@@ -1,0 +1,28 @@
+# Web 框架
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+pydantic==2.9.2
+pydantic-settings==2.5.2
+
+# 数据库
+sqlalchemy==2.0.35
+pymysql==1.1.1
+redis==5.1.1
+
+# 安全
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# AI / LLM（使用 OpenAI 兼容协议接入国内合规大模型）
+openai==1.45.0
+httpx==0.27.2
+
+# 向量库（二选一，先占位；MVP 可用内存向量或 Tencent Cloud VectorDB）
+# pymilvus==2.4.5
+
+# 配置
+python-dotenv==1.0.1
+
+# 测试
+pytest==8.3.2
+httpx==0.27.2

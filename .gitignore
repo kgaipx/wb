@@ -1,0 +1,30 @@
+# ===== WorkBuddy 内部数据（含个人记忆/隐私，绝不入库） =====
+.workbuddy/
+
+# ===== 环境变量 / 密钥（只提交 .example 模板） =====
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+build/
+*.local
+
+# ===== 日志 / 系统 =====
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
