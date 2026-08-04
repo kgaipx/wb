@@ -15,10 +15,9 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "change_me"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
 
-    # 数据库
-    DATABASE_URL: str = (
-        "mysql+pymysql://gwy:gwy_dev_pass@127.0.0.1:3306/gwy_platform?charset=utf8mb4"
-    )
+    # 数据库：开发期默认 SQLite（零外部依赖，便于本地验证）；生产请通过环境变量覆盖为 MySQL。
+    # 例：DATABASE_URL=mysql+pymysql://user:pass@host:3306/gwy_platform?charset=utf8mb4
+    DATABASE_URL: str = "sqlite:///./gwy_dev.db"
 
     # Redis
     REDIS_URL: str = "redis://127.0.0.1:6379/0"

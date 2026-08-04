@@ -9,10 +9,14 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
 
+# SQLite 开发期需关闭单线程检查，以便 FastAPI 跨请求复用连接
+_connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
+
 engine = create_engine(
     settings.DATABASE_URL,
     pool_pre_ping=True,
     future=True,
+    connect_args=_connect_args,
 )
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)

@@ -1,19 +1,15 @@
 """API 路由聚合（方案 c3 业务服务层：按功能域拆分）。
 
-当前为脚手架占位，后续把各功能域（学员/学习/题库/测评/支付/审核）拆成独立 router 挂到此处。
+WBS 2.1 认证 / 学员中心，WBS 2.2 题库 已挂载；后续 WBS 3-8 的功能域（learn/ai/exam/pay/review）按同方式挂接。
 """
 from fastapi import APIRouter
 
-api_router = APIRouter()
+from app.api.routes import auth, question_bank, student
 
-# 健康检查已在 main.py 提供；此处预留业务聚合入口
-# from app.api.routes import auth, learn, question_bank, assessment, payment, review
-# api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
-# api_router.include_router(learn.router, prefix="/learn", tags=["learn"])
-# api_router.include_router(question_bank.router, prefix="/bank", tags=["bank"])
-# api_router.include_router(assessment.router, prefix="/exam", tags=["exam"])
-# api_router.include_router(payment.router, prefix="/pay", tags=["pay"])
-# api_router.include_router(review.router, prefix="/review", tags=["review"])
+api_router = APIRouter()
+api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
+api_router.include_router(student.router, prefix="/student", tags=["student"])
+api_router.include_router(question_bank.router, prefix="/bank", tags=["bank"])
 
 
 @api_router.get("/ping", tags=["system"])
