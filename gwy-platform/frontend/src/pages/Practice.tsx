@@ -47,52 +47,77 @@ export default function Practice() {
 
   return (
     <section>
-      <h2>刷题</h2>
-      {err && <div style={{ color: "#dc2626", fontSize: 13 }}>{err}</div>}
+      <h2 className="page-title">刷题练习</h2>
+      {err && <div className="err-text">{err}</div>}
 
       {!active && (
-        <div style={{ display: "grid", gap: 8 }}>
+        <div>
           {list.map((q) => (
-            <button key={q.id} style={itemCard} onClick={() => { setActive(q); setSelected(""); setResult(null); setExplain(""); }}>
-              <div style={{ fontSize: 13, color: "#888" }}>{q.subject} · {q.knowledge_point} · 难度{q.difficulty}</div>
-              <div style={{ fontSize: 15, marginTop: 2 }}>{q.stem}</div>
+            <button
+              key={q.id}
+              className="q-item"
+              onClick={() => {
+                setActive(q);
+                setSelected("");
+                setResult(null);
+                setExplain("");
+              }}
+            >
+              <div className="q-item__meta">
+                <span className="tag tag--brand">{q.subject}</span>
+                <span>{q.knowledge_point}</span>
+                <span>· 难度 {q.difficulty}</span>
+                {q.is_verified && <span className="tag tag--verified">✓ 已审核</span>}
+              </div>
+              <div className="q-item__stem">{q.stem}</div>
             </button>
           ))}
-          {list.length === 0 && <div style={{ color: "#888" }}>题库加载中…</div>}
+          {list.length === 0 && <div className="muted">题库加载中…</div>}
         </div>
       )}
 
       {active && (
-        <div style={card}>
-          <button style={{ background: "none", border: "none", color: "#2563eb", padding: 0, marginBottom: 8 }} onClick={() => setActive(null)}>← 返回题库</button>
-          <div style={{ fontSize: 13, color: "#888" }}>{active.subject} · {active.knowledge_point}</div>
+        <div className="card">
+          <button className="back-link" onClick={() => setActive(null)}>
+            ← 返回题库
+          </button>
+          <div className="q-item__meta" style={{ marginBottom: 6 }}>
+            <span className="tag tag--brand">{active.subject}</span>
+            <span>{active.knowledge_point}</span>
+          </div>
           <div style={{ fontSize: 16, margin: "6px 0 12px" }}>{active.stem}</div>
 
           {active.options.map((o) => (
-            <label key={o.id} style={{ display: "flex", gap: 8, alignItems: "center", padding: "8px 10px", border: "1px solid #eee", borderRadius: 8, marginBottom: 6, cursor: "pointer", background: selected === o.label ? "#eef4ff" : "#fff" }}>
+            <label key={o.id} className={"opt" + (selected === o.label ? " opt--selected" : "")}>
               <input type="radio" name="opt" checked={selected === o.label} onChange={() => setSelected(o.label)} />
               <b>{o.label}.</b> <span>{o.content}</span>
             </label>
           ))}
 
-          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-            <button style={btn} disabled={busy || !selected} onClick={submit}>提交</button>
-            <button style={btnGhost} disabled={busy} onClick={askTutor}>AI 私教讲解</button>
+          <div className="row" style={{ marginTop: 8, gap: 8 }}>
+            <button className="btn btn--primary" style={{ flex: 1 }} disabled={busy || !selected} onClick={submit}>
+              提交
+            </button>
+            <button className="btn btn--ghost" style={{ flex: 1 }} disabled={busy} onClick={askTutor}>
+              AI 私教讲解
+            </button>
           </div>
 
           {result && (
-            <div style={{ marginTop: 12, padding: 12, background: result.is_correct ? "#f0fdf4" : "#fef2f2", borderRadius: 8 }}>
+            <div className={"result " + (result.is_correct ? "result--ok" : "result--bad")}>
               <b>{result.is_correct ? "✔ 答对" : `✘ 答错，正确答案：${result.correct_answer}`}</b>
-              {result.explanation && <div style={{ marginTop: 6, fontSize: 14 }}>{result.explanation}</div>}
-              <div style={{ marginTop: 6, fontSize: 12, color: "#888" }}>当前掌握度：{result.mastery}</div>
+              {result.explanation && <div style={{ marginTop: 6 }}>{result.explanation}</div>}
+              <div className="text-3" style={{ marginTop: 6, fontSize: 12 }}>
+                当前掌握度：{result.mastery}
+              </div>
             </div>
           )}
 
           {explain && (
-            <div style={{ marginTop: 12, padding: 12, background: "#f5f8ff", borderRadius: 8 }}>
-              <b>AI 私教讲解</b>
-              <div style={{ marginTop: 6, fontSize: 14, whiteSpace: "pre-wrap" }}>{explain}</div>
-              {cites.length > 0 && <div style={{ marginTop: 6, fontSize: 12, color: "#888" }}>来源：{cites.join("；")}</div>}
+            <div className="tutor-box">
+              <div className="tutor-box__title">AI 私教讲解</div>
+              <div className="tutor-box__body">{explain}</div>
+              {cites.length > 0 && <div className="tutor-box__cite">来源：{cites.join("；")}</div>}
             </div>
           )}
         </div>
@@ -100,8 +125,3 @@ export default function Practice() {
     </section>
   );
 }
-
-const card: React.CSSProperties = { padding: 16, background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,.06)" };
-const itemCard: React.CSSProperties = { textAlign: "left", padding: 12, background: "#fff", border: "1px solid #eee", borderRadius: 10, cursor: "pointer" };
-const btn: React.CSSProperties = { flex: 1, padding: "10px 0", background: "#2563eb", color: "#fff", border: "none", borderRadius: 8, fontSize: 15 };
-const btnGhost: React.CSSProperties = { flex: 1, padding: "10px 0", background: "#fff", color: "#2563eb", border: "1px solid #2563eb", borderRadius: 8, fontSize: 15 };

@@ -131,6 +131,12 @@ def health_check():
     }
 
 
+@app.get("/api/health", tags=["system"])
+def health_check_api():
+    """与 /health 等价的 /api 前缀别名，便于前端经统一 BASE 探活。"""
+    return health_check()
+
+
 if __name__ == "__main__":
     import uvicorn
 

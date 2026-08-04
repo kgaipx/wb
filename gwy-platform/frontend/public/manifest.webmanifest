@@ -2,7 +2,7 @@
   "name": "AI公务员考前培训学习平台",
   "short_name": "公考私教",
   "description": "AI-native 公考私教：懂你短板、内容可信、花钱无忧",
-  "theme_color": "#2563eb",
+  "theme_color": "#1B4FB5",
   "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/",

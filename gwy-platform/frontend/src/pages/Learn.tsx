@@ -17,7 +17,9 @@ export default function Learn() {
       setErr(e.message);
     }
   }
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+  }, []);
 
   async function tutor(qid: number) {
     setBusy(true);
@@ -31,49 +33,63 @@ export default function Learn() {
     }
   }
 
-  if (err) return <section><h2>学习中心</h2><div style={{ color: "#dc2626" }}>{err}</div></section>;
-  if (!dash) return <section><h2>学习中心</h2><div style={{ color: "#888" }}>加载中…（需先登录）</div></section>;
+  if (err) return <section><h2 className="page-title">学习中心</h2><div className="err-text">{err}</div></section>;
+  if (!dash) return <section><h2 className="page-title">学习中心</h2><div className="muted">加载中…（需先登录）</div></section>;
 
   return (
     <section>
-      <h2>学习中心</h2>
-      <div style={card}>
+      <h2 className="page-title">学习中心</h2>
+      <div className="card">
         <strong>学情概览</strong>
-        <div style={{ fontSize: 14, color: "#555", marginTop: 4 }}>
+        <div className="muted" style={{ marginTop: 4 }}>
           累计答题 {dash.total_answers} 次 · 正确率 {Math.round(dash.correct_rate * 100)}%
         </div>
-        {dash.ability.map((a) => (
-          <div key={a.knowledge_point} style={{ marginTop: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-              <span>{a.knowledge_point}</span><span style={{ color: "#888" }}>{Math.round(a.mastery * 100)}%</span>
+        {dash.ability.map((a) => {
+          const pct = Math.round(a.mastery * 100);
+          const tone = pct >= 60 ? "progress--success" : pct >= 35 ? "" : "progress--warn";
+          return (
+            <div key={a.knowledge_point} style={{ marginTop: 8 }}>
+              <div className="row row--between" style={{ fontSize: 13 }}>
+                <span>{a.knowledge_point}</span>
+                <span className="text-3">{pct}%</span>
+              </div>
+              <div className={"progress " + tone}>
+                <div className="progress__bar" style={{ width: pct + "%" }} />
+              </div>
             </div>
-            <div style={{ height: 6, background: "#eee", borderRadius: 4, marginTop: 2 }}>
-              <div style={{ width: `${Math.round(a.mastery * 100)}%`, height: "100%", background: "#2563eb", borderRadius: 4 }} />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
-      <div style={{ ...card, marginTop: 12, background: "#fff7ed" }}>
+      <div className="card card--warning" style={{ marginTop: 12 }}>
         <strong>薄弱知识点（AI 诊断）</strong>
-        <div style={{ fontSize: 14, marginTop: 4 }}>
+        <div style={{ marginTop: 4 }}>
           {rec && rec.knowledge_points.length ? rec.knowledge_points.join("、") : "暂无明显薄弱点，继续保持 👍"}
         </div>
       </div>
 
-      <h3 style={{ fontSize: 15 }}>为你推荐练习</h3>
-      {rec && rec.questions.map((q: any) => (
-        <div key={q.id} style={itemCard}>
-          <div style={{ fontSize: 13, color: "#888" }}>{q.subject} · {q.knowledge_point}</div>
-          <div style={{ fontSize: 15, marginTop: 2 }}>{q.stem}</div>
-          <button style={{ ...btnGhost, marginTop: 6, padding: "6px 10px", fontSize: 13 }} disabled={busy} onClick={() => tutor(q.id)}>AI 私教讲解</button>
-          {explain[q.id] && <div style={{ marginTop: 8, fontSize: 14, whiteSpace: "pre-wrap", background: "#f5f8ff", padding: 10, borderRadius: 8 }}>{explain[q.id]}</div>}
-        </div>
-      ))}
+      <h3 className="section-title" style={{ marginTop: 16 }}>
+        为你推荐练习
+      </h3>
+      {rec &&
+        rec.questions.map((q: any) => (
+          <div key={q.id} className="q-item">
+            <div className="q-item__meta">
+              <span className="tag tag--brand">{q.subject}</span>
+              <span>{q.knowledge_point}</span>
+            </div>
+            <div className="q-item__stem">{q.stem}</div>
+            <button className="btn btn--ghost btn--sm" style={{ marginTop: 8 }} disabled={busy} onClick={() => tutor(q.id)}>
+              AI 私教讲解
+            </button>
+            {explain[q.id] && (
+              <div className="tutor-box" style={{ marginTop: 8 }}>
+                <div className="tutor-box__title">AI 私教讲解</div>
+                <div className="tutor-box__body">{explain[q.id]}</div>
+              </div>
+            )}
+          </div>
+        ))}
     </section>
   );
 }
-
-const card: React.CSSProperties = { padding: 16, background: "#fff", borderRadius: 12, boxShadow: "0 1px 4px rgba(0,0,0,.06)" };
-const itemCard: React.CSSProperties = { textAlign: "left", padding: 12, background: "#fff", border: "1px solid #eee", borderRadius: 10, marginBottom: 8 };
-const btnGhost: React.CSSProperties = { background: "#fff", color: "#2563eb", border: "1px solid #2563eb", borderRadius: 8 };

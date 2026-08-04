@@ -1,4 +1,7 @@
 import React from "react";
+import "./theme/tokens.css";
+import "./theme/global.css";
+import "./theme/components.css";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";

@@ -1,5 +1,7 @@
 // 后端接口封装：统一 /api 前缀、错误处理、Auth 头注入（WBS 2.1~7.1 全量联通）
-const BASE = "/api";
+// 后端接口基址：默认同源 /api（开发期由 vite 代理转发到 :8000）；
+// 部署时可经 VITE_API_BASE 指向独立后端域名（需后端 CORS 放行该来源）。
+const BASE: string = import.meta.env.VITE_API_BASE || "/api";
 
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem("access_token");
