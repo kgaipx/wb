@@ -311,3 +311,58 @@ def test_ai_plan_offline_fallback(client, monkeypatch):
     assert d["offline"] is True
     assert len(d["items"]) == 7
     assert d["items"][0]["tasks"]
+
+
+def test_plan_persist_and_checkin_loop(client, monkeypatch):
+    """学习计划落库 + 打卡闭环：生成即保存、GET 取当前、打卡更新进度、重生成换新计划。"""
+    tok = _register(client, "loop@e.com", "secret1")
+    _seed_wrong_answer(client, tok)
+
+    def _boom(self, *a, **k):
+        raise RuntimeError("no network")
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", _boom)
+
+    # 生成即落库
+    r = client.post("/api/ai/plan", headers=_hdr(tok), json={"days": 7})
+    assert r.status_code == 200
+    p = r.json()
+    assert "plan_id" in p
+    assert p["progress"]["total_tasks"] > 0
+    assert 0.0 <= p["progress"]["rate"] <= 1.0
+
+    # GET 取当前计划（同一份）
+    g = client.get("/api/ai/plan", headers=_hdr(tok))
+    assert g.status_code == 200
+    assert g.json()["plan_id"] == p["plan_id"]
+
+    # 打卡第一个任务 -> done + 进度 +1 + 连续打卡>=1
+    tid = p["items"][0]["tasks"][0]["id"]
+    before = p["progress"]["done_tasks"]
+    tg = client.post(f"/api/ai/plan/tasks/{tid}/toggle", headers=_hdr(tok))
+    assert tg.status_code == 200
+    assert tg.json()["task"]["done"] is True
+    assert tg.json()["progress"]["done_tasks"] == before + 1
+    assert tg.json()["progress"]["streak_days"] >= 1
+
+    # 取消打卡 -> 还原
+    tg2 = client.post(f"/api/ai/plan/tasks/{tid}/toggle", headers=_hdr(tok))
+    assert tg2.json()["task"]["done"] is False
+    assert tg2.json()["progress"]["done_tasks"] == before
+
+    # 打卡不存在的任务 -> 404
+    assert client.post("/api/ai/plan/tasks/999999/toggle", headers=_hdr(tok)).status_code == 404
+
+    # 重生成 -> 旧计划被替换：打卡计数归零、生成时间刷新，GET 取到同一份新计划
+    r2 = client.post("/api/ai/plan", headers=_hdr(tok), json={"days": 7})
+    assert r2.json()["progress"]["done_tasks"] == 0
+    assert r2.json()["generated_at"] >= p["generated_at"]
+    g2 = client.get("/api/ai/plan", headers=_hdr(tok))
+    assert g2.json()["plan_id"] == r2.json()["plan_id"]
+    assert g2.json()["generated_at"] == r2.json()["generated_at"]
+
+
+def test_plan_get_404_when_none(client):
+    """无计划时 GET /ai/plan 返回 404（前端据此触发生成）。"""
+    tok = _register(client, "nope@e.com", "secret1")
+    assert client.get("/api/ai/plan", headers=_hdr(tok)).status_code == 404

@@ -7,6 +7,7 @@ from app.models.knowledge import KnowledgeChunk
 from app.models.content import ContentReview
 from app.models.billing import Order, RefundRequest
 from app.models.favorite import Favorite
+from app.models.study_plan import PlanTask, StudyPlan
 
 __all__ = [
     "Base",
@@ -20,4 +21,6 @@ __all__ = [
     "Order",
     "RefundRequest",
     "Favorite",
+    "StudyPlan",
+    "PlanTask",
 ]

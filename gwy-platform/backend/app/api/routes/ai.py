@@ -21,8 +21,11 @@ from app.schemas.ai import (
     ExplainOut,
     PlanIn,
     PlanOut,
+    PlanProgress,
+    PlanToggleOut,
     RecommendOut,
 )
+from app.services import study_plan_service as sp_svc
 
 router = APIRouter()
 
@@ -85,5 +88,47 @@ def plan(
     current: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    """AI 学习计划生成：聚合学情/错题/收藏，输出带日程的个性化计划（LLM 不可用时降级）。"""
-    return PlanOut(**generate_plan(db, current, days=payload.days, target=payload.target))
+    """AI 学习计划生成：聚合学情/错题/收藏，输出带日程的个性化计划（LLM 不可用时降级），并落库以支持打卡。"""
+    plan_dict = generate_plan(db, current, days=payload.days, target=payload.target)
+    sp = sp_svc.persist_plan(db, current, plan_dict, target=payload.target)
+    prog = sp_svc.compute_progress(db, sp)
+    return PlanOut(**sp_svc.to_plan_out(sp, prog))
+
+
+@router.get("/plan", response_model=PlanOut)
+def get_plan(
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """获取当前已保存的学习计划（含打卡状态与进度）；无计划则返回 404。"""
+    sp = sp_svc.get_current_plan(db, current)
+    if sp is None:
+        raise HTTPException(status_code=404, detail="尚未生成学习计划，请先生成")
+    prog = sp_svc.compute_progress(db, sp)
+    return PlanOut(**sp_svc.to_plan_out(sp, prog))
+
+
+@router.post("/plan/tasks/{task_id}/toggle", response_model=PlanToggleOut)
+def toggle_plan_task(
+    task_id: int,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """打卡 / 取消打卡单个任务（执行-复盘闭环）；仅可操作本人计划内的任务。"""
+    task = sp_svc.toggle_task(db, current, task_id)
+    if task is None:
+        raise HTTPException(status_code=404, detail="任务不存在")
+    prog = sp_svc.compute_progress(db, task.plan)
+    last = prog.get("last_checkin_at")
+    progress_payload = {
+        k: v for k, v in prog.items() if k not in ("today_index", "last_checkin_at")
+    }
+    progress_payload["last_checkin_at"] = last.isoformat() if last else None
+    return PlanToggleOut(
+        task={
+            "id": task.id,
+            "done": task.done,
+            "checked_at": task.checked_at.isoformat() if task.checked_at else None,
+        },
+        progress=PlanProgress(**progress_payload),
+    )

@@ -12,7 +12,9 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `请求失败: ${res.status}`);
+    const e: any = new Error(err.detail || `请求失败: ${res.status}`);
+    e.status = res.status;
+    throw e;
   }
   return res.json() as Promise<T>;
 }
@@ -67,10 +69,12 @@ export interface ChatReply {
   offline: boolean;
 }
 export interface PlanTask {
+  id: number;
   kind: string; // practice | review_wrong | favorite | mock | explain | read
   title: string;
   target: string | null;
   ref_id: number | null;
+  done: boolean; // 是否已打卡
 }
 export interface PlanDay {
   day: number;
@@ -79,12 +83,26 @@ export interface PlanDay {
   knowledge_points: string[];
   tasks: PlanTask[];
 }
+export interface PlanProgress {
+  total_tasks: number;
+  done_tasks: number;
+  rate: number; // 完成率 0-1
+  streak_days: number; // 连续打卡天数
+  by_kind: Record<string, { total: number; done: number }>;
+  last_checkin_at: string | null;
+  today_total: number;
+  today_done: number;
+}
 export interface PlanOut {
+  plan_id: number;
   days: number;
   items: PlanDay[];
   model: string | null;
   offline: boolean;
   summary: string | null;
+  generated_at: string;
+  today_index: number; // 计划视角下「今天」第几天；0 表示未开始/已结束
+  progress: PlanProgress;
 }
 
 export const api = {
@@ -144,6 +162,25 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ days, target }),
     }),
+  // 学习计划打卡 / 进度追踪（执行-复盘闭环）
+  planGet: async (): Promise<PlanOut | null> => {
+    try {
+      return await request<PlanOut>("/ai/plan");
+    } catch (e: any) {
+      if (e?.status === 404) return null; // 尚未生成计划
+      throw e;
+    }
+  },
+  planGenerate: (days = 7, target?: string) =>
+    request<PlanOut>("/ai/plan", {
+      method: "POST",
+      body: JSON.stringify({ days, target }),
+    }),
+  planToggle: (taskId: number) =>
+    request<{ task: { id: number; done: boolean; checked_at: string | null }; progress: PlanProgress }>(
+      `/ai/plan/tasks/${taskId}/toggle`,
+      { method: "POST" }
+    ),
 
   // 申论批改（WBS 4.1）
   essayGrade: (essay_text: string, prompt_material = "", max_score = 100) =>

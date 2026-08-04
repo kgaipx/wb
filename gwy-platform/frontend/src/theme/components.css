@@ -480,6 +480,79 @@
   color: var(--text-3);
   font-size: 18px;
 }
+
+/* ===================== 学习计划进度 / 打卡 ===================== */
+.plan-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 12px;
+}
+.plan-ring {
+  flex: 0 0 auto;
+}
+.plan-progress__stats {
+  display: flex;
+  gap: 18px;
+  flex: 1;
+}
+.plan-progress__stats .stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.plan-progress__stats b {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.plan-progress__stats span {
+  font-size: 11px;
+  color: var(--text-3);
+}
+.plan-check {
+  flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: #fff;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.plan-check--on {
+  background: var(--success);
+  border-color: var(--success);
+}
+.plan-check:active {
+  transform: scale(0.92);
+}
+.plan-task__title--link {
+  cursor: pointer;
+}
+.plan-task--done .plan-task__title {
+  text-decoration: line-through;
+  color: var(--text-3);
+}
+.plan-day--today {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-050);
+}
+.plan-day__today {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 999px;
+  padding: 2px 9px;
+}
 .kind--mock { background: #eaf1ff; color: #3457b0; }
 .kind--review_wrong { background: #fdeceb; color: #c0392b; }
 .kind--favorite { background: #fff3e0; color: #b26a00; }
@@ -553,6 +626,21 @@
 .tag--warning {
   background: var(--warning-050);
   color: var(--warning);
+}
+
+/* 徽标（计划页标题区等） */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1.5;
+}
+.badge--soft {
+  background: var(--brand-050);
+  color: var(--brand);
 }
 
 /* ===================== 进度条 ===================== */

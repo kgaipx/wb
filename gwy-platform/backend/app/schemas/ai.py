@@ -44,20 +44,34 @@ class EssayGradeOut(BaseModel):
     rationale: str
 
 
-class PlanTask(BaseModel):
-    """计划中的单个任务。"""
+class PlanTaskOut(BaseModel):
+    """已落库的计划任务（含打卡状态）。"""
+    id: int
     kind: str  # practice | review_wrong | favorite | mock | explain | read
     title: str
     target: str | None = None  # 知识点 / 文案
     ref_id: int | None = None  # 关联题目 id（用于跳转刷题）
+    done: bool = False  # 是否已打卡完成
 
 
-class PlanDay(BaseModel):
+class PlanDayOut(BaseModel):
     day: int
     focus: str  # 当日主攻知识点
     summary: str
     knowledge_points: list[str] = []
-    tasks: list[PlanTask] = []
+    tasks: list[PlanTaskOut] = []
+
+
+class PlanProgress(BaseModel):
+    """进度聚合：完成率 / 连续打卡 / 按类型分布 / 今日待办。"""
+    total_tasks: int
+    done_tasks: int
+    rate: float  # 完成率 0-1
+    streak_days: int  # 连续打卡天数
+    by_kind: dict[str, dict[str, int]] = {}  # {kind: {total, done}}
+    last_checkin_at: str | None = None
+    today_total: int = 0  # 今日任务数
+    today_done: int = 0  # 今日已完成数
 
 
 class PlanIn(BaseModel):
@@ -66,8 +80,18 @@ class PlanIn(BaseModel):
 
 
 class PlanOut(BaseModel):
+    plan_id: int
     days: int
-    items: list[PlanDay]
+    items: list[PlanDayOut]
     model: str | None = None
     offline: bool = False  # True 表示 LLM 不可用，走了规则降级
     summary: str | None = None  # 计划总述
+    generated_at: str  # 计划生成时间（ISO）
+    today_index: int = 0  # 计划视角下「今天」对应第几天；0 表示未开始/已结束
+    progress: PlanProgress
+
+
+class PlanToggleOut(BaseModel):
+    """打卡切换后的返回：更新后的任务状态 + 最新进度。"""
+    task: dict
+    progress: PlanProgress
