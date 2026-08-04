@@ -61,6 +61,7 @@ class LLMGateway:
             messages=messages,  # type: ignore[arg-type]
             temperature=temperature,
             max_tokens=max_tokens,
+            timeout=30,
         )
         return LLMResponse(
             content=resp.choices[0].message.content or "",

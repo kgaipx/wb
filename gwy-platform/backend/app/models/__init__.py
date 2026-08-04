@@ -3,5 +3,19 @@ from app.db.base import Base
 from app.models.user import User
 from app.models.question import Question, QuestionOption
 from app.models.progress import UserAnswer, AbilityProfile
+from app.models.knowledge import KnowledgeChunk
+from app.models.content import ContentReview
+from app.models.billing import Order, RefundRequest
 
-__all__ = ["Base", "User", "Question", "QuestionOption", "UserAnswer", "AbilityProfile"]
+__all__ = [
+    "Base",
+    "User",
+    "Question",
+    "QuestionOption",
+    "UserAnswer",
+    "AbilityProfile",
+    "KnowledgeChunk",
+    "ContentReview",
+    "Order",
+    "RefundRequest",
+]

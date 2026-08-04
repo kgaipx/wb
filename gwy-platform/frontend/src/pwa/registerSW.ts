@@ -1,13 +1,12 @@
-// 注册 PWA Service Worker（离线优先，方案方向3 / WBS 6.1）
-// vite-plugin-pwa 在构建时生成 virtual:pwa-register
-import { registerSW as register } from "virtual:pwa-register";
-
+// 注册手写 Service Worker（离线优先，方案方向3 / WBS 6.1）
+// 开发期不注册，避免热更新干扰；生产构建产物含 /sw.js。
 export function registerSW() {
-  if (import.meta.env.DEV) return; // 开发期不注册，避免热更新干扰
-  register({
-    immediate: true,
-    onRegisteredSW(swUrl) {
-      console.info("[PWA] service worker registered:", swUrl);
-    },
-  });
+  if (import.meta.env.DEV) return;
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        /* 注册失败不阻断主流程 */
+      });
+    });
+  }
 }

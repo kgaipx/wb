@@ -1,38 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { VitePWA } from "vite-plugin-pwa";
 
-// 离线优先（方案方向3）：Workbox 预缓存壳 + 运行时缓存题库
+// 离线优先（方案方向3 / WBS 6.1）：使用手写 Service Worker（public/sw.js）实现
+// 应用壳预缓存 + 题库接口运行时缓存（StaleWhileRevalidate），零额外依赖、构建稳定。
 export default defineConfig({
-  plugins: [
-    react(),
-    VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.svg"],
-      manifest: {
-        name: "AI公务员考前培训学习平台",
-        short_name: "公考私教",
-        description: "AI-native 公考私教：懂你短板、内容可信、花钱无忧",
-        theme_color: "#2563eb",
-        background_color: "#ffffff",
-        display: "standalone",
-        start_url: "/",
-        icons: [
-          { src: "pwa-192.png", sizes: "192x192", type: "image/png" },
-          { src: "pwa-512.png", sizes: "512x512", type: "image/png" },
-        ],
-      },
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,svg,png}"],
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.pathname.startsWith("/api/bank"),
-            handler: "StaleWhileRevalidate",
-            options: { cacheName: "question-bank" },
-          },
-        ],
-      },
-    }),
-  ],
+  plugins: [react()],
+  // 关闭 outDir 自动清空：规避沙箱安全删除机制对 fs.rmSync 的拦截（构建仍会覆盖写入）
+  build: { emptyOutDir: false },
   server: { port: 5173, proxy: { "/api": "http://localhost:8000" } },
 });

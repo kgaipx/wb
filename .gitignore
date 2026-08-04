@@ -7,6 +7,7 @@
 !.env.example
 backend/.env
 backend/.env.*
+!backend/.env.example
 
 # ===== Python =====
 __pycache__/
@@ -25,6 +26,10 @@ node_modules/
 dist/
 build/
 *.local
+# tsc -b 增量构建产物与声明文件（不应入库）
+*.tsbuildinfo
+gwy-platform/frontend/vite.config.js
+gwy-platform/frontend/vite.config.d.ts
 
 # ===== 日志 / 系统 =====
 *.log
