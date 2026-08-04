@@ -42,3 +42,32 @@ class EssayGradeOut(BaseModel):
     dimensions: dict[str, float]
     needs_human_review: bool
     rationale: str
+
+
+class PlanTask(BaseModel):
+    """计划中的单个任务。"""
+    kind: str  # practice | review_wrong | favorite | mock | explain | read
+    title: str
+    target: str | None = None  # 知识点 / 文案
+    ref_id: int | None = None  # 关联题目 id（用于跳转刷题）
+
+
+class PlanDay(BaseModel):
+    day: int
+    focus: str  # 当日主攻知识点
+    summary: str
+    knowledge_points: list[str] = []
+    tasks: list[PlanTask] = []
+
+
+class PlanIn(BaseModel):
+    days: int = 7  # 计划天数
+    target: str | None = None  # 目标考试，如「2026 国考」
+
+
+class PlanOut(BaseModel):
+    days: int
+    items: list[PlanDay]
+    model: str | None = None
+    offline: bool = False  # True 表示 LLM 不可用，走了规则降级
+    summary: str | None = None  # 计划总述

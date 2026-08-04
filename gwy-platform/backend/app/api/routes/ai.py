@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.ai.adaptive import recommend_questions
 from app.ai.essay_grader import EssayGrader
+from app.ai.study_planner import generate_plan
 from app.ai.tutor_agent import TutorAgent
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
@@ -18,6 +19,8 @@ from app.schemas.ai import (
     EssayGradeOut,
     ExplainIn,
     ExplainOut,
+    PlanIn,
+    PlanOut,
     RecommendOut,
 )
 
@@ -74,3 +77,13 @@ def essay_grade(payload: EssayGradeIn, current: User = Depends(get_current_user)
         needs_human_review=score.needs_human_review,
         rationale=score.rationale,
     )
+
+
+@router.post("/plan", response_model=PlanOut)
+def plan(
+    payload: PlanIn,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """AI 学习计划生成：聚合学情/错题/收藏，输出带日程的个性化计划（LLM 不可用时降级）。"""
+    return PlanOut(**generate_plan(db, current, days=payload.days, target=payload.target))

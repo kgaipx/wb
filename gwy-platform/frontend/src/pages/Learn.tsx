@@ -131,6 +131,19 @@ export default function Learn() {
         </button>
       </div>
 
+      <div className="card card--soft" style={{ marginTop: 12 }}>
+        <div className="row row--between">
+          <strong>AI 周学习计划</strong>
+          <span className="badge badge--soft">私教大脑</span>
+        </div>
+        <div className="muted" style={{ marginTop: 4 }}>
+          把诊断、错题、收藏串成可执行日程，每天该练什么一目了然。
+        </div>
+        <button className="btn btn--primary btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/plan")}>
+          生成我的学习计划 →
+        </button>
+      </div>
+
       <h3 className="section-title" style={{ marginTop: 16 }}>
         为你推荐练习
       </h3>

@@ -66,6 +66,26 @@ export interface ChatReply {
   model: string | null;
   offline: boolean;
 }
+export interface PlanTask {
+  kind: string; // practice | review_wrong | favorite | mock | explain | read
+  title: string;
+  target: string | null;
+  ref_id: number | null;
+}
+export interface PlanDay {
+  day: number;
+  focus: string;
+  summary: string;
+  knowledge_points: string[];
+  tasks: PlanTask[];
+}
+export interface PlanOut {
+  days: number;
+  items: PlanDay[];
+  model: string | null;
+  offline: boolean;
+  summary: string | null;
+}
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
@@ -118,6 +138,11 @@ export const api = {
     request<ChatReply>("/ai/chat", {
       method: "POST",
       body: JSON.stringify({ messages, kp_hint }),
+    }),
+  plan: (days = 7, target?: string) =>
+    request<PlanOut>("/ai/plan", {
+      method: "POST",
+      body: JSON.stringify({ days, target }),
     }),
 
   // 申论批改（WBS 4.1）

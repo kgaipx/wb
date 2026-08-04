@@ -239,3 +239,75 @@ def test_ai_chat_offline_fallback(client, monkeypatch):
     d = r.json()
     assert d["offline"] is True
     assert d["answer"]
+
+
+def _seed_wrong_answer(client, tok):
+    """造一道错答，使 planner 的 priority 知识点非空（触发 LLM/降级分支）。"""
+    import json as _json
+
+    q0 = client.get("/api/bank/questions?limit=20").json()[0]
+    q0d = client.get(f"/api/bank/questions/{q0['id']}").json()
+    sel = q0d["options"][0]["label"]
+    pr = client.post(
+        "/api/bank/practice", json={"question_id": q0["id"], "selected": sel}, headers=_hdr(tok)
+    ).json()
+    if pr["is_correct"]:
+        sel = q0d["options"][1]["label"]
+        client.post(
+            "/api/bank/practice", json={"question_id": q0["id"], "selected": sel}, headers=_hdr(tok)
+        )
+    return q0["id"], _json
+
+
+def test_ai_plan_online(client, monkeypatch):
+    """AI 学习计划：LLM 可用时返回结构化 JSON 计划（items 数 = days）。"""
+    tok = _register(client, "plan@e.com", "secret1")
+    _, _json = _seed_wrong_answer(client, tok)
+
+    class _Resp:
+        content = _json.dumps(
+            {
+                "summary": "7 天冲刺计划",
+                "items": [
+                    {
+                        "day": i + 1,
+                        "focus": f"KP{i}",
+                        "summary": f"第{i+1}天主攻 KP{i}",
+                        "knowledge_points": [f"KP{i}"],
+                        "tasks": [{"kind": "practice", "title": "刷 3 题", "target": f"KP{i}", "ref_id": 1}],
+                    }
+                    for i in range(7)
+                ],
+            }
+        )
+        model = "fake-model"
+        token_usage = 0
+
+    def _fake(self, *a, **k):
+        return _Resp()
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", _fake)
+    r = client.post("/api/ai/plan", headers=_hdr(tok), json={"days": 7})
+    assert r.status_code == 200
+    d = r.json()
+    assert d["offline"] is False
+    assert len(d["items"]) == 7
+    assert d["items"][0]["day"] == 1
+    assert d["items"][0]["tasks"][0]["kind"] == "practice"
+
+
+def test_ai_plan_offline_fallback(client, monkeypatch):
+    """AI 学习计划：LLM 不可用时降级为规则计划（items 数 = days，offline=True）。"""
+    tok = _register(client, "plan2@e.com", "secret1")
+    _seed_wrong_answer(client, tok)
+
+    def _boom(self, *a, **k):
+        raise RuntimeError("no network")
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", _boom)
+    r = client.post("/api/ai/plan", headers=_hdr(tok), json={"days": 7})
+    assert r.status_code == 200
+    d = r.json()
+    assert d["offline"] is True
+    assert len(d["items"]) == 7
+    assert d["items"][0]["tasks"]

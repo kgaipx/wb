@@ -397,6 +397,95 @@
   z-index: 50;
 }
 
+/* ===================== AI 学习计划 ===================== */
+.plan-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}
+.plan-day {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  margin-top: 12px;
+  box-shadow: var(--sh-sm);
+}
+.plan-day__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.plan-day__badge {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--brand);
+  border-radius: 999px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.plan-day__focus {
+  font-weight: 700;
+  font-size: 15px;
+}
+.plan-day__summary {
+  font-size: 13px;
+  margin-top: 4px;
+}
+.plan-day__tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 10px;
+}
+.plan-task {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  cursor: default;
+  font: inherit;
+  color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.plan-task--link {
+  cursor: pointer;
+}
+.plan-task--link:hover {
+  border-color: var(--brand-100);
+  background: var(--brand-050);
+}
+.plan-task__kind {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: var(--brand-100);
+  color: var(--brand);
+  white-space: nowrap;
+}
+.plan-task__title {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.plan-task__arrow {
+  color: var(--text-3);
+  font-size: 18px;
+}
+.kind--mock { background: #eaf1ff; color: #3457b0; }
+.kind--review_wrong { background: #fdeceb; color: #c0392b; }
+.kind--favorite { background: #fff3e0; color: #b26a00; }
+.kind--explain { background: #e9f7ef; color: #1d7a46; }
+.kind--read { background: #eef2f7; color: #475569; }
+
 /* ===================== 表单 ===================== */
 .input {
   width: 100%;
