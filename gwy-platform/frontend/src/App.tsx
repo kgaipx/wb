@@ -9,6 +9,7 @@ import Favorites from "./pages/Favorites";
 import Chat from "./pages/Chat";
 import Plan from "./pages/Plan";
 import Review from "./pages/Review";
+import Membership from "./pages/Membership";
 
 type Icon = () => JSX.Element;
 
@@ -94,6 +95,7 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/plan" element={<Plan />} />
           <Route path="/review" element={<Review />} />
+          <Route path="/membership" element={<Membership />} />
           <Route path="/chat" element={<Chat />} />
         </Routes>
       </main>

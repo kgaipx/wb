@@ -9,11 +9,8 @@ export default function Profile() {
   const [wrongCount, setWrongCount] = useState(0);
   const [favCount, setFavCount] = useState(0);
   const [err, setErr] = useState("");
-  const [msg, setMsg] = useState("");
-
   const [essay, setEssay] = useState("");
   const [grade, setGrade] = useState<any>(null);
-  const [refundMsg, setRefundMsg] = useState("");
 
   useEffect(() => {
     api.dashboard().then((d) => {
@@ -24,31 +21,6 @@ export default function Profile() {
     api.favoriteList().then((f) => setFavCount(f.length)).catch(() => {});
   }, []);
 
-  async function buy(p: string) {
-    setMsg("");
-    try {
-      const o = await api.createOrder(p);
-      setPlan(o.plan);
-      setMsg(`已开通 ${p}（订单 #${o.id}，¥${(o.amount / 100).toFixed(0)}）`);
-    } catch (e: any) {
-      setErr(e.message);
-    }
-  }
-  async function refund() {
-    setRefundMsg("");
-    try {
-      const b = await api.myBilling();
-      if (!b.orders.length) {
-        setRefundMsg("请先开通会员再申请退费");
-        return;
-      }
-      const r = await api.requestRefund(b.orders[0].id, "不适合当前备考计划");
-      setPlan("free");
-      setRefundMsg(`退费申请 #${r.id}：¥${(r.amount / 100).toFixed(0)}，状态 ${r.status}（3 个工作日内到账）`);
-    } catch (e: any) {
-      setRefundMsg(e.message);
-    }
-  }
   async function gradeEssay() {
     setGrade(null);
     try {
@@ -74,7 +46,7 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* 透明定价 / 会员（WBS 7.1） */}
+      {/* 学习管理 */}
       <div className="card" style={{ marginTop: 12 }}>
         <strong>学习管理</strong>
         <div className="row" style={{ gap: 8, marginTop: 8 }}>
@@ -89,21 +61,17 @@ export default function Profile() {
         </div>
       </div>
 
-      <div className="card" style={{ marginTop: 12 }}>
-        <strong>会员与透明定价</strong>
-        <div className="price-note">
-          会员 ¥99/月 · 年卡 ¥990/年 · <b className="text-accent">7 日内全额退、30 日内退 50%、超期转人工</b>
+      {/* 会员中心入口（WBS 7.1） */}
+      <div className="card card--tutor" style={{ marginTop: 12 }}>
+        <div className="card--tutor__txt">
+          <strong>会员中心</strong>
+          <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+            透明定价 · 无忧退费 · AI 私教全流程权益
+          </div>
         </div>
-        <div className="row" style={{ gap: 8 }}>
-          <button className="btn btn--primary" style={{ flex: 1 }} disabled={plan !== "free"} onClick={() => buy("pro")}>
-            开通会员 ¥99
-          </button>
-          <button className="btn btn--ghost" style={{ flex: 1 }} disabled={plan === "free"} onClick={refund}>
-            无忧退费
-          </button>
-        </div>
-        {msg && <div className="ok-text">{msg}</div>}
-        {refundMsg && <div className="ok-text">{refundMsg}</div>}
+        <button className="btn btn--ghost btn--sm" onClick={() => nav("/membership")}>
+          进入 →
+        </button>
       </div>
 
       {/* 内容可信 / 双签审核台（WBS 5.2 信任保障） */}

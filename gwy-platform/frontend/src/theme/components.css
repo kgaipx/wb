@@ -1050,3 +1050,173 @@
 .status--approved { background: rgba(22, 163, 74, 0.12); color: var(--success); }
 .status--rejected { background: rgba(217, 43, 28, 0.14); color: var(--danger); }
 .status--corrected { background: rgba(245, 158, 11, 0.14); color: var(--warning); }
+
+/* ===================== AI 私教对话：会话抽屉 ===================== */
+.chat__headinfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+.chat-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: rgba(16, 24, 40, 0.42);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fade-in 0.15s ease;
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+.chat-drawer__panel {
+  width: 100%;
+  max-width: var(--app-max);
+  max-height: 76vh;
+  background: var(--surface);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  box-shadow: 0 -8px 30px rgba(16, 24, 40, 0.18);
+  padding: var(--sp-4);
+  display: flex;
+  flex-direction: column;
+  animation: sheet-up 0.2s ease;
+}
+@keyframes sheet-up { from { transform: translateY(20px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
+.chat-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-3);
+}
+.chat-drawer__list {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.session-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.session-item--on {
+  border-color: var(--brand);
+  background: var(--brand-050);
+}
+.session-item__main { flex: 1; min-width: 0; }
+.session-item__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.session-item__meta {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.session-item__del {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 15px;
+}
+.session-item__del:hover {
+  border-color: var(--danger);
+  background: var(--danger-050);
+}
+
+/* ===================== 会员中心 ===================== */
+.plans-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+}
+.plan-card {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: var(--sp-4);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.plan-card--on {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-050);
+}
+.plan-card--hot {
+  border-color: var(--accent);
+}
+.plan-card__badge {
+  position: absolute;
+  top: -10px;
+  right: 14px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+}
+.plan-card__name { font-size: 16px; font-weight: 800; }
+.plan-card__price {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.plan-card__period { font-size: 13px; font-weight: 600; color: var(--text-3); margin-left: 2px; }
+.plan-card__tagline { font-size: 13px; color: var(--text-2); }
+.plan-card__benefits {
+  list-style: none;
+  display: grid;
+  gap: 7px;
+  margin: 8px 0 4px;
+}
+.plan-card__benefits li {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.45;
+}
+.plan-card__benefits li::before {
+  content: "✓";
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin-top: 1px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--success-050);
+  color: var(--success);
+  font-size: 10px;
+  font-weight: 700;
+}
+.bill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.bill-row:last-child { border-bottom: none; }
+.bill-row .emp { font-size: 14px; }

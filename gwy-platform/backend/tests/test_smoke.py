@@ -441,3 +441,100 @@ def test_content_reject_and_correct(client):
     assert co.json()["status"] == "corrected"
     assert co.json()["version"] == 2
     assert co.json()["body"] == "v2 修正后内容"
+
+
+def test_chat_session_persist(client, monkeypatch):
+    """AI 私教对话持久化：建会话→收发→刷新加载→多会话切换→删除（WBS 3.1 闭环）。"""
+    tok = _register(client, "cs@e.com", "secret1")
+
+    class _Resp:
+        content = "这是私教的回答"
+        model = "fake-model"
+        token_usage = 0
+
+    def _fake(self, *a, **k):
+        return _Resp()
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", _fake)
+
+    # 新建会话
+    s = client.post("/api/ai/chat/sessions", headers=_hdr(tok))
+    assert s.status_code == 201, s.text
+    sid = s.json()["id"]
+
+    # 第一条消息自动生成标题（取前 20 字）
+    content = "如何高效备考资料分析"
+    r = client.post(
+        f"/api/ai/chat/sessions/{sid}/messages",
+        headers=_hdr(tok),
+        json={"content": content},
+    )
+    assert r.status_code == 200
+    assert r.json()["title"] == content
+    assert r.json()["message"]["role"] == "assistant"
+    assert r.json()["message"]["content"] == "这是私教的回答"
+
+    # 会话列表：message_count=2（用户+助手），标题正确
+    lst = client.get("/api/ai/chat/sessions", headers=_hdr(tok)).json()
+    assert any(x["id"] == sid and x["message_count"] == 2 for x in lst)
+
+    # 刷新加载：消息按时间正序，首条为用户、次条为助手
+    msgs = client.get(f"/api/ai/chat/sessions/{sid}/messages", headers=_hdr(tok)).json()
+    assert len(msgs) == 2
+    assert msgs[0]["role"] == "user" and msgs[0]["content"] == content
+    assert msgs[1]["role"] == "assistant" and msgs[1]["content"] == "这是私教的回答"
+
+    # 第二条消息：多轮上下文连续
+    r2 = client.post(
+        f"/api/ai/chat/sessions/{sid}/messages",
+        headers=_hdr(tok),
+        json={"content": "那数量关系呢"},
+    )
+    assert r2.status_code == 200
+    msgs2 = client.get(f"/api/ai/chat/sessions/{sid}/messages", headers=_hdr(tok)).json()
+    assert len(msgs2) == 4
+
+    # 第二个会话 + 切换
+    s2 = client.post("/api/ai/chat/sessions", headers=_hdr(tok)).json()
+    client.post(
+        f"/api/ai/chat/sessions/{s2['id']}/messages",
+        headers=_hdr(tok),
+        json={"content": "申论怎么开头"},
+    )
+    lst2 = client.get("/api/ai/chat/sessions", headers=_hdr(tok)).json()
+    assert len(lst2) == 2
+
+    # 删除第一个会话 → 列表剩 1，消息 404
+    d = client.delete(f"/api/ai/chat/sessions/{sid}", headers=_hdr(tok))
+    assert d.status_code == 204
+    assert len(client.get("/api/ai/chat/sessions", headers=_hdr(tok)).json()) == 1
+    assert client.get(f"/api/ai/chat/sessions/{sid}/messages", headers=_hdr(tok)).status_code == 404
+
+
+def test_chat_session_access_control(client, monkeypatch):
+    """会话隔离：A 的会话 B 不可访问（404）。"""
+    tok_a = _register(client, "acl_a@e.com", "secret1")
+    tok_b = _register(client, "acl_b@e.com", "secret1")
+
+    class _Resp:
+        content = "x"
+        model = "m"
+        token_usage = 0
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", lambda self, *a, **k: _Resp())
+    sid = client.post("/api/ai/chat/sessions", headers=_hdr(tok_a)).json()["id"]
+    assert client.get(f"/api/ai/chat/sessions/{sid}/messages", headers=_hdr(tok_b)).status_code == 404
+    assert client.delete(f"/api/ai/chat/sessions/{sid}", headers=_hdr(tok_b)).status_code == 404
+
+
+def test_billing_plans_catalog(client):
+    """会员套餐目录：返回 free/pro/pro_year 三档 + 退费规则。"""
+    tok = _register(client, "pl@e.com", "secret1")
+    r = client.get("/api/billing/plans", headers=_hdr(tok))
+    assert r.status_code == 200
+    body = r.json()
+    ids = {p["id"] for p in body["plans"]}
+    assert ids == {"free", "pro", "pro_year"}
+    assert body["plans"][1]["price"] == 9900  # pro ¥99
+    assert body["plans"][2]["price"] == 99000  # pro_year ¥990
+    assert body["refund_policy"]

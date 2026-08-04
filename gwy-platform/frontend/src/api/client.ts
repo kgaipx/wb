@@ -59,14 +59,31 @@ export interface WrongItem {
   last_selected: string | null;
 }
 export interface ChatMessage {
+  id?: number;
   role: "user" | "assistant";
   content: string;
+  citations?: string[];
+  model?: string | null;
+  offline?: boolean;
+  created_at?: string;
 }
 export interface ChatReply {
   answer: string;
   citations: string[];
   model: string | null;
   offline: boolean;
+}
+export interface ChatSession {
+  id: number;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+}
+export interface ChatSendOut {
+  session_id: number;
+  message: ChatMessage;
+  title: string;
 }
 export interface PlanTask {
   id: number;
@@ -178,6 +195,18 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ messages, kp_hint }),
     }),
+  // AI 私教对话历史持久化（WBS 3.1：会话可回溯、刷新不丢）
+  chatSessions: () => request<ChatSession[]>("/ai/chat/sessions"),
+  chatCreate: () => request<ChatSession>("/ai/chat/sessions", { method: "POST" }),
+  chatMessages: (sessionId: number) =>
+    request<ChatMessage[]>(`/ai/chat/sessions/${sessionId}/messages`),
+  chatSend: (sessionId: number, content: string, kp_hint?: string) =>
+    request<ChatSendOut>(`/ai/chat/sessions/${sessionId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ content, kp_hint }),
+    }),
+  chatDelete: (sessionId: number) =>
+    request<void>(`/ai/chat/sessions/${sessionId}`, { method: "DELETE" }),
   plan: (days = 7, target?: string) =>
     request<PlanOut>("/ai/plan", {
       method: "POST",
@@ -234,6 +263,8 @@ export const api = {
       body: JSON.stringify({ order_id, reason }),
     }),
   myBilling: () => request<{ plan: string; orders: any[]; refunds: any[] }>("/billing/me"),
+  billingPlans: () =>
+    request<{ plans: any[]; currency: string; refund_policy: string }>("/billing/plans"),
 
   // 内容双签审核 / 信任保障（WBS 5.2 / c11 P0）
   reviewSubmit: (body: { item_type: string; item_id: string; body: string; version?: number }) =>

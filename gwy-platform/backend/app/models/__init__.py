@@ -8,6 +8,7 @@ from app.models.content import ContentReview
 from app.models.billing import Order, RefundRequest
 from app.models.favorite import Favorite
 from app.models.study_plan import PlanTask, StudyPlan
+from app.models.chat import ChatMessage, ChatSession
 
 __all__ = [
     "Base",
@@ -23,4 +24,6 @@ __all__ = [
     "Favorite",
     "StudyPlan",
     "PlanTask",
+    "ChatSession",
+    "ChatMessage",
 ]

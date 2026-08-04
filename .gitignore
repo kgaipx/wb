@@ -37,3 +37,6 @@ gwy-platform/frontend/vite.config.d.ts
 Thumbs.db
 .idea/
 .vscode/
+
+# ===== 部署临时打包产物（本地构建后投递用，不入库） =====
+gwy-platform/deploy_*.tar.gz

@@ -18,6 +18,57 @@ router = APIRouter()
 
 _PRICE = {"pro": 9900, "pro_year": 99000}  # 单位：分（¥99 / ¥990）
 
+# 会员套餐目录（WBS 7.1）：透明定价 + 权益清单，供会员中心页直接渲染
+_PLANS = [
+    {
+        "id": "free",
+        "name": "免费版",
+        "price": 0,
+        "period": "永久",
+        "tagline": "先体验核心能力",
+        "benefits": [
+            "题库刷题与错题本",
+            "AI 逐题讲解（每日限量）",
+            "生成 7 天学习计划",
+            "内容双签可信保障",
+        ],
+        "highlight": False,
+    },
+    {
+        "id": "pro",
+        "name": "会员月卡",
+        "price": 9900,
+        "period": "月",
+        "tagline": "私教全程陪跑",
+        "benefits": [
+            "无限次 AI 私教对话（历史可回溯）",
+            "申论 AI 批改 + 人工复核兜底",
+            "自适应弱项推送与复错率追踪",
+            "学习计划打卡与连续打卡激励",
+            "全部免费版权益",
+        ],
+        "highlight": True,
+    },
+    {
+        "id": "pro_year",
+        "name": "会员年卡",
+        "price": 99000,
+        "period": "年",
+        "tagline": "折合 ¥82.5/月，立省 ¥198",
+        "benefits": [
+            "会员月卡全部权益",
+            "折合每月仅 ¥82.5，较月卡省 16.7%",
+            "优先客服与功能抢先体验",
+        ],
+        "highlight": False,
+    },
+]
+
+_REFUND_POLICY = (
+    "无忧退费：开通后 7 日内全额退；8–30 日内退 50%；超期转人工评估。"
+    "退费申请通过后 3 个工作日内到账，进度全程可查。"
+)
+
 
 @router.post("/orders", response_model=OrderOut, status_code=201)
 def create_order(
@@ -77,4 +128,14 @@ def my_billing(current: User = Depends(get_current_user), db: Session = Depends(
         "plan": current.plan,
         "orders": [OrderOut.model_validate(o).model_dump() for o in orders],
         "refunds": [RefundOut.model_validate(r).model_dump() for r in refunds],
+    }
+
+
+@router.get("/plans", tags=["billing"])
+def plan_catalog():
+    """会员套餐目录（透明定价 + 权益清单 + 退费规则），供会员中心页渲染。"""
+    return {
+        "plans": _PLANS,
+        "currency": "CNY",
+        "refund_policy": _REFUND_POLICY,
     }

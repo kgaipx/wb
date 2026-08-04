@@ -6,13 +6,14 @@ WBS 3.1 私教、3.2 自适应、4.1 申论批改（/ai）、4.2 模考（/exam�
 """
 from fastapi import APIRouter
 
-from app.api.routes import ai, auth, billing, content, exam, question_bank, student
+from app.api.routes import ai, auth, billing, chat, content, exam, question_bank, student
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(student.router, prefix="/student", tags=["student"])
 api_router.include_router(question_bank.router, prefix="/bank", tags=["bank"])
 api_router.include_router(ai.router, prefix="/ai", tags=["ai"])
+api_router.include_router(chat.router, prefix="/ai", tags=["ai"])
 api_router.include_router(exam.router, prefix="/exam", tags=["exam"])
 api_router.include_router(billing.router, prefix="/billing", tags=["billing"])
 api_router.include_router(content.router, prefix="/content", tags=["content"])
