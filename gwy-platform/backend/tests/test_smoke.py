@@ -196,3 +196,46 @@ def test_favorites_crud(client):
 
     assert client.delete(f"/api/bank/favorites/{qid}", headers=_hdr(tok)).status_code == 200
     assert client.get("/api/bank/favorites", headers=_hdr(tok)).json() == []
+
+
+def test_ai_chat_online(client, monkeypatch):
+    """AI 私教对话：LLM 可用时返回答案与来源。"""
+    tok = _register(client, "chat@e.com", "secret1")
+
+    class _Resp:
+        content = "类比推理要先判断题干两组词的关系类型，再逐一匹配选项。"
+        model = "fake-model"
+        token_usage = 0
+
+    def _fake(self, *a, **k):
+        return _Resp()
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", _fake)
+    r = client.post(
+        "/api/ai/chat",
+        headers=_hdr(tok),
+        json={"messages": [{"role": "user", "content": "类比推理怎么学"}]},
+    )
+    assert r.status_code == 200
+    d = r.json()
+    assert d["offline"] is False
+    assert "类比" in d["answer"]
+
+
+def test_ai_chat_offline_fallback(client, monkeypatch):
+    """AI 私教对话：LLM 不可用时降级为离线检索摘要（绝不 500）。"""
+    tok = _register(client, "chat2@e.com", "secret1")
+
+    def _boom(self, *a, **k):
+        raise RuntimeError("no network")
+
+    monkeypatch.setattr("app.ai.llm_gateway.LLMGateway.complete", _boom)
+    r = client.post(
+        "/api/ai/chat",
+        headers=_hdr(tok),
+        json={"messages": [{"role": "user", "content": "类比推理怎么学"}]},
+    )
+    assert r.status_code == 200
+    d = r.json()
+    assert d["offline"] is True
+    assert d["answer"]

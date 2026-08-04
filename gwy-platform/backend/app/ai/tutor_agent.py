@@ -57,6 +57,63 @@ class TutorAgent:
             "model": resp.model,
         }
 
+    def chat(self, messages: list[dict], kp_hint: str | None = None) -> dict:
+        """多轮对话：基于 RAG 检索 + LLM 生成；离线（LLM 不可用）时降级为检索摘要。
+
+        返回 {answer, citations, model, offline}。offline=True 表示走降级分支。
+        """
+        last_user = ""
+        for m in reversed(messages):
+            if m.get("role") == "user":
+                last_user = (m.get("content") or "").strip()
+                break
+        query = f"{kp_hint or ''} {last_user}".strip()
+        chunks = self.retriever.retrieve(query, top_k=4)
+
+        context = (
+            "参考资料：\n" + "\n".join(f"- {c.content}（来源：{c.source}）" for c in chunks)
+            if chunks
+            else "（暂无检索到专属资料，基于通用公考知识作答）"
+        )
+        system = (
+            "你是耐心、专业、不说废话的公务员考试私教，可以就备考方法、知识点、"
+            "解题技巧、申论写作、心态与时间规划等给出可操作建议。讲解要直击要点，"
+            "避免空话。若资料不足以支撑，可基于通用公考常识作答，并提示『此为通用建议，非官方口径』。"
+        )
+        history = "\n".join(
+            f"{'学员' if m.get('role') == 'user' else '私教'}：{m.get('content', '')}" for m in messages
+        )
+        prompt = (
+            f"{context}\n\n【对话历史】\n{history}\n\n"
+            "请基于上述资料与历史，针对学员最新问题给出清晰、分点、可操作的回答。"
+        )
+        try:
+            resp = self.gateway.complete(prompt, system=system, temperature=0.4, max_tokens=900)
+            return {
+                "answer": resp.content,
+                "citations": [c.source for c in chunks],
+                "model": resp.model,
+                "offline": False,
+            }
+        except Exception:
+            # 离线降级：仅用检索片段拼接摘要，绝不抛 500
+            if chunks:
+                answer = (
+                    "（当前为离线检索模式，未接入大模型）根据资料：\n"
+                    + "\n".join(f"- {c.content}" for c in chunks[:3])
+                )
+            else:
+                answer = (
+                    "（当前为离线模式，暂未接入大模型，也未检索到相关资料。）"
+                    "你可以先去「刷题」或「错题本」练习，或换更具体的关键词再问。"
+                )
+            return {
+                "answer": answer,
+                "citations": [c.source for c in chunks],
+                "model": "offline-fallback",
+                "offline": True,
+            }
+
     @staticmethod
     def diagnose_mistakes(abilities: list[AbilityProfile], weak_threshold: float = 0.6) -> list[str]:
         """错题诊断：返回掌握度低于阈值的薄弱知识点（按掌握度升序）。"""

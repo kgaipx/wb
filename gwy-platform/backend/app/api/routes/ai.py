@@ -11,7 +11,15 @@ from app.ai.tutor_agent import TutorAgent
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
 from app.models import AbilityProfile, Question, User
-from app.schemas.ai import EssayGradeIn, EssayGradeOut, ExplainIn, ExplainOut, RecommendOut
+from app.schemas.ai import (
+    ChatIn,
+    ChatOut,
+    EssayGradeIn,
+    EssayGradeOut,
+    ExplainIn,
+    ExplainOut,
+    RecommendOut,
+)
 
 router = APIRouter()
 
@@ -48,6 +56,12 @@ def recommend(top_n: int = 10, current: User = Depends(get_current_user), db: Se
             for q in questions
         ],
     )
+
+
+@router.post("/chat", response_model=ChatOut)
+def chat(payload: ChatIn, current: User = Depends(get_current_user)):
+    tutor = TutorAgent()
+    return ChatOut(**tutor.chat(payload.messages, payload.kp_hint))
 
 
 @router.post("/essay-grade", response_model=EssayGradeOut)

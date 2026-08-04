@@ -56,6 +56,16 @@ export interface WrongItem {
   wrong_count: number;
   last_selected: string | null;
 }
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+export interface ChatReply {
+  answer: string;
+  citations: string[];
+  model: string | null;
+  offline: boolean;
+}
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
@@ -104,6 +114,11 @@ export const api = {
       body: JSON.stringify({ question_id, selected }),
     }),
   recommend: (top_n = 10) => request<{ knowledge_points: string[]; questions: any[] }>(`/ai/recommend?top_n=${top_n}`),
+  chat: (messages: ChatMessage[], kp_hint?: string) =>
+    request<ChatReply>("/ai/chat", {
+      method: "POST",
+      body: JSON.stringify({ messages, kp_hint }),
+    }),
 
   // 申论批改（WBS 4.1）
   essayGrade: (essay_text: string, prompt_material = "", max_score = 100) =>

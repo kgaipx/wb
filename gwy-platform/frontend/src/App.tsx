@@ -1,4 +1,4 @@
-import { Routes, Route, NavLink } from "react-router-dom";
+import { Routes, Route, NavLink, Link, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
 import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import Exam from "./pages/Exam";
 import Wrong from "./pages/Wrong";
 import Favorites from "./pages/Favorites";
+import Chat from "./pages/Chat";
 
 type Icon = () => JSX.Element;
 
@@ -57,6 +58,20 @@ const tabs = [
   { to: "/profile", label: "我的", icon: UserIcon },
 ];
 
+function FloatingTutor() {
+  const loc = useLocation();
+  if (loc.pathname === "/chat") return null;
+  return (
+    <Link to="/chat" className="fab" aria-label="AI 私教">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z" />
+        <path d="M8.5 9.5h7M8.5 13h4" />
+      </svg>
+      <span className="fab__label">私教</span>
+    </Link>
+  );
+}
+
 export default function App() {
   return (
     <div className="app-shell">
@@ -75,8 +90,11 @@ export default function App() {
           <Route path="/wrong" element={<Wrong />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/chat" element={<Chat />} />
         </Routes>
       </main>
+
+      <FloatingTutor />
 
       <nav className="nav-bar">
         {tabs.map((t) => {

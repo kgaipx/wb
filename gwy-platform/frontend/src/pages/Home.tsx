@@ -110,6 +110,20 @@ export default function Home() {
         </div>
       )}
 
+      {user && (
+        <div className="card card--tutor" style={{ marginTop: 14 }}>
+          <div className="card--tutor__txt">
+            <strong>卡住了？问问 AI 私教</strong>
+            <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+              知识点、解题技巧、申论写法、复习规划，随时问。
+            </div>
+          </div>
+          <button className="btn btn--primary" onClick={() => nav("/chat")}>
+            去问问
+          </button>
+        </div>
+      )}
+
       <div className="card card--soft" style={{ marginTop: 14 }}>
         <strong>平台能力</strong>
         <ul className="cap-list">

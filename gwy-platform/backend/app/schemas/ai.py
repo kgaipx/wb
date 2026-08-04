@@ -19,6 +19,18 @@ class RecommendOut(BaseModel):
     questions: list[dict] = []  # 候选题目（精简字段）
 
 
+class ChatIn(BaseModel):
+    messages: list[dict]  # 对话历史：[{role: "user"|"assistant", content: str}]
+    kp_hint: str | None = None  # 可选的知识点提示，用于更精准检索
+
+
+class ChatOut(BaseModel):
+    answer: str
+    citations: list[str] = []
+    model: str | None = None
+    offline: bool = False  # True 表示 LLM 不可用时走了离线降级
+
+
 class EssayGradeIn(BaseModel):
     essay_text: str
     prompt_material: str = ""
