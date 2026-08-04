@@ -521,3 +521,109 @@
   background: var(--border);
   margin: var(--sp-3) 0;
 }
+
+/* ===================== 模考 / 选择 chip ===================== */
+.field-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-top: 6px;
+}
+.chip {
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.chip--on {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+.chip--warn {
+  background: var(--warning-050);
+  border-color: transparent;
+  color: var(--warning);
+}
+.exam-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+}
+.exam-bar .btn {
+  margin-left: auto;
+}
+
+/* ===================== 提分报告 ===================== */
+.report-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+  background: linear-gradient(135deg, var(--brand-050), var(--surface));
+}
+.big-rate {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.big-rate span {
+  font-size: 20px;
+  font-weight: 700;
+  margin-left: 2px;
+}
+.rate--good {
+  color: var(--success);
+}
+.rate--mid {
+  color: var(--brand);
+}
+.rate--bad {
+  color: var(--danger);
+}
+
+/* ===================== 能力图谱雷达 ===================== */
+.radar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 12px 0 4px;
+}
+.radar {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+}
+.radar__ring {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.radar__axis {
+  stroke: var(--border);
+  stroke-width: 1;
+}
+.radar__area {
+  fill: rgba(27, 79, 181, 0.18);
+  stroke: var(--brand);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+.radar__dot {
+  fill: var(--brand);
+}
+.radar__label {
+  font-size: 10px;
+  fill: var(--text-2);
+}

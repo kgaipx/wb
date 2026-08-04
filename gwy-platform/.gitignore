@@ -30,3 +30,8 @@ Thumbs.db
 backend/app/__pycache__/
 .coverage
 htmlcov/
+
+# Local dev database (regenerated on startup; never commit)
+gwy_dev.db
+*.sqlite
+*.sqlite3

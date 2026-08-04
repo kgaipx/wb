@@ -98,7 +98,13 @@ def submit_exam(
             .first()
         )
         if ab is None:
-            ab = AbilityProfile(user_id=current.id, knowledge_point=q.knowledge_point)
+            ab = AbilityProfile(
+                user_id=current.id,
+                knowledge_point=q.knowledge_point,
+                attempts=0,
+                correct=0,
+                mastery=0.0,
+            )
             db.add(ab)
         ab.attempts += 1
         if is_correct:

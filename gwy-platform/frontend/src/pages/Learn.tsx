@@ -1,6 +1,46 @@
 import { useEffect, useState } from "react";
 import { api, Dashboard } from "../api/client";
 
+/** 能力图谱雷达：把知识点掌握度（0~1）可视化为自适应诊断。最多 8 个轴，超出截断。 */
+function AbilityRadar({ data }: { data: { label: string; value: number }[] }) {
+  const size = 240;
+  const cx = size / 2;
+  const cy = size / 2;
+  const R = size / 2 - 34;
+  const n = data.length;
+  const angle = (i: number) => -Math.PI / 2 + (i * 2 * Math.PI) / n;
+  const pt = (i: number, r: number): [number, number] => {
+    const a = angle(i);
+    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
+  };
+  const rings = [0.25, 0.5, 0.75, 1];
+  const vPts = data.map((d, i) => pt(i, R * Math.max(0.05, Math.min(1, d.value))));
+  const vPoly = vPts.map((p) => p.join(",")).join(" ");
+  return (
+    <svg viewBox={`0 0 ${size} ${size}`} className="radar" role="img" aria-label="能力图谱雷达">
+      {rings.map((rr) => (
+        <polygon key={rr} points={data.map((_, i) => pt(i, R * rr).join(",")).join(" ")} className="radar__ring" />
+      ))}
+      {data.map((_, i) => {
+        const [x, y] = pt(i, R);
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} className="radar__axis" />;
+      })}
+      <polygon points={vPoly} className="radar__area" />
+      {vPts.map((p, i) => (
+        <circle key={i} cx={p[0]} cy={p[1]} r={3} className="radar__dot" />
+      ))}
+      {data.map((d, i) => {
+        const [x, y] = pt(i, R + 15);
+        return (
+          <text key={i} x={x} y={y} className="radar__label" textAnchor="middle" dominantBaseline="middle">
+            {d.label}
+          </text>
+        );
+      })}
+    </svg>
+  );
+}
+
 export default function Learn() {
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
@@ -44,6 +84,24 @@ export default function Learn() {
         <div className="muted" style={{ marginTop: 4 }}>
           累计答题 {dash.total_answers} 次 · 正确率 {Math.round(dash.correct_rate * 100)}%
         </div>
+        {dash.ability.length > 0 ? (
+          <div className="radar-wrap">
+            <AbilityRadar
+              data={dash.ability
+                .slice(0, 8)
+                .map((a) => ({ label: a.knowledge_point, value: a.mastery }))}
+            />
+            {dash.ability.length > 8 && (
+              <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
+                仅展示掌握度最低的 8 个知识点
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="muted" style={{ marginTop: 10 }}>
+            尚未产生作答数据，去「刷题」或「模考」后这里会生成你的能力图谱。
+          </div>
+        )}
         {dash.ability.map((a) => {
           const pct = Math.round(a.mastery * 100);
           const tone = pct >= 60 ? "progress--success" : pct >= 35 ? "" : "progress--warn";
