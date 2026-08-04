@@ -48,3 +48,17 @@ class PracticeResult(BaseModel):
     correct_answer: str | None
     explanation: str | None
     mastery: float
+
+
+class WrongItem(BaseModel):
+    """错题本条目：题目（不泄漏答案）+ 错答次数 + 最近一次错选。"""
+
+    question: QuestionOut
+    wrong_count: int
+    last_selected: str | None
+
+    model_config = {"from_attributes": False}
+
+
+class FavoriteIn(BaseModel):
+    question_id: int

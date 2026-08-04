@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api, Dashboard } from "../api/client";
 
 /** 能力图谱雷达：把知识点掌握度（0~1）可视化为自适应诊断。最多 8 个轴，超出截断。 */
@@ -42,6 +43,7 @@ function AbilityRadar({ data }: { data: { label: string; value: number }[] }) {
 }
 
 export default function Learn() {
+  const nav = useNavigate();
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
   const [explain, setExplain] = useState<Record<number, string>>({});
@@ -124,6 +126,9 @@ export default function Learn() {
         <div style={{ marginTop: 4 }}>
           {rec && rec.knowledge_points.length ? rec.knowledge_points.join("、") : "暂无明显薄弱点，继续保持 👍"}
         </div>
+        <button className="link-btn" style={{ marginTop: 6 }} onClick={() => nav("/wrong")}>
+          去错题本针对性重练 →
+        </button>
       </div>
 
       <h3 className="section-title" style={{ marginTop: 16 }}>

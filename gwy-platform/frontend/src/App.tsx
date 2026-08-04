@@ -4,6 +4,8 @@ import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
 import Profile from "./pages/Profile";
 import Exam from "./pages/Exam";
+import Wrong from "./pages/Wrong";
+import Favorites from "./pages/Favorites";
 
 type Icon = () => JSX.Element;
 
@@ -38,12 +40,20 @@ const ExamIcon: Icon = () => (
     <path d="M9 12l2 2 4-4" />
   </svg>
 );
+const WrongIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 12a9 9 0 1 0 3-6.7" />
+    <path d="M3 4v4h4" />
+    <path d="M12 8v4l3 2" />
+  </svg>
+);
 
 const tabs = [
   { to: "/", label: "首页", end: true, icon: HomeIcon },
   { to: "/learn", label: "学习", icon: BookIcon },
   { to: "/practice", label: "刷题", icon: PenIcon },
   { to: "/exam", label: "模考", icon: ExamIcon },
+  { to: "/wrong", label: "错题", icon: WrongIcon },
   { to: "/profile", label: "我的", icon: UserIcon },
 ];
 
@@ -62,6 +72,8 @@ export default function App() {
           <Route path="/learn" element={<Learn />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/exam" element={<Exam />} />
+          <Route path="/wrong" element={<Wrong />} />
+          <Route path="/favorites" element={<Favorites />} />
           <Route path="/profile" element={<Profile />} />
         </Routes>
       </main>

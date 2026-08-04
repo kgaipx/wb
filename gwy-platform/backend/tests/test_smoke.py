@@ -1,7 +1,7 @@
 """全链路冒烟测试（固化人工验证路径，加固 WBS 8.1 质量门禁）。
 
-覆盖：健康检查 / 注册登录 / 学情 / 刷题判分 / 在线模考 / AI 讲解·申论批改（mock LLM）/
-会员退费 / 内容双签校验。AI 调用通过 monkeypatch 隔离，保证离线可跑。
+覆盖：健康检查 / 注册登录 / 学情 / 刷题判分 / 在线模考 / 错题本闭环 / 收藏夹 CRUD /
+AI 讲解·申论批改（mock LLM）/ 会员退费 / 内容双签校验。AI 调用通过 monkeypatch 隔离，保证离线可跑。
 """
 from app.api.routes import ai as ai_routes
 
@@ -150,3 +150,49 @@ def test_content_double_sign(client):
     assert a2["status"] == "approved" and a2["reviewer_2"] == "审核员B"
     pend = client.get("/api/content/review/pending").json()
     assert all(r["status"] == "pending" for r in pend)
+
+
+def test_wrongbook_and_review_loop(client):
+    """错答进入错题本；复盘后移出错题本（复错率闭环）。"""
+    tok = _register(client, "w@e.com", "secret1")
+    q0_id = client.get("/api/bank/questions?limit=20").json()[0]["id"]
+    q0 = client.get(f"/api/bank/questions/{q0_id}").json()
+    # 选定一个错误选项：先试 A，若恰好答对则换 B
+    sel = q0["options"][0]["label"]
+    pr = client.post(
+        "/api/bank/practice", json={"question_id": q0["id"], "selected": sel}, headers=_hdr(tok)
+    ).json()
+    if pr["is_correct"]:
+        sel = q0["options"][1]["label"]
+        pr = client.post(
+            "/api/bank/practice", json={"question_id": q0["id"], "selected": sel}, headers=_hdr(tok)
+        ).json()
+    assert pr["is_correct"] is False
+
+    wrong = client.get("/api/student/wrong", headers=_hdr(tok)).json()
+    assert any(w["question"]["id"] == q0["id"] for w in wrong)
+
+    rev = client.post(f"/api/student/wrong/{q0['id']}/review", headers=_hdr(tok))
+    assert rev.status_code == 200
+    wrong2 = client.get("/api/student/wrong", headers=_hdr(tok)).json()
+    assert all(w["question"]["id"] != q0["id"] for w in wrong2)
+
+
+def test_favorites_crud(client):
+    """收藏夹增加/幂等/删除。"""
+    tok = _register(client, "f@e.com", "secret1")
+    qid = client.get("/api/bank/questions?limit=20").json()[0]["id"]
+
+    assert client.get("/api/bank/favorites", headers=_hdr(tok)).json() == []
+    assert client.post("/api/bank/favorites", json={"question_id": qid}, headers=_hdr(tok)).status_code == 200
+
+    favs = client.get("/api/bank/favorites", headers=_hdr(tok)).json()
+    assert any(q["id"] == qid for q in favs)
+
+    # 重复添加应幂等（不重复收藏）
+    client.post("/api/bank/favorites", json={"question_id": qid}, headers=_hdr(tok))
+    favs2 = client.get("/api/bank/favorites", headers=_hdr(tok)).json()
+    assert sum(1 for q in favs2 if q["id"] == qid) == 1
+
+    assert client.delete(f"/api/bank/favorites/{qid}", headers=_hdr(tok)).status_code == 200
+    assert client.get("/api/bank/favorites", headers=_hdr(tok)).json() == []

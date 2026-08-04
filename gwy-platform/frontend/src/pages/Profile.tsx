@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api, Dashboard } from "../api/client";
 
 export default function Profile() {
+  const nav = useNavigate();
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [plan, setPlan] = useState("free");
+  const [wrongCount, setWrongCount] = useState(0);
+  const [favCount, setFavCount] = useState(0);
   const [err, setErr] = useState("");
   const [msg, setMsg] = useState("");
 
@@ -16,6 +20,8 @@ export default function Profile() {
       setDash(d);
       setPlan(d.user.plan);
     }).catch((e) => setErr(e.message));
+    api.wrongList().then((w) => setWrongCount(w.length)).catch(() => {});
+    api.favoriteList().then((f) => setFavCount(f.length)).catch(() => {});
   }, []);
 
   async function buy(p: string) {
@@ -69,6 +75,20 @@ export default function Profile() {
       </div>
 
       {/* 透明定价 / 会员（WBS 7.1） */}
+      <div className="card" style={{ marginTop: 12 }}>
+        <strong>学习管理</strong>
+        <div className="row" style={{ gap: 8, marginTop: 8 }}>
+          <button className="manage-card" onClick={() => nav("/wrong")}>
+            <span className="manage-card__num">{wrongCount}</span>
+            <span className="manage-card__label">待复盘错题</span>
+          </button>
+          <button className="manage-card" onClick={() => nav("/favorites")}>
+            <span className="manage-card__num">{favCount}</span>
+            <span className="manage-card__label">我的收藏</span>
+          </button>
+        </div>
+      </div>
+
       <div className="card" style={{ marginTop: 12 }}>
         <strong>会员与透明定价</strong>
         <div className="price-note">

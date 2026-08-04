@@ -208,6 +208,75 @@
   background: var(--warning-050);
   border-color: transparent;
 }
+.card--hint {
+  background: var(--brand-050);
+  border-color: transparent;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+}
+.link-btn {
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  padding: 0;
+  cursor: pointer;
+}
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+/* 错题角标 */
+.tag--bad {
+  background: var(--danger-050);
+  color: var(--danger);
+}
+
+/* 学习管理卡（我的页） */
+.manage-card {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 14px 8px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.manage-card:hover {
+  border-color: var(--brand-100);
+  box-shadow: var(--sh-sm);
+}
+.manage-card__num {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--brand);
+}
+.manage-card__label {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* 浮层提示（Toast） */
+.ok-text--float {
+  position: fixed;
+  left: 50%;
+  bottom: 92px;
+  transform: translateX(-50%);
+  background: var(--success);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: var(--r-pill);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  box-shadow: var(--sh-md);
+  z-index: 50;
+}
 
 /* ===================== 表单 ===================== */
 .input {

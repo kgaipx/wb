@@ -9,8 +9,16 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
-from app.models import AbilityProfile, Question, QuestionOption, User, UserAnswer
+from app.models import (
+    AbilityProfile,
+    Favorite,
+    Question,
+    QuestionOption,
+    User,
+    UserAnswer,
+)
 from app.schemas.question import (
+    FavoriteIn,
     PracticeResult,
     PracticeSubmit,
     QuestionListItem,
@@ -101,3 +109,52 @@ def practice(
         explanation=q.explanation,
         mastery=ab.mastery,
     )
+
+
+@router.get("/favorites", response_model=list[QuestionOut])
+def list_favorites(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    favs = (
+        db.query(Favorite)
+        .filter(Favorite.user_id == current.id)
+        .order_by(Favorite.created_at.desc())
+        .all()
+    )
+    ids = [f.question_id for f in favs]
+    if not ids:
+        return []
+    qs = db.query(Question).filter(Question.id.in_(ids)).all()
+    by_id = {q.id: q for q in qs}
+    return [by_id[i] for i in ids if i in by_id]
+
+
+@router.post("/favorites", response_model=dict)
+def add_favorite(
+    payload: FavoriteIn,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    q = db.get(Question, payload.question_id)
+    if q is None:
+        raise HTTPException(status_code=404, detail="题目不存在")
+    exists = (
+        db.query(Favorite)
+        .filter(Favorite.user_id == current.id, Favorite.question_id == payload.question_id)
+        .first()
+    )
+    if not exists:
+        db.add(Favorite(user_id=current.id, question_id=payload.question_id))
+        db.commit()
+    return {"ok": True}
+
+
+@router.delete("/favorites/{qid}", response_model=dict)
+def del_favorite(qid: int, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    f = (
+        db.query(Favorite)
+        .filter(Favorite.user_id == current.id, Favorite.question_id == qid)
+        .first()
+    )
+    if f:
+        db.delete(f)
+        db.commit()
+    return {"ok": True}

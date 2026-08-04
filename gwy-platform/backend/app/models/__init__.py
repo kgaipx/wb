@@ -6,6 +6,7 @@ from app.models.progress import UserAnswer, AbilityProfile
 from app.models.knowledge import KnowledgeChunk
 from app.models.content import ContentReview
 from app.models.billing import Order, RefundRequest
+from app.models.favorite import Favorite
 
 __all__ = [
     "Base",
@@ -18,4 +19,5 @@ __all__ = [
     "ContentReview",
     "Order",
     "RefundRequest",
+    "Favorite",
 ]

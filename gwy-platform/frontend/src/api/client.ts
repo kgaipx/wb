@@ -51,6 +51,11 @@ export interface Question {
   is_verified: boolean;
   options: { id: number; label: string; content: string }[];
 }
+export interface WrongItem {
+  question: Question;
+  wrong_count: number;
+  last_selected: string | null;
+}
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
@@ -64,6 +69,11 @@ export const api = {
 
   // 学员中心 / 学情（WBS 2.1 / 3.2）
   dashboard: () => request<Dashboard>("/student/me"),
+
+  // 错题本（WBS 2.2 衍生 / 复错率闭环）
+  wrongList: () => request<WrongItem[]>("/student/wrong"),
+  wrongReview: (question_id: number) =>
+    request<{ ok: boolean }>(`/student/wrong/${question_id}/review`, { method: "POST" }),
 
   // 题库 / 刷题（WBS 2.2）
   bankList: (params: { subject?: string; category?: string; limit?: number } = {}) => {
@@ -79,6 +89,13 @@ export const api = {
       "/bank/practice",
       { method: "POST", body: JSON.stringify({ question_id, selected }) }
     ),
+
+  // 收藏夹（WBS 2.2 衍生 / 学习管理）
+  favoriteList: () => request<Question[]>("/bank/favorites"),
+  favoriteAdd: (question_id: number) =>
+    request<{ ok: boolean }>("/bank/favorites", { method: "POST", body: JSON.stringify({ question_id }) }),
+  favoriteRemove: (question_id: number) =>
+    request<{ ok: boolean }>(`/bank/favorites/${question_id}`, { method: "DELETE" }),
 
   // AI 私教 / 自适应（WBS 3.1 / 3.2）
   explain: (question_id: number, selected?: string) =>

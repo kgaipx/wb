@@ -1,21 +1,53 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { api, Question } from "../api/client";
 
 export default function Practice() {
+  const [params] = useSearchParams();
   const [list, setList] = useState<Question[]>([]);
   const [active, setActive] = useState<Question | null>(null);
   const [selected, setSelected] = useState("");
   const [result, setResult] = useState<any>(null);
   const [explain, setExplain] = useState<string>("");
   const [cites, setCites] = useState<string[]>([]);
+  const [faved, setFaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
   useEffect(() => {
     api.bankList({ limit: 50 })
-      .then(setList)
+      .then((qs) => {
+        setList(qs);
+        const qid = params.get("q");
+        if (qid) {
+          const target = qs.find((q) => String(q.id) === qid);
+          if (target) {
+            setActive(target);
+            return;
+          }
+        }
+      })
       .catch((e) => setErr(e.message));
-  }, []);
+  }, [params]);
+
+  useEffect(() => {
+    if (!active) return;
+    api
+      .favoriteList()
+      .then((favs) => setFaved(favs.some((f) => f.id === active.id)))
+      .catch(() => setFaved(false));
+  }, [active]);
+
+  async function toggleFav() {
+    if (!active) return;
+    try {
+      if (faved) await api.favoriteRemove(active.id);
+      else await api.favoriteAdd(active.id);
+      setFaved((v) => !v);
+    } catch (e: any) {
+      setErr(e.message);
+    }
+  }
 
   async function submit() {
     if (!active || !selected) return;
@@ -81,9 +113,14 @@ export default function Practice() {
           <button className="back-link" onClick={() => setActive(null)}>
             ← 返回题库
           </button>
-          <div className="q-item__meta" style={{ marginBottom: 6 }}>
-            <span className="tag tag--brand">{active.subject}</span>
-            <span>{active.knowledge_point}</span>
+          <div className="row row--between" style={{ marginBottom: 6 }}>
+            <div className="q-item__meta">
+              <span className="tag tag--brand">{active.subject}</span>
+              <span>{active.knowledge_point}</span>
+            </div>
+            <button className={"chip " + (faved ? "chip--on" : "")} onClick={toggleFav}>
+              {faved ? "★ 已收藏" : "☆ 收藏"}
+            </button>
           </div>
           <div style={{ fontSize: 16, margin: "6px 0 12px" }}>{active.stem}</div>
 

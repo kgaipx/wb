@@ -29,6 +29,9 @@ class UserAnswer(Base):
         Text, nullable=True, comment="用户选择（选项标签拼接 / essay 要点）"
     )
     is_correct: Mapped[bool] = mapped_column(Boolean, default=False)
+    reviewed: Mapped[bool] = mapped_column(
+        Boolean, default=False, comment="是否已复盘/标记掌握（错题本移除依据）"
+    )
     time_spent_ms: Mapped[int] = mapped_column(Integer, default=0, comment="作答耗时")
     submitted_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
 
