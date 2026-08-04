@@ -105,6 +105,27 @@ export interface PlanOut {
   progress: PlanProgress;
 }
 
+export interface ReviewOut {
+  id: number;
+  item_type: string; // question | knowledge | essay_policy
+  item_id: string;
+  version: number;
+  status: string; // pending | approved | rejected | corrected
+  body: string;
+  reviewer_1: string | null;
+  reviewer_2: string | null;
+  reviewer_note: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export interface ReviewStats {
+  total: number;
+  approved: number;
+  sample_target: number;
+  sample_rate: number;
+  pass_rate: number; // 已通过占比
+}
+
 export const api = {
   health: () => request<{ status: string }>("/health"),
 
@@ -213,4 +234,28 @@ export const api = {
       body: JSON.stringify({ order_id, reason }),
     }),
   myBilling: () => request<{ plan: string; orders: any[]; refunds: any[] }>("/billing/me"),
+
+  // 内容双签审核 / 信任保障（WBS 5.2 / c11 P0）
+  reviewSubmit: (body: { item_type: string; item_id: string; body: string; version?: number }) =>
+    request<ReviewOut>("/content/review/submit", {
+      method: "POST",
+      body: JSON.stringify({ version: 1, ...body }),
+    }),
+  reviewPending: () => request<ReviewOut[]>("/content/review/pending"),
+  reviewSpotCheck: () => request<ReviewStats>("/content/review/spot-check"),
+  reviewApprove: (id: number, reviewer: string) =>
+    request<ReviewOut>(`/content/review/${id}/approve`, {
+      method: "POST",
+      body: JSON.stringify({ reviewer }),
+    }),
+  reviewReject: (id: number, reviewer: string, note?: string) =>
+    request<ReviewOut>(`/content/review/${id}/reject`, {
+      method: "POST",
+      body: JSON.stringify({ reviewer, note }),
+    }),
+  reviewCorrect: (id: number, reviewer: string, new_body: string) =>
+    request<ReviewOut>(`/content/review/${id}/correct`, {
+      method: "POST",
+      body: JSON.stringify({ reviewer, new_body }),
+    }),
 };

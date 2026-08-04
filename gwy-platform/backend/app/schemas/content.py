@@ -30,6 +30,7 @@ class ReviewOut(BaseModel):
     item_id: str
     version: int
     status: str
+    body: str
     reviewer_1: str | None
     reviewer_2: str | None
     reviewer_note: str | None

@@ -106,6 +106,20 @@ export default function Profile() {
         {refundMsg && <div className="ok-text">{refundMsg}</div>}
       </div>
 
+      {/* 内容可信 / 双签审核台（WBS 5.2 信任保障） */}
+      <div className="card card--soft" style={{ marginTop: 12 }}>
+        <div className="row row--between">
+          <strong>内容可信 · 双签审核台</strong>
+          <span className="badge badge--soft">运营后台</span>
+        </div>
+        <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+          AI 生成内容须经两名审核员复核通过方可发布，版本留痕、可溯可纠。
+        </div>
+        <button className="btn btn--ghost btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/review")}>
+          进入审核台 →
+        </button>
+      </div>
+
       {/* 申论批改（WBS 4.1） */}
       <div className="card" style={{ marginTop: 12 }}>
         <strong>申论 AI 批改</strong>

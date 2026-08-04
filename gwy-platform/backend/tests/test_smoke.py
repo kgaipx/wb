@@ -366,3 +366,78 @@ def test_plan_get_404_when_none(client):
     """无计划时 GET /ai/plan 返回 404（前端据此触发生成）。"""
     tok = _register(client, "nope@e.com", "secret1")
     assert client.get("/api/ai/plan", headers=_hdr(tok)).status_code == 404
+
+
+def test_content_dual_sign_flow(client):
+    """内容双签：送审→甲签→乙签→approved；同人重复签名报错；pending 可查；抽检统计累计。"""
+    tok = _register(client, "rev@e.com", "secret1")
+
+    # 送审
+    s = client.post(
+        "/api/content/review/submit",
+        headers=_hdr(tok),
+        json={"item_type": "question", "item_id": "q-demo-1", "body": "AI 解析草稿", "version": 1},
+    )
+    assert s.status_code == 201, s.text
+    rid = s.json()["id"]
+    assert s.json()["status"] == "pending"
+
+    # pending 列表含该单
+    pend = client.get("/api/content/review/pending").json()
+    assert any(x["id"] == rid for x in pend)
+
+    # 甲签
+    a1 = client.post(f"/api/content/review/{rid}/approve", json={"reviewer": "审核员·甲"})
+    assert a1.status_code == 200 and a1.json()["reviewer_1"] == "审核员·甲"
+    assert a1.json()["status"] == "pending"  # 尚缺一签
+
+    # 同人重复签名 -> 400
+    dup = client.post(f"/api/content/review/{rid}/approve", json={"reviewer": "审核员·甲"})
+    assert dup.status_code == 400
+
+    # 乙签 -> 双签完成
+    a2 = client.post(f"/api/content/review/{rid}/approve", json={"reviewer": "审核员·乙"})
+    assert a2.status_code == 200
+    assert a2.json()["reviewer_2"] == "审核员·乙"
+    assert a2.json()["status"] == "approved"
+
+    # 已通过不再出现在 pending
+    pend2 = client.get("/api/content/review/pending").json()
+    assert not any(x["id"] == rid for x in pend2)
+
+    # 抽检统计：累计与已通过均含该单
+    sc = client.get("/api/content/review/spot-check").json()
+    assert sc["total"] >= 1 and sc["approved"] >= 1
+
+
+def test_content_reject_and_correct(client):
+    """内容双签：驳回（带意见）/ 更正（版本+1、状态 corrected）。"""
+    tok = _register(client, "rev2@e.com", "secret1")
+
+    s = client.post(
+        "/api/content/review/submit",
+        headers=_hdr(tok),
+        json={"item_type": "knowledge", "item_id": "kp-demo-2", "body": "待审知识点", "version": 1},
+    )
+    rid = s.json()["id"]
+
+    rj = client.post(f"/api/content/review/{rid}/reject", json={"reviewer": "审核员·甲", "note": "表述不准确"})
+    assert rj.status_code == 200
+    assert rj.json()["status"] == "rejected"
+    assert rj.json()["reviewer_note"] == "表述不准确"
+
+    # 重新送审并更正
+    s2 = client.post(
+        "/api/content/review/submit",
+        headers=_hdr(tok),
+        json={"item_type": "knowledge", "item_id": "kp-demo-3", "body": "v1 内容", "version": 1},
+    )
+    rid2 = s2.json()["id"]
+    co = client.post(
+        f"/api/content/review/{rid2}/correct",
+        json={"reviewer": "审核员·乙", "new_body": "v2 修正后内容"},
+    )
+    assert co.status_code == 200
+    assert co.json()["status"] == "corrected"
+    assert co.json()["version"] == 2
+    assert co.json()["body"] == "v2 修正后内容"
