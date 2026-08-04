@@ -3,7 +3,7 @@
 架构原则（方案 c3）：离线优先、AI-native、模块化、合规内建。
 本文件仅做应用装配；具体能力在 app/api 与 app/ai 中按功能域拆分。
 
-开发期（APP_ENV != production）启动时自动建表并注入示范数据，便于本地零依赖联调。
+启动时自动建表（APP_ENV != production 时额外注入示范数据），便于零依赖联调与演示部署。
 """
 from contextlib import asynccontextmanager
 
@@ -158,11 +158,13 @@ def _seed_demo_data() -> None:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 开发期自动建表（生产环境使用 Alembic 迁移脚本管理 schema）
-    if settings.APP_ENV != "production":
-        from app import models  # 确保模型注册到 Base.metadata
+    # 建表：开发期与尚未接入 Alembic 的生产环境均自动建表（SQLite 直部署兜底，
+    # 避免空库直接 500；接入 Alembic 后可移除本兜底）。
+    from app import models  # 确保模型注册到 Base.metadata
 
-        models.Base.metadata.create_all(bind=engine)
+    models.Base.metadata.create_all(bind=engine)
+    # 仅在非生产环境注入示范题库；生产应使用 Alembic 迁移 + 真实题库
+    if settings.APP_ENV != "production":
         _seed_demo_data()
     yield
 
