@@ -14,7 +14,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SERVER="root@49.233.171.233"
-PEM="${DEPLOY_PEM:-$HOME/Downloads/gkaipx.pem}"
+PEM="${DEPLOY_PEM:-$HOME/Downloads/gkaipx2.pem}"
 # 兼容 Windows OpenSSH：将 Git-Bash 风格 /c/... 路径转为 Windows 风格 c:/...
 PEM_WIN="$PEM"
 if [[ "$PEM" == /*/* ]]; then
@@ -28,8 +28,10 @@ VITE_API_BASE=/api npm run build --prefix frontend
 
 echo "==> 2/4 打包产物"
 rm -f deploy_backend.tar.gz deploy_frontend.tar.gz || true
-tar --exclude='.env' --exclude='*.db' --exclude='__pycache__' --exclude='.pytest_cache' \
-    --exclude='venv' --exclude='node_modules' \
+tar --exclude='.env' --exclude='*.db' --exclude='*.db-wal' --exclude='*.db-shm' \
+    --exclude='__pycache__' --exclude='.pytest_cache' --exclude='venv' \
+    --exclude='node_modules' --exclude='data' --exclude='scripts_fix' \
+    --exclude='_preview_ocr.json' --exclude='_preview_ocr_full.json' \
     -czf deploy_backend.tar.gz -C backend .
 tar -czf deploy_frontend.tar.gz -C frontend/dist .
 
