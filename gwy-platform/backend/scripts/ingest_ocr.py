@@ -295,14 +295,30 @@ def merge_answers(questions: list[dict], answers: dict[int, str]) -> tuple[int, 
 
 
 # ---------- DB import ----------
-def import_to_db(questions: list[dict]):
+def import_to_db(questions: list[dict], require_answer: bool = True,
+                 min_options: int = 4):
+    """写入 Question + QuestionOption。质量闸门：
+    - min_options: 选项数不足则跳过（避免残缺题）
+    - require_answer: 答案无效（空或不在选项内）则跳过（避免无法判分）
+    返回 (n_added, n_dup, n_skipped)。
+    """
     from app.db.session import SessionLocal
     from app.models import Question, QuestionOption
     db = SessionLocal()
     try:
         n_added = 0
         n_dup = 0
+        n_skipped = 0
         for q in questions:
+            opts = q.get("options", [])
+            labels = [o[0] for o in opts]
+            if min_options and len(opts) < min_options:
+                n_skipped += 1
+                continue
+            ans = q.get("answer")
+            if require_answer and (not ans or ans not in labels):
+                n_skipped += 1
+                continue
             # dedupe by stem (first 60 chars)
             stem_key = (q["stem"] or "")[:60]
             exists = db.query(Question).filter(
@@ -335,7 +351,7 @@ def import_to_db(questions: list[dict]):
                 ))
             n_added += 1
         db.commit()
-        return n_added, n_dup
+        return n_added, n_dup, n_skipped
     finally:
         db.close()
 
@@ -343,19 +359,53 @@ def import_to_db(questions: list[dict]):
 # ---------- main ----------
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--tiben", required=True, help="题本 PDF 路径")
-    ap.add_argument("--daan", help="答案 PDF 路径（可选）")
+    ap.add_argument("--tiben", help="题本 PDF 路径（OCR 模式，与 --from-json 二选一）")
+    ap.add_argument("--daan", help="答案 PDF 路径（可选，OCR 模式）")
     ap.add_argument("--pages", nargs="+", type=int, help="仅处理题本指定 1-based 页码（调试用）")
     ap.add_argument("--daan-pages", nargs="+", type=int, help="仅 OCR 答案册指定 1-based 页码（调试用）")
+    ap.add_argument("--from-json", help="直接从已生成的预览 JSON 导入（跳过 OCR，无需 PDF/引擎）")
     ap.add_argument("--import", dest="do_import", action="store_true",
                     help="写入数据库（默认仅预览）")
     ap.add_argument("--preview", default="_preview_ocr.json")
     ap.add_argument("--dpi", type=int, default=200)
     ap.add_argument("--source-name", help="覆盖 source 字段")
+    ap.add_argument("--min-options", type=int, default=4,
+                    help="导入最少选项数（默认 4：只导入完整 4 选项题；设 2 可放宽）")
     args = ap.parse_args()
 
+    # ---------- 直接 JSON 导入模式（无需 OCR 引擎，可在服务器运行） ----------
+    if args.from_json:
+        print(f"[from-json] {args.from_json}", flush=True)
+        valid = json.load(open(args.from_json, encoding="utf-8"))
+        # 与 OCR 路径一致的轻量过滤
+        valid = [q for q in valid
+                 if 2 <= len(q.get("options", [])) <= 4
+                 and len(q.get("stem") or "") >= 5
+                 and not (q.get("stem") or "").startswith("[")]
+        from collections import Counter
+        print("\n=== FROM-JSON STATS ===", flush=True)
+        print(f"loaded: {len(valid)}", flush=True)
+        ans_ok = sum(1 for q in valid
+                     if q.get("answer") and any(o[0] == q["answer"] for o in q["options"]))
+        print(f"with valid answer: {ans_ok} ({ans_ok / max(1, len(valid)) * 100:.0f}%)",
+              flush=True)
+        print(f"options dist: {dict(sorted(Counter(len(q['options']) for q in valid).items()))}",
+              flush=True)
+        if args.do_import:
+            n_added, n_dup, n_skipped = import_to_db(
+                valid, require_answer=True, min_options=args.min_options)
+            print(f"\n[DB] inserted={n_added}  duplicates={n_dup}  "
+                  f"skipped(no-ans/<{args.min_options}-opt)={n_skipped}", flush=True)
+        else:
+            print("\n[dry-run] pass --import to write to DB", flush=True)
+        return
+
+    # ---------- OCR 模式（需要 rapidocr + PyMuPDF） ----------
     from rapidocr_onnxruntime import RapidOCR
     import fitz
+
+    if not args.tiben:
+        ap.error("--tiben 必填（除非使用 --from-json）")
 
     print("[OCR] init engine...", flush=True)
     ocr = RapidOCR()
@@ -431,8 +481,10 @@ def main():
 
     # --- import ---
     if args.do_import:
-        n_added, n_dup = import_to_db(valid)
-        print(f"\n[DB] inserted={n_added}  duplicates={n_dup}", flush=True)
+        n_added, n_dup, n_skipped = import_to_db(
+            valid, require_answer=True, min_options=args.min_options)
+        print(f"\n[DB] inserted={n_added}  duplicates={n_dup}  "
+              f"skipped(no-ans/<{args.min_options}-opt)={n_skipped}", flush=True)
     else:
         print("\n[dry-run] pass --import to write to DB", flush=True)
 
