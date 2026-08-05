@@ -17,8 +17,11 @@ from app.ai.content_validator import (
 )
 from app.api.routes.auth import get_current_user, require_reviewer
 from app.db.session import get_db
-from app.models import ContentReview, User
+from app.models import ContentReview, Question, User
 from app.schemas.content import (
+    QuestionOptionOut,
+    QuestionReviewOut,
+    QuestionReviewStats,
     ReviewApproveIn,
     ReviewCorrectIn,
     ReviewOut,
@@ -92,3 +95,137 @@ def pending(current: User = Depends(require_reviewer), db: Session = Depends(get
 @router.get("/review/spot-check", tags=["content"])
 def spotcheck(current: User = Depends(require_reviewer), db: Session = Depends(get_db)):
     return spot_check(db)
+
+
+# ---------------------------------------------------------------------------
+# 题库审核：把 is_verified=False 的导入题接入双签闭环（信任保障链路补全）。
+# 复用 ContentReview 双签状态机（item_type='question'）；双签通过时翻转
+# Question.is_verified=True —— 此前 approve() 只改审核单、未翻转题目，是缺口。
+# ---------------------------------------------------------------------------
+
+
+def _q_review_or_create(db: Session, q: Question) -> ContentReview:
+    r = (
+        db.query(ContentReview)
+        .filter(ContentReview.item_type == "question", ContentReview.item_id == str(q.id))
+        .first()
+    )
+    if r is None:
+        r = ContentReview(
+            item_type="question", item_id=str(q.id), body=q.stem or "", version=1, status="pending"
+        )
+        db.add(r)
+        db.flush()
+    return r
+
+
+def _to_qreview(q: Question, r: ContentReview | None) -> QuestionReviewOut:
+    status = r.status if r is not None else "none"
+    return QuestionReviewOut(
+        review_id=r.id if r is not None else None,
+        question_id=q.id,
+        subject=q.subject,
+        category=q.category,
+        qtype=q.qtype,
+        stem=q.stem,
+        options=[
+            QuestionOptionOut(label=o.label, content=o.content, is_correct=o.is_correct)
+            for o in q.options
+        ],
+        answer=q.answer,
+        knowledge_point=q.knowledge_point,
+        source=q.source,
+        copyright_owner=q.copyright_owner,
+        is_verified=q.is_verified,
+        review_status=status,
+        reviewer_1=r.reviewer_1 if r is not None else None,
+        reviewer_2=r.reviewer_2 if r is not None else None,
+    )
+
+
+@router.get("/review/questions/pending", response_model=list[QuestionReviewOut])
+def questions_pending(
+    limit: int = 20,
+    offset: int = 0,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """待核实题库队列（is_verified=False），附带已存在的双签进度。"""
+    qs = (
+        db.query(Question)
+        .filter(Question.is_verified == False)  # noqa: E712
+        .order_by(Question.id)
+        .limit(limit)
+        .offset(offset)
+        .all()
+    )
+    ids = [str(q.id) for q in qs]
+    reviews = {
+        r.item_id: r
+        for r in db.query(ContentReview).filter(
+            ContentReview.item_type == "question", ContentReview.item_id.in_(ids)
+        )
+    }
+    return [_to_qreview(q, reviews.get(str(q.id))) for q in qs]
+
+
+@router.get("/review/questions/stats", response_model=QuestionReviewStats)
+def questions_stats(current: User = Depends(require_reviewer), db: Session = Depends(get_db)):
+    total = db.query(Question).count()
+    verified = db.query(Question).filter(Question.is_verified == True).count()  # noqa: E712
+    pending = total - verified
+    awaiting_second = (
+        db.query(ContentReview)
+        .filter(
+            ContentReview.item_type == "question",
+            ContentReview.status == "pending",
+            ContentReview.reviewer_1.isnot(None),
+            ContentReview.reviewer_2.is_(None),
+        )
+        .count()
+    )
+    return QuestionReviewStats(
+        total=total, verified=verified, pending=pending, awaiting_second=awaiting_second
+    )
+
+
+@router.post("/review/questions/{question_id}/sign", response_model=QuestionReviewOut)
+def sign_question(
+    question_id: int,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """甲签 / 乙签：累计两名不同审核员后翻转 Question.is_verified=True。"""
+    q = db.get(Question, question_id)
+    if q is None:
+        raise HTTPException(status_code=404, detail="题目不存在")
+    r = _q_review_or_create(db, q)
+    try:
+        r = approve(db, r.id, _reviewer_name(current))
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    # 双签通过 → 题目转正（信任保障闭环的关键一步，此前缺失）
+    if r.status == "approved":
+        q.is_verified = True
+        db.add(q)
+    db.commit()
+    db.refresh(r)
+    return _to_qreview(q, r)
+
+
+@router.post("/review/questions/{question_id}/reject", response_model=QuestionReviewOut)
+def reject_question(
+    question_id: int,
+    payload: ReviewRejectIn,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """驳回：题目保持未核实（is_verified=False），留痕待修正后重报。"""
+    q = db.get(Question, question_id)
+    if q is None:
+        raise HTTPException(status_code=404, detail="题目不存在")
+    r = _q_review_or_create(db, q)
+    r = reject(db, r.id, _reviewer_name(current), payload.note)
+    db.commit()
+    db.refresh(r)
+    return _to_qreview(q, r)

@@ -36,3 +36,40 @@ class ReviewOut(BaseModel):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class QuestionOptionOut(BaseModel):
+    label: str
+    content: str | None = None
+    is_correct: bool
+
+
+class QuestionReviewOut(BaseModel):
+    """待核实题库题目 + 其双签审核进度（信任保障闭环）。
+
+    审核员控制台需看到答案与正确项以核验导入质量；
+    与学员端刷题接口刻意不同——那里隐藏答案防泄漏。
+    """
+
+    review_id: int | None = None
+    question_id: int
+    subject: str | None = None
+    category: str | None = None
+    qtype: str | None = None
+    stem: str | None = None
+    options: list[QuestionOptionOut] = []
+    answer: str | None = None
+    knowledge_point: str | None = None
+    source: str | None = None
+    copyright_owner: str | None = None
+    is_verified: bool
+    review_status: str  # none | pending | approved | rejected
+    reviewer_1: str | None = None
+    reviewer_2: str | None = None
+
+
+class QuestionReviewStats(BaseModel):
+    total: int  # 题库总量
+    verified: int  # 已双签通过（is_verified=True）
+    pending: int  # 待核实（is_verified=False）
+    awaiting_second: int  # 已签第一签、待第二签

@@ -169,6 +169,36 @@ export interface ReviewStats {
   pass_rate: number; // 已通过占比
 }
 
+// 题库双签审核（待核实题接入审核台）
+export interface QuestionOptionOut {
+  label: string;
+  content: string | null;
+  is_correct: boolean;
+}
+export interface QuestionReviewOut {
+  review_id: number | null;
+  question_id: number;
+  subject: string | null;
+  category: string | null;
+  qtype: string | null;
+  stem: string | null;
+  options: QuestionOptionOut[];
+  answer: string | null;
+  knowledge_point: string | null;
+  source: string | null;
+  copyright_owner: string | null;
+  is_verified: boolean;
+  review_status: string; // none | pending | approved | rejected
+  reviewer_1: string | null;
+  reviewer_2: string | null;
+}
+export interface QuestionReviewStats {
+  total: number;
+  verified: number;
+  pending: number;
+  awaiting_second: number;
+}
+
 export interface EssayPrompt {
   id: number;
   title: string;
@@ -368,5 +398,20 @@ export const api = {
     request<ReviewOut>(`/content/review/${id}/correct`, {
       method: "POST",
       body: JSON.stringify({ new_body }),
+    }),
+  // 题库审核：待核实题（is_verified=False）接入双签闭环
+  reviewQuestionsPending: (limit = 20, offset = 0) =>
+    request<QuestionReviewOut[]>(`/content/review/questions/pending?limit=${limit}&offset=${offset}`),
+  reviewQuestionsStats: () =>
+    request<QuestionReviewStats>("/content/review/questions/stats"),
+  reviewQuestionSign: (question_id: number) =>
+    request<QuestionReviewOut>(`/content/review/questions/${question_id}/sign`, {
+      method: "POST",
+      body: JSON.stringify({}),
+    }),
+  reviewQuestionReject: (question_id: number, note?: string) =>
+    request<QuestionReviewOut>(`/content/review/questions/${question_id}/reject`, {
+      method: "POST",
+      body: JSON.stringify({ note }),
     }),
 };
