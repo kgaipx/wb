@@ -16,6 +16,8 @@ import Membership from "./pages/Membership";
 import Essay from "./pages/Essay";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
+import Assessment from "./pages/Assessment";
 
 type Icon = () => JSX.Element;
 
@@ -50,6 +52,14 @@ const ExamIcon: Icon = () => (
     <path d="M9 12l2 2 4-4" />
   </svg>
 );
+const AssessIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+    <path d="M12 12 18.5 7" />
+  </svg>
+);
 const WrongIcon: Icon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 12a9 9 0 1 0 3-6.7" />
@@ -72,6 +82,7 @@ const tabs = [
   { to: "/learn", label: "学习", icon: BookIcon },
   { to: "/practice", label: "刷题", icon: PenIcon },
   { to: "/exam", label: "模考", icon: ExamIcon },
+  { to: "/assessment", label: "测评", icon: AssessIcon },
   { to: "/wrong", label: "错题", icon: WrongIcon },
   { to: "/data", label: "数据", icon: ChartIcon },
   { to: "/profile", label: "我的", icon: UserIcon },
@@ -134,6 +145,7 @@ function AppShell() {
           <Route path="/learn" element={<RequireAuth><Learn /></RequireAuth>} />
           <Route path="/practice" element={<RequireAuth><Practice /></RequireAuth>} />
           <Route path="/exam" element={<RequireAuth><Exam /></RequireAuth>} />
+          <Route path="/assessment" element={<RequireAuth><Assessment /></RequireAuth>} />
           <Route path="/wrong" element={<RequireAuth><Wrong /></RequireAuth>} />
           <Route path="/favorites" element={<RequireAuth><Favorites /></RequireAuth>} />
           <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
@@ -142,6 +154,7 @@ function AppShell() {
           <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
           <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
           <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
           <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

@@ -11,6 +11,7 @@ from app.models.favorite import Favorite
 from app.models.study_plan import PlanTask, StudyPlan
 from app.models.chat import ChatMessage, ChatSession
 from app.models.exam_record import ExamRecord
+from app.models.assessment import AssessmentRecord
 from app.models.password_reset import PasswordResetToken
 
 __all__ = [
@@ -32,5 +33,6 @@ __all__ = [
     "ChatSession",
     "ChatMessage",
     "ExamRecord",
+    "AssessmentRecord",
     "PasswordResetToken",
 ]

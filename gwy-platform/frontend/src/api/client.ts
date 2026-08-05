@@ -207,6 +207,42 @@ export interface EssayPrompt {
   requirement: string;
   max_score: number;
 }
+
+// 运营后台（仅 admin 角色可见）
+export interface AdminUserRow {
+  email: string;
+  nickname: string | null;
+  plan: string;
+  target_exam: string;
+  role: string;
+  created_at: string;
+}
+export interface PlanCount {
+  plan: string;
+  count: number;
+}
+export interface SubjectCount {
+  subject: string;
+  count: number;
+}
+export interface AdminOverview {
+  users_total: number;
+  users_new_7d: number;
+  users_by_plan: PlanCount[];
+  pro_users: number;
+  paid_orders: number;
+  revenue_yuan: number;
+  questions_total: number;
+  questions_verified: number;
+  questions_pending: number;
+  question_subjects: SubjectCount[];
+  pending_reviews: number;
+  answers_total: number;
+  avg_correct_rate: number;
+  essays_graded: number;
+  mock_exams: number;
+  recent_users: AdminUserRow[];
+}
 export interface EssayHistoryItem {
   id: number;
   prompt_id: number | null;
@@ -215,6 +251,42 @@ export interface EssayHistoryItem {
   dimensions: Record<string, number>;
   needs_human_review: boolean;
   rationale: string | null;
+  created_at: string;
+}
+
+// 能力测评（WBS 3.2 自适应诊断）
+export interface AssessmentDim {
+  knowledge_point: string;
+  mastery: number; // 该维度本次正确率 0-1（雷达图数据）
+}
+export interface AssessmentPaperItem {
+  id: number;
+  subject: string;
+  category: string;
+  qtype: string;
+  stem: string;
+  difficulty: number;
+  knowledge_point: string;
+  is_verified: boolean;
+  options: { id: number; label: string; content: string }[];
+}
+export interface AssessmentReport {
+  id: number;
+  overall: number;
+  dimensions: AssessmentDim[];
+  weak_points: string[];
+  suggestions: string[];
+  total: number;
+  correct: number;
+  created_at: string;
+}
+export interface AssessmentRecordOut {
+  id: number;
+  overall: number;
+  dimensions: AssessmentDim[];
+  weak_points: string[];
+  suggestions: string[];
+  questions_total: number;
   created_at: string;
 }
 
@@ -229,6 +301,9 @@ export interface AiQuota {
 
 export const api = {
   health: () => request<{ status: string }>("/health"),
+
+  // 运营后台（仅 admin 角色可见）
+  adminOverview: () => request<AdminOverview>("/admin/overview"),
 
   // 认证（WBS 2.1）
   register: (body: { email: string; password: string; nickname?: string; province?: string; target_exam?: string }) =>
@@ -341,6 +416,19 @@ export const api = {
     request<any[]>("/exam/history?limit=" + limit),
   examHistoryDetail: (id: number) =>
     request<any>("/exam/history/" + id),
+
+  // 能力测评（WBS 3.2 自适应诊断）
+  assessmentPaper: () =>
+    request<AssessmentPaperItem[]>("/assessment/paper"),
+  assessmentSubmit: (answers: { question_id: number; selected: string }[]) =>
+    request<AssessmentReport>("/assessment/submit", {
+      method: "POST",
+      body: JSON.stringify({ answers }),
+    }),
+  assessmentHistory: (limit = 20) =>
+    request<AssessmentRecordOut[]>("/assessment/history?limit=" + limit),
+  assessmentHistoryDetail: (id: number) =>
+    request<AssessmentRecordOut>("/assessment/history/" + id),
 
   // 计费 / 退费 / 会员（WBS 5.1 / 7.1）
   createOrder: (plan: string) =>
