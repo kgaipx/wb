@@ -53,6 +53,7 @@ export default function Review() {
   const [qOffset, setQOffset] = useState(0);
   const [qHasMore, setQHasMore] = useState(false);
   const [qSigned, setQSigned] = useState<QuestionReviewOut[]>([]); // 本会话已处理（反馈）
+  const [qBulkBusy, setQBulkBusy] = useState(false); // 本页批量签
 
   // ===== 内容审核 =====
   function loadAll() {
@@ -218,6 +219,45 @@ export default function Review() {
     } finally {
       setQBusy(false);
     }
+  }
+
+  // 本页全部签名：审完一页后一键签整页（双签须两名不同审核员各执行一次）
+  async function bulkSignQ() {
+    if (qPending.length === 0) return;
+    const ok = window.confirm(
+      `确认对本页 ${qPending.length} 道待核实题执行「${reviewerName}」签名？\n` +
+      `请确保已逐题核对题干、选项与答案。两位审核员各执行一次本操作即完成双签转正。`
+    );
+    if (!ok) return;
+    setQBulkBusy(true);
+    setQErr("");
+    let okCnt = 0;
+    let skipCnt = 0;
+    let errCnt = 0;
+    for (const q of qPending) {
+      // 跳过自己已签的题（防重复签 / 400）
+      if (q.reviewer_1 === user?.email || q.reviewer_2 === user?.email) {
+        skipCnt++;
+        continue;
+      }
+      try {
+        await api.reviewQuestionSign(q.question_id);
+        okCnt++;
+      } catch (e: any) {
+        if ((e as any)?.status === 400) skipCnt++;
+        else errCnt++;
+      }
+    }
+    try {
+      await loadQuestions();
+    } catch {
+      /* ignore */
+    }
+    setQBulkBusy(false);
+    setQErr(
+      `本页签名完成 ✔ 成功 ${okCnt} · 跳过(已签) ${skipCnt}` +
+      (errCnt ? ` · 失败 ${errCnt}` : "")
+    );
   }
 
   const passPct = stats ? Math.round(stats.pass_rate * 100) : 0;
@@ -440,6 +480,14 @@ export default function Review() {
             </div>
             <div className="chip-row" style={{ marginTop: 8 }}>
               <span className="chip chip--on">{reviewerName}</span>
+            </div>
+            <div className="row" style={{ gap: 8, marginTop: 10 }}>
+              <button className="btn btn--primary btn--sm" disabled={qBulkBusy || qPending.length === 0} onClick={bulkSignQ}>
+                {qBulkBusy ? "签名中…" : `本页全部签名（${qPending.length}）`}
+              </button>
+              <span className="muted" style={{ fontSize: 12, alignSelf: "center" }}>
+                两位审核员各点一次即整页双签转正
+              </span>
             </div>
             {qErr && <div className="err-text" style={{ marginTop: 8 }}>{qErr}</div>}
           </div>
