@@ -21,6 +21,12 @@ os.environ["LLM_MODEL"] = ""
 from fastapi.testclient import TestClient  # noqa: E402
 
 import app.main as main_mod  # noqa: E402
+import app.middleware as _mw  # noqa: E402
+
+
+# 测试套件内放宽认证限流阈值：全链路约 20+ 次 register，默认 10/min 会误伤。
+# 限流行为由 test_auth_rate_limit 单独、在受控窗口内验证（临时还原阈值）。
+_mw.AUTH_LIMIT = 10_000_000
 
 
 @pytest.fixture(scope="session")

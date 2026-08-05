@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class OrderIn(BaseModel):
     plan: str = "pro"  # pro / pro_year
+    payment_method: str = "sandbox"  # sandbox / wechat / alipay / manual
 
 
 class OrderOut(BaseModel):
@@ -14,6 +15,9 @@ class OrderOut(BaseModel):
     amount: int  # 分
     currency: str
     status: str
+    payment_method: str = "sandbox"
+    out_trade_no: str | None = None
+    pay_url: str | None = None  # 沙箱/收银台支付入口（仅创建时返回）
     created_at: datetime
 
     model_config = {"from_attributes": True}
@@ -31,6 +35,7 @@ class RefundOut(BaseModel):
     status: str
     reason: str | None
     requested_at: datetime
+    decided_at: datetime | None = None
     eta_arrive_at: datetime | None
 
     model_config = {"from_attributes": True}

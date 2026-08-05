@@ -3,6 +3,12 @@
 // 部署时可经 VITE_API_BASE 指向独立后端域名（需后端 CORS 放行该来源）。
 const BASE: string = import.meta.env.VITE_API_BASE || "/api";
 
+// 401 未授权回调：由 AuthProvider 注册，用于清除失效 token 并跳转登录页。
+let _onUnauthorized: (() => void) | null = null;
+export function setUnauthorizedHandler(fn: (() => void) | null) {
+  _onUnauthorized = fn;
+}
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = localStorage.getItem("access_token");
   const headers = new Headers(options.headers);
@@ -10,6 +16,13 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
   const res = await fetch(`${BASE}${path}`, { ...options, headers });
+  if (res.status === 401) {
+    localStorage.removeItem("access_token");
+    if (_onUnauthorized) _onUnauthorized();
+    const err: any = new Error("登录已失效，请重新登录");
+    err.status = 401;
+    throw err;
+  }
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     const e: any = new Error(err.detail || `请求失败: ${res.status}`);
@@ -26,6 +39,8 @@ export interface UserOut {
   province: string | null;
   target_exam: string;
   plan: string;
+  plan_expires_at: string | null;
+  role: string;
   created_at: string;
 }
 export interface Ability {
@@ -66,12 +81,6 @@ export interface ChatMessage {
   model?: string | null;
   offline?: boolean;
   created_at?: string;
-}
-export interface ChatReply {
-  answer: string;
-  citations: string[];
-  model: string | null;
-  offline: boolean;
 }
 export interface ChatSession {
   id: number;
@@ -143,6 +152,34 @@ export interface ReviewStats {
   pass_rate: number; // 已通过占比
 }
 
+export interface EssayPrompt {
+  id: number;
+  title: string;
+  kp: string | null;
+  material: string;
+  requirement: string;
+  max_score: number;
+}
+export interface EssayHistoryItem {
+  id: number;
+  prompt_id: number | null;
+  prompt_title: string | null;
+  total: number;
+  dimensions: Record<string, number>;
+  needs_human_review: boolean;
+  rationale: string | null;
+  created_at: string;
+}
+
+export interface AiQuota {
+  plan: string;
+  is_pro: boolean;
+  limit: number; // 每日配额上限（pro 为 -1 表示不限）
+  used: number;
+  remaining: number; // 剩余次数（pro 为 -1）
+  date: string; // YYYY-MM-DD
+}
+
 export const api = {
   health: () => request<{ status: string }>("/health"),
 
@@ -152,6 +189,8 @@ export const api = {
   login: (body: { email: string; password: string }) =>
     request<{ access_token: string }>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
   me: () => request<UserOut>("/auth/me"),
+  updateMe: (body: { nickname?: string; province?: string; target_exam?: string }) =>
+    request<UserOut>("/auth/me", { method: "PATCH", body: JSON.stringify(body) }),
 
   // 学员中心 / 学情（WBS 2.1 / 3.2）
   dashboard: () => request<Dashboard>("/student/me"),
@@ -169,7 +208,6 @@ export const api = {
     if (params.limit) q.set("limit", String(params.limit));
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
-  bankQuestion: (id: number) => request<Question>(`/bank/questions/${id}`),
   practice: (question_id: number, selected: string) =>
     request<{ question_id: number; is_correct: boolean; correct_answer: string; explanation: string | null; mastery: number }>(
       "/bank/practice",
@@ -190,11 +228,8 @@ export const api = {
       body: JSON.stringify({ question_id, selected }),
     }),
   recommend: (top_n = 10) => request<{ knowledge_points: string[]; questions: any[] }>(`/ai/recommend?top_n=${top_n}`),
-  chat: (messages: ChatMessage[], kp_hint?: string) =>
-    request<ChatReply>("/ai/chat", {
-      method: "POST",
-      body: JSON.stringify({ messages, kp_hint }),
-    }),
+  // 会员配额（免费版每日 AI 讲解额度；pro 不限）
+  quota: () => request<AiQuota>("/ai/quota"),
   // AI 私教对话历史持久化（WBS 3.1：会话可回溯、刷新不丢）
   chatSessions: () => request<ChatSession[]>("/ai/chat/sessions"),
   chatCreate: () => request<ChatSession>("/ai/chat/sessions", { method: "POST" }),
@@ -207,11 +242,6 @@ export const api = {
     }),
   chatDelete: (sessionId: number) =>
     request<void>(`/ai/chat/sessions/${sessionId}`, { method: "DELETE" }),
-  plan: (days = 7, target?: string) =>
-    request<PlanOut>("/ai/plan", {
-      method: "POST",
-      body: JSON.stringify({ days, target }),
-    }),
   // 学习计划打卡 / 进度追踪（执行-复盘闭环）
   planGet: async (): Promise<PlanOut | null> => {
     try {
@@ -233,60 +263,91 @@ export const api = {
     ),
 
   // 申论批改（WBS 4.1）
-  essayGrade: (essay_text: string, prompt_material = "", max_score = 100) =>
-    request<{ total: number; dimensions: Record<string, number>; needs_human_review: boolean; rationale: string }>(
+  essayPrompts: () => request<EssayPrompt[]>("/ai/essay-prompts"),
+  essayGrade: (
+    essay_text: string,
+    prompt_material = "",
+    max_score = 100,
+    prompt_id: number | null = null,
+    requirement = "",
+  ) =>
+    request<{ total: number; dimensions: Record<string, number>; needs_human_review: boolean; rationale: string; record_id: number | null }>(
       "/ai/essay-grade",
-      { method: "POST", body: JSON.stringify({ essay_text, prompt_material, max_score }) }
+      { method: "POST", body: JSON.stringify({ essay_text, prompt_material, requirement, max_score, prompt_id }) }
     ),
+  essayHistory: () => request<EssayHistoryItem[]>("/ai/essay-history"),
 
   // 在线模考（WBS 4.2）
   examStart: (subject?: string, count = 20) =>
-    request<{ subject: string; count: number; paper: any[] }>("/exam/start", {
+    request<{ subject: string; count: number; requested: number; available: number; paper: any[] }>("/exam/start", {
       method: "POST",
       body: JSON.stringify({ subject, count }),
     }),
   examSubmit: (answers: { question_id: number; selected: string }[]) =>
-    request<{ total: number; correct: number; correct_rate: number; weak_points: string[]; details: any[] }>(
+    request<{ id: number; total: number; correct: number; correct_rate: number; weak_points: string[]; details: any[] }>(
       "/exam/submit",
       { method: "POST", body: JSON.stringify({ answers }) }
     ),
+  examHistory: (limit = 20) =>
+    request<any[]>("/exam/history?limit=" + limit),
+  examHistoryDetail: (id: number) =>
+    request<any>("/exam/history/" + id),
 
   // 计费 / 退费 / 会员（WBS 5.1 / 7.1）
   createOrder: (plan: string) =>
-    request<{ id: number; plan: string; amount: number; status: string }>("/billing/orders", {
+    request<{ id: number; plan: string; amount: number; status: string; pay_url: string | null }>("/billing/orders", {
       method: "POST",
       body: JSON.stringify({ plan }),
     }),
+  paySandbox: (orderId: number) =>
+    request<any>(`/billing/pay/sandbox/${orderId}`, { method: "POST" }),
   requestRefund: (order_id: number, reason?: string) =>
     request<{ id: number; order_id: number; amount: number; status: string }>("/billing/refund", {
       method: "POST",
       body: JSON.stringify({ order_id, reason }),
     }),
-  myBilling: () => request<{ plan: string; orders: any[]; refunds: any[] }>("/billing/me"),
+  myBilling: () => request<{ plan: string; plan_expires_at: string | null; orders: any[]; refunds: any[] }>("/billing/me"),
   billingPlans: () =>
     request<{ plans: any[]; currency: string; refund_policy: string }>("/billing/plans"),
 
   // 内容双签审核 / 信任保障（WBS 5.2 / c11 P0）
-  reviewSubmit: (body: { item_type: string; item_id: string; body: string; version?: number }) =>
+  reviewSubmit: (body: { item_type: string; item_id?: string; body: string; version?: number }) =>
     request<ReviewOut>("/content/review/submit", {
       method: "POST",
       body: JSON.stringify({ version: 1, ...body }),
     }),
+  changePassword: (old_password: string, new_password: string) =>
+    request<{ ok: boolean }>("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify({ old_password, new_password }),
+    }),
+  // 账号找回 / 密码重置（WBS 2.1 安全）；开发模式 forgotPassword 会返回 dev_token
+  forgotPassword: (email: string) =>
+    request<{ ok: boolean; dev_token?: string; message: string }>("/auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+  resetPassword: (token: string, new_password: string) =>
+    request<{ ok: boolean; message: string }>("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ token, new_password }),
+    }),
   reviewPending: () => request<ReviewOut[]>("/content/review/pending"),
   reviewSpotCheck: () => request<ReviewStats>("/content/review/spot-check"),
-  reviewApprove: (id: number, reviewer: string) =>
+  // 审核员身份以服务端登录用户为准，前端不再传 reviewer
+  reviewApprove: (id: number) =>
     request<ReviewOut>(`/content/review/${id}/approve`, {
       method: "POST",
-      body: JSON.stringify({ reviewer }),
+      body: JSON.stringify({}),
     }),
-  reviewReject: (id: number, reviewer: string, note?: string) =>
+  reviewReject: (id: number, note?: string) =>
     request<ReviewOut>(`/content/review/${id}/reject`, {
       method: "POST",
-      body: JSON.stringify({ reviewer, note }),
+      body: JSON.stringify({ note }),
     }),
-  reviewCorrect: (id: number, reviewer: string, new_body: string) =>
+  reviewCorrect: (id: number, new_body: string) =>
     request<ReviewOut>(`/content/review/${id}/correct`, {
       method: "POST",
-      body: JSON.stringify({ reviewer, new_body }),
+      body: JSON.stringify({ new_body }),
     }),
 };

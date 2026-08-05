@@ -5,23 +5,21 @@ from pydantic import BaseModel
 
 class ReviewSubmitIn(BaseModel):
     item_type: str  # question / knowledge / essay_policy
-    item_id: str
+    item_id: str = ""  # 留空则由后端自动生成草稿编号
     body: str
     version: int = 1
 
 
 class ReviewApproveIn(BaseModel):
-    reviewer: str
+    """双签通过无需请求体携带审核员身份，服务端以登录用户为准。"""
 
 
 class ReviewRejectIn(BaseModel):
-    reviewer: str
     note: str | None = None
 
 
 class ReviewCorrectIn(BaseModel):
     new_body: str
-    reviewer: str
 
 
 class ReviewOut(BaseModel):

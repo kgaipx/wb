@@ -17,6 +17,28 @@ class UserLogin(BaseModel):
     password: str
 
 
+class UserUpdate(BaseModel):
+    nickname: str | None = None
+    province: str | None = None
+    target_exam: str | None = None
+
+
+class ChangePasswordIn(BaseModel):
+    old_password: str
+    new_password: str
+
+
+class PasswordResetRequestIn(BaseModel):
+    """账号找回：提交注册邮箱，请求发送重置令牌。"""
+    email: str = Field(..., min_length=3, max_length=255)
+
+
+class PasswordResetIn(BaseModel):
+    """使用令牌重置密码：单次使用、30 分钟有效。"""
+    token: str = Field(..., min_length=8, max_length=128)
+    new_password: str = Field(min_length=6, max_length=64)
+
+
 class UserOut(BaseModel):
     id: int
     email: str
@@ -24,6 +46,8 @@ class UserOut(BaseModel):
     province: str | None
     target_exam: str
     plan: str
+    plan_expires_at: datetime | None = None
+    role: str = "user"
     created_at: datetime
 
     model_config = {"from_attributes": True}

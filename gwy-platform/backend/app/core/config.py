@@ -35,5 +35,20 @@ class Settings(BaseSettings):
     # CORS
     CORS_ORIGINS: str = "http://localhost:5173"
 
+    # 免费版每日 AI 逐题讲解配额（防滥用；pro/pro_year 不限）
+    FREE_AI_EXPLAIN_QUOTA: int = 20
+
+    # 支付：沙箱模式（自托管/演示用，可模拟支付回调）；接真实微信/支付宝时置 False。
+    # 生产回调校验令牌（PAYMENT_NOTIFY_SECRET），由支付 provider 回调时携带以验真。
+    PAYMENT_SANDBOX: bool = True
+    PAYMENT_NOTIFY_SECRET: str = ""
+
+    # 邮件（账号找回）：未配置 SMTP_HOST 时进入开发模式，接口直接返回重置令牌，便于自托管演示。
+    SMTP_HOST: str = ""
+    SMTP_PORT: int = 465
+    SMTP_USER: str = ""
+    SMTP_PASSWORD: str = ""
+    SMTP_SENDER: str = "noreply@gwy.example"
+
 
 settings = Settings()

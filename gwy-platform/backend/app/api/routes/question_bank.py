@@ -32,7 +32,7 @@ router = APIRouter()
 def list_questions(
     subject: str | None = None,
     category: str | None = None,
-    limit: int = Query(20, le=100, ge=1),
+    limit: int = Query(20, le=500, ge=1),
     db: Session = Depends(get_db),
 ):
     q = db.query(Question)

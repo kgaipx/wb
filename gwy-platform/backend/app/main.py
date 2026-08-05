@@ -6,6 +6,7 @@
 启动时自动建表（APP_ENV != production 时额外注入示范数据），便于零依赖联调与演示部署。
 """
 from contextlib import asynccontextmanager
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -13,6 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from app.core.config import settings
 from app.db.session import engine
+from app.middleware import SecurityMiddleware
 
 
 def _seed_demo_data() -> None:
@@ -156,16 +158,79 @@ def _seed_demo_data() -> None:
         db.close()
 
 
+def _ensure_admin() -> None:
+    """从环境变量引导初始管理员账号（仅在尚未存在时创建）。
+
+    生产部署通过 ADMIN_EMAIL / ADMIN_PASSWORD 注入；未配置则不创建。
+    管理员用于内容双签复核、支付手动激活、一致性报告等敏感操作。
+    """
+    email = os.getenv("ADMIN_EMAIL")
+    pwd = os.getenv("ADMIN_PASSWORD")
+    if not email or not pwd:
+        return
+    from app.core.security import hash_password
+    from app.db.session import SessionLocal
+    from app.models import User
+
+    db = SessionLocal()
+    try:
+        if db.query(User).filter(User.email == email).first():
+            return
+        db.add(
+            User(
+                email=email,
+                nickname="管理员",
+                hashed_password=hash_password(pwd),
+                role="admin",
+                target_exam="国考",
+            )
+        )
+        db.commit()
+        print(f"[admin] 已创建管理员账号：{email}")
+    finally:
+        db.close()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # 建表：开发期与尚未接入 Alembic 的生产环境均自动建表（SQLite 直部署兜底，
-    # 避免空库直接 500；接入 Alembic 后可移除本兜底）。
+    # 建表：仅非生产环境自动建表（开发/测试零配置）；生产环境 schema 由 Alembic 管理，
+    # 部署脚本执行 `alembic upgrade head`（或首次对旧库 `alembic stamp head`）。
     from app import models  # 确保模型注册到 Base.metadata
 
-    models.Base.metadata.create_all(bind=engine)
-    # 仅在非生产环境注入示范题库；生产应使用 Alembic 迁移 + 真实题库
     if settings.APP_ENV != "production":
-        _seed_demo_data()
+        models.Base.metadata.create_all(bind=engine)
+
+    # 生产安全基线校验：禁止以默认密钥启动，避免严重安全风险
+    if settings.APP_ENV == "production":
+        if not settings.SECRET_KEY or settings.SECRET_KEY in ("change_me",):
+            raise RuntimeError(
+                "生产环境 SECRET_KEY 仍为默认值/为空，存在严重安全风险。"
+                "请在服务器 .env 中设置强随机密钥（例如：openssl rand -hex 32）。"
+            )
+        if any(h in settings.CORS_ORIGINS for h in ("localhost", "127.0.0.1")):
+            print("⚠️ [config] 生产环境 CORS_ORIGINS 含 localhost，应改为正式域名以避免跨域风险。")
+
+    # 引导初始管理员（环境变量驱动，幂等）
+    _ensure_admin()
+
+    # 题库初始化（开发/生产通用，幂等）：
+    # 1) 优先从 backend/data/seed.json 导入原创大题库 + 知识库 + 申论题；
+    # 2) 若 seed.json 缺失且题库仍为空，退回内置 14 题示范数据（仅非生产）。
+    from app.db.session import SessionLocal
+    from app.scripts.load_data import ensure_seed
+
+    db = SessionLocal()
+    try:
+        loaded = ensure_seed(db)
+        if loaded is not None:
+            print(f"[seed] 已导入数据集：{loaded}")
+        elif settings.APP_ENV != "production" and db.query(models.Question).count() == 0:
+            _seed_demo_data()
+    except FileNotFoundError:
+        if settings.APP_ENV != "production" and db.query(models.Question).count() == 0:
+            _seed_demo_data()
+    finally:
+        db.close()
     yield
 
 
@@ -183,6 +248,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 生产安全基线：响应头 + 认证限流 + 请求体限制（详见 app/middleware.py）
+app.add_middleware(SecurityMiddleware)
 
 app.include_router(api_router, prefix="/api")
 

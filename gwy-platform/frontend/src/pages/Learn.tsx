@@ -47,6 +47,7 @@ export default function Learn() {
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
   const [explain, setExplain] = useState<Record<number, string>>({});
+  const [upgradeFor, setUpgradeFor] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
 
@@ -65,11 +66,14 @@ export default function Learn() {
 
   async function tutor(qid: number) {
     setBusy(true);
+    setErr("");
     try {
       const r = await api.explain(qid);
       setExplain((s) => ({ ...s, [qid]: r.explanation }));
+      setUpgradeFor(null);
     } catch (e: any) {
-      setErr(e.message);
+      if (e.status === 402) setUpgradeFor(qid);
+      else setErr(e.message);
     } finally {
       setBusy(false);
     }
@@ -158,6 +162,16 @@ export default function Learn() {
             <button className="btn btn--ghost btn--sm" style={{ marginTop: 8 }} disabled={busy} onClick={() => tutor(q.id)}>
               AI 私教讲解
             </button>
+            {upgradeFor === q.id && (
+              <div className="card card--warning" style={{ marginTop: 8 }}>
+                <div className="muted" style={{ fontSize: 13 }}>
+                  免费版今日 AI 讲解额度已用完，升级会员解锁无限次讲解。
+                </div>
+                <button className="btn btn--primary btn--sm" style={{ marginTop: 6 }} onClick={() => nav("/membership")}>
+                  去升级 →
+                </button>
+              </div>
+            )}
             {explain[q.id] && (
               <div className="tutor-box" style={{ marginTop: 8 }}>
                 <div className="tutor-box__title">AI 私教讲解</div>

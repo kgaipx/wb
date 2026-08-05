@@ -1,4 +1,7 @@
-import { Routes, Route, NavLink, Link, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { Routes, Route, NavLink, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
+import { AuthProvider, useAuth } from "./auth";
+import { setUnauthorizedHandler } from "./api/client";
 import Home from "./pages/Home";
 import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
@@ -10,6 +13,8 @@ import Chat from "./pages/Chat";
 import Plan from "./pages/Plan";
 import Review from "./pages/Review";
 import Membership from "./pages/Membership";
+import Essay from "./pages/Essay";
+import Login from "./pages/Login";
 
 type Icon = () => JSX.Element;
 
@@ -63,7 +68,7 @@ const tabs = [
 
 function FloatingTutor() {
   const loc = useLocation();
-  if (loc.pathname === "/chat") return null;
+  if (loc.pathname === "/chat" || loc.pathname === "/login") return null;
   return (
     <Link to="/chat" className="fab" aria-label="AI 私教">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
@@ -75,51 +80,92 @@ function FloatingTutor() {
   );
 }
 
-export default function App() {
+/** 受保护路由：未登录跳转 /login 并记录来源页。 */
+function RequireAuth({ children }: { children: JSX.Element }) {
+  const { user, loading } = useAuth();
+  const loc = useLocation();
+  if (loading) return <div className="splash">加载中…</div>;
+  if (!user) return <Navigate to="/login" state={{ from: loc.pathname }} replace />;
+  return children;
+}
+
+/** 注册 401 回调：清除登录态并跳转登录页。 */
+function AuthGate() {
+  const { logout } = useAuth();
+  const nav = useNavigate();
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      logout();
+      nav("/login");
+    });
+    return () => setUnauthorizedHandler(null);
+  }, [logout, nav]);
+  return null;
+}
+
+function AppShell() {
+  const loc = useLocation();
+  const isAuth = loc.pathname === "/login";
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <div className="app-header__logo">公</div>
-        <div className="app-header__name">AI 公考私教</div>
-        <div className="app-header__tag">懂你短板 · 内容可信</div>
-      </header>
+      {!isAuth && (
+        <header className="app-header">
+          <div className="app-header__logo">公</div>
+          <div className="app-header__name">AI 公考私教</div>
+          <div className="app-header__tag">懂你短板 · 内容可信</div>
+        </header>
+      )}
 
-      <main className="app-main">
+      <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/learn" element={<Learn />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/exam" element={<Exam />} />
-          <Route path="/wrong" element={<Wrong />} />
-          <Route path="/favorites" element={<Favorites />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/plan" element={<Plan />} />
-          <Route path="/review" element={<Review />} />
-          <Route path="/membership" element={<Membership />} />
-          <Route path="/chat" element={<Chat />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/learn" element={<RequireAuth><Learn /></RequireAuth>} />
+          <Route path="/practice" element={<RequireAuth><Practice /></RequireAuth>} />
+          <Route path="/exam" element={<RequireAuth><Exam /></RequireAuth>} />
+          <Route path="/wrong" element={<RequireAuth><Wrong /></RequireAuth>} />
+          <Route path="/favorites" element={<RequireAuth><Favorites /></RequireAuth>} />
+          <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+          <Route path="/plan" element={<RequireAuth><Plan /></RequireAuth>} />
+          <Route path="/review" element={<RequireAuth><Review /></RequireAuth>} />
+          <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
+          <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
+          <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
 
-      <FloatingTutor />
+      {!isAuth && <FloatingTutor />}
 
-      <nav className="nav-bar">
-        {tabs.map((t) => {
-          const Icon = t.icon;
-          return (
-            <NavLink
-              key={t.to}
-              to={t.to}
-              end={t.end}
-              className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
-            >
-              <span className="nav-link__ico">
-                <Icon />
-              </span>
-              {t.label}
-            </NavLink>
-          );
-        })}
-      </nav>
+      {!isAuth && (
+        <nav className="nav-bar">
+          {tabs.map((t) => {
+            const Icon = t.icon;
+            return (
+              <NavLink
+                key={t.to}
+                to={t.to}
+                end={t.end}
+                className={({ isActive }) => "nav-link" + (isActive ? " active" : "")}
+              >
+                <span className="nav-link__ico">
+                  <Icon />
+                </span>
+                {t.label}
+              </NavLink>
+            );
+          })}
+        </nav>
+      )}
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AuthGate />
+      <AppShell />
+    </AuthProvider>
   );
 }

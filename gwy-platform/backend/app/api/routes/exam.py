@@ -5,13 +5,14 @@
 """
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
-from app.models import AbilityProfile, Question, User, UserAnswer
+from app.models import AbilityProfile, ExamRecord, Question, User, UserAnswer
+from app.schemas.exam import ExamRecordDetail, ExamRecordOut
 from app.schemas.question import OptionOut
 
 router = APIRouter()
@@ -26,22 +27,33 @@ class ExamSubmit(BaseModel):
     answers: list[ExamAnswerItem]
 
 
+class ExamStartIn(BaseModel):
+    subject: str | None = None
+    count: int = 20
+
+
 @router.post("/start", tags=["exam"])
 def start_exam(
-    subject: str | None = None,
-    count: int = Query(20, le=100, ge=1),
+    payload: ExamStartIn,
     current: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    count = max(1, min(100, payload.count))
     q = db.query(Question).filter(Question.is_verified == True)  # noqa: E712
-    if subject:
-        q = q.filter(Question.subject == subject)
+    if payload.subject:
+        q = q.filter(Question.subject == payload.subject)
+    available = q.count()
     questions = q.order_by(Question.id).limit(count).all()
     if not questions:
-        raise HTTPException(status_code=404, detail="暂无可组卷题目")
+        raise HTTPException(
+            status_code=404,
+            detail="该科目暂无可组卷题目，请尝试「全部科目」或选择其他科目",
+        )
     return {
-        "subject": subject or "全部",
+        "subject": payload.subject or "全部",
         "count": len(questions),
+        "requested": count,
+        "available": available,
         "paper": [
             {
                 "id": q_.id,
@@ -113,16 +125,64 @@ def submit_exam(
         ab.last_practiced = datetime.now(timezone.utc)
 
         details.append(
-            {"question_id": q.id, "is_correct": is_correct, "correct_answer": "".join(correct_labels)}
+            {
+                "question_id": q.id,
+                "is_correct": is_correct,
+                "correct_answer": "".join(correct_labels),
+                "selected": item.selected,
+                "stem": q.stem,
+                "knowledge_point": q.knowledge_point,
+            }
         )
 
-    db.commit()
     rate = round(correct / total, 3) if total else 0.0
     top_weak = sorted(weak.items(), key=lambda x: x[1], reverse=True)[:5]
+    # 模考科目：取首题科目，混合则记为「全部」
+    _subjects = {q.subject for q in (db.get(Question, it.question_id) for it in payload.answers) if q}
+    record_subject = next(iter(_subjects)) if len(_subjects) == 1 else "全部"
+    record = ExamRecord(
+        user_id=current.id,
+        subject=record_subject,
+        total=total,
+        correct=correct,
+        correct_rate=rate,
+        weak_points=[k for k, _ in top_weak],
+        details=details,
+    )
+    db.add(record)
+    db.commit()
+    db.refresh(record)
     return {
+        "id": record.id,
         "total": total,
         "correct": correct,
         "correct_rate": rate,
         "weak_points": [k for k, _ in top_weak],
         "details": details,
     }
+
+
+@router.get("/history", response_model=list[ExamRecordOut], tags=["exam"])
+def exam_history(
+    limit: int = 20, current: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    """模考历史列表（按时间倒序），用于复盘与进步追踪。"""
+    return (
+        db.query(ExamRecord)
+        .filter(ExamRecord.user_id == current.id)
+        .order_by(ExamRecord.created_at.desc())
+        .limit(limit)
+        .all()
+    )
+
+
+@router.get("/history/{record_id}", response_model=ExamRecordDetail, tags=["exam"])
+def exam_history_detail(
+    record_id: int, current: User = Depends(get_current_user), db: Session = Depends(get_db)
+):
+    """某次模考的逐题明细（含正确答案），支持离线复盘。"""
+    rec = db.get(ExamRecord, record_id)
+    if rec is None or rec.user_id != current.id:
+        raise HTTPException(status_code=404, detail="模考记录不存在")
+    return rec
+

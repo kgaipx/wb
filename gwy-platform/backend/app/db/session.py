@@ -9,8 +9,18 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
 
-# SQLite 开发期需关闭单线程检查，以便 FastAPI 跨请求复用连接
+# SQLite：关闭单线程检查（多 worker 共享），并启用 WAL 提升并发读写；
+# 通过 PRAGMA 在连接建立时设置 journal_mode=WAL、busy_timeout 避免写锁冲突。
 _connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
+
+
+def _pragma_on_connect(dbapi_conn, _conn_record):
+    if settings.DATABASE_URL.startswith("sqlite"):
+        cur = dbapi_conn.cursor()
+        cur.execute("PRAGMA journal_mode=WAL")
+        cur.execute("PRAGMA busy_timeout=5000")
+        cur.close()
+
 
 engine = create_engine(
     settings.DATABASE_URL,
@@ -18,6 +28,11 @@ engine = create_engine(
     future=True,
     connect_args=_connect_args,
 )
+
+if settings.DATABASE_URL.startswith("sqlite"):
+    from sqlalchemy import event
+
+    event.listen(engine, "connect", _pragma_on_connect)
 
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False, future=True)
 

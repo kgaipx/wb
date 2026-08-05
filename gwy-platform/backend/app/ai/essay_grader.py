@@ -4,21 +4,26 @@
 验收门槛（方案 c12）：人 AI 评分一致性 ≥ 0.8。
 
 - 阶段一（初评）：LLM 按维度（立意/结构/论证/语言/素材）打分，输出 JSON。
-- 阶段二（校准）：校验维度分布合理性，异常（如维度全 0、总分越界、与给定要点严重背离）
-  触发转人工，确保一致性门禁。
+- 阶段二（校准）：校验维度分布合理性，异常（如维度全 0、总分越界、分布异常）触发转人工。
+- 发布闸门（人 AI 一致性门禁）：基于人工标注评测集计算 Pearson 一致性系数，
+  若低于阈值 0.8，则保守地对所有 AI 评分强制转人工复核，确保「评分可信」卖点落地。
 LLM 不可用时回退到基于要点的启发式评分，保证服务可用。
 """
 import json
 import math
 import os
 import re
+import time
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from app.ai.llm_gateway import LLMGateway
 
 DIMENSIONS = ["立意", "结构", "论证", "语言", "素材"]
 _SAMPLE_PATH = os.path.join(os.path.dirname(__file__), "data", "essay_eval_sample.json")
+# 一致性报告缓存（避免每次评分都重跑评测集；默认 1 小时刷新）
+_CONSISTENCY_TTL = 3600.0
+_consistency_cache: dict = {"value": None, "ts": 0.0}
 
 _SYSTEM = (
     "你是申论阅卷专家。严格依据给定材料与作答要求，从立意、结构、论证、语言、素材五个维度评分。"
@@ -26,18 +31,13 @@ _SYSTEM = (
 )
 
 
+@dataclass
 class EssayScore:
-    def __init__(
-        self,
-        total: float,
-        dimensions: dict[str, float],
-        needs_human_review: bool,
-        rationale: str,
-    ) -> None:
-        self.total = total
-        self.dimensions = dimensions
-        self.needs_human_review = needs_human_review
-        self.rationale = rationale
+    total: float
+    dimensions: dict[str, float]
+    needs_human_review: bool
+    rationale: str
+    consistency: dict = field(default_factory=dict)  # 人 AI 一致性门禁报告
 
 
 class EssayGrader:
@@ -47,10 +47,13 @@ class EssayGrader:
     def __init__(self) -> None:
         self.gateway = LLMGateway()
 
-    def grade(self, essay_text: str, prompt_material: str, max_score: int = 100) -> EssayScore:
+    def _score_core(self, essay_text: str, prompt_material: str, requirement: str, max_score: int) -> EssayScore:
+        """核心评分（不含发布闸门，供单次评分与评测集共用，避免递归）。"""
         per_dim = max_score / len(DIMENSIONS)
+        req_block = f"【作答要求】\n{requirement}\n\n" if requirement else ""
         prompt = (
             f"【材料】\n{prompt_material}\n\n"
+            f"{req_block}"
             f"【考生作答】\n{essay_text}\n\n"
             "请评分并严格输出如下 JSON：\n"
             '{"立意": <0-20>, "结构": <0-20>, "论证": <0-20>, "语言": <0-20>, "素材": <0-20>, '
@@ -75,6 +78,31 @@ class EssayGrader:
         total = round(sum(dims.values()), 1)
         needs_human = self._calibrate(dims, per_dim, essay_text)
         return EssayScore(total=total, dimensions=dims, needs_human_review=needs_human, rationale=rationale)
+
+    def grade(self, essay_text: str, prompt_material: str, requirement: str = "", max_score: int = 100) -> EssayScore:
+        score = self._score_core(essay_text, prompt_material, requirement, max_score)
+        # 发布闸门：人 AI 一致性低于阈值时保守转人工
+        rep = self.consistency_report()
+        if rep["evaluated"] and rep["ok"] is False:
+            score.needs_human_review = True
+        score.consistency = rep
+        return score
+
+    def consistency_report(self) -> dict:
+        """返回人 AI 一致性报告（带缓存）；ok=None 表示无评测集（不阻断）。"""
+        now = time.time()
+        if _consistency_cache["value"] is None or now - _consistency_cache["ts"] > _CONSISTENCY_TTL:
+            val = self.evaluate_against_human_set()
+            _consistency_cache["value"] = val
+            _consistency_cache["ts"] = now
+        val = _consistency_cache["value"]
+        ok = val >= self.CONSISTENCY_THRESHOLD if val >= 0 else None
+        return {
+            "coefficient": val,
+            "threshold": self.CONSISTENCY_THRESHOLD,
+            "ok": ok,
+            "evaluated": val >= 0,
+        }
 
     @staticmethod
     def _parse(text: str) -> tuple[dict | None, str]:
@@ -108,7 +136,7 @@ class EssayGrader:
         """在人工标注评测集上计算人 AI 一致性（Pearson 相关），作为发布闸门。
 
         评测集格式：[{"essay_text":..., "prompt_material":..., "human_score":<0-100>}]
-        返回 0~1 的一致性系数；样本不足返回 -1。
+        返回 0~1 的一致性系数；样本不足或无评测集返回 -1。
         """
         path = human_set_path or _SAMPLE_PATH
         if not os.path.exists(path):
@@ -120,7 +148,9 @@ class EssayGrader:
 
         human, ai = [], []
         for s in samples:
-            score = self.grade(s["essay_text"], s.get("prompt_material", ""))
+            score = self._score_core(
+                s["essay_text"], s.get("prompt_material", ""), s.get("requirement", ""), 100
+            )
             human.append(float(s["human_score"]))
             ai.append(score.total)
 

@@ -12,6 +12,16 @@ class ExplainOut(BaseModel):
     explanation: str
     citations: list[str] = []
     model: str | None = None
+    quota_remaining: int | None = None  # 免费版剩余配额（pro 为 None）
+
+
+class AiQuota(BaseModel):
+    plan: str
+    is_pro: bool
+    limit: int  # 每日配额上限（pro 为 -1 表示不限）
+    used: int
+    remaining: int  # 剩余次数（pro 为 -1）
+    date: str  # 配额所属日期 YYYY-MM-DD
 
 
 class RecommendOut(BaseModel):
@@ -33,8 +43,11 @@ class ChatOut(BaseModel):
 
 class EssayGradeIn(BaseModel):
     essay_text: str
-    prompt_material: str = ""
+    prompt_material: str = ""  # 给定材料（供评分上下文）
+    requirement: str = ""  # 作答要求（供评分上下文；与 material 共同约束评分）
     max_score: int = 100
+    prompt_id: int | None = None  # 关联申论题库题目（落库时记录）
+    save: bool = True  # 是否将批改结果落库（供历史复看）
 
 
 class EssayGradeOut(BaseModel):
@@ -42,6 +55,8 @@ class EssayGradeOut(BaseModel):
     dimensions: dict[str, float]
     needs_human_review: bool
     rationale: str
+    consistency: dict = {}  # 人 AI 一致性门禁报告（coefficient/threshold/ok/evaluated）
+    record_id: int | None = None  # 落库后的记录 id（save=True 时返回）
 
 
 class PlanTaskOut(BaseModel):

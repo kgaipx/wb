@@ -6,9 +6,12 @@ from app.models.progress import UserAnswer, AbilityProfile
 from app.models.knowledge import KnowledgeChunk
 from app.models.content import ContentReview
 from app.models.billing import Order, RefundRequest
+from app.models.essay import EssayGradeRecord, EssayPrompt
 from app.models.favorite import Favorite
 from app.models.study_plan import PlanTask, StudyPlan
 from app.models.chat import ChatMessage, ChatSession
+from app.models.exam_record import ExamRecord
+from app.models.password_reset import PasswordResetToken
 
 __all__ = [
     "Base",
@@ -21,9 +24,13 @@ __all__ = [
     "ContentReview",
     "Order",
     "RefundRequest",
+    "EssayPrompt",
+    "EssayGradeRecord",
     "Favorite",
     "StudyPlan",
     "PlanTask",
     "ChatSession",
     "ChatMessage",
+    "ExamRecord",
+    "PasswordResetToken",
 ]
