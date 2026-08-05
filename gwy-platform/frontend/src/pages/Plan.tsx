@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, PlanDay, PlanOut, PlanProgress, PlanTask } from "../api/client";
+import { triggerDownload, stamp } from "../utils/exportUtils";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -48,6 +49,7 @@ export default function Plan() {
   const [days, setDays] = useState(7);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [toast, setToast] = useState("");
 
   const regenerate = useCallback(
     async (d: number) => {
@@ -112,9 +114,51 @@ export default function Plan() {
     }
   }
 
+  function flash(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2000);
+  }
+
+  function planToMarkdown(): string {
+    if (!plan) return "";
+    const p = plan.progress;
+    const lines: string[] = [
+      `# AI 学习计划（${plan.days} 天）`,
+      "",
+      `> 总体完成率 **${Math.round(p.rate * 100)}%** · 连续打卡 ${p.streak_days} 天 · 累计 ${
+        p.done_tasks
+      }/${p.total_tasks} 项`,
+      "",
+    ];
+    if (plan.summary) {
+      lines.push(plan.summary, "");
+    }
+    plan.items.forEach((d) => {
+      lines.push(`## 第 ${d.day} 天 · ${d.focus}`);
+      if (d.summary) lines.push(d.summary);
+      lines.push("");
+      d.tasks.forEach((t) => {
+        const mark = t.done ? "x" : " ";
+        lines.push(`- [${mark}] ${KIND_LABEL[t.kind] || t.kind}：${t.title}`);
+      });
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  function exportPlan() {
+    if (!plan) {
+      flash("计划尚未生成");
+      return;
+    }
+    triggerDownload(`AI学习计划_${stamp()}.md`, planToMarkdown());
+    flash("已导出学习计划（Markdown）");
+  }
+
   return (
     <section>
       <h2 className="page-title">AI 学习计划</h2>
+      {toast && <div className="ok-text ok-text--float">{toast}</div>}
       <div className="card card--soft">
         <div className="row row--between">
           <strong>你的私教大脑已就位</strong>
@@ -147,6 +191,11 @@ export default function Plan() {
                 </b>
                 <span>累计完成</span>
               </div>
+            </div>
+            <div className="plan-progress__actions">
+              <button className="btn btn--sm btn--ghost" disabled={busy} onClick={exportPlan}>
+                导出计划
+              </button>
             </div>
           </div>
           <div className="progress" style={{ marginTop: 8 }}>

@@ -246,6 +246,24 @@
   font-weight: 600;
 }
 
+/* ===================== 数据导出与分享 ===================== */
+.export-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.export-bar__hint {
+  font-size: 12px;
+  margin-left: auto;
+}
+.plan-progress__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
 /* ===================== 站内通知（Notification Center） ===================== */
 .bell-btn {
   position: relative;

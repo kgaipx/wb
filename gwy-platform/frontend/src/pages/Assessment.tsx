@@ -7,6 +7,7 @@ import {
   AssessmentRecordOut,
   AssessmentDim,
 } from "../api/client";
+import { triggerDownload, shareOrCopy, stamp } from "../utils/exportUtils";
 
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
 
@@ -96,6 +97,7 @@ export default function Assessment() {
   const [history, setHistory] = useState<AssessmentRecordOut[]>([]);
   const [detail, setDetail] = useState<AssessmentRecordOut | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [toast, setToast] = useState("");
 
   async function start() {
     setBusy(true);
@@ -244,10 +246,66 @@ export default function Assessment() {
     );
   }
 
+  function flash(msg: string) {
+    setToast(msg);
+    setTimeout(() => setToast(""), 2000);
+  }
+
+  function reportToMarkdown(rep: AssessmentReport | AssessmentRecordOut): string {
+    const r = rep as any;
+    const overall = Math.round((r.overall || 0) * 100);
+    const total = r.total ?? r.questions_total;
+    const correct = r.correct ?? r.questions_total;
+    const lines: string[] = [
+      "# 能力测评报告",
+      "",
+      `> ${fmtDate(r.created_at)} · 总体掌握度 **${overall}%**（答对 ${correct}/${total}）`,
+      "",
+      "## 能力雷达（各知识点掌握度）",
+    ];
+    (r.dimensions || []).forEach((d: AssessmentDim) => {
+      lines.push(`- ${d.knowledge_point}：${Math.round(d.mastery * 100)}%`);
+    });
+    if (r.weak_points?.length) {
+      lines.push("", "## 薄弱知识点");
+      r.weak_points.forEach((w: string) => lines.push(`- ${w}`));
+    }
+    if (r.suggestions?.length) {
+      lines.push("", "## 提升建议");
+      r.suggestions.forEach((s: string) => lines.push(`- ${s}`));
+    }
+    if (r.details?.length) {
+      lines.push("", "## 逐题回顾");
+      r.details.forEach((d: any, i: number) => {
+        lines.push(
+          "",
+          `**第 ${i + 1} 题**${d.knowledge_point ? ` · ${d.knowledge_point}` : ""}：${
+            d.is_correct ? "✔ 答对" : "✘ 答错"
+          }`
+        );
+        lines.push(d.stem);
+        if (!d.is_correct)
+          lines.push(`正确答案：${d.correct_answer}${d.selected ? `（你的作答：${d.selected}）` : ""}`);
+      });
+    }
+    return lines.join("\n");
+  }
+
+  function exportReport(rep: AssessmentReport | AssessmentRecordOut) {
+    triggerDownload(`能力测评报告_${stamp()}.md`, reportToMarkdown(rep));
+    flash("已导出测评报告（Markdown）");
+  }
+
+  async function shareReport(rep: AssessmentReport | AssessmentRecordOut) {
+    const res = await shareOrCopy("我的公考能力测评报告", reportToMarkdown(rep));
+    flash(res === "shared" ? "已唤起分享" : res === "copied" ? "已复制报告内容" : "分享已取消");
+  }
+
   return (
     <section>
       <h2 className="page-title">能力测评</h2>
       {err && <div className="err-text">{err}</div>}
+      {toast && <div className="ok-text ok-text--float">{toast}</div>}
 
       {phase === "setup" && (
         <div className="card">
@@ -313,7 +371,15 @@ export default function Assessment() {
       {phase === "report" && report && (
         <>
           {renderReport(report)}
-          <div className="row" style={{ marginTop: 16, gap: 8 }}>
+          <div className="export-bar" style={{ marginTop: 16 }}>
+            <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => exportReport(report)}>
+              导出报告
+            </button>
+            <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => shareReport(report)}>
+              分享成绩
+            </button>
+          </div>
+          <div className="row" style={{ marginTop: 12, gap: 8 }}>
             <button className="btn btn--primary" style={{ flex: 1 }} disabled={busy} onClick={start}>
               重新测评
             </button>
@@ -381,7 +447,15 @@ export default function Assessment() {
             ← 返回历史列表
           </button>
           {renderReport(detail)}
-          <button className="btn btn--ghost btn--block" style={{ marginTop: 16 }} onClick={() => setPhase("history")}>
+          <div className="export-bar" style={{ marginTop: 12 }}>
+            <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => exportReport(detail)}>
+              导出报告
+            </button>
+            <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => shareReport(detail)}>
+              分享成绩
+            </button>
+          </div>
+          <button className="btn btn--ghost btn--block" style={{ marginTop: 12 }} onClick={() => setPhase("history")}>
             返回历史列表
           </button>
         </>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, WrongItem } from "../api/client";
+import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
 
 interface ItemState {
   open: boolean;
@@ -80,11 +81,65 @@ export default function Wrong() {
     }
   }
 
+  function wrongToMarkdown(): string {
+    const lines: string[] = [
+      "# 错题本导出",
+      "",
+      `> 导出时间：${stamp().replace(/_/, " ")} · 共 ${items.length} 道待复盘错题`,
+      "",
+    ];
+    items.forEach((it, i) => {
+      const q = it.question;
+      lines.push(`## 第 ${i + 1} 题 · ${q.subject} · ${q.knowledge_point}（错 ${it.wrong_count} 次）`);
+      lines.push("");
+      lines.push(q.stem);
+      lines.push("");
+      q.options.forEach((o) => lines.push(`- ${o.label}. ${o.content}`));
+      lines.push("");
+      lines.push(`**上次作答**：${it.last_selected || "—"}`);
+      lines.push("");
+      lines.push("---");
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  function exportWrong() {
+    if (!items.length) {
+      setToast("暂无可导出的错题");
+      setTimeout(() => setToast(""), 1800);
+      return;
+    }
+    triggerDownload(`错题本_${stamp()}.md`, wrongToMarkdown());
+    setToast("已导出错题本（Markdown）");
+    setTimeout(() => setToast(""), 1800);
+  }
+
+  async function copyWrong() {
+    if (!items.length) {
+      setToast("暂无可复制的错题");
+      setTimeout(() => setToast(""), 1800);
+      return;
+    }
+    const ok = await copyText(wrongToMarkdown());
+    setToast(ok ? "已复制错题本内容" : "复制失败");
+    setTimeout(() => setToast(""), 1800);
+  }
+
   return (
     <section>
       <h2 className="page-title">错题本</h2>
       <div className="card card--hint">
         把做错的题在这里重练，<b>答对即移出错题本</b>——这正是对抗「错题复错率」的核心闭环。
+      </div>
+      <div className="export-bar">
+        <button className="btn btn--sm btn--ghost" disabled={busy} onClick={exportWrong}>
+          导出错题本
+        </button>
+        <button className="btn btn--sm btn--ghost" disabled={busy} onClick={copyWrong}>
+          复制全文
+        </button>
+        <span className="text-3 export-bar__hint">导出 Markdown，可分享或打印成 PDF</span>
       </div>
       {err && <div className="err-text">{err}</div>}
       {toast && <div className="ok-text ok-text--float">{toast}</div>}
