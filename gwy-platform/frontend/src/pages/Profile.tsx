@@ -191,6 +191,21 @@ export default function Profile() {
         </div>
       )}
 
+      {/* 运营后台总览（仅管理员可见） */}
+      {user && user.role === "admin" && (
+        <div className="card card--tutor" style={{ marginTop: 12 }}>
+          <div className="card--tutor__txt">
+            <strong>运营后台</strong>
+            <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+              用户增长 · 营收 · 题库核实 · 学习活跃，一眼掌握平台健康度。
+            </div>
+          </div>
+          <button className="btn btn--ghost btn--sm" onClick={() => nav("/admin")}>
+            进入 →
+          </button>
+        </div>
+      )}
+
       {/* 申论批改（WBS 4.1） */}
       <div className="card" style={{ marginTop: 12 }}>
         <strong>申论 AI 批改</strong>

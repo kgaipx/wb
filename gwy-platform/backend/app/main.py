@@ -159,13 +159,15 @@ def _seed_demo_data() -> None:
 
 
 def _ensure_admin() -> None:
-    """从环境变量引导初始管理员账号（仅在尚未存在时创建）。
+    """从配置引导初始管理员账号（仅在尚未存在时创建）。
 
-    生产部署通过 ADMIN_EMAIL / ADMIN_PASSWORD 注入；未配置则不创建。
-    管理员用于内容双签复核、支付手动激活、一致性报告等敏感操作。
+    生产部署通过 .env 的 ADMIN_EMAIL / ADMIN_PASSWORD 注入；未配置则不创建。
+    注意：此处必须读 settings（pydantic 从 .env 文件读取，不会导出到 os.environ），
+    使用 os.getenv 会始终为 None，导致引导失效。
+    管理员用于内容双签复核、支付手动激活、运营后台等敏感操作。
     """
-    email = os.getenv("ADMIN_EMAIL")
-    pwd = os.getenv("ADMIN_PASSWORD")
+    email = settings.ADMIN_EMAIL
+    pwd = settings.ADMIN_PASSWORD
     if not email or not pwd:
         return
     from app.core.security import hash_password

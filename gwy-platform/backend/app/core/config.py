@@ -38,6 +38,13 @@ class Settings(BaseSettings):
     # 免费版每日 AI 逐题讲解配额（防滥用；pro/pro_year 不限）
     FREE_AI_EXPLAIN_QUOTA: int = 20
 
+    # 初始管理员引导（仅 ADMIN_EMAIL/ADMIN_PASSWORD 均在 .env 中设置时，
+    # 启动期幂等创建 role=admin 账号，用于内容双签复核与运营后台）。
+    # 注意：字段必须在此声明，否则 extra="ignore" 会丢弃 .env 中的未知键，
+    # 导致 _ensure_admin() 读不到环境变量。
+    ADMIN_EMAIL: str = ""
+    ADMIN_PASSWORD: str = ""
+
     # 支付：沙箱模式（自托管/演示用，可模拟支付回调）；接真实微信/支付宝时置 False。
     # 生产回调校验令牌（PAYMENT_NOTIFY_SECRET），由支付 provider 回调时携带以验真。
     PAYMENT_SANDBOX: bool = True
