@@ -40,3 +40,8 @@ Thumbs.db
 
 # ===== 部署临时打包产物（本地构建后投递用，不入库） =====
 gwy-platform/deploy_*.tar.gz
+
+# ===== 第三方题库导入暂存区（用户从百度网盘等下载的参考材料，不入库） =====
+gwy-platform/backend/data/incoming/*
+!gwy-platform/backend/data/incoming/.gitkeep
+!gwy-platform/backend/data/incoming/README.md
