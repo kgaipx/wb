@@ -2,12 +2,22 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  /* 移动端去掉点击时的灰色高亮块，体验更接近原生 App */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  /* 禁止 iOS 在横屏/某些场景下自动放大字体 */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html,
 body,
 #root {
   height: 100%;
+  /* 阻止移动端下拉刷新/滚动链穿透到外层 */
+  overscroll-behavior-y: none;
 }
 
 body {

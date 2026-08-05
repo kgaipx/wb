@@ -148,6 +148,49 @@ function AppShell() {
   const [notifs, setNotifs] = useState<NotificationOut[]>([]);
   const [unread, setUnread] = useState(0);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstall, setShowInstall] = useState(false);
+
+  // —— PWA 安装引导 ——
+  useEffect(() => {
+    const onPrompt = (e: any) => {
+      // 捕获浏览器原生「安装到主屏幕」提示，改为自有 UI 触发
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstall(true);
+    };
+    const onInstalled = () => {
+      setShowInstall(false);
+      setDeferredPrompt(null);
+    };
+    window.addEventListener("beforeinstallprompt", onPrompt);
+    window.addEventListener("appinstalled", onInstalled);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onPrompt);
+      window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
+  const installApp = async () => {
+    if (!deferredPrompt) return;
+    try {
+      await deferredPrompt.prompt();
+      const choice = await deferredPrompt.userChoice;
+      if (choice?.outcome === "accepted") {
+        /* 用户接受安装，浏览器会自动添加到主屏幕 */
+      }
+    } catch {
+      /* 忽略：部分浏览器不支持主动 prompt */
+    } finally {
+      setDeferredPrompt(null);
+      setShowInstall(false);
+    }
+  };
+
+  const dismissInstall = () => {
+    setShowInstall(false);
+    setDeferredPrompt(null);
+  };
 
   const loadNotifs = useCallback(async () => {
     try {
@@ -245,6 +288,25 @@ function AppShell() {
 
       {!isAuth && panelOpen && (
         <div className="notif-backdrop" onClick={() => setPanelOpen(false)} />
+      )}
+
+      {!isAuth && showInstall && (
+        <div className="install-banner">
+          <div className="install-banner__txt">
+            <b>安装到主屏幕</b>
+            <span>获得类原生 App 体验，离线也能刷题</span>
+          </div>
+          <button className="install-banner__btn" onClick={installApp}>
+            安装
+          </button>
+          <button
+            className="install-banner__close"
+            aria-label="关闭"
+            onClick={dismissInstall}
+          >
+            ×
+          </button>
+        </div>
       )}
 
       <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
