@@ -234,3 +234,57 @@ def test_feat_plan_generate_and_checkin(client, monkeypatch):
     assert t["progress"]["done_tasks"] == 1
     gp = client.get("/api/ai/plan", headers=_hdr(tok)).json()
     assert gp["progress"]["done_tasks"] == 1
+
+
+def test_feat_student_stats_recurrence(client):
+    """学情看板：错题复错率计算正确。
+    - 题A：错→错（复错，recurrence 计 1）
+    - 题B：错→对（已攻克，不计入复错）
+    - 题C：仅错一次且未复测（分母不计入）
+    期望 recurrence_rate = 1/2 = 0.5，wrong_distinct = 3。
+    """
+    tok = _register(client, "feat_stats@e.com", "secret1")
+    qs = client.get("/api/bank/questions?limit=20").json()
+    from app.db.session import SessionLocal
+    from app.models import Question as QModel
+
+    picks = {}
+    db = SessionLocal()
+    try:
+        for q in qs:
+            qo = db.get(QModel, q["id"])
+            correct = next(o.label for o in qo.options if o.is_correct)
+            wrong = next(o.label for o in qo.options if not o.is_correct)
+            picks[q["id"]] = (correct, wrong)
+    finally:
+        db.close()
+
+    qids = list(picks.keys())[:3]
+    qa, qb, qc = qids[0], qids[1], qids[2]
+    ca, wa = picks[qa]
+    cb, wb = picks[qb]
+    cc, wc = picks[qc]
+
+    # 题A：错 → 错
+    client.post("/api/bank/practice", json={"question_id": qa, "selected": wa}, headers=_hdr(tok))
+    client.post("/api/bank/practice", json={"question_id": qa, "selected": wa}, headers=_hdr(tok))
+    # 题B：错 → 对
+    client.post("/api/bank/practice", json={"question_id": qb, "selected": wb}, headers=_hdr(tok))
+    client.post("/api/bank/practice", json={"question_id": qb, "selected": cb}, headers=_hdr(tok))
+    # 题C：仅错一次
+    client.post("/api/bank/practice", json={"question_id": qc, "selected": wc}, headers=_hdr(tok))
+
+    stats = client.get("/api/student/stats", headers=_hdr(tok)).json()
+    assert stats["wrong_distinct"] == 3
+    # retried=2（A、B 各复测一次），recurred=1（仅 A 复错）
+    assert stats["recurrence_rate"] == 0.5
+    # reviewed_distinct 初始为 0（未标记复盘）
+    assert stats["reviewed_distinct"] == 0
+    # 客观正确率：仅 题B 第二次对 → 1/5 = 0.2
+    assert stats["correct_rate"] == 0.2
+    assert len(stats["last_7_days"]) == 7
+
+    # 标记题A复盘，reviewed_distinct 应 +1
+    client.post("/api/student/wrong/" + str(qa) + "/review", headers=_hdr(tok))
+    stats2 = client.get("/api/student/stats", headers=_hdr(tok)).json()
+    assert stats2["reviewed_distinct"] == 1

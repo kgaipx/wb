@@ -45,3 +45,7 @@ gwy-platform/deploy_*.tar.gz
 gwy-platform/backend/data/incoming/*
 !gwy-platform/backend/data/incoming/.gitkeep
 !gwy-platform/backend/data/incoming/README.md
+
+# ===== 导入管线预览产物（OCR/解析中间产物，含第三方内容，不入库） =====
+gwy-platform/backend/_preview*.json
+gwy-platform/backend/**/_preview*.json

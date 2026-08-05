@@ -1,7 +1,11 @@
 """学员中心 / 学情看板路由（方案 c4 方向1 / WBS 2.1）。
 
 /student/me 返回用户画像 + 答题统计 + 能力图谱，是"AI 私教"诊断面板的数据来源。
+/student/stats 返回学情数据看板（P0 信号：错题复错率 / 正确率 / 弱项 / 趋势 / 连续打卡）。
 """
+from collections import Counter, defaultdict
+from datetime import datetime, timedelta, timezone
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -9,9 +13,10 @@ from sqlalchemy.orm import Session
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
 from app.models import AbilityProfile, Question, User, UserAnswer
-from app.schemas.progress import AbilityOut, StudentDashboard
+from app.schemas.progress import AbilityOut, DayTrend, StudentDashboard, StudentStats
 from app.schemas.question import QuestionOut, WrongItem
 from app.schemas.user import UserOut
+from app.services.study_plan_service import compute_progress, get_current_plan
 
 router = APIRouter()
 
@@ -113,3 +118,90 @@ def review_wrong(qid: int, current: User = Depends(get_current_user), db: Sessio
     ans.reviewed = True
     db.commit()
     return {"ok": True}
+
+
+@router.get("/stats", response_model=StudentStats)
+def stats(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """学情数据看板：复错率（P0）、客观正确率、弱项、近 7 日趋势、连续打卡。
+
+    仅统计客观题（qtype != 'essay'），申论由独立模块追踪。
+    """
+    rows = (
+        db.query(UserAnswer, Question.qtype)
+        .join(Question, Question.id == UserAnswer.question_id)
+        .filter(UserAnswer.user_id == current.id, Question.qtype != "essay")
+        .order_by(UserAnswer.question_id, UserAnswer.id)
+        .all()
+    )
+
+    # 按题聚合作答序列（时间序），并统计每日量
+    by_q: dict[int, list[bool]] = defaultdict(list)
+    day_ans: Counter = Counter()
+    day_correct: Counter = Counter()
+    today = datetime.now(timezone.utc).date()
+    for ans, _qtype in rows:
+        by_q[ans.question_id].append(bool(ans.is_correct))
+        d = ans.submitted_at.date().isoformat()
+        day_ans[d] += 1
+        if ans.is_correct:
+            day_correct[d] += 1
+
+    total = sum(len(v) for v in by_q.values())
+    correct = sum(1 for ans, _ in rows if ans.is_correct)
+    correct_rate = round(correct / total, 3) if total else 0.0
+
+    # 复错率：曾经做错且其后复测仍错的题 / 曾错且复测过的题
+    ever_wrong = 0
+    recurred = 0
+    retried = 0
+    for _qid, seq in by_q.items():
+        wrong_idx = [i for i, c in enumerate(seq) if not c]
+        if not wrong_idx:
+            continue
+        ever_wrong += 1
+        later = seq[wrong_idx[0] + 1 :]
+        if later:
+            retried += 1
+            if any(not c for c in later):
+                recurred += 1
+    recurrence_rate = round(recurred / retried, 3) if retried else 0.0
+
+    reviewed = (
+        db.query(func.count(func.distinct(UserAnswer.question_id)))
+        .filter(UserAnswer.user_id == current.id, UserAnswer.reviewed == True)  # noqa: E712
+        .scalar()
+        or 0
+    )
+
+    abilities = (
+        db.query(AbilityProfile)
+        .filter(AbilityProfile.user_id == current.id)
+        .all()
+    )
+    mastered_kp = sum(1 for a in abilities if a.mastery >= 0.8)
+    weak = sorted(abilities, key=lambda a: a.mastery)[:8]
+
+    last_7_days = [
+        DayTrend(
+            date=(today - timedelta(days=i)).isoformat(),
+            answers=day_ans.get((today - timedelta(days=i)).isoformat(), 0),
+            correct=day_correct.get((today - timedelta(days=i)).isoformat(), 0),
+        )
+        for i in range(6, -1, -1)
+    ]
+
+    plan = get_current_plan(db, current)
+    streak_days = compute_progress(db, plan)["streak_days"] if plan else 0
+
+    return StudentStats(
+        user=UserOut.model_validate(current),
+        total_answers=total,
+        correct_rate=correct_rate,
+        wrong_distinct=ever_wrong,
+        recurrence_rate=recurrence_rate,
+        reviewed_distinct=int(reviewed),
+        mastered_kp=mastered_kp,
+        ability=[AbilityOut.model_validate(a) for a in weak],
+        last_7_days=last_7_days,
+        streak_days=streak_days,
+    )

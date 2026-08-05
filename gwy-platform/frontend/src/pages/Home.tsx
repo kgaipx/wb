@@ -96,6 +96,16 @@ export default function Home() {
       )}
 
       <div className="card card--soft" style={{ marginTop: 14 }}>
+        <div className="row row--between">
+          <strong>学习数据中心</strong>
+          <button className="link-btn" onClick={() => nav("/data")}>查看 →</button>
+        </div>
+        <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+          复错率、正确率、弱项知识点与近 7 日趋势，一眼看清提分进度。
+        </div>
+      </div>
+
+      <div className="card card--soft" style={{ marginTop: 14 }}>
         <strong>卡住了？问问 AI 私教</strong>
         <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
           知识点、解题技巧、申论写法、复习规划，随时问。

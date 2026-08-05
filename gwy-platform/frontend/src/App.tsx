@@ -15,6 +15,7 @@ import Review from "./pages/Review";
 import Membership from "./pages/Membership";
 import Essay from "./pages/Essay";
 import Login from "./pages/Login";
+import Dashboard from "./pages/Dashboard";
 
 type Icon = () => JSX.Element;
 
@@ -56,6 +57,15 @@ const WrongIcon: Icon = () => (
     <path d="M12 8v4l3 2" />
   </svg>
 );
+const ChartIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 19V5" />
+    <path d="M4 19h16" />
+    <rect x="7" y="11" width="3" height="5" rx="1" />
+    <rect x="12" y="7" width="3" height="9" rx="1" />
+    <rect x="17" y="13" width="3" height="3" rx="1" />
+  </svg>
+);
 
 const tabs = [
   { to: "/", label: "首页", end: true, icon: HomeIcon },
@@ -63,6 +73,7 @@ const tabs = [
   { to: "/practice", label: "刷题", icon: PenIcon },
   { to: "/exam", label: "模考", icon: ExamIcon },
   { to: "/wrong", label: "错题", icon: WrongIcon },
+  { to: "/data", label: "数据", icon: ChartIcon },
   { to: "/profile", label: "我的", icon: UserIcon },
 ];
 
@@ -130,6 +141,7 @@ function AppShell() {
           <Route path="/review" element={<RequireAuth><Review /></RequireAuth>} />
           <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
           <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
+          <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
           <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

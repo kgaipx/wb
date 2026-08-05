@@ -56,6 +56,23 @@ export interface Dashboard {
   correct_rate: number;
   ability: Ability[];
 }
+export interface DayTrend {
+  date: string;
+  answers: number;
+  correct: number;
+}
+export interface StudentStats {
+  user: UserOut;
+  total_answers: number;
+  correct_rate: number;
+  wrong_distinct: number;
+  recurrence_rate: number; // 错题复错率 0-1（越低越好）
+  reviewed_distinct: number; // 已复盘（标记掌握）的错题数
+  mastered_kp: number; // 掌握度≥0.8 的知识点数
+  ability: Ability[]; // 弱项知识点（掌握度升序，最多 8）
+  last_7_days: DayTrend[];
+  streak_days: number; // 连续打卡天数
+}
 export interface Question {
   id: number;
   subject: string;
@@ -194,6 +211,8 @@ export const api = {
 
   // 学员中心 / 学情（WBS 2.1 / 3.2）
   dashboard: () => request<Dashboard>("/student/me"),
+  // 学情数据看板（P0 信号：复错率 / 正确率 / 弱项 / 趋势 / 连续打卡）
+  studentStats: () => request<StudentStats>("/student/stats"),
 
   // 错题本（WBS 2.2 衍生 / 复错率闭环）
   wrongList: () => request<WrongItem[]>("/student/wrong"),
