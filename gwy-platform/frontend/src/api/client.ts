@@ -290,6 +290,21 @@ export interface AssessmentRecordOut {
   created_at: string;
 }
 
+// 站内通知（Notification Center）
+export interface NotificationOut {
+  id: number;
+  type: string;
+  title: string;
+  body: string;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+}
+export interface NotificationList {
+  items: NotificationOut[];
+  unread_count: number;
+}
+
 export interface AiQuota {
   plan: string;
   is_pro: boolean;
@@ -429,6 +444,13 @@ export const api = {
     request<AssessmentRecordOut[]>("/assessment/history?limit=" + limit),
   assessmentHistoryDetail: (id: number) =>
     request<AssessmentRecordOut>("/assessment/history/" + id),
+
+  // 站内通知（Notification Center）
+  notifications: () => request<NotificationList>("/notifications"),
+  markNotificationRead: (id: number) =>
+    request<NotificationOut>("/notifications/" + id + "/read", { method: "POST" }),
+  markAllNotificationsRead: () =>
+    request<NotificationList>("/notifications/read-all", { method: "POST" }),
 
   // 计费 / 退费 / 会员（WBS 5.1 / 7.1）
   createOrder: (plan: string) =>

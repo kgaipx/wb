@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
 from app.models import AbilityProfile, AssessmentRecord, Question, User, UserAnswer
+from app.services.notification_service import create_notification, NOTIF_ASSESSMENT_DONE
 from app.schemas.assessment import (
     AssessmentDim,
     AssessmentPaperItem,
@@ -180,6 +181,13 @@ def assessment_submit(
     db.add(record)
     db.commit()
     db.refresh(record)
+
+    create_notification(
+        db, current.id, NOTIF_ASSESSMENT_DONE,
+        "📊 测评已完成", "查看你的能力雷达图与弱项分析",
+        f"/assessment/history/{record.id}",
+    )
+    db.commit()
 
     return AssessmentReport(
         id=record.id,

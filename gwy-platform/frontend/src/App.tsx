@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Routes, Route, NavLink, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth";
-import { setUnauthorizedHandler } from "./api/client";
+import { setUnauthorizedHandler, api } from "./api/client";
+import type { NotificationOut } from "./api/client";
 import Home from "./pages/Home";
 import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
@@ -125,9 +126,70 @@ function AuthGate() {
   return null;
 }
 
+function formatNotifTime(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const diff = Date.now() - d.getTime();
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "刚刚";
+  if (min < 60) return `${min} 分钟前`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} 小时前`;
+  const day = Math.floor(h / 24);
+  if (day < 30) return `${day} 天前`;
+  return d.toLocaleDateString("zh-CN");
+}
+
 function AppShell() {
   const loc = useLocation();
   const isAuth = loc.pathname === "/login";
+  const { user } = useAuth();
+  const nav = useNavigate();
+  const [notifs, setNotifs] = useState<NotificationOut[]>([]);
+  const [unread, setUnread] = useState(0);
+  const [panelOpen, setPanelOpen] = useState(false);
+
+  const loadNotifs = useCallback(async () => {
+    try {
+      const data = await api.notifications();
+      setNotifs(data.items);
+      setUnread(data.unread_count);
+    } catch {
+      /* 忽略：未登录或网络错误不阻塞主流程 */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && !isAuth) loadNotifs();
+    else {
+      setNotifs([]);
+      setUnread(0);
+    }
+  }, [user, isAuth, loadNotifs, loc.pathname]);
+
+  const openNotif = async (n: NotificationOut) => {
+    setPanelOpen(false);
+    if (!n.is_read) {
+      try {
+        await api.markNotificationRead(n.id);
+        setUnread((u) => Math.max(0, u - 1));
+      } catch {
+        /* ignore */
+      }
+    }
+    if (n.link) nav(n.link);
+  };
+
+  const readAll = async () => {
+    try {
+      await api.markAllNotificationsRead();
+      setUnread(0);
+      setNotifs((list) => list.map((x) => ({ ...x, is_read: true })));
+    } catch {
+      /* ignore */
+    }
+  };
+
   return (
     <div className="app-shell">
       {!isAuth && (
@@ -135,7 +197,54 @@ function AppShell() {
           <div className="app-header__logo">公</div>
           <div className="app-header__name">AI 公考私教</div>
           <div className="app-header__tag">懂你短板 · 内容可信</div>
+          <button
+            className="bell-btn"
+            aria-label="通知"
+            onClick={() => setPanelOpen((o) => !o)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+            {unread > 0 && (
+              <span className="unread-dot">{unread > 99 ? "99+" : unread}</span>
+            )}
+          </button>
+
+          {panelOpen && (
+            <div className="notif-panel">
+              <div className="notif-panel__head">
+                <span>通知</span>
+                {unread > 0 && (
+                  <button className="notif-readall" onClick={readAll}>
+                    全部已读
+                  </button>
+                )}
+              </div>
+              <div className="notif-panel__body">
+                {notifs.length === 0 ? (
+                  <div className="notif-empty">暂无通知</div>
+                ) : (
+                  notifs.map((n) => (
+                    <button
+                      key={n.id}
+                      className={"notif-item" + (n.is_read ? "" : " unread")}
+                      onClick={() => openNotif(n)}
+                    >
+                      <div className="notif-item__title">{n.title}</div>
+                      <div className="notif-item__body">{n.body}</div>
+                      <div className="notif-time">{formatNotifTime(n.created_at)}</div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
         </header>
+      )}
+
+      {!isAuth && panelOpen && (
+        <div className="notif-backdrop" onClick={() => setPanelOpen(false)} />
       )}
 
       <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>

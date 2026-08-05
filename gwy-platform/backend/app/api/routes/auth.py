@@ -18,6 +18,7 @@ from app.core.security import (
 )
 from app.db.session import get_db
 from app.models import PasswordResetToken, User
+from app.services.notification_service import create_notification, NOTIF_MEMBERSHIP_EXPIRED
 from app.schemas.user import (
     ChangePasswordIn,
     PasswordResetIn,
@@ -45,6 +46,10 @@ def _maybe_downgrade_expired(user: User, db: Session) -> None:
         if exp < datetime.now(timezone.utc):
             user.plan = "free"
             user.plan_expires_at = None
+            create_notification(
+                db, user.id, NOTIF_MEMBERSHIP_EXPIRED,
+                "⏰ 会员已到期", "续费可恢复会员权益", "/membership",
+            )
             db.commit()
 
 

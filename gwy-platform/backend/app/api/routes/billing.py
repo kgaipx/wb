@@ -20,6 +20,7 @@ from app.db.session import get_db
 from app.models import Order, RefundRequest, User
 from app.schemas.billing import OrderIn, OrderOut, RefundIn, RefundOut
 from app.services.billing import compute_refund
+from app.services.notification_service import create_notification, NOTIF_MEMBERSHIP_ACTIVATED
 
 router = APIRouter()
 
@@ -49,6 +50,10 @@ def _mark_paid(order: Order, db: Session, method: str | None = None) -> None:
         order.payment_method = method
     user = db.get(User, order.user_id)
     _grant_membership(user, order.plan)
+    create_notification(
+        db, user.id, NOTIF_MEMBERSHIP_ACTIVATED,
+        "🎉 会员已开通", "会员权益已生效，去解锁全部功能", None,
+    )
     db.commit()
 
 
