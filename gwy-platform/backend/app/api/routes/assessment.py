@@ -217,6 +217,7 @@ def _build_suggestions(weak: list[str], dims: list[AssessmentDim]) -> list[str]:
 @router.get("/history", response_model=list[AssessmentRecordOut])
 def assessment_history(
     limit: int = 20,
+    offset: int = 0,
     current: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -224,6 +225,7 @@ def assessment_history(
         db.query(AssessmentRecord)
         .filter(AssessmentRecord.user_id == current.id)
         .order_by(AssessmentRecord.created_at.desc())
+        .offset(offset)
         .limit(limit)
         .all()
     )

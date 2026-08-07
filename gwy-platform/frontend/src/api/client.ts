@@ -444,8 +444,8 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ answers }),
     }),
-  assessmentHistory: (limit = 20) =>
-    request<AssessmentRecordOut[]>("/assessment/history?limit=" + limit),
+  assessmentHistory: (limit = 20, offset = 0) =>
+    request<AssessmentRecordOut[]>("/assessment/history?limit=" + limit + "&offset=" + offset),
   assessmentHistoryDetail: (id: number) =>
     request<AssessmentRecordOut>("/assessment/history/" + id),
 

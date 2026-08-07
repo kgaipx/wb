@@ -148,11 +148,35 @@ export default function Assessment() {
     }
   }
 
-  async function loadHistory() {
+  const HIS_PAGE = 20;
+  const [hisOffset, setHisOffset] = useState(0);
+  const [hisLoadingMore, setHisLoadingMore] = useState(false);
+  const [hisHasMore, setHisHasMore] = useState(false);
+
+  async function loadHistory(reset = true) {
+    const off = reset ? 0 : hisOffset;
     try {
-      setHistory(await api.assessmentHistory(20));
+      const data = await api.assessmentHistory(HIS_PAGE, off);
+      if (reset) {
+        setHistory(data);
+        setHisOffset(HIS_PAGE);
+      } else {
+        setHistory((prev) => [...prev, ...data]);
+        setHisOffset(off + HIS_PAGE);
+      }
+      setHisHasMore(data.length === HIS_PAGE);
     } catch (e: any) {
       setErr(e.message);
+    }
+  }
+
+  async function loadMoreHistory() {
+    if (hisLoadingMore || !hisHasMore) return;
+    setHisLoadingMore(true);
+    try {
+      await loadHistory(false);
+    } finally {
+      setHisLoadingMore(false);
     }
   }
   useEffect(() => {
@@ -413,7 +437,7 @@ export default function Assessment() {
       {phase === "history" && (
         <div>
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
-            共 {history.length} 次测评记录（能力成长轨迹）
+            已加载 {history.length} 次测评记录（能力成长轨迹）
           </div>
           {history.length === 0 && (
             <div className="card">
@@ -447,6 +471,11 @@ export default function Assessment() {
               </button>
             );
           })}
+          {hisHasMore && (
+            <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={hisLoadingMore} onClick={loadMoreHistory}>
+              {hisLoadingMore ? "加载中…" : "加载更多测评记录"}
+            </button>
+          )}
           <button className="btn btn--primary btn--block" style={{ marginTop: 14 }} disabled={busy} onClick={start}>
             开始新测评
           </button>
