@@ -205,6 +205,9 @@ function AppShell() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstall, setShowInstall] = useState(false);
+  const [online, setOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : true
+  );
 
   // —— PWA 安装引导 ——
   useEffect(() => {
@@ -223,6 +226,18 @@ function AppShell() {
     return () => {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
+    };
+  }, []);
+
+  // —— 离线状态指示（强化「离线轻量」差异化卖点）——
+  useEffect(() => {
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
     };
   }, []);
 
@@ -391,6 +406,13 @@ function AppShell() {
           >
             ×
           </button>
+        </div>
+      )}
+
+      {!online && (
+        <div className="offline-banner" role="status">
+          <span className="offline-banner__dot" />
+          <span>当前离线 · 已缓存内容可继续刷题，恢复网络后自动同步进度</span>
         </div>
       )}
 
