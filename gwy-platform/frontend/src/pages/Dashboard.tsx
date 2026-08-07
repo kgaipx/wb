@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, StudentStats } from "../api/client";
+import { LineChart } from "../components/LineChart";
 
 function pct(v: number) {
   return Math.round(v * 100);
@@ -134,6 +135,27 @@ export default function Dashboard() {
         </div>
         <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
           每根柱为当日客观题作答量；保持每日一练，复错率才会稳步下降。
+        </div>
+      </div>
+
+      {/* 近 7 日正确率趋势 */}
+      <div className="card" style={{ marginTop: 12 }}>
+        <div className="row row--between">
+          <strong>近 7 日正确率</strong>
+          <span className="tag tag--brand">质量信号</span>
+        </div>
+        <LineChart
+          points={stats.last_7_days.map((d) => ({
+            label: d.date.slice(5),
+            value: d.answers > 0 ? Math.round((d.correct / d.answers) * 100) : 0,
+          }))}
+          max={100}
+          min={0}
+          unit="%"
+          color="var(--success)"
+        />
+        <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+          折线为每日客观题正确率；正确率稳步上升 + 复错率下降 = 复习有效。
         </div>
       </div>
 

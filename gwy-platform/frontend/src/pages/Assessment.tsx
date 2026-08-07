@@ -7,6 +7,7 @@ import {
   AssessmentRecordOut,
   AssessmentDim,
 } from "../api/client";
+import { LineChart } from "../components/LineChart";
 import { triggerDownload, shareOrCopy, stamp } from "../utils/exportUtils";
 
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
@@ -237,6 +238,31 @@ export default function Assessment() {
         <div className="card" style={{ marginTop: 12 }}>
           <strong style={{ display: "block", marginBottom: 6 }}>能力雷达图（各知识点掌握度）</strong>
           <RadarChart dims={dims} />
+          {dims.length > 0 && (
+            <>
+              <div className="muted" style={{ fontSize: 12, margin: "12px 0 6px" }}>各维度掌握度（升序，先补最弱）</div>
+              <div style={{ marginTop: 4 }}>
+                {[...dims]
+                  .sort((a, b) => a.mastery - b.mastery)
+                  .map((d) => {
+                    const mv = Math.round(d.mastery * 100);
+                    const color =
+                      d.mastery >= 0.7 ? "var(--success)" : d.mastery >= 0.4 ? "var(--warning)" : "var(--danger)";
+                    return (
+                      <div className="kp-row" key={d.knowledge_point}>
+                        <div className="kp-row__name">{d.knowledge_point}</div>
+                        <div className="kp-row__bar">
+                          <div className="progress">
+                            <div className="progress__bar" style={{ width: `${mv}%`, background: color }} />
+                          </div>
+                        </div>
+                        <div className="kp-row__val">{mv}%</div>
+                      </div>
+                    );
+                  })}
+              </div>
+            </>
+          )}
         </div>
 
         {r.weak_points?.length > 0 && (
@@ -482,6 +508,29 @@ export default function Assessment() {
 
       {phase === "history" && (
         <div>
+          {history.length >= 2 && (
+            <div className="card" style={{ marginBottom: 12 }}>
+              <div className="row row--between">
+                <strong>能力成长趋势</strong>
+                <span className="muted" style={{ fontSize: 12 }}>总体掌握度</span>
+              </div>
+              <LineChart
+                points={[...history]
+                  .reverse()
+                  .map((h) => ({
+                    label: h.created_at.slice(5, 10),
+                    value: Math.round((h.overall || 0) * 100),
+                  }))}
+                max={100}
+                min={0}
+                unit="%"
+                color="var(--brand)"
+              />
+              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+                每次测评的总体掌握度随时间走势；越往上说明能力画像越扎实。
+              </div>
+            </div>
+          )}
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
             已加载 {history.length} 次测评记录（能力成长轨迹）
           </div>
