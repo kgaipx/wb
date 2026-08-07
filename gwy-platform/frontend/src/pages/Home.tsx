@@ -19,6 +19,17 @@ export default function Home() {
   const [dailyIdx, setDailyIdx] = useState(0);
   const [dailyLoading, setDailyLoading] = useState(false);
   const [plan, setPlan] = useState<PlanOut | null>(null);
+  const [installed, setInstalled] = useState(false);
+
+  // PWA 已安装态检测：standalone 显示模式（Android Chrome / 桌面）或 iOS Safari navigator.standalone
+  useEffect(() => {
+    const mq = window.matchMedia("(display-mode: standalone)");
+    const update = () =>
+      setInstalled(mq.matches || (navigator as any).standalone === true);
+    update();
+    mq.addEventListener?.("change", update);
+    return () => mq.removeEventListener?.("change", update);
+  }, []);
 
   // 已登录：拉一批「每日一练」弱项推荐，支持「换一题」循环浏览
   const loadDaily = useCallback(() => {
@@ -118,6 +129,18 @@ export default function Home() {
             </button>
           </div>
         </div>
+      </div>
+
+      {/* PWA 引导徽章：强化「离线轻量」卖点，已安装用户给正向反馈 */}
+      <div className="home-pwa">
+        <span className="home-pwa__badge home-pwa__badge--info">
+          <span className="dot" />可离线刷题
+        </span>
+        {installed && (
+          <span className="home-pwa__badge">
+            <span className="dot" />已安装到设备
+          </span>
+        )}
       </div>
 
       {/* 今日学习计划概览 */}

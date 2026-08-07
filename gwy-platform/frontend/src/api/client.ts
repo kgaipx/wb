@@ -227,6 +227,10 @@ export interface SubjectCount {
   subject: string;
   count: number;
 }
+export interface DayMetric {
+  date: string; // YYYY-MM-DD (UTC)
+  value: number;
+}
 export interface AdminOverview {
   users_total: number;
   users_new_7d: number;
@@ -243,6 +247,9 @@ export interface AdminOverview {
   avg_correct_rate: number;
   essays_graded: number;
   mock_exams: number;
+  daily_new_users: DayMetric[];
+  daily_answers: DayMetric[];
+  daily_revenue: DayMetric[]; // 单位：元
   recent_users: AdminUserRow[];
 }
 export interface EssayHistoryItem {

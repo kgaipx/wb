@@ -241,6 +241,31 @@ function AppShell() {
     };
   }, []);
 
+  // iOS / 移动端键盘遮挡修复：输入框获得焦点时，待键盘弹出后将其滚动到可视区中部。
+  // 这是跨平台通用的缓解方案（无法在沙箱内真机验证，需在 iOS Safari 实机确认效果）。
+  useEffect(() => {
+    const onFocusIn = (e: Event) => {
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.isContentEditable)
+      ) {
+        // 延迟到键盘弹出动画之后，避免被固定底部导航遮挡
+        window.setTimeout(() => {
+          try {
+            t.scrollIntoView({ block: "center", behavior: "smooth" });
+          } catch {
+            /* 老浏览器兼容 */
+          }
+        }, 300);
+      }
+    };
+    document.addEventListener("focusin", onFocusIn);
+    return () => document.removeEventListener("focusin", onFocusIn);
+  }, []);
+
   const installApp = async () => {
     if (!deferredPrompt) return;
     try {

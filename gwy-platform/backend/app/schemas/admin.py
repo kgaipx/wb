@@ -35,6 +35,13 @@ class PlanCount(BaseModel):
     count: int
 
 
+class DayMetric(BaseModel):
+    """单日时序指标（UTC 日期 + 数值；营收单位为元）。"""
+
+    date: str  # YYYY-MM-DD
+    value: float
+
+
 class AdminOverview(BaseModel):
     # 用户
     users_total: int
@@ -58,6 +65,11 @@ class AdminOverview(BaseModel):
     avg_correct_rate: float  # 0-1 全站客观题正确率
     essays_graded: int
     mock_exams: int
+
+    # 近 7 日趋势（UTC 时序，支撑运营增长 / 活跃 / 营收观测）
+    daily_new_users: list[DayMetric]
+    daily_answers: list[DayMetric]
+    daily_revenue: list[DayMetric]  # 单位：元
 
     # 最近注册（运营拉新观察）
     recent_users: list[AdminUserRow]

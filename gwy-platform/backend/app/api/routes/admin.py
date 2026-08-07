@@ -23,11 +23,57 @@ from app.models.user import User
 from app.schemas.admin import (
     AdminOverview,
     AdminUserRow,
+    DayMetric,
     PlanCount,
     SubjectCount,
 )
 
 router = APIRouter()
+
+
+def _daily_buckets(records: list, n: int = 7) -> list[DayMetric]:
+    """按 UTC 日期把带时区的时间戳分桶为近 n 日计数。
+
+    records 为 datetime 列表；created_at/submitted_at 存的是带时区的 UTC，
+    SQLite 的 strftime 无法解析其 +00:00 后缀，故在 Python 侧按日期聚合。
+    数据量（运营后台低频访问）下完全够用。
+    """
+    base = datetime.now(timezone.utc).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    out: list[DayMetric] = []
+    for i in range(n - 1, -1, -1):
+        day_start = base - timedelta(days=i)
+        key = day_start.strftime("%Y-%m-%d")
+        cnt = sum(
+            1
+            for r in records
+            if r.year == day_start.year
+            and r.month == day_start.month
+            and r.day == day_start.day
+        )
+        out.append(DayMetric(date=key, value=float(cnt)))
+    return out
+
+
+def _daily_revenue_buckets(rows: list, n: int = 7) -> list[DayMetric]:
+    """按 UTC 日期聚合金额（分→元）。rows: [(datetime, amount_fen), ...]"""
+    base = datetime.now(timezone.utc).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+    out: list[DayMetric] = []
+    for i in range(n - 1, -1, -1):
+        day_start = base - timedelta(days=i)
+        key = day_start.strftime("%Y-%m-%d")
+        total = sum(
+            a
+            for r, a in rows
+            if r.year == day_start.year
+            and r.month == day_start.month
+            and r.day == day_start.day
+        )
+        out.append(DayMetric(date=key, value=round(total / 100.0, 2)))
+    return out
 
 
 @router.get("/overview", response_model=AdminOverview)
@@ -118,6 +164,29 @@ def overview(
         for u in recent
     ]
 
+    # 近 7 日趋势（增长 / 活跃 / 营收）
+    new_user_dts = [
+        r[0]
+        for r in db.query(User.created_at)
+        .filter(User.created_at >= since_7d)
+        .all()
+    ]
+    answer_dts = [
+        r[0]
+        for r in db.query(UserAnswer.submitted_at)
+        .filter(UserAnswer.submitted_at >= since_7d)
+        .all()
+    ]
+    paid_rows = [
+        (r[0], r[1])
+        for r in db.query(Order.created_at, Order.amount)
+        .filter(Order.status == "paid", Order.created_at >= since_7d)
+        .all()
+    ]
+    daily_new_users = _daily_buckets(new_user_dts)
+    daily_answers = _daily_buckets(answer_dts)
+    daily_revenue = _daily_revenue_buckets(paid_rows)
+
     return AdminOverview(
         users_total=users_total,
         users_new_7d=users_new_7d,
@@ -134,5 +203,8 @@ def overview(
         avg_correct_rate=avg_correct_rate,
         essays_graded=essays_graded,
         mock_exams=mock_exams,
+        daily_new_users=daily_new_users,
+        daily_answers=daily_answers,
+        daily_revenue=daily_revenue,
         recent_users=recent_users,
     )

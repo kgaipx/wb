@@ -2529,3 +2529,103 @@
   background: #f59e0b;
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
 }
+
+/* ===== 运营后台图表（零依赖 SVG） ===== */
+.adm-trend-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+@media (min-width: 560px) {
+  .adm-trend-grid { grid-template-columns: 1fr 1fr 1fr; }
+}
+.adm-trend__title {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+.adm-chart { width: 100%; }
+.adm-chart svg { display: block; }
+.adm-chart__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.adm-chart__last { font-weight: 700; color: var(--text-1); font-size: 13px; }
+
+.adm-donut {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+@media (max-width: 420px) {
+  .adm-donut { justify-content: center; }
+}
+.adm-donut svg { flex: 0 0 auto; }
+.adm-donut__total {
+  font-size: 20px;
+  font-weight: 800;
+  fill: var(--text-1);
+}
+.adm-donut__sub {
+  font-size: 10px;
+  fill: var(--text-3);
+}
+.adm-donut__legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+.adm-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+.adm-legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex: 0 0 auto;
+}
+.adm-legend__item b { margin-left: auto; color: var(--text-1); }
+
+/* ===== 首页 PWA 引导徽章 ===== */
+.home-pwa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+.home-pwa__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(46, 158, 91, 0.12);
+  color: #1f7a47;
+  border: 1px solid rgba(46, 158, 91, 0.25);
+}
+.home-pwa__badge--info {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.home-pwa__badge .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}

@@ -27,6 +27,7 @@ export default function Membership() {
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
+  const [sandbox, setSandbox] = useState(false); // 真实收银台未接入时为 true
 
   async function refresh() {
     try {
@@ -63,7 +64,8 @@ export default function Membership() {
         window.location.href = o.pay_url;
         return;
       }
-      // 沙箱/演示：模拟支付成功，即时开通
+      // 沙箱/演示：模拟支付成功，即时开通（真实收银台待接入商户号后自动切换）
+      setSandbox(true);
       await api.paySandbox(o.id);
       setMsg(`已开通 ${planId}（订单 #${o.id}，¥${(o.amount / 100).toFixed(0)}）`);
       await refresh();
@@ -173,6 +175,12 @@ export default function Membership() {
           <span>即时开通</span>
         </div>
       </div>
+
+      {sandbox && (
+        <div className="card card--warning" style={{ marginTop: 12, fontSize: 13 }}>
+          当前为<strong>演示支付</strong>：尚未接入真实收银台（需支付商户号 + 网关，后端返回绝对 pay_url 后自动切换为跳转支付）。演示下单会即时开通会员，不产生真实扣款。
+        </div>
+      )}
 
       {/* 当前会员状态 */}
       <div className="card card--tutor">
