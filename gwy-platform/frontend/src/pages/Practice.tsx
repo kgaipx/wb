@@ -133,6 +133,19 @@ export default function Practice() {
     }
   }
 
+  async function favAndSkip() {
+    if (!active) return;
+    if (!faved) {
+      try {
+        await api.favoriteAdd(active.id);
+        setFaved(true);
+      } catch (e: any) {
+        setErr(e.message);
+      }
+    }
+    await nextQuestion();
+  }
+
   async function submit() {
     if (!active || !selected) return;
     setBusy(true);
@@ -304,9 +317,14 @@ export default function Practice() {
           </div>
 
           {!result && (
-            <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={busy} onClick={nextQuestion}>
-              跳过本题 →
-            </button>
+            <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+              <button className="btn btn--ghost" disabled={busy} onClick={nextQuestion}>
+                跳过本题 →
+              </button>
+              <button className="btn btn--ghost" disabled={busy} onClick={favAndSkip}>
+                收藏并跳过 →
+              </button>
+            </div>
           )}
 
           {upgrade && (

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, EssayPrompt, EssayHistoryItem } from "../api/client";
-import { DimensionBars, ESSAY_DIMENSIONS } from "../components/DimensionBars";
+import { DimensionBars } from "../components/DimensionBars";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -138,13 +138,7 @@ export default function Essay() {
                 {new Date(h.created_at).toLocaleString("zh-CN")}
                 {h.needs_human_review && " · 已转人工"}
               </div>
-              <div style={{ marginTop: 6 }}>
-                {ESSAY_DIMENSIONS.map((d) => (
-                  <span key={d} className="tag" style={{ marginRight: 6, fontSize: 12 }}>
-                    {d} {h.dimensions[d] ?? 0}
-                  </span>
-                ))}
-              </div>
+              <DimensionBars dims={h.dimensions} />
               {h.rationale && <div className="text-3" style={{ fontSize: 13, marginTop: 6 }}>{h.rationale}</div>}
             </div>
           ))}
