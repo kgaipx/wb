@@ -3,6 +3,7 @@ import { Routes, Route, NavLink, Link, useLocation, useNavigate, Navigate } from
 import { AuthProvider, useAuth } from "./auth";
 import { setUnauthorizedHandler, api } from "./api/client";
 import type { NotificationOut } from "./api/client";
+import ErrorBoundary from "./components/ErrorBoundary";
 import Home from "./pages/Home";
 import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
@@ -375,25 +376,27 @@ function AppShell() {
       )}
 
       <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/learn" element={<RequireAuth><Learn /></RequireAuth>} />
-          <Route path="/practice" element={<RequireAuth><Practice /></RequireAuth>} />
-          <Route path="/exam" element={<RequireAuth><Exam /></RequireAuth>} />
-          <Route path="/assessment" element={<RequireAuth><Assessment /></RequireAuth>} />
-          <Route path="/wrong" element={<RequireAuth><Wrong /></RequireAuth>} />
-          <Route path="/favorites" element={<RequireAuth><Favorites /></RequireAuth>} />
-          <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-          <Route path="/plan" element={<RequireAuth><Plan /></RequireAuth>} />
-          <Route path="/review" element={<RequireAuth><Review /></RequireAuth>} />
-          <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
-          <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
-          <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
-          <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
-          <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/learn" element={<RequireAuth><Learn /></RequireAuth>} />
+            <Route path="/practice" element={<RequireAuth><Practice /></RequireAuth>} />
+            <Route path="/exam" element={<RequireAuth><Exam /></RequireAuth>} />
+            <Route path="/assessment" element={<RequireAuth><Assessment /></RequireAuth>} />
+            <Route path="/wrong" element={<RequireAuth><Wrong /></RequireAuth>} />
+            <Route path="/favorites" element={<RequireAuth><Favorites /></RequireAuth>} />
+            <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+            <Route path="/plan" element={<RequireAuth><Plan /></RequireAuth>} />
+            <Route path="/review" element={<RequireAuth><Review /></RequireAuth>} />
+            <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
+            <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
+            <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
+            <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
+            <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ErrorBoundary>
       </main>
 
       {!isAuth && <FloatingTutor />}

@@ -1141,6 +1141,44 @@
   line-height: 1.5;
 }
 
+/* ===================== 全局错误边界 ===================== */
+.error-screen {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.error-screen__card {
+  max-width: 420px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 22px;
+}
+.error-screen__icon {
+  font-size: 40px;
+  margin-bottom: 6px;
+}
+.error-screen__card h2 {
+  margin: 6px 0 8px;
+  font-size: 20px;
+}
+.error-screen__detail {
+  margin-top: 12px;
+  padding: 10px 12px;
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  border-radius: 8px;
+  max-height: 140px;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 /* ===================== 统计 / 价格 ===================== */
 .stat-row {
   display: flex;
@@ -1224,6 +1262,27 @@
 }
 .exam-bar .btn {
   margin-left: auto;
+}
+.exam-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+.exam-clock--warn {
+  background: var(--danger-050);
+  color: var(--danger);
+  animation: examClockPulse 1s ease-in-out infinite;
+}
+@keyframes examClockPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }
 
 /* ===================== 提分报告 ===================== */

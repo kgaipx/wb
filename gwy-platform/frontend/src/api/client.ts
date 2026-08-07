@@ -422,7 +422,7 @@ export const api = {
 
   // 在线模考（WBS 4.2）
   examStart: (subject?: string, count = 20) =>
-    request<{ subject: string; count: number; requested: number; available: number; paper: any[] }>("/exam/start", {
+    request<{ subject: string; count: number; requested: number; available: number; duration_seconds: number; paper: any[] }>("/exam/start", {
       method: "POST",
       body: JSON.stringify({ subject, count }),
     }),

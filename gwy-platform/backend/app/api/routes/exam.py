@@ -49,11 +49,14 @@ def start_exam(
             status_code=404,
             detail="该科目暂无可组卷题目，请尝试「全部科目」或选择其他科目",
         )
+    # 限时：按题量估算（90 秒/题），作为「限时组卷」的倒计时依据（前端据此自动交卷）
+    duration_seconds = count * 90
     return {
         "subject": payload.subject or "全部",
         "count": len(questions),
         "requested": count,
         "available": available,
+        "duration_seconds": duration_seconds,
         "paper": [
             {
                 "id": q_.id,

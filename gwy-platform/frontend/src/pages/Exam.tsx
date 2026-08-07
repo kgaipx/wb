@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api } from "../api/client";
 
 interface PaperQ {
@@ -24,6 +24,12 @@ function fmtDate(iso: string): string {
   return `${d.getMonth() + 1}-${d.getDate()} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
 }
 
+function fmtClock(sec: number): string {
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
 export default function Exam() {
   const [tab, setTab] = useState<"exam" | "history">("exam");
   const [phase, setPhase] = useState<Phase>("setup");
@@ -35,6 +41,16 @@ export default function Exam() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
+
+  // 限时倒计时状态
+  const [deadline, setDeadline] = useState(0); // 截止时间戳(ms)
+  const [remaining, setRemaining] = useState(0); // 剩余秒数
+  // 用 ref 让计时器回调始终读到最新试卷与作答，避免闭包过期
+  const paperRef = useRef<PaperQ[]>([]);
+  const answersRef = useRef<Record<number, string>>({});
+  const submittingRef = useRef(false);
+  paperRef.current = paper;
+  answersRef.current = answers;
 
   const HIS_PAGE = 20;
   const [history, setHistory] = useState<any[]>([]);
@@ -74,6 +90,36 @@ export default function Exam() {
     if (tab === "history") loadHistory();
   }, [tab]);
 
+  // 限时倒计时：进入 doing 且已设截止时间后开始计时，归零自动交卷
+  useEffect(() => {
+    if (phase !== "doing" || !deadline) return;
+    const tick = () => {
+      const rem = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+      setRemaining(rem);
+      if (rem <= 0) {
+        const ans = paperRef.current.map((q) => ({
+          question_id: q.id,
+          selected: answersRef.current[q.id] || "",
+        }));
+        doSubmit(ans);
+      }
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [phase, deadline]);
+
+  // 考试中关闭/刷新页面时给予浏览器原生确认，防止误丢进度
+  useEffect(() => {
+    if (phase !== "doing") return;
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [phase]);
+
   async function start() {
     setBusy(true);
     setErr("");
@@ -85,6 +131,8 @@ export default function Exam() {
       }
       setPaper(r.paper);
       setAnswers({});
+      setDeadline(Date.now() + r.duration_seconds * 1000);
+      setRemaining(r.duration_seconds);
       setPhase("doing");
     } catch (e: any) {
       if (e.status === 404) {
@@ -97,19 +145,28 @@ export default function Exam() {
     }
   }
 
-  async function submit() {
+  /** 真正交卷逻辑（手动/自动共用）。用 ref 防重复提交。 */
+  async function doSubmit(ans: { question_id: number; selected: string }[]) {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setBusy(true);
     setErr("");
     try {
-      const ans = paper.map((q) => ({ question_id: q.id, selected: answers[q.id] || "" }));
       const r = await api.examSubmit(ans);
       setReport(r);
       setPhase("report");
+      setDeadline(0);
     } catch (e: any) {
       setErr(e.message);
     } finally {
       setBusy(false);
+      submittingRef.current = false;
     }
+  }
+
+  function submit() {
+    const ans = paper.map((q) => ({ question_id: q.id, selected: answers[q.id] || "" }));
+    doSubmit(ans);
   }
 
   async function openDetail(id: number) {
@@ -212,6 +269,11 @@ export default function Exam() {
           <div className="exam-bar">
             <span className="tag tag--brand">{subject || "全部"}</span>
             <span className="text-3">已答 {answered}/{paper.length}</span>
+            {remaining > 0 && (
+              <span className={"exam-clock" + (remaining <= 60 ? " exam-clock--warn" : "")}>
+                ⏱ {fmtClock(remaining)}
+              </span>
+            )}
             <button className="btn btn--primary btn--sm" disabled={busy} onClick={submit}>
               {busy ? "阅卷中…" : "交卷"}
             </button>
