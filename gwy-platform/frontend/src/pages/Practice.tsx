@@ -165,10 +165,47 @@ export default function Practice() {
     }
   }
 
+  // 下一题：在当前（已筛选）列表内顺序推进；到末尾且还有更多则先翻页再继续
+  async function nextQuestion() {
+    if (!active) return;
+    const idx = list.findIndex((q) => q.id === active.id);
+    if (idx >= 0 && idx + 1 < list.length) {
+      openQuestion(list[idx + 1]);
+      return;
+    }
+    if (hasMore && !loadingMore) {
+      const qs = await api
+        .bankList({
+          limit: PAGE,
+          offset,
+          subject: filter !== "全部" ? filter : undefined,
+          knowledge_point: kpFilter || undefined,
+        })
+        .catch(() => []);
+      if (qs.length) {
+        setList((prev) => [...prev, ...qs]);
+        setOffset((o) => o + qs.length);
+        setHasMore(qs.length === PAGE);
+        openQuestion(qs[0]);
+        return;
+      }
+    }
+    // 没有更多题：回到题库列表
+    setActive(null);
+  }
+
   const subjects = useMemo(() => {
     const set = new Set(list.map((q) => q.subject));
     return ["全部", ...Array.from(set)];
   }, [list]);
+
+  const nextLabel = (() => {
+    if (!active) return "下一题 →";
+    const idx = list.findIndex((q) => q.id === active.id);
+    if (idx >= 0 && idx + 1 < list.length) return "下一题 →";
+    if (hasMore) return "加载更多并继续 →";
+    return "已到末尾 · 返回题库";
+  })();
 
   return (
     <section>
@@ -284,6 +321,9 @@ export default function Practice() {
               <div className="text-3" style={{ marginTop: 6, fontSize: 12 }}>
                 当前掌握度：{Math.round((result.mastery ?? 0) * 100)}%
               </div>
+              <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={busy} onClick={nextQuestion}>
+                {nextLabel}
+              </button>
             </div>
           )}
 
