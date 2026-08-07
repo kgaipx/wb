@@ -20,6 +20,8 @@ export default function Home() {
   const [dailyLoading, setDailyLoading] = useState(false);
   const [plan, setPlan] = useState<PlanOut | null>(null);
   const [installed, setInstalled] = useState(false);
+  const [examStat, setExamStat] = useState<any[]>([]);
+  const [examLoading, setExamLoading] = useState(false);
 
   // PWA 已安装态检测：standalone 显示模式（Android Chrome / 桌面）或 iOS Safari navigator.standalone
   useEffect(() => {
@@ -52,6 +54,17 @@ export default function Home() {
   useEffect(() => {
     if (!user) return;
     api.planGet().then(setPlan).catch(() => setPlan(null));
+  }, [user]);
+
+  // 已登录：拉最近 5 次模考，用于首页「模考进步」第一屏提分信号
+  useEffect(() => {
+    if (!user) return;
+    setExamLoading(true);
+    api
+      .examHistory(5, 0)
+      .then(setExamStat)
+      .catch(() => setExamStat([]))
+      .finally(() => setExamLoading(false));
   }, [user]);
 
   const daily = dailyList[dailyIdx] || null;
@@ -247,6 +260,58 @@ export default function Home() {
           <button className="btn btn--primary btn--sm" onClick={() => nav(`/practice?q=${daily.id}`)}>
             练习
           </button>
+        )}
+      </div>
+
+      {/* 模考进步：把"提分信号"前置到首页第一屏 */}
+      <div className="card" style={{ marginTop: 14 }}>
+        <div className="row row--between">
+          <strong>模考进步</strong>
+          <button className="link-btn" onClick={() => nav("/exam")}>完整复盘 →</button>
+        </div>
+        {examLoading ? (
+          <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>加载中…</div>
+        ) : examStat.length === 0 ? (
+          <>
+            <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+              还没有模考记录，去「模考」测一次真实水平吧。
+            </div>
+            <button className="btn btn--primary btn--sm" style={{ marginTop: 8 }} onClick={() => nav("/exam")}>
+              去模考
+            </button>
+          </>
+        ) : (
+          (() => {
+            const last = examStat[0];
+            const rate = Math.round((last.correct_rate || 0) * 100);
+            const tone = rate >= 70 ? "rate--good" : rate >= 50 ? "rate--mid" : "rate--bad";
+            const prevRate = examStat[1] ? Math.round((examStat[1].correct_rate || 0) * 100) : null;
+            const delta = prevRate !== null ? rate - prevRate : 0;
+            const deltaCls =
+              delta > 0 ? "rate-trend--up" : delta < 0 ? "rate-trend--down" : "rate-trend--flat";
+            return (
+              <div style={{ marginTop: 6 }}>
+                <div className="row row--between">
+                  <span className="muted" style={{ fontSize: 13 }}>
+                    最近一次 · {last.created_at.slice(5, 10) + " " + last.created_at.slice(11, 16)}
+                  </span>
+                  <span className={"big-rate " + tone} style={{ fontSize: 22 }}>{rate}<span>%</span></span>
+                </div>
+                {prevRate !== null && (
+                  <div className="row row--between" style={{ marginTop: 4, fontSize: 12 }}>
+                    <span className="muted">较上次模考</span>
+                    <span className={"rate-trend " + deltaCls}>
+                      {delta > 0 ? "▲ +" : delta < 0 ? "▼ " : "— "}
+                      {Math.abs(delta)}%
+                    </span>
+                  </div>
+                )}
+                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+                  已记录近 {examStat.length} 次模考，去「在线模考·历史」看完整进步曲线。
+                </div>
+              </div>
+            );
+          })()
         )}
       </div>
 
