@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./auth";
 import { setUnauthorizedHandler, api } from "./api/client";
 import type { NotificationOut } from "./api/client";
 import ErrorBoundary from "./components/ErrorBoundary";
+import { notifMeta, formatNotifTime } from "./components/notifMeta";
 import Home from "./pages/Home";
 import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
@@ -19,6 +20,7 @@ import Essay from "./pages/Essay";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
+import Notifications from "./pages/Notifications";
 import Assessment from "./pages/Assessment";
 
 type Icon = () => JSX.Element;
@@ -123,6 +125,12 @@ const MoreIcon: Icon = () => (
     <circle cx="19" cy="12" r="1.9" />
   </svg>
 );
+const BellIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+  </svg>
+);
 
 /** 主栏固定 5 个核心入口（首页 + 练习闭环 + 我的），保证小屏不拥挤。 */
 const PRIMARY = [
@@ -142,6 +150,7 @@ const MORE: MoreEntry[] = [
   { to: "/favorites", label: "收藏", icon: StarIcon },
   { to: "/plan", label: "计划", icon: PlanIcon },
   { to: "/membership", label: "会员", icon: CrownIcon },
+  { to: "/notifications", label: "通知", icon: BellIcon },
   { to: "/essay", label: "申论", icon: EssayIcon },
   { to: "/review", label: "审核", icon: ShieldIcon, role: "reviewer" },
   { to: "/admin", label: "运营", icon: GaugeIcon, role: "admin" },
@@ -184,19 +193,7 @@ function AuthGate() {
   return null;
 }
 
-function formatNotifTime(iso: string): string {
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "";
-  const diff = Date.now() - d.getTime();
-  const min = Math.floor(diff / 60000);
-  if (min < 1) return "刚刚";
-  if (min < 60) return `${min} 分钟前`;
-  const h = Math.floor(min / 60);
-  if (h < 24) return `${h} 小时前`;
-  const day = Math.floor(h / 24);
-  if (day < 30) return `${day} 天前`;
-  return d.toLocaleDateString("zh-CN");
-}
+// 时间格式化已迁移至 components/notifMeta，避免与通知中心页重复实现。
 
 function AppShell() {
   const loc = useLocation();
@@ -334,17 +331,39 @@ function AppShell() {
                 {notifs.length === 0 ? (
                   <div className="notif-empty">暂无通知</div>
                 ) : (
-                  notifs.map((n) => (
+                  <>
+                    {notifs.map((n) => {
+                      const m = notifMeta(n.type);
+                      return (
+                        <button
+                          key={n.id}
+                          className={"notif-item" + (n.is_read ? "" : " unread")}
+                          style={{ borderLeft: `3px solid ${m.color}` }}
+                          onClick={() => openNotif(n)}
+                        >
+                          <div className="notif-item__row">
+                            <span className="notif-item__ico" style={{ color: m.color }}>
+                              {m.icon}
+                            </span>
+                            <span className="notif-item__txt">
+                              <span className="notif-item__title">{n.title}</span>
+                              <span className="notif-item__body">{n.body}</span>
+                              <span className="notif-time">{formatNotifTime(n.created_at)}</span>
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
                     <button
-                      key={n.id}
-                      className={"notif-item" + (n.is_read ? "" : " unread")}
-                      onClick={() => openNotif(n)}
+                      className="notif-viewall"
+                      onClick={() => {
+                        setPanelOpen(false);
+                        nav("/notifications");
+                      }}
                     >
-                      <div className="notif-item__title">{n.title}</div>
-                      <div className="notif-item__body">{n.body}</div>
-                      <div className="notif-time">{formatNotifTime(n.created_at)}</div>
+                      查看全部通知 →
                     </button>
-                  ))
+                  </>
                 )}
               </div>
             </div>
@@ -393,6 +412,7 @@ function AppShell() {
             <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
             <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
+            <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
             <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

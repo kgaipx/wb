@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, ChatMessage, ChatSession } from "../api/client";
+import Markdown from "../components/Markdown";
 
 const SUGGESTIONS = [
   "类比推理总做错，怎么破？",
@@ -239,7 +240,7 @@ export default function Chat() {
 
         {messages.map((m, i) => (
           <div key={m.id ?? i} className={`bubble bubble--${m.role}`}>
-            {m.content}
+            {m.role === "assistant" ? <Markdown>{m.content}</Markdown> : m.content}
             {m.role === "assistant" && m.citations && m.citations.length > 0 && (
               <div className="chat__cite">
                 <span className="muted">资料来源</span>

@@ -48,4 +48,6 @@ class AssessmentRecordOut(BaseModel):
     weak_points: list[str]
     suggestions: list[str]
     questions_total: int
+    correct: int | None = None
+    details: list[dict] | None = None
     created_at: str

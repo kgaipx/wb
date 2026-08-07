@@ -35,3 +35,12 @@ htmlcov/
 gwy_dev.db
 *.sqlite
 *.sqlite3
+
+# Build / dev scratch artifacts (never commit)
+dist_prod/
+dist_out/
+dist_*/
+vite.config.js.timestamp-*.mjs
+.gwy_msg.tmp
+__mdtest.cjs
+__mdtest.jsx

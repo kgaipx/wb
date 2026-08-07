@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Dashboard } from "../api/client";
+import Markdown from "../components/Markdown";
 
 /** 能力图谱雷达：把知识点掌握度（0~1）可视化为自适应诊断。最多 8 个轴，超出截断。 */
 function AbilityRadar({ data }: { data: { label: string; value: number }[] }) {
@@ -201,7 +202,7 @@ export default function Learn() {
             {explain[q.id] && (
               <div className="tutor-box" style={{ marginTop: 8 }}>
                 <div className="tutor-box__title">AI 私教讲解</div>
-                <div className="tutor-box__body">{explain[q.id]}</div>
+                <div className="tutor-box__body"><Markdown>{explain[q.id]}</Markdown></div>
               </div>
             )}
           </div>

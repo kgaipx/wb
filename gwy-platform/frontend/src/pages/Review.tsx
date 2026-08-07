@@ -36,6 +36,7 @@ export default function Review() {
   const [pending, setPending] = useState<ReviewOut[]>([]);
   const [done, setDone] = useState<ReviewOut[]>([]);
   const [stats, setStats] = useState<ReviewStats | null>(null);
+  const [loadingC, setLoadingC] = useState(true);
   const [err, setErr] = useState("");
   const [noPerm, setNoPerm] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -57,6 +58,7 @@ export default function Review() {
 
   // ===== 内容审核 =====
   function loadAll() {
+    setLoadingC(true);
     return Promise.all([api.reviewPending(), api.reviewSpotCheck()])
       .then(([p, s]) => {
         setPending(p);
@@ -69,7 +71,8 @@ export default function Review() {
         } else {
           setErr(e.message);
         }
-      });
+      })
+      .finally(() => setLoadingC(false));
   }
   useEffect(() => {
     if (tab === "content") loadAll();
@@ -323,7 +326,18 @@ export default function Review() {
 
           <h3 className="section-title" style={{ marginTop: 16 }}>待复核队列（{pending.length}）</h3>
           {subOk && <div className="ok-text" style={{ marginBottom: 8 }}>{subOk}</div>}
-          {pending.length === 0 && (
+          {loadingC && pending.length === 0 && (
+            <>
+              {[0, 1].map((i) => (
+                <div className="card review-card" key={i} style={{ marginTop: 12 }}>
+                  <div className="skeleton-line" style={{ width: "35%" }} />
+                  <div className="skeleton-line" style={{ width: "95%", marginTop: 10 }} />
+                  <div className="skeleton-line" style={{ width: "70%", marginTop: 8 }} />
+                </div>
+              ))}
+            </>
+          )}
+          {pending.length === 0 && !loadingC && (
             <div className="card review-empty">
               <div className="muted">待复核队列为空。</div>
               <button className="btn btn--primary btn--sm" style={{ marginTop: 10 }} disabled={busy} onClick={() => setShowForm(true)}>
@@ -452,6 +466,7 @@ export default function Review() {
                     </div>
                     <span className={"status-pill status--" + r.status}>{STATUS_LABEL[r.status] || r.status}</span>
                   </div>
+                  {r.body && <div className="review-body review-body--mini">{r.body}</div>}
                   {r.reviewer_note && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>驳回意见：{r.reviewer_note}</div>}
                 </div>
               ))}
@@ -493,6 +508,17 @@ export default function Review() {
           </div>
 
           <h3 className="section-title" style={{ marginTop: 16 }}>待核实题库（{qPending.length}）</h3>
+          {qBusy && qPending.length === 0 && (
+            <>
+              {[0, 1].map((i) => (
+                <div className="card qrev-card" key={i} style={{ marginTop: 12 }}>
+                  <div className="skeleton-line" style={{ width: "40%" }} />
+                  <div className="skeleton-line" style={{ width: "95%", marginTop: 10 }} />
+                  <div className="skeleton-line" style={{ width: "80%", marginTop: 8 }} />
+                </div>
+              ))}
+            </>
+          )}
           {qPending.length === 0 && !qBusy && (
             <div className="card review-empty">
               <div className="muted">暂无待核实题目，全部已双签通过 🎉</div>

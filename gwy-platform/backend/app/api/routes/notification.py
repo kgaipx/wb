@@ -30,6 +30,7 @@ def _to_out(n: Notification) -> NotificationOut:
 @router.get("", response_model=NotificationList)
 def list_notifications(
     limit: int = 30,
+    offset: int = 0,
     current: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -37,6 +38,7 @@ def list_notifications(
         db.query(Notification)
         .filter(Notification.user_id == current.id)
         .order_by(Notification.created_at.desc())
+        .offset(offset)
         .limit(limit)
         .all()
     )

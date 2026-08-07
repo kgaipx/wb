@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, WrongItem } from "../api/client";
 import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
+import Markdown from "../components/Markdown";
 
 interface ItemState {
   open: boolean;
@@ -225,8 +226,8 @@ export default function Wrong() {
                 </div>
                 {st.result && (
                   <div className={"result " + (st.result.is_correct ? "result--ok" : "result--bad")}>
-                    <b>{st.result.is_correct ? "✔ 答对，已移出错题本" : `✘ 还是错了，正确答案：${st.result.correct_answer}`}</b>
-                    {st.result.explanation && <div style={{ marginTop: 6 }}>{st.result.explanation}</div>}
+                    <b>                    {st.result.is_correct ? "✔ 答对，已移出错题本" : `✘ 还是错了，正确答案：${st.result.correct_answer}`}</b>
+                    {st.result.explanation && <div style={{ marginTop: 6 }}><Markdown>{st.result.explanation}</Markdown></div>}
                   </div>
                 )}
               </div>
@@ -235,7 +236,7 @@ export default function Wrong() {
             {st.explain && (
               <div className="tutor-box" style={{ marginTop: 8 }}>
                 <div className="tutor-box__title">AI 私教讲解</div>
-                <div className="tutor-box__body">{st.explain}</div>
+                <div className="tutor-box__body"><Markdown>{st.explain}</Markdown></div>
                 {st.cites.length > 0 && <div className="tutor-box__cite">来源：{st.cites.join("；")}</div>}
               </div>
             )}

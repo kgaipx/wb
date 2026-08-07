@@ -49,6 +49,9 @@ export default function Membership() {
   const isFree = me?.plan === "free";
   const expired = me?.plan_expires_at ? new Date(me.plan_expires_at).getTime() < Date.now() : false;
 
+  const freePlan = plans.find((p) => p.id === "free");
+  const paidPlan = plans.find((p) => p.highlight) || plans.find((p) => p.id !== "free");
+
   async function buy(planId: string) {
     setBusy(true);
     setMsg("");
@@ -99,6 +102,75 @@ export default function Membership() {
         <div className="chat__headinfo">
           <div className="chat__title">会员中心</div>
           <div className="chat__status">透明定价 · 无忧退费</div>
+        </div>
+      </div>
+
+      {/* 价值引导 hero */}
+      <div className="card mem-hero">
+        <div className="mem-hero__title">升级会员，把 AI 私教装进口袋</div>
+        <div className="mem-hero__subs">从「盲目刷题」到「精准提分」，AI 全程陪你走完备考每一步</div>
+        <div className="mem-hero__props">
+          <div className="mem-prop">
+            <span className="mem-prop__ic">🎯</span>
+            <b>精准提分</b>
+            <span>学情诊断 + 个性化计划</span>
+          </div>
+          <div className="mem-prop">
+            <span className="mem-prop__ic">✍️</span>
+            <b>申论精批</b>
+            <span>五维评分逐段批注</span>
+          </div>
+          <div className="mem-prop">
+            <span className="mem-prop__ic">♾️</span>
+            <b>无限畅学</b>
+            <span>AI 讲解不再限次</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 免费 vs 会员 能力对比 */}
+      {paidPlan && (
+        <div className="card mem-compare">
+          <div className="mem-compare__col">
+            <div className="mem-compare__h mem-compare__h--free">免费版</div>
+            <ul>
+              {(freePlan?.benefits || ["每日 AI 讲解额度", "基础申论批改", "学习计划", "题库刷题"]).map((b) => (
+                <li key={b}>
+                  <span className="mem-cmp-ic">✓</span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="mem-compare__col mem-compare__col--paid">
+            <div className="mem-compare__h mem-compare__h--paid">会员版 · {paidPlan.name}</div>
+            <ul>
+              {paidPlan.benefits.map((b) => (
+                <li key={b}>
+                  <span className="mem-cmp-ic mem-cmp-ic--on">★</span>
+                  {b}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* 升级三步引导 */}
+      <div className="card mem-steps">
+        <div className="mem-step">
+          <b>1</b>
+          <span>选套餐</span>
+        </div>
+        <div className="mem-step__arrow">→</div>
+        <div className="mem-step">
+          <b>2</b>
+          <span>安全支付</span>
+        </div>
+        <div className="mem-step__arrow">→</div>
+        <div className="mem-step">
+          <b>3</b>
+          <span>即时开通</span>
         </div>
       </div>
 

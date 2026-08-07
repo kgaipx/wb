@@ -289,6 +289,16 @@ export interface AssessmentRecordOut {
   weak_points: string[];
   suggestions: string[];
   questions_total: number;
+  correct?: number | null;
+  details?: Array<{
+    question_id: number;
+    is_correct: boolean;
+    correct_answer: string;
+    selected: string;
+    stem: string;
+    knowledge_point: string;
+    options?: Array<{ label: string; content: string; is_correct: boolean }>;
+  }> | null;
   created_at: string;
 }
 
@@ -450,7 +460,8 @@ export const api = {
     request<AssessmentRecordOut>("/assessment/history/" + id),
 
   // 站内通知（Notification Center）
-  notifications: () => request<NotificationList>("/notifications"),
+  notifications: (limit = 30, offset = 0) =>
+    request<NotificationList>(`/notifications?limit=${limit}&offset=${offset}`),
   markNotificationRead: (id: number) =>
     request<NotificationOut>("/notifications/" + id + "/read", { method: "POST" }),
   markAllNotificationsRead: () =>

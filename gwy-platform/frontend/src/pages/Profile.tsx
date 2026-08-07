@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, Dashboard, EssayPrompt } from "../api/client";
 import { useAuth } from "../auth";
 import { DimensionBars } from "../components/DimensionBars";
+import Markdown from "../components/Markdown";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -227,7 +228,11 @@ export default function Profile() {
               {grade.needs_human_review && <span className="text-warning">（已转人工复核）</span>}
             </div>
             <DimensionBars dims={grade.dimensions} />
-            {grade.rationale && <div style={{ fontSize: 13, marginTop: 8 }}>{grade.rationale}</div>}
+            {grade.rationale && (
+              <div className="tutor-box" style={{ marginTop: 8 }}>
+                <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
+              </div>
+            )}
           </div>
         )}
       </div>

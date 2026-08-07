@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
+import Markdown from "../components/Markdown";
 
 const PAGE = 60;
 
@@ -357,7 +358,7 @@ export default function Practice() {
                 AI 私教讲解
                 {explainOffline && <span className="badge badge--warn">离线模式</span>}
               </div>
-              <div className="tutor-box__body">{explain}</div>
+              <div className="tutor-box__body"><Markdown>{explain}</Markdown></div>
               {cites.length > 0 && <div className="tutor-box__cite">来源：{cites.join("；")}</div>}
             </div>
           )}

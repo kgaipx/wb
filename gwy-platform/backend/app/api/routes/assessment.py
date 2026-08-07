@@ -155,6 +155,10 @@ def assessment_submit(
                 "selected": item.selected,
                 "stem": q.stem,
                 "knowledge_point": q.knowledge_point,
+                "options": [
+                    {"label": o.label, "content": o.content, "is_correct": o.is_correct}
+                    for o in q.options
+                ],
             }
         )
 
@@ -177,6 +181,8 @@ def assessment_submit(
         weak_json=json.dumps(weak_points, ensure_ascii=False),
         suggestions_json=json.dumps(suggestions, ensure_ascii=False),
         questions_total=total,
+        correct_count=correct,
+        details_json=json.dumps(details, ensure_ascii=False),
     )
     db.add(record)
     db.commit()
@@ -257,6 +263,10 @@ def _record_out(r: AssessmentRecord) -> AssessmentRecordOut:
         sugg = json.loads(r.suggestions_json) or []
     except (json.JSONDecodeError, TypeError):
         sugg = []
+    try:
+        details = json.loads(r.details_json) if r.details_json else []
+    except (json.JSONDecodeError, TypeError):
+        details = []
     return AssessmentRecordOut(
         id=r.id,
         overall=r.overall,
@@ -264,5 +274,7 @@ def _record_out(r: AssessmentRecord) -> AssessmentRecordOut:
         weak_points=weak,
         suggestions=sugg,
         questions_total=r.questions_total,
+        correct=r.correct_count,
+        details=details,
         created_at=r.created_at.isoformat(),
     )

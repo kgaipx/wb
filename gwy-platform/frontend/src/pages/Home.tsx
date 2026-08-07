@@ -1,22 +1,63 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../api/client";
+import { api, PlanOut, PlanTask } from "../api/client";
 import { useAuth } from "../auth";
+
+const KIND_LABEL: Record<string, string> = {
+  practice: "刷题",
+  review_wrong: "错题",
+  favorite: "收藏",
+  explain: "讲解",
+  mock: "模考",
+  read: "阅读",
+};
 
 export default function Home() {
   const nav = useNavigate();
   const { user, loading, logout } = useAuth();
-  const [daily, setDaily] = useState<any>(null);
+  const [dailyList, setDailyList] = useState<any[]>([]);
+  const [dailyIdx, setDailyIdx] = useState(0);
+  const [dailyLoading, setDailyLoading] = useState(false);
+  const [plan, setPlan] = useState<PlanOut | null>(null);
 
-  // 已登录用户拉一条「每日一练」推荐
+  // 已登录：拉一批「每日一练」弱项推荐，支持「换一题」循环浏览
+  const loadDaily = useCallback(() => {
+    setDailyLoading(true);
+    api
+      .recommend(6)
+      .then((r) => {
+        setDailyList(r.questions || []);
+        setDailyIdx(0);
+      })
+      .catch(() => setDailyList([]))
+      .finally(() => setDailyLoading(false));
+  }, []);
+
   useEffect(() => {
-    if (user) {
-      api
-        .recommend(1)
-        .then((r) => setDaily(r.questions[0] || null))
-        .catch(() => setDaily(null));
-    }
+    if (user) loadDaily();
+  }, [user, loadDaily]);
+
+  // 已登录：拉取已有学习计划，用于首页「今日计划」概览（不自动生成）
+  useEffect(() => {
+    if (!user) return;
+    api.planGet().then(setPlan).catch(() => setPlan(null));
   }, [user]);
+
+  const daily = dailyList[dailyIdx] || null;
+
+  const onPlanTask = (t: PlanTask) => {
+    if (t.kind === "mock") {
+      nav("/exam");
+      return;
+    }
+    if (t.ref_id) nav(`/practice?q=${t.ref_id}`);
+  };
+
+  const shuffleDaily = () => {
+    if (dailyList.length === 0) return;
+    if (dailyIdx < dailyList.length - 1) setDailyIdx(dailyIdx + 1);
+    else loadDaily(); // 当前批次看完，重新拉一批
+  };
 
   if (loading) return <section><div className="splash">加载中…</div></section>;
 
@@ -79,21 +120,112 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 每日一练 */}
-      {daily && (
-        <div className="card card--tutor" style={{ marginTop: 14 }}>
-          <div className="card--tutor__txt">
-            <div className="muted" style={{ fontSize: 12 }}>每日一练 · 推荐</div>
-            <div style={{ fontWeight: 700, marginTop: 4 }}>{daily.knowledge_point}</div>
-            <div className="muted" style={{ fontSize: 13, marginTop: 2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-              {daily.stem}
-            </div>
+      {/* 今日学习计划概览 */}
+      {plan ? (
+        <div className="card home-plan" style={{ marginTop: 14 }}>
+          <div className="row row--between">
+            <strong>今日学习计划</strong>
+            <button className="link-btn" onClick={() => nav("/plan")}>完整计划 →</button>
           </div>
-          <button className="btn btn--primary btn--sm" onClick={() => nav(`/practice?q=${daily.id}`)}>
-            练习
+          <div className="home-plan__top">
+            <span className="home-plan__streak">🔥 连续打卡 {plan.progress.streak_days} 天</span>
+            <span className="home-plan__today">
+              今日 {plan.progress.today_done}/{plan.progress.today_total}
+            </span>
+          </div>
+          {(() => {
+            const today = plan.items.find((d) => d.day === plan.today_index);
+            if (!today) {
+              return (
+                <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>
+                  今日计划已结束或尚未开始，去计划页查看全部安排。
+                </div>
+              );
+            }
+            return (
+              <>
+                <div className="home-plan__focus muted">{today.focus}</div>
+                <div className="home-plan__tasks">
+                  {today.tasks.slice(0, 4).map((t) => {
+                    const clickable = t.kind === "mock" || !!t.ref_id;
+                    return (
+                      <div
+                        key={t.id}
+                        className={
+                          "home-plan__task" +
+                          (t.done ? " is-done" : "") +
+                          (clickable ? " is-link" : "")
+                        }
+                        onClick={clickable ? () => onPlanTask(t) : undefined}
+                      >
+                        <span className={"home-plan__check" + (t.done ? " on" : "")}>
+                          {t.done ? "✓" : ""}
+                        </span>
+                        <span className="home-plan__kind">{KIND_LABEL[t.kind] || t.kind}</span>
+                        <span className="home-plan__title">{t.title}</span>
+                        {t.done && <span className="home-plan__badge">已完成</span>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })()}
+        </div>
+      ) : (
+        <div className="card card--soft" style={{ marginTop: 14 }}>
+          <div className="row row--between">
+            <strong>今日学习计划</strong>
+          </div>
+          <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
+            还没有为你定制的 AI 学习计划，生成后这里会出现今日待办。
+          </div>
+          <button className="btn btn--primary" style={{ marginTop: 10 }} onClick={() => nav("/plan")}>
+            制定我的计划
           </button>
         </div>
       )}
+
+      {/* 每日一练 */}
+      <div className="card card--tutor" style={{ marginTop: 14 }}>
+        <div className="card--tutor__txt">
+          <div className="row row--between">
+            <div className="muted" style={{ fontSize: 12 }}>每日一练 · 为你推荐</div>
+            <button
+              className="link-btn"
+              style={{ fontSize: 12 }}
+              onClick={shuffleDaily}
+              disabled={dailyLoading}
+            >
+              {dailyLoading ? "加载中…" : "换一题"}
+            </button>
+          </div>
+          {dailyLoading ? (
+            <div className="daily-skeleton">正在匹配你的薄弱知识点…</div>
+          ) : daily ? (
+            <>
+              <div className="daily-tags">
+                {daily.subject && <span className="tag tag--brand">{daily.subject}</span>}
+                {daily.category && <span className="tag">{daily.category}</span>}
+                {daily.difficulty != null && (
+                  <span className="tag tag--warning">难度 {daily.difficulty}</span>
+                )}
+              </div>
+              <div style={{ fontWeight: 700, marginTop: 6 }}>{daily.knowledge_point}</div>
+              <div className="muted" style={{ fontSize: 13, marginTop: 2, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                {daily.stem}
+              </div>
+            </>
+          ) : (
+            <div className="muted" style={{ marginTop: 6 }}>暂无推荐题，去题库练练手吧</div>
+          )}
+        </div>
+        {daily && (
+          <button className="btn btn--primary btn--sm" onClick={() => nav(`/practice?q=${daily.id}`)}>
+            练习
+          </button>
+        )}
+      </div>
 
       <div className="card card--soft" style={{ marginTop: 14 }}>
         <div className="row row--between">

@@ -33,4 +33,10 @@ class AssessmentRecord(Base):
         Text, default="[]", comment="JSON: 提升建议列表"
     )
     questions_total: Mapped[int] = mapped_column(Integer, default=0, comment="本次测评题量")
+    correct_count: Mapped[int | None] = mapped_column(
+        Integer, nullable=True, comment="本次答对题数（历史详情正确展示用）"
+    )
+    details_json: Mapped[str | None] = mapped_column(
+        Text, nullable=True, comment="JSON: 逐题回顾明细（题面/作答/正误/正确答案）"
+    )
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)

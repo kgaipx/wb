@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, PlanDay, PlanOut, PlanProgress, PlanTask } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
+import Markdown from "../components/Markdown";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -10,6 +11,16 @@ const KIND_LABEL: Record<string, string> = {
   explain: "讲解",
   mock: "模考",
   read: "阅读",
+};
+
+const TYPE_ORDER = ["practice", "review_wrong", "favorite", "explain", "mock", "read"];
+const TYPE_COLOR: Record<string, string> = {
+  practice: "#2563EB",
+  review_wrong: "#C0392B",
+  favorite: "#B26A00",
+  explain: "#1D7A46",
+  mock: "#3457B0",
+  read: "#475569",
 };
 
 /** 完成度环形进度 */
@@ -119,6 +130,18 @@ export default function Plan() {
     setTimeout(() => setToast(""), 2000);
   }
 
+  // 可视化派生数据：计划日历（每日完成度）+ 任务类型分布
+  const typeCounts: Record<string, number> = {};
+  const calDays = plan
+    ? plan.items.map((d) => {
+        const total = d.tasks.length;
+        const done = d.tasks.filter((t) => t.done).length;
+        d.tasks.forEach((t) => (typeCounts[t.kind] = (typeCounts[t.kind] || 0) + 1));
+        return { day: d.day, done, total };
+      })
+    : [];
+  const typeTotal = Object.values(typeCounts).reduce((a, b) => a + b, 0) || 1;
+
   function planToMarkdown(): string {
     if (!plan) return "";
     const p = plan.progress;
@@ -204,6 +227,81 @@ export default function Plan() {
               style={{ width: `${Math.round(plan.progress.rate * 100)}%` }}
             />
           </div>
+
+          {/* 计划日历：每日完成度可视化 */}
+          <div className="card plan-cal-card">
+            <div className="row row--between">
+              <strong>计划日历</strong>
+              <span className="muted" style={{ fontSize: 12 }}>
+                {plan.today_index != null ? `今天 · 第 ${plan.today_index} 天` : "整体进度"}
+              </span>
+            </div>
+            <div className="plan-cal">
+              {calDays.map((c) => {
+                const isToday = plan.today_index === c.day;
+                const future = c.day > (plan.today_index ?? 999);
+                const pct = c.total ? Math.round((c.done / c.total) * 100) : 0;
+                const state =
+                  future
+                    ? "future"
+                    : c.total > 0 && c.done === c.total
+                    ? "done"
+                    : c.done > 0
+                    ? "part"
+                    : "todo";
+                return (
+                  <div
+                    key={c.day}
+                    className={
+                      "plan-cal__cell plan-cal__cell--" +
+                      state +
+                      (isToday ? " plan-cal__cell--today" : "")
+                    }
+                    title={`第 ${c.day} 天：${c.done}/${c.total} 完成`}
+                  >
+                    <span className="plan-cal__num">{c.day}</span>
+                    <span className="plan-cal__fill" style={{ height: `${pct}%` }} />
+                    <span className="plan-cal__pct">{future ? "·" : `${pct}%`}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="plan-cal__legend">
+              <span><i className="dot dot--done" />已完成</span>
+              <span><i className="dot dot--part" />进行中</span>
+              <span><i className="dot dot--todo" />未开始</span>
+              <span><i className="dot dot--future" />未到</span>
+            </div>
+          </div>
+
+          {/* 任务类型分布 */}
+          <div className="card plan-dist-card">
+            <div className="row row--between">
+              <strong>任务构成</strong>
+              <span className="muted" style={{ fontSize: 12 }}>共 {typeTotal} 项</span>
+            </div>
+            <div className="plan-dist__bar">
+              {TYPE_ORDER.filter((k) => typeCounts[k]).map((k) => (
+                <span
+                  key={k}
+                  className="plan-dist__seg"
+                  style={{
+                    width: `${(typeCounts[k] / typeTotal) * 100}%`,
+                    background: TYPE_COLOR[k],
+                  }}
+                  title={`${KIND_LABEL[k] || k} ${typeCounts[k]}`}
+                />
+              ))}
+            </div>
+            <div className="plan-dist__legend">
+              {TYPE_ORDER.filter((k) => typeCounts[k]).map((k) => (
+                <span key={k} className="plan-dist__chip">
+                  <i style={{ background: TYPE_COLOR[k] }} />
+                  {KIND_LABEL[k] || k} {typeCounts[k]}
+                </span>
+              ))}
+            </div>
+          </div>
         </>
       )}
 
@@ -243,12 +341,15 @@ export default function Plan() {
           )}
           {plan.summary && (
             <div className="card" style={{ marginTop: 10 }}>
-              <div className="tutor-box__body">{plan.summary}</div>
+              <div className="tutor-box__body"><Markdown>{plan.summary}</Markdown></div>
             </div>
           )}
 
           {plan.items.map((day: PlanDay) => {
             const isToday = plan.today_index === day.day;
+            const dayTotal = day.tasks.length;
+            const dayDone = day.tasks.filter((t) => t.done).length;
+            const dayPct = dayTotal ? Math.round((dayDone / dayTotal) * 100) : 0;
             return (
               <div
                 key={day.day}
@@ -258,8 +359,12 @@ export default function Plan() {
                   <span className="plan-day__badge">第 {day.day} 天</span>
                   {isToday && <span className="plan-day__today">今日</span>}
                   <span className="plan-day__focus">{day.focus}</span>
+                  <span className="plan-day__rate">{dayPct}%</span>
                 </div>
-                <div className="plan-day__summary muted">{day.summary}</div>
+                <div className="plan-day__summary muted"><Markdown>{day.summary}</Markdown></div>
+                <div className="plan-day__bar">
+                  <div className="plan-day__barfill" style={{ width: `${dayPct}%` }} />
+                </div>
                 <div className="plan-day__tasks">
                   {day.tasks.map((t) => {
                     const clickable = t.kind === "mock" || !!t.ref_id;

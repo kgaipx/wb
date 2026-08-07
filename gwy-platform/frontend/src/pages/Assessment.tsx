@@ -96,6 +96,7 @@ export default function Assessment() {
   const [err, setErr] = useState("");
   const [history, setHistory] = useState<AssessmentRecordOut[]>([]);
   const [detail, setDetail] = useState<AssessmentRecordOut | null>(null);
+  const [prevOverall, setPrevOverall] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [toast, setToast] = useState("");
 
@@ -150,11 +151,13 @@ export default function Assessment() {
 
   const HIS_PAGE = 20;
   const [hisOffset, setHisOffset] = useState(0);
+  const [hisLoading, setHisLoading] = useState(false);
   const [hisLoadingMore, setHisLoadingMore] = useState(false);
   const [hisHasMore, setHisHasMore] = useState(false);
 
   async function loadHistory(reset = true) {
     const off = reset ? 0 : hisOffset;
+    if (reset) setHisLoading(true);
     try {
       const data = await api.assessmentHistory(HIS_PAGE, off);
       if (reset) {
@@ -167,6 +170,8 @@ export default function Assessment() {
       setHisHasMore(data.length === HIS_PAGE);
     } catch (e: any) {
       setErr(e.message);
+    } finally {
+      if (reset) setHisLoading(false);
     }
   }
 
@@ -187,7 +192,12 @@ export default function Assessment() {
     setBusy(true);
     setErr("");
     try {
-      setDetail(await api.assessmentHistoryDetail(id));
+      const d = await api.assessmentHistoryDetail(id);
+      setDetail(d);
+      // 历史按时间倒序：当前记录的下一条即「上一次」测评
+      const idx = history.findIndex((h) => h.id === id);
+      const prev = idx >= 0 && idx + 1 < history.length ? history[idx + 1].overall : null;
+      setPrevOverall(prev);
       setPhase("historyDetail");
     } catch (e: any) {
       setErr(e.message);
@@ -199,18 +209,29 @@ export default function Assessment() {
   const cur = paper[idx];
   const answeredCount = paper.filter((q) => answers[q.id]).length;
 
-  function renderReport(rep: AssessmentReport | AssessmentRecordOut) {
+  function renderReport(rep: AssessmentReport | AssessmentRecordOut, prevOverall?: number | null) {
     const r = rep as any;
     const overall = Math.round((r.overall || 0) * 100);
     const tone = overall >= 70 ? "rate--good" : overall >= 50 ? "rate--mid" : "rate--bad";
     const dims: AssessmentDim[] = r.dimensions || [];
     const total = r.total ?? r.questions_total;
-    const correct = r.correct ?? r.questions_total;
+    const correct = typeof r.correct === "number" ? r.correct : null;
+    const prevPct = prevOverall != null ? Math.round(prevOverall * 100) : null;
+    const diff = prevPct != null ? overall - prevPct : null;
+    const trendCls = diff == null ? "" : diff > 0 ? "rate-trend--up" : diff < 0 ? "rate-trend--down" : "rate-trend--flat";
+    const trendArrow = diff == null ? "" : diff > 0 ? "▲" : diff < 0 ? "▼" : "—";
     return (
       <>
         <div className="card report-hero">
           <div className={"big-rate " + tone}>{overall}<span>%</span></div>
-          <div className="muted">总体掌握度 · 答对 {correct} / {total} 题</div>
+          <div className="muted">
+            总体掌握度 · {correct !== null ? `答对 ${correct} / ${total} 题` : `共 ${total} 题`}
+            {diff !== null && (
+              <span className={"rate-trend " + trendCls}>
+                {trendArrow} {diff > 0 ? "+" : ""}{diff} 较上次
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="card" style={{ marginTop: 12 }}>
@@ -257,25 +278,50 @@ export default function Assessment() {
         {r.details?.length > 0 && (
           <>
             <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
-            {r.details.map((d: any, i: number) => (
-              <div className="card" key={d.question_id} style={{ marginTop: 12 }}>
-                <div className="row row--between">
-                  <span className="text-3">
-                    第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}
-                  </span>
-                  <span className={d.is_correct ? "text-success" : "text-danger"}>
-                    {d.is_correct ? "✔ 答对" : "✘ 答错"}
-                  </span>
-                </div>
-                <div className="q-item__stem" style={{ marginTop: 4 }}>{d.stem}</div>
-                {!d.is_correct && (
-                  <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
-                    正确答案：<b className="text-brand">{d.correct_answer}</b>
-                    {d.selected ? `（你的作答：${d.selected}）` : ""}
+            {r.details.map((d: any, i: number) => {
+              const opts: Array<{ label: string; content: string; is_correct: boolean }> = d.options || [];
+              const userLabels = new Set((d.selected || "").split("").filter(Boolean));
+              return (
+                <div className="card adetail" key={d.question_id} style={{ marginTop: 12 }}>
+                  <div className="row row--between">
+                    <span className="text-3">
+                      第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}
+                    </span>
+                    <span className={d.is_correct ? "text-success" : "text-danger"}>
+                      {d.is_correct ? "✔ 答对" : "✘ 答错"}
+                    </span>
                   </div>
-                )}
-              </div>
-            ))}
+                  <div className="q-item__stem" style={{ marginTop: 4 }}>{d.stem}</div>
+                  {opts.length > 0 ? (
+                    <div className="adetail-opts">
+                      {opts.map((o) => {
+                        const isUser = userLabels.has(o.label);
+                        const cls =
+                          o.is_correct
+                            ? " adopt--correct"
+                            : isUser
+                            ? " adopt--wrong"
+                            : "";
+                        return (
+                          <div key={o.label} className={"adopt" + cls}>
+                            <b>{o.label}.</b> <span>{o.content}</span>
+                            {o.is_correct && <span className="adopt__mark">正确答案</span>}
+                            {isUser && !o.is_correct && (
+                              <span className="adopt__mark adopt__mark--wrong">你的作答</span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
+                      正确答案：<b className="text-brand">{d.correct_answer}</b>
+                      {d.selected ? `（你的作答：${d.selected}）` : ""}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </>
         )}
       </>
@@ -439,13 +485,25 @@ export default function Assessment() {
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
             已加载 {history.length} 次测评记录（能力成长轨迹）
           </div>
-          {history.length === 0 && (
+          {history.length === 0 && !hisLoading && (
             <div className="card">
               <div className="muted">还没有测评记录，去完成一次能力测评吧。</div>
               <button className="btn btn--primary btn--sm" style={{ marginTop: 10 }} onClick={start}>
                 开始测评 →
               </button>
             </div>
+          )}
+
+          {hisLoading && history.length === 0 && (
+            <>
+              {[0, 1, 2].map((i) => (
+                <div className="card" key={i} style={{ marginTop: 12 }}>
+                  <div className="skeleton-line" style={{ width: "45%" }} />
+                  <div className="skeleton-line" style={{ width: "80%", marginTop: 10 }} />
+                  <div className="skeleton-line" style={{ width: "30%", marginTop: 10 }} />
+                </div>
+              ))}
+            </>
           )}
           {history.map((h) => {
             const rate = Math.round((h.overall || 0) * 100);
@@ -487,7 +545,7 @@ export default function Assessment() {
           <button className="back-link" onClick={() => setPhase("history")}>
             ← 返回历史列表
           </button>
-          {renderReport(detail)}
+          {renderReport(detail, prevOverall)}
           <div className="export-bar" style={{ marginTop: 12 }}>
             <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => exportReport(detail)}>
               导出报告

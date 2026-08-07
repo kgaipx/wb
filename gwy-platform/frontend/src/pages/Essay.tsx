@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, EssayPrompt, EssayHistoryItem } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
+import Markdown from "../components/Markdown";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -113,7 +114,7 @@ export default function Essay() {
               {grade.rationale && (
                 <div className="tutor-box" style={{ marginTop: 12 }}>
                   <div className="tutor-box__title">总评</div>
-                  <div className="tutor-box__body">{grade.rationale}</div>
+                  <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
                 </div>
               )}
               <div className="muted" style={{ marginTop: 10, fontSize: 12 }}>
@@ -139,7 +140,11 @@ export default function Essay() {
                 {h.needs_human_review && " · 已转人工"}
               </div>
               <DimensionBars dims={h.dimensions} />
-              {h.rationale && <div className="text-3" style={{ fontSize: 13, marginTop: 6 }}>{h.rationale}</div>}
+              {h.rationale && (
+                <div className="tutor-box" style={{ marginTop: 8 }}>
+                  <div className="tutor-box__body"><Markdown>{h.rationale}</Markdown></div>
+                </div>
+              )}
             </div>
           ))}
         </>
