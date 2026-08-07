@@ -183,6 +183,12 @@ export default function Wrong() {
             <div className="q-item__meta">
               <span className="tag tag--bad">错 {it.wrong_count} 次</span>
               <span className="tag tag--brand">{q.subject}</span>
+              {it.recurrence_rate !== null && it.recurrence_rate !== undefined && (
+                <span className={"tag " + (it.recurrence_rate >= 0.6 ? "tag--bad" : it.recurrence_rate >= 0.3 ? "tag--warn" : "tag--ok")}>
+                  复错率 {Math.round(it.recurrence_rate * 100)}%
+                </span>
+              )}
+              {it.attempts > 0 && <span className="text-3">共答 {it.attempts} 次</span>}
               <span>{q.knowledge_point}</span>
             </div>
             <div className="q-item__stem" style={{ marginTop: 6 }}>{q.stem}</div>

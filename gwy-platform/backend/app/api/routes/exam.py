@@ -164,13 +164,14 @@ def submit_exam(
 
 @router.get("/history", response_model=list[ExamRecordOut], tags=["exam"])
 def exam_history(
-    limit: int = 20, current: User = Depends(get_current_user), db: Session = Depends(get_db)
+    limit: int = 20, offset: int = 0, current: User = Depends(get_current_user), db: Session = Depends(get_db)
 ):
-    """模考历史列表（按时间倒序），用于复盘与进步追踪。"""
+    """模考历史列表（按时间倒序），支持分页用于复盘与进步追踪。"""
     return (
         db.query(ExamRecord)
         .filter(ExamRecord.user_id == current.id)
         .order_by(ExamRecord.created_at.desc())
+        .offset(offset)
         .limit(limit)
         .all()
     )

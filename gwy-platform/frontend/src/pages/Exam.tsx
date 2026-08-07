@@ -36,14 +36,37 @@ export default function Exam() {
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
 
+  const HIS_PAGE = 20;
   const [history, setHistory] = useState<any[]>([]);
   const [detail, setDetail] = useState<any>(null);
+  const [hisOffset, setHisOffset] = useState(0);
+  const [hisLoadingMore, setHisLoadingMore] = useState(false);
+  const [hisHasMore, setHisHasMore] = useState(false);
 
-  async function loadHistory() {
+  async function loadHistory(reset = true) {
+    const off = reset ? 0 : hisOffset;
     try {
-      setHistory(await api.examHistory(30));
+      const data = await api.examHistory(HIS_PAGE, off);
+      if (reset) {
+        setHistory(data);
+        setHisOffset(HIS_PAGE);
+      } else {
+        setHistory((prev) => [...prev, ...data]);
+        setHisOffset(off + HIS_PAGE);
+      }
+      setHisHasMore(data.length === HIS_PAGE);
     } catch (e: any) {
       setErr(e.message);
+    }
+  }
+
+  async function loadMoreHistory() {
+    if (hisLoadingMore || !hisHasMore) return;
+    setHisLoadingMore(true);
+    try {
+      await loadHistory(false);
+    } finally {
+      setHisLoadingMore(false);
     }
   }
 
@@ -231,7 +254,7 @@ export default function Exam() {
 
       {tab === "history" && phase !== "historyDetail" && (
         <div>
-          <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>共 {history.length} 次模考记录</div>
+          <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>已加载 {history.length} 次模考记录</div>
           {history.length === 0 && (
             <div className="card">
               <div className="muted">还没有模考记录，去「模考」完成一次吧。</div>
@@ -257,6 +280,11 @@ export default function Exam() {
               </button>
             );
           })}
+          {hisHasMore && (
+            <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={hisLoadingMore} onClick={loadMoreHistory}>
+              {hisLoadingMore ? "加载中…" : "加载更多模考记录"}
+            </button>
+          )}
         </div>
       )}
 

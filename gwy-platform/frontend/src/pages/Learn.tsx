@@ -44,20 +44,46 @@ function AbilityRadar({ data }: { data: { label: string; value: number }[] }) {
 
 export default function Learn() {
   const nav = useNavigate();
+  const REC_PAGE = 10;
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
   const [explain, setExplain] = useState<Record<number, string>>({});
   const [upgradeFor, setUpgradeFor] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [recTopN, setRecTopN] = useState(REC_PAGE);
+  const [recLoadingMore, setRecLoadingMore] = useState(false);
+  const [recHasMore, setRecHasMore] = useState(false);
 
   async function load() {
     try {
-      const [d, r] = await Promise.all([api.dashboard(), api.recommend(10)]);
+      const [d, r] = await Promise.all([api.dashboard(), api.recommend(REC_PAGE)]);
       setDash(d);
       setRec(r);
+      setRecTopN(REC_PAGE);
+      setRecHasMore(r.questions.length === REC_PAGE);
     } catch (e: any) {
       setErr(e.message);
+    }
+  }
+
+  async function loadMoreRec() {
+    if (recLoadingMore || !recHasMore || !rec) return;
+    setRecLoadingMore(true);
+    try {
+      const next = recTopN + REC_PAGE;
+      const r = await api.recommend(next);
+      setRec((prev: any) => {
+        const seen = new Set(prev.questions.map((q: any) => q.id));
+        const added = r.questions.filter((q: any) => !seen.has(q.id));
+        return { ...r, questions: [...prev.questions, ...added] };
+      });
+      setRecTopN(next);
+      setRecHasMore(r.questions.length === next);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setRecLoadingMore(false);
     }
   }
   useEffect(() => {
@@ -180,6 +206,11 @@ export default function Learn() {
             )}
           </div>
         ))}
+        {rec && recHasMore && (
+          <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={recLoadingMore} onClick={loadMoreRec}>
+            {recLoadingMore ? "加载中…" : "加载更多推荐练习"}
+          </button>
+        )}
     </section>
   );
 }

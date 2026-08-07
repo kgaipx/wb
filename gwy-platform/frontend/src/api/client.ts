@@ -89,6 +89,8 @@ export interface WrongItem {
   question: Question;
   wrong_count: number;
   last_selected: string | null;
+  attempts: number; // 该用户在该题的总作答次数
+  recurrence_rate: number | null; // 错答占比 0-1（复错倾向）
 }
 export interface ChatMessage {
   id?: number;
@@ -429,8 +431,8 @@ export const api = {
       "/exam/submit",
       { method: "POST", body: JSON.stringify({ answers }) }
     ),
-  examHistory: (limit = 20) =>
-    request<any[]>("/exam/history?limit=" + limit),
+  examHistory: (limit = 20, offset = 0) =>
+    request<any[]>("/exam/history?limit=" + limit + "&offset=" + offset),
   examHistoryDetail: (id: number) =>
     request<any>("/exam/history/" + id),
 

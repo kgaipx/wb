@@ -594,6 +594,14 @@
   background: var(--danger-050);
   color: var(--danger);
 }
+.tag--warn {
+  background: var(--warning-050);
+  color: var(--warning);
+}
+.tag--ok {
+  background: var(--success-050);
+  color: var(--success);
+}
 
 /* 学习管理卡（我的页） */
 .manage-card {

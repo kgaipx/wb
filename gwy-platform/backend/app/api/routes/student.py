@@ -7,7 +7,7 @@ from collections import Counter, defaultdict
 from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func
+from sqlalchemy import func, case
 from sqlalchemy.orm import Session
 
 from app.api.routes.auth import get_current_user
@@ -77,6 +77,18 @@ def wrong_questions(current: User = Depends(get_current_user), db: Session = Dep
         .all()
     )
     items: list[WrongItem] = []
+    qids = [q.id for q, _ in joined]
+    agg = (
+        db.query(
+            UserAnswer.question_id,
+            func.count(UserAnswer.id).label("attempts"),
+            func.sum(case((UserAnswer.is_correct == False, 1), else_=0)).label("wrong_total"),  # noqa: E712
+        )
+        .filter(UserAnswer.user_id == current.id, UserAnswer.question_id.in_(qids))
+        .group_by(UserAnswer.question_id)
+        .all()
+    )
+    agg_map = {r.question_id: (r.attempts, int(r.wrong_total or 0)) for r in agg}
     for q, cnt in joined:
         last = (
             db.query(UserAnswer.selected)
@@ -89,11 +101,15 @@ def wrong_questions(current: User = Depends(get_current_user), db: Session = Dep
             .order_by(UserAnswer.submitted_at.desc())
             .first()
         )
+        attempts, wrong_total = agg_map.get(q.id, (0, 0))
+        recurrence_rate = round(wrong_total / attempts, 3) if attempts else None
         items.append(
             WrongItem(
                 question=QuestionOut.model_validate(q),
                 wrong_count=cnt,
                 last_selected=last.selected if last else None,
+                attempts=attempts,
+                recurrence_rate=recurrence_rate,
             )
         )
     return items

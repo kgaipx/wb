@@ -51,11 +51,13 @@ class PracticeResult(BaseModel):
 
 
 class WrongItem(BaseModel):
-    """错题本条目：题目（不泄漏答案）+ 错答次数 + 最近一次错选。"""
+    """错题本条目：题目（不泄漏答案）+ 错答次数 + 最近一次错选 + 复错率信号。"""
 
     question: QuestionOut
     wrong_count: int
     last_selected: str | None
+    attempts: int = 0  # 该用户在该题的总作答次数
+    recurrence_rate: float | None = None  # 错答占比 0-1（复错倾向，越高越需重点攻克）
 
     model_config = {"from_attributes": False}
 
