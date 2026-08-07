@@ -5,6 +5,42 @@ import Markdown from "../components/Markdown";
 
 const PAGE = 60;
 
+/** 知识点掌握度环形徽章：按档位配色，中心显示百分比 + 档位文字。 */
+function MasteryBadge({ value }: { value: number }) {
+  const v = Math.max(0, Math.min(1, value || 0));
+  const pctv = Math.round(v * 100);
+  const tone = v >= 0.7 ? "var(--success)" : v >= 0.4 ? "var(--warning)" : "var(--danger)";
+  const label = v >= 0.7 ? "精通" : v >= 0.4 ? "巩固" : "薄弱";
+  const R = 26;
+  const C = 2 * Math.PI * R;
+  const off = C * (1 - v);
+  return (
+    <div className="mastery-badge" title={`知识点掌握度：${pctv}%（${label}）`}>
+      <svg width="72" height="72" viewBox="0 0 72 72">
+        <circle cx="36" cy="36" r={R} fill="none" stroke="var(--surface-2)" strokeWidth="8" />
+        <circle
+          cx="36"
+          cy="36"
+          r={R}
+          fill="none"
+          stroke={tone}
+          strokeWidth="8"
+          strokeDasharray={C}
+          strokeDashoffset={off}
+          strokeLinecap="round"
+          transform="rotate(-90 36 36)"
+        />
+        <text x="36" y="34" textAnchor="middle" fontSize="16" fontWeight={700} fill={tone}>
+          {pctv}%
+        </text>
+        <text x="36" y="50" textAnchor="middle" fontSize={10} fill="#9aa0ab">
+          {label}
+        </text>
+      </svg>
+    </div>
+  );
+}
+
 export default function Practice() {
   const [params] = useSearchParams();
   const nav = useNavigate();
@@ -22,6 +58,9 @@ export default function Practice() {
   const [kpFilter, setKpFilter] = useState<string>(""); // 测评弱项专项练习（按 knowledge_point）
   const kpAutoOpened = useRef(false);
   const [upgrade, setUpgrade] = useState(false);
+  const [streak, setStreak] = useState(0); // 连续答对计数（激励）
+  const [encourage, setEncourage] = useState(""); // 答对/中断浮动鼓励文案
+  const encourageTimer = useRef<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -147,6 +186,12 @@ export default function Practice() {
     await nextQuestion();
   }
 
+  function flashEncourage(msg: string) {
+    setEncourage(msg);
+    if (encourageTimer.current) window.clearTimeout(encourageTimer.current);
+    encourageTimer.current = window.setTimeout(() => setEncourage(""), 2200);
+  }
+
   async function submit() {
     if (!active || !selected) return;
     setBusy(true);
@@ -154,6 +199,16 @@ export default function Practice() {
     try {
       const r = await api.practice(active.id, selected);
       setResult(r);
+      if (r.is_correct) {
+        const ns = streak + 1;
+        setStreak(ns);
+        if (ns >= 3) {
+          flashEncourage(ns % 10 === 0 ? `🔥 连续答对 ${ns} 题，手感火热，继续！` : `连续答对 ${ns} 题，保持节奏`);
+        }
+      } else {
+        if (streak >= 3) flashEncourage("连续答对中断，别急，复盘后再战！");
+        setStreak(0);
+      }
     } catch (e: any) {
       setErr(e.message);
     } finally {
@@ -274,6 +329,14 @@ export default function Practice() {
           <button className="back-link" onClick={() => setActive(null)}>
             ← 返回题库
           </button>
+          {encourage && (
+            <div className="streak-toast" onClick={() => setEncourage("")}>{encourage}</div>
+          )}
+          {streak >= 2 && (
+            <div className="streak-badge" key={streak}>
+              🔥 连续答对 {streak} 题
+            </div>
+          )}
           <div className="row row--between" style={{ marginBottom: 6 }}>
             <div className="q-item__meta">
               <span className="tag tag--brand">{active.subject}</span>
@@ -341,11 +404,20 @@ export default function Practice() {
 
           {result && (
             <div className={"result " + (result.is_correct ? "result--ok" : "result--bad")}>
-              <b>{result.is_correct ? "✔ 答对" : `✘ 答错，正确答案：${result.correct_answer}`}</b>
-              {result.explanation && <div style={{ marginTop: 6 }}>{result.explanation}</div>}
-              <div className="text-3" style={{ marginTop: 6, fontSize: 12 }}>
-                当前掌握度：{Math.round((result.mastery ?? 0) * 100)}%
+              <div className="result__head">
+                <div>
+                  <b>{result.is_correct ? "✔ 答对" : `✘ 答错，正确答案：${result.correct_answer}`}</b>
+                  <div className="text-3" style={{ marginTop: 4, fontSize: 12 }}>
+                    {result.is_correct ? "这一知识点又稳了一分" : "别担心，下方可看 AI 讲解复盘"}
+                  </div>
+                </div>
+                <MasteryBadge value={result.mastery ?? 0} />
               </div>
+              {result.explanation && (
+                <div style={{ marginTop: 8 }}>
+                  <Markdown>{result.explanation}</Markdown>
+                </div>
+              )}
               <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={busy} onClick={nextQuestion}>
                 {nextLabel}
               </button>

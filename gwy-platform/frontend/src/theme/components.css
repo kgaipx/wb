@@ -810,6 +810,51 @@
 .ov-bar__fill--warn { background: var(--warning); }
 .ov-bar__fill--ok { background: var(--success); }
 
+/* 刷题页激励：连续答对徽章 + 浮动鼓励 + 掌握度徽章 */
+.streak-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  margin-bottom: 10px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ff8a3d, #ff5e3a);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(255, 94, 58, 0.35);
+  animation: streakPop 0.4s ease;
+}
+@keyframes streakPop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.streak-toast {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--brand);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(59, 111, 224, 0.35);
+  animation: streakPop 0.35s ease;
+}
+.mastery-badge { flex: 0 0 auto; }
+.result__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 /* 学习管理卡（我的页） */
 .manage-card {
   flex: 1;
