@@ -19,9 +19,11 @@ export default function Wrong() {
   const [err, setErr] = useState("");
   const [toast, setToast] = useState("");
   const [wf, setWf] = useState<string>("全部"); // 错题本科目筛选
+  const [loading, setLoading] = useState(true);
 
   function refresh() {
-    api.wrongList().then(setItems).catch((e) => setErr(e.message));
+    setLoading(true);
+    api.wrongList().then(setItems).catch((e) => setErr(e.message)).finally(() => setLoading(false));
   }
   useEffect(() => {
     refresh();
@@ -150,8 +152,9 @@ export default function Wrong() {
       </div>
       {err && <div className="err-text">{err}</div>}
       {toast && <div className="ok-text ok-text--float">{toast}</div>}
+      {loading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
 
-      {items.length === 0 && (
+      {!loading && items.length === 0 && (
         <div className="muted" style={{ marginTop: 16 }}>
           暂无待复盘错题。多做「刷题」和「模考」，这里会自动收集你的错答。
         </div>

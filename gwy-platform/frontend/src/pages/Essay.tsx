@@ -14,6 +14,7 @@ export default function Essay() {
   const [history, setHistory] = useState<EssayHistoryItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [hLoading, setHLoading] = useState(false);
 
   useEffect(() => {
     api.essayPrompts().then(setPrompts).catch((e) => setErr(e.message));
@@ -41,10 +42,13 @@ export default function Essay() {
   }
 
   async function loadHistory() {
+    setHLoading(true);
     try {
       setHistory(await api.essayHistory());
     } catch (e: any) {
       setErr(e.message);
+    } finally {
+      setHLoading(false);
     }
   }
 
@@ -145,7 +149,8 @@ export default function Essay() {
 
       {tab === "history" && (
         <>
-          {history.length === 0 && <div className="muted" style={{ marginTop: 16 }}>暂无批改记录，去「写 & 批改」完成首次申论批改吧。</div>}
+          {hLoading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
+          {!hLoading && history.length === 0 && <div className="muted" style={{ marginTop: 16 }}>暂无批改记录，去「写 & 批改」完成首次申论批改吧。</div>}
           {history.map((h) => (
             <div key={h.id} className="card" style={{ marginTop: 12 }}>
               <div className="row row--between">

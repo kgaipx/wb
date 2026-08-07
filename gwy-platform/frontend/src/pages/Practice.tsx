@@ -19,6 +19,7 @@ export default function Practice() {
   const [kpFilter, setKpFilter] = useState<string>(""); // 测评弱项专项练习（按 knowledge_point）
   const kpAutoOpened = useRef(false);
   const [upgrade, setUpgrade] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     api.bankList({ limit: 200 })
@@ -35,7 +36,8 @@ export default function Practice() {
           kpAutoOpened.current = false;
         }
       })
-      .catch((e) => setErr(e.message));
+      .catch((e) => setErr(e.message))
+      .finally(() => setLoading(false));
   }, [params]);
 
   useEffect(() => {
@@ -157,7 +159,7 @@ export default function Practice() {
               <div className="q-item__stem">{q.stem}</div>
             </button>
           ))}
-          {filtered.length === 0 && <div className="muted">该科目暂无题目</div>}
+          {filtered.length === 0 && (loading ? <div className="muted">加载中…</div> : <div className="muted">该科目暂无题目</div>)}
         </div>
       )}
 
@@ -225,7 +227,7 @@ export default function Practice() {
               <b>{result.is_correct ? "✔ 答对" : `✘ 答错，正确答案：${result.correct_answer}`}</b>
               {result.explanation && <div style={{ marginTop: 6 }}>{result.explanation}</div>}
               <div className="text-3" style={{ marginTop: 6, fontSize: 12 }}>
-                当前掌握度：{result.mastery}
+                当前掌握度：{Math.round((result.mastery ?? 0) * 100)}%
               </div>
             </div>
           )}

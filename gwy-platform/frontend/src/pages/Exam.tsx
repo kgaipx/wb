@@ -13,10 +13,10 @@ interface PaperQ {
 }
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
 
+// 模考为限时客观题组卷（自动评分）；申论属主观题需 AI 批改，不纳入自动模考，请到「申论批改」专项训练
 const SUBJECTS = [
   { v: "", label: "全部科目" },
   { v: "行测", label: "行测" },
-  { v: "申论", label: "申论" },
 ];
 
 function fmtDate(iso: string): string {

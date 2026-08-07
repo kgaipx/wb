@@ -7,9 +7,11 @@ export default function Favorites() {
   const [list, setList] = useState<Question[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [loading, setLoading] = useState(true);
 
   function refresh() {
-    api.favoriteList().then(setList).catch((e) => setErr(e.message));
+    setLoading(true);
+    api.favoriteList().then(setList).catch((e) => setErr(e.message)).finally(() => setLoading(false));
   }
   useEffect(() => {
     refresh();
@@ -34,8 +36,9 @@ export default function Favorites() {
         把重点、易错、值得反复揣摩的题加入收藏，沉淀为你的个人备考清单。
       </div>
       {err && <div className="err-text">{err}</div>}
+      {loading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
 
-      {list.length === 0 && (
+      {!loading && list.length === 0 && (
         <div className="muted" style={{ marginTop: 16 }}>
           还没有收藏。在「刷题」「模考」或「错题本」中可把题目加入收藏。
         </div>
