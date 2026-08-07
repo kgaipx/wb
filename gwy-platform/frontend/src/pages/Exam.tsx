@@ -30,6 +30,46 @@ function fmtClock(sec: number): string {
   return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+/** 模考正确率趋势折线（零依赖 SVG，复用运营后台视觉）。单点居中显示。 */
+function ExamTrendChart({ rows }: { rows: { label: string; value: number }[] }) {
+  const W = 320;
+  const H = 96;
+  const pad = 10;
+  const bottom = 0;
+  const top = 100;
+  const n = rows.length;
+  const step = n > 1 ? (W - pad * 2) / (n - 1) : 0;
+  const pts = rows.map((r, i) => {
+    const x = n > 1 ? pad + i * step : W / 2;
+    const y = H - pad - ((r.value - bottom) / (top - bottom)) * (H - pad * 2);
+    return [x, y] as const;
+  });
+  const line = pts.map((p) => p.join(",")).join(" ");
+  const area = `${pad},${H - pad} ${line} ${W - pad},${H - pad}`;
+  return (
+    <div>
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label="正确率趋势">
+        <polygon points={area} fill="var(--brand)" opacity={0.1} />
+        <polyline
+          points={line}
+          fill="none"
+          stroke="var(--brand)"
+          strokeWidth={2.2}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {pts.map((p, i) => (
+          <circle key={i} cx={p[0]} cy={p[1]} r={2.8} fill="var(--brand)" />
+        ))}
+      </svg>
+      <div className="row row--between" style={{ fontSize: 11, color: "var(--text-3)", marginTop: 2 }}>
+        <span>{rows[0]?.label}</span>
+        {n > 1 && <span>{rows[n - 1]?.label}</span>}
+      </div>
+    </div>
+  );
+}
+
 export default function Exam() {
   const [tab, setTab] = useState<"exam" | "history">("exam");
   const [phase, setPhase] = useState<Phase>("setup");
@@ -188,11 +228,54 @@ export default function Exam() {
   function renderReport(rep: any, getStem: (d: any) => string | undefined) {
     const rate = Math.round((rep.correct_rate || 0) * 100);
     const tone = rate >= 70 ? "rate--good" : rate >= 50 ? "rate--mid" : "rate--bad";
+    // 按知识点聚合正确率（弱→强排序），让考生看清究竟哪个模块拖后腿
+    const kpStats = (() => {
+      const m = new Map<string, { c: number; t: number }>();
+      (rep.details || []).forEach((d: any) => {
+        const k = d.knowledge_point || "未分类";
+        const e = m.get(k) || { c: 0, t: 0 };
+        e.t += 1;
+        if (d.is_correct) e.c += 1;
+        m.set(k, e);
+      });
+      return Array.from(m.entries())
+        .map(([kp, v]) => ({ kp, rate: v.t ? v.c / v.t : 0, c: v.c, t: v.t }))
+        .sort((a, b) => a.rate - b.rate);
+    })();
     return (
       <>
         <div className="card report-hero">
           <div className={"big-rate " + tone}>{rate}<span>%</span></div>
           <div className="muted">正确率 · 答对 {rep.correct}/{rep.total} 题</div>
+        </div>
+        <div className="card" style={{ marginTop: 12 }}>
+          <div className="row row--between">
+            <strong>各知识点正确率</strong>
+            <span className="muted" style={{ fontSize: 12 }}>弱 → 强</span>
+          </div>
+          {kpStats.length === 0 ? (
+            <div className="muted" style={{ fontSize: 13, marginTop: 8 }}>暂无维度数据</div>
+          ) : (
+            <div style={{ marginTop: 8 }}>
+              {kpStats.map((s) => {
+                const p = Math.round(s.rate * 100);
+                const tone2 = p >= 70 ? "progress--success" : p >= 50 ? "" : "progress--warn";
+                return (
+                  <div key={s.kp} style={{ marginTop: 8 }}>
+                    <div className="row row--between" style={{ fontSize: 13 }}>
+                      <span>
+                        {s.kp} <span className="text-3">（{s.c}/{s.t}）</span>
+                      </span>
+                      <span className={p >= 70 ? "text-success" : p >= 50 ? "text-brand" : "text-danger"}>{p}%</span>
+                    </div>
+                    <div className={"progress " + tone2}>
+                      <div className="progress__bar" style={{ width: p + "%" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
         <div className="card card--warning" style={{ marginTop: 12 }}>
           <strong>薄弱知识点（AI 诊断）</strong>
@@ -316,6 +399,57 @@ export default function Exam() {
 
       {tab === "history" && phase !== "historyDetail" && (
         <div>
+          {history.length > 0 &&
+            (() => {
+              const sorted = [...history].sort(
+                (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              );
+              const trendRows = sorted.map((h, i) => ({
+                label: `第${i + 1}次`,
+                value: Math.round((h.correct_rate || 0) * 100),
+              }));
+              const avg = Math.round(
+                (sorted.reduce((s, h) => s + (h.correct_rate || 0), 0) / sorted.length) * 100
+              );
+              const best = Math.round(Math.max(...sorted.map((h) => h.correct_rate || 0)) * 100);
+              const first = Math.round((sorted[0].correct_rate || 0) * 100);
+              const last = Math.round((sorted[sorted.length - 1].correct_rate || 0) * 100);
+              const delta = last - first;
+              const deltaCls =
+                delta > 0 ? "rate-trend--up" : delta < 0 ? "rate-trend--down" : "rate-trend--flat";
+              return (
+                <div className="card">
+                  <div className="row row--between">
+                    <strong>成绩进步趋势</strong>
+                    <span className="muted" style={{ fontSize: 12 }}>正确率 %</span>
+                  </div>
+                  <ExamTrendChart rows={trendRows} />
+                  <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 8 }}>
+                    <div className="metric">
+                      <div className="metric__num" style={{ fontSize: 20 }}>{sorted.length}</div>
+                      <div className="metric__label">模考次数</div>
+                    </div>
+                    <div className="metric">
+                      <div className="metric__num" style={{ fontSize: 20, color: "var(--brand)" }}>{avg}%</div>
+                      <div className="metric__label">平均正确率</div>
+                    </div>
+                    <div className="metric">
+                      <div className="metric__num" style={{ fontSize: 20, color: "var(--success)" }}>{best}%</div>
+                      <div className="metric__label">最佳成绩</div>
+                    </div>
+                  </div>
+                  {sorted.length >= 2 && (
+                    <div className="row row--between" style={{ marginTop: 10, fontSize: 13 }}>
+                      <span className="muted">较首次模考</span>
+                      <span className={"rate-trend " + deltaCls}>
+                        {delta > 0 ? "▲ +" : delta < 0 ? "▼ " : "— "}
+                        {Math.abs(delta)}%
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>已加载 {history.length} 次模考记录</div>
           {history.length === 0 && (
             <div className="card">
