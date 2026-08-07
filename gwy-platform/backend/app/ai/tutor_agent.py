@@ -23,7 +23,11 @@ class TutorAgent:
         self.retriever = KnowledgeRetriever(self.gateway)
 
     def explain_question(self, question: Question, user_selected: str | None = None) -> dict:
-        """逐题讲解：返回思路、知识点、用户错因、易错点、练习建议。"""
+        """逐题讲解：返回思路、知识点、用户错因、易错点、练习建议。
+
+        LLM 不可用时降级为 RAG 检索摘要（与 chat() 一致），绝不抛 500。
+        返回 {knowledge_point, explanation, citations, model, offline}。
+        """
         query = f"{question.stem} 知识点：{question.knowledge_point}"
         chunks = self.retriever.retrieve(query, top_k=4)
 
@@ -49,13 +53,36 @@ class TutorAgent:
             "4. 易错点：本题高频失分点。\n"
             "5. 下一步：针对该知识点的一个巩固练习建议。"
         )
-        resp = self.gateway.complete(prompt, system=_SYSTEM, temperature=0.3, max_tokens=900)
-        return {
-            "knowledge_point": question.knowledge_point,
-            "explanation": resp.content,
-            "citations": [c.source for c in chunks],
-            "model": resp.model,
-        }
+        try:
+            resp = self.gateway.complete(prompt, system=_SYSTEM, temperature=0.3, max_tokens=900)
+            return {
+                "knowledge_point": question.knowledge_point,
+                "explanation": resp.content,
+                "citations": [c.source for c in chunks],
+                "model": resp.model,
+                "offline": False,
+            }
+        except Exception:
+            # 离线降级：仅用检索片段拼接讲解，绝不抛 500
+            if chunks:
+                explanation = (
+                    "（当前为离线讲解模式，未接入大模型）根据资料给出要点：\n"
+                    + "\n".join(f"- {c.content}" for c in chunks[:4])
+                    + f"\n\n本题标准答案为：{''.join(correct)}；知识点：{question.knowledge_point}。"
+                )
+            else:
+                explanation = (
+                    "（当前为离线模式，未接入大模型，也未检索到专属资料。）"
+                    f"本题标准答案为：{''.join(correct)}；知识点：{question.knowledge_point}。"
+                    "你可以先去「刷题」或「错题本」巩固，或稍后重试 AI 讲解。"
+                )
+            return {
+                "knowledge_point": question.knowledge_point,
+                "explanation": explanation,
+                "citations": [c.source for c in chunks],
+                "model": "offline-fallback",
+                "offline": True,
+            }
 
     def chat(self, messages: list[dict], kp_hint: str | None = None) -> dict:
         """多轮对话：基于 RAG 检索 + LLM 生成；离线（LLM 不可用）时降级为检索摘要。

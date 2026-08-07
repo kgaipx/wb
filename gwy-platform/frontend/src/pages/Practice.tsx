@@ -11,6 +11,7 @@ export default function Practice() {
   const [result, setResult] = useState<any>(null);
   const [explain, setExplain] = useState<string>("");
   const [cites, setCites] = useState<string[]>([]);
+  const [explainOffline, setExplainOffline] = useState<boolean>(false);
   const [faved, setFaved] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -90,6 +91,7 @@ export default function Practice() {
       const r = await api.explain(active.id, selected || undefined);
       setExplain(r.explanation);
       setCites(r.citations);
+      setExplainOffline(!!r.offline);
     } catch (e: any) {
       if (e.status === 402) setUpgrade(true);
       else setErr(e.message);
@@ -198,7 +200,10 @@ export default function Practice() {
 
           {explain && (
             <div className="tutor-box">
-              <div className="tutor-box__title">AI 私教讲解</div>
+              <div className="tutor-box__title">
+                AI 私教讲解
+                {explainOffline && <span className="badge badge--warn">离线模式</span>}
+              </div>
               <div className="tutor-box__body">{explain}</div>
               {cites.length > 0 && <div className="tutor-box__cite">来源：{cites.join("；")}</div>}
             </div>

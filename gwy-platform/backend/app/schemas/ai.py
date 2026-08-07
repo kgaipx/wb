@@ -13,6 +13,7 @@ class ExplainOut(BaseModel):
     citations: list[str] = []
     model: str | None = None
     quota_remaining: int | None = None  # 免费版剩余配额（pro 为 None）
+    offline: bool = False  # True 表示 LLM 不可用时走了离线降级讲解
 
 
 class AiQuota(BaseModel):

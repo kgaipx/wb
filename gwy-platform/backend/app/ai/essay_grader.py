@@ -14,6 +14,7 @@ import math
 import os
 import re
 import time
+from collections import Counter
 
 from dataclasses import dataclass, field
 
@@ -65,9 +66,8 @@ class EssayGrader:
             if dims is None:
                 raise ValueError("LLM 未返回可解析 JSON")
         except Exception:
-            # 回退：基于要点的极简启发式（保障可用性，但一律转人工复核）
-            dims = {d: round(per_dim * 0.6, 1) for d in DIMENSIONS}
-            rationale = "AI 评分服务暂不可用，已转人工复核（启发式预评仅供参考）。"
+            # 回退：基于要点的规则化预评（保障可用性且给出有区分度的分数，仍一律转人工复核）
+            dims, rationale = self._heuristic_score(essay_text, prompt_material, per_dim)
             return EssayScore(
                 total=round(sum(dims.values()), 1),
                 dimensions=dims,
@@ -116,6 +116,72 @@ class EssayGrader:
             return None, ""
         dims = {d: float(obj.get(d, 0)) for d in DIMENSIONS}
         return dims, str(obj.get("rationale", ""))
+
+    @staticmethod
+    def _heuristic_score(essay_text: str, prompt_material: str, per_dim: float) -> tuple[dict, str]:
+        """LLM 不可用时的规则化预评：综合篇幅/结构/材料关键词覆盖，给出有区分度的五维分数。
+
+        仍返回 needs_human_review=True（上层负责标转人工），此处只让分数更有信息量。
+        """
+        essay = (essay_text or "").strip()
+        n = len(essay)
+        if n == 0:
+            dims = {d: 0.0 for d in DIMENSIONS}
+            return dims, "未检测到作答内容，已转人工复核。"
+        # 1) 篇幅因子 [0,1]
+        if n <= 200:
+            length = 0.35 + 0.25 * (n / 200.0)
+        elif n <= 1000:
+            length = 0.6 + 0.4 * ((n - 200) / 800.0)
+        elif n <= 1600:
+            length = 1.0
+        else:
+            length = 0.9  # 冗长略降
+        # 2) 结构因子 [0,1]：分段 + 衔接/对策词
+        paras = [p for p in re.split(r"[\n\r]+|\s{2,}", essay) if p.strip()]
+        markers = len(
+            re.findall(r"首先|其次|再次|最后|第一|第二|第三|一方面|另一方面|综上|总之|因此|所以|应当|必须|需要|要", essay)
+        )
+        structure = min(1.0, 0.45 + min(len(paras), 5) / 5 * 0.3 + min(markers, 8) / 8 * 0.25)
+        # 3) 材料关键词覆盖 [0,1]
+        cov = EssayGrader._material_coverage(essay, prompt_material)
+        # 五维加权（保证维度间有区分度，非一刀切）
+        vals = {
+            "立意": 0.55 * cov + 0.45 * structure,
+            "结构": structure,
+            "论证": 0.5 * cov + 0.3 * structure + 0.2 * length,
+            "语言": 0.45 * structure + 0.55 * length,
+            "素材": cov,
+        }
+        dims = {d: round(per_dim * max(0.0, min(1.0, v)), 1) for d, v in vals.items()}
+        rationale = (
+            f"AI 评分服务暂不可用，已转人工复核。规则预评（仅供参考）："
+            f"篇幅约 {n} 字、分段 {len(paras)}、衔接词 {markers} 处、材料关键词覆盖 {int(cov * 100)}%。"
+        )
+        return dims, rationale
+
+    @staticmethod
+    def _material_coverage(essay: str, material: str) -> float:
+        """提取材料高频 2 字词（去停用词），返回考生在作答中覆盖的比例 [0,1]。"""
+        mat = material or ""
+        if not mat:
+            return 0.5  # 无材料时取中性值，避免全 0
+        grams = [mat[i:i + 2] for i in range(len(mat) - 1) if re.match(r"[一-鿿]{2}", mat[i:i + 2])]
+        if not grams:
+            return 0.5
+        counter = Counter(grams)
+        stop = {
+            "我们", "可以", "这样", "因为", "所以", "这个", "那个", "以及", "通过", "对于", "进行",
+            "实现", "需要", "重要", "发展", "应该", "必须", "提高", "加强", "中国", "社会", "问题",
+            "一个", "一些", "这些", "那些", "就是", "这是", "还是", "这么", "那么", "已经", "没有",
+        }
+        for s in stop:
+            counter.pop(s, None)
+        top = [g for g, _ in counter.most_common(12)]
+        if not top:
+            return 0.5
+        hit = sum(1 for g in top if g in essay)
+        return hit / len(top)
 
     @staticmethod
     def _calibrate(dims: dict[str, float], per_dim: float, essay_text: str) -> bool:

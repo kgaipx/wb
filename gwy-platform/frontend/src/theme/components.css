@@ -803,6 +803,12 @@
   background: var(--brand-050);
   color: var(--brand);
 }
+.badge--warn {
+  margin-left: 8px;
+  background: #fff4e0;
+  color: #b76e00;
+  border: 1px solid #f0c777;
+}
 
 /* ===================== 进度条 ===================== */
 .progress {

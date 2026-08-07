@@ -362,7 +362,7 @@ export const api = {
 
   // AI 私教 / 自适应（WBS 3.1 / 3.2）
   explain: (question_id: number, selected?: string) =>
-    request<{ knowledge_point: string; explanation: string; citations: string[]; model: string | null }>("/ai/explain", {
+    request<{ knowledge_point: string; explanation: string; citations: string[]; model: string | null; offline?: boolean }>("/ai/explain", {
       method: "POST",
       body: JSON.stringify({ question_id, selected }),
     }),
