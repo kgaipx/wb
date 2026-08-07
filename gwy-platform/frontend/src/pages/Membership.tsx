@@ -55,13 +55,14 @@ export default function Membership() {
     setErr("");
     try {
       const o = await api.createOrder(planId);
-      if (o.pay_url) {
-        // 沙箱/演示：模拟支付成功（真实支付应跳转收银台 URL 完成支付）
-        await api.paySandbox(o.id);
-        setMsg(`已开通 ${planId}（订单 #${o.id}，¥${(o.amount / 100).toFixed(0)}）`);
-      } else {
-        setMsg(`订单 #${o.id} 已创建，请前往支付完成开通`);
+      // 真实收银台为绝对 http(s) 链接时跳转支付；沙箱返回的相对/空 pay_url 走模拟支付
+      if (o.pay_url && /^https?:\/\//i.test(o.pay_url)) {
+        window.location.href = o.pay_url;
+        return;
       }
+      // 沙箱/演示：模拟支付成功，即时开通
+      await api.paySandbox(o.id);
+      setMsg(`已开通 ${planId}（订单 #${o.id}，¥${(o.amount / 100).toFixed(0)}）`);
       await refresh();
     } catch (e: any) {
       setErr(e.message);
