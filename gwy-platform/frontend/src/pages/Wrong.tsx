@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, WrongItem } from "../api/client";
 import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
+import MasteryBadge from "../components/MasteryBadge";
 
 interface ItemState {
   open: boolean;
@@ -20,6 +21,7 @@ export default function Wrong() {
   const [err, setErr] = useState("");
   const [toast, setToast] = useState("");
   const [wf, setWf] = useState<string>("全部"); // 错题本科目筛选
+  const [sortBy, setSortBy] = useState<"risk" | "attempts">("risk"); // 列表排序：复错风险↓ / 练习次数↓
   const [loading, setLoading] = useState(true);
 
   function refresh() {
@@ -42,6 +44,12 @@ export default function Wrong() {
     [items]
   );
   const visible = wf === "全部" ? items : items.filter((it) => it.question.subject === wf);
+  const sorted = useMemo(() => {
+    const arr = [...visible];
+    if (sortBy === "risk") arr.sort((a, b) => (b.recurrence_rate ?? 0) - (a.recurrence_rate ?? 0));
+    else arr.sort((a, b) => b.attempts - a.attempts);
+    return arr;
+  }, [visible, sortBy]);
 
   // 全局概览（不受科目筛选影响，反映错题本全貌）
   const overview = useMemo(() => {
@@ -229,27 +237,36 @@ export default function Wrong() {
           ))}
         </div>
       )}
+      {items.length > 0 && (
+        <div className="chip-row" style={{ marginBottom: 10 }}>
+          <button className={"chip " + (sortBy === "risk" ? "chip--on" : "")} onClick={() => setSortBy("risk")}>复错风险↓</button>
+          <button className={"chip " + (sortBy === "attempts" ? "chip--on" : "")} onClick={() => setSortBy("attempts")}>练习次数↓</button>
+        </div>
+      )}
       {items.length > 0 && visible.length === 0 && (
         <div className="muted" style={{ marginTop: 12 }}>
           该科目暂无错题。
         </div>
       )}
 
-      {visible.map((it) => {
+      {sorted.map((it) => {
         const q = it.question;
         const st = s(q.id);
         return (
           <div key={q.id} className="card" style={{ marginTop: 12 }}>
-            <div className="q-item__meta">
-              <span className="tag tag--bad">错 {it.wrong_count} 次</span>
-              <span className="tag tag--brand">{q.subject}</span>
-              {it.recurrence_rate !== null && it.recurrence_rate !== undefined && (
-                <span className={"tag " + (it.recurrence_rate >= 0.6 ? "tag--bad" : it.recurrence_rate >= 0.3 ? "tag--warn" : "tag--ok")}>
-                  复错率 {Math.round(it.recurrence_rate * 100)}%
-                </span>
-              )}
-              {it.attempts > 0 && <span className="text-3">共答 {it.attempts} 次</span>}
-              <span>{q.knowledge_point}</span>
+            <div className="wrong-item__top">
+              <div className="q-item__meta">
+                <span className="tag tag--bad">错 {it.wrong_count} 次</span>
+                <span className="tag tag--brand">{q.subject}</span>
+                {it.recurrence_rate !== null && it.recurrence_rate !== undefined && (
+                  <span className={"tag " + (it.recurrence_rate >= 0.6 ? "tag--bad" : it.recurrence_rate >= 0.3 ? "tag--warn" : "tag--ok")}>
+                    复错率 {Math.round(it.recurrence_rate * 100)}%
+                  </span>
+                )}
+                {it.attempts > 0 && <span className="text-3">共答 {it.attempts} 次</span>}
+                <span>{q.knowledge_point}</span>
+              </div>
+              <MasteryBadge value={1 - (it.recurrence_rate ?? 0)} size={56} />
             </div>
             <div className="q-item__stem" style={{ marginTop: 6 }}>{q.stem}</div>
 

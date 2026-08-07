@@ -847,6 +847,8 @@
   animation: streakPop 0.35s ease;
 }
 .mastery-badge { flex: 0 0 auto; }
+.wrong-item__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.wrong-item__top .q-item__meta { flex: 1; }
 .result__head {
   display: flex;
   align-items: center;
