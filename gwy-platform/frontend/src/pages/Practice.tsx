@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
 
+const PAGE = 60;
+
 export default function Practice() {
   const [params] = useSearchParams();
   const nav = useNavigate();
@@ -20,17 +22,27 @@ export default function Practice() {
   const kpAutoOpened = useRef(false);
   const [upgrade, setUpgrade] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [offset, setOffset] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const didInit = useRef(false);
 
+  // 初始加载（含 ?q= 直达 / ?kp= 专项练习）
   useEffect(() => {
-    api.bankList({ limit: 200 })
+    setLoading(true);
+    setErr("");
+    const qid = params.get("q");
+    const kp = params.get("kp");
+    api
+      .bankList({ limit: PAGE, offset: 0, knowledge_point: kp || undefined })
       .then((qs) => {
         setList(qs);
-        const qid = params.get("q");
+        setOffset(qs.length);
+        setHasMore(qs.length === PAGE);
         if (qid) {
           const target = qs.find((q) => String(q.id) === qid);
           if (target) setActive(target);
         }
-        const kp = params.get("kp");
         if (kp) {
           setKpFilter(kp);
           kpAutoOpened.current = false;
@@ -40,6 +52,31 @@ export default function Practice() {
       .finally(() => setLoading(false));
   }, [params]);
 
+  // 科目 / 弱项筛选变化 → 重新拉第一页（跳过挂载初值）
+  useEffect(() => {
+    if (!didInit.current) {
+      didInit.current = true;
+      return;
+    }
+    if (active) return; // 做题中不重拉
+    setLoading(true);
+    setErr("");
+    api
+      .bankList({
+        limit: PAGE,
+        offset: 0,
+        subject: filter !== "全部" ? filter : undefined,
+        knowledge_point: kpFilter || undefined,
+      })
+      .then((qs) => {
+        setList(qs);
+        setOffset(qs.length);
+        setHasMore(qs.length === PAGE);
+      })
+      .catch((e) => setErr(e.message))
+      .finally(() => setLoading(false));
+  }, [filter, kpFilter]);
+
   useEffect(() => {
     if (!active) return;
     api
@@ -48,25 +85,34 @@ export default function Practice() {
       .catch(() => setFaved(false));
   }, [active]);
 
-  // 科目筛选
-  const subjects = useMemo(() => {
-    const set = new Set(list.map((q) => q.subject));
-    return ["全部", ...Array.from(set)];
-  }, [list]);
-  const filtered = useMemo(() => {
-    let out = list;
-    if (kpFilter) out = out.filter((q) => q.knowledge_point === kpFilter);
-    if (filter !== "全部") out = out.filter((q) => q.subject === filter);
-    return out;
-  }, [list, filter, kpFilter]);
-
   // 从测评弱项进入：自动打开第一道专项题（每轮 kp 仅触发一次）
   useEffect(() => {
-    if (kpFilter && !kpAutoOpened.current && !active && filtered.length) {
+    if (kpFilter && !kpAutoOpened.current && !active && list.length) {
       kpAutoOpened.current = true;
-      setActive(filtered[0]);
+      setActive(list[0]);
     }
-  }, [kpFilter, filtered, active]);
+  }, [kpFilter, list, active]);
+
+  async function loadMore() {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    setErr("");
+    try {
+      const qs = await api.bankList({
+        limit: PAGE,
+        offset,
+        subject: filter !== "全部" ? filter : undefined,
+        knowledge_point: kpFilter || undefined,
+      });
+      setList((prev) => [...prev, ...qs]);
+      setOffset((o) => o + qs.length);
+      setHasMore(qs.length === PAGE);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   function openQuestion(q: Question) {
     setActive(q);
@@ -119,6 +165,11 @@ export default function Practice() {
     }
   }
 
+  const subjects = useMemo(() => {
+    const set = new Set(list.map((q) => q.subject));
+    return ["全部", ...Array.from(set)];
+  }, [list]);
+
   return (
     <section>
       <h2 className="page-title">刷题练习</h2>
@@ -134,7 +185,6 @@ export default function Practice() {
                 onClick={() => {
                   setKpFilter("");
                   kpAutoOpened.current = false;
-                  nav("/practice");
                 }}
               >
                 清除筛选
@@ -148,7 +198,7 @@ export default function Practice() {
               </button>
             ))}
           </div>
-          {filtered.map((q) => (
+          {list.map((q) => (
             <button key={q.id} className="q-item" onClick={() => openQuestion(q)}>
               <div className="q-item__meta">
                 <span className="tag tag--brand">{q.subject}</span>
@@ -159,7 +209,12 @@ export default function Practice() {
               <div className="q-item__stem">{q.stem}</div>
             </button>
           ))}
-          {filtered.length === 0 && (loading ? <div className="muted">加载中…</div> : <div className="muted">该科目暂无题目</div>)}
+          {list.length === 0 && (loading ? <div className="muted">加载中…</div> : <div className="muted">该科目暂无题目</div>)}
+          {hasMore && (
+            <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={loadingMore} onClick={loadMore}>
+              {loadingMore ? "加载中…" : "加载更多"}
+            </button>
+          )}
         </div>
       )}
 

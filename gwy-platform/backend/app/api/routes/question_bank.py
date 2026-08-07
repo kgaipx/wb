@@ -32,6 +32,8 @@ router = APIRouter()
 def list_questions(
     subject: str | None = None,
     category: str | None = None,
+    knowledge_point: str | None = None,
+    offset: int = Query(0, ge=0),
     limit: int = Query(20, le=500, ge=1),
     db: Session = Depends(get_db),
 ):
@@ -40,7 +42,9 @@ def list_questions(
         q = q.filter(Question.subject == subject)
     if category:
         q = q.filter(Question.category == category)
-    return q.order_by(Question.id).limit(limit).all()
+    if knowledge_point:
+        q = q.filter(Question.knowledge_point == knowledge_point)
+    return q.order_by(Question.id).offset(offset).limit(limit).all()
 
 
 @router.get("/questions/{qid}", response_model=QuestionOut)

@@ -340,10 +340,12 @@ export const api = {
     request<{ ok: boolean }>(`/student/wrong/${question_id}/review`, { method: "POST" }),
 
   // 题库 / 刷题（WBS 2.2）
-  bankList: (params: { subject?: string; category?: string; limit?: number } = {}) => {
+  bankList: (params: { subject?: string; category?: string; knowledge_point?: string; offset?: number; limit?: number } = {}) => {
     const q = new URLSearchParams();
     if (params.subject) q.set("subject", params.subject);
     if (params.category) q.set("category", params.category);
+    if (params.knowledge_point) q.set("knowledge_point", params.knowledge_point);
+    if (params.offset !== undefined) q.set("offset", String(params.offset));
     if (params.limit) q.set("limit", String(params.limit));
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
