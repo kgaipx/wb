@@ -49,3 +49,19 @@ gwy-platform/backend/data/incoming/*
 # ===== 导入管线预览产物（OCR/解析中间产物，含第三方内容，不入库） =====
 gwy-platform/backend/_preview*.json
 gwy-platform/backend/**/_preview*.json
+
+# ===== SSH 私钥 / 凭证（绝不入库） =====
+*.pem
+*.key
+*.p12
+*.pfx
+id_*
+
+# ===== OCR / 解析管线一次性中间产物与临时调试脚本（非正式 ingest 管线，不入库） =====
+gwy-platform/backend/_*.json
+gwy-platform/backend/_*.py
+gwy-platform/backend/_*.txt
+gwy-platform/backend/parse_daan*.py
+gwy-platform/backend/run_daan_robust.py
+gwy-platform/backend/wait_then_*.py
+gwy-platform/backend/scripts_fix/

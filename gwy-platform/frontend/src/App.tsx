@@ -78,6 +78,20 @@ const ChartIcon: Icon = () => (
   </svg>
 );
 
+const ShieldIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z" />
+    <path d="M9 12l2 2 4-4" />
+  </svg>
+);
+const GaugeIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 18a8 8 0 1 1 16 0" />
+    <path d="M12 14l4-3" />
+    <circle cx="12" cy="14" r="1.2" fill="currentColor" />
+  </svg>
+);
+
 const tabs = [
   { to: "/", label: "首页", end: true, icon: HomeIcon },
   { to: "/learn", label: "学习", icon: BookIcon },
@@ -233,6 +247,15 @@ function AppShell() {
     }
   };
 
+  // 角色专属入口：审核台(reviewer/admin)、运营后台(admin) 注入底部导航
+  const visibleTabs = [...tabs];
+  if (user && (user.role === "reviewer" || user.role === "admin")) {
+    visibleTabs.push({ to: "/review", label: "审核", icon: ShieldIcon });
+  }
+  if (user && user.role === "admin") {
+    visibleTabs.push({ to: "/admin", label: "运营", icon: GaugeIcon });
+  }
+
   return (
     <div className="app-shell">
       {!isAuth && (
@@ -335,7 +358,7 @@ function AppShell() {
 
       {!isAuth && (
         <nav className="nav-bar">
-          {tabs.map((t) => {
+          {visibleTabs.map((t) => {
             const Icon = t.icon;
             return (
               <NavLink
