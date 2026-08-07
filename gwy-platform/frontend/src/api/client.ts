@@ -85,6 +85,12 @@ export interface Question {
   is_verified: boolean;
   options: { id: number; label: string; content: string }[];
 }
+export interface FavoriteItem {
+  question: Question;
+  note: string; // 私人笔记（云端同步）
+  tags: string[]; // 自定义标签，如 ["易错","重点"]
+  created_at: string;
+}
 export interface WrongItem {
   question: Question;
   wrong_count: number;
@@ -375,11 +381,16 @@ export const api = {
     ),
 
   // 收藏夹（WBS 2.2 衍生 / 学习管理）
-  favoriteList: () => request<Question[]>("/bank/favorites"),
+  favoriteList: () => request<FavoriteItem[]>("/bank/favorites"),
   favoriteAdd: (question_id: number) =>
     request<{ ok: boolean }>("/bank/favorites", { method: "POST", body: JSON.stringify({ question_id }) }),
   favoriteRemove: (question_id: number) =>
     request<{ ok: boolean }>(`/bank/favorites/${question_id}`, { method: "DELETE" }),
+  favoriteUpdate: (question_id: number, body: { note?: string; tags?: string[] }) =>
+    request<FavoriteItem>(`/bank/favorites/${question_id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
 
   // AI 私教 / 自适应（WBS 3.1 / 3.2）
   explain: (question_id: number, selected?: string) =>

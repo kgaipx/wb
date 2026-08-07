@@ -64,3 +64,21 @@ class WrongItem(BaseModel):
 
 class FavoriteIn(BaseModel):
     question_id: int
+
+
+class FavoritePatch(BaseModel):
+    """收藏关系更新：笔记与自定义标签（二者任选其一，传 null 表示不修改）。"""
+
+    note: str | None = None
+    tags: list[str] | None = None
+
+
+class FavoriteOut(BaseModel):
+    """收藏条目：题目本体 + 云端笔记 + 自定义标签。"""
+
+    question: QuestionOut
+    note: str = ""
+    tags: list[str] = []
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

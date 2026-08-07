@@ -301,6 +301,50 @@ export default function Assessment() {
           </div>
         )}
 
+        {(() => {
+          const t = computeTrend(overall);
+          if (!t) return null;
+          const diffCls =
+            t.diff > 0 ? "rate-trend--up" : t.diff < 0 ? "rate-trend--down" : "rate-trend--flat";
+          const arrow = t.diff > 0 ? "▲" : t.diff < 0 ? "▼" : "—";
+          const verdict =
+            t.diff > 0
+              ? "持续进步，保持节奏！"
+              : t.diff < 0
+              ? "略有回落，针对性补强即可追平。"
+              : "稳住了基线，向更高分冲刺。";
+          return (
+            <div className="card card--soft" style={{ marginTop: 12 }}>
+              <strong style={{ display: "block", marginBottom: 4 }}>成长趋势小结</strong>
+              <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
+                基于 {t.count} 次历史测评的整体轨迹
+              </div>
+              <div className="trend-grid">
+                <div className="trend-cell">
+                  <div className="trend-cell__val">{t.firstPct}%</div>
+                  <div className="trend-cell__label">首次</div>
+                </div>
+                <div className="trend-cell">
+                  <div className="trend-cell__val">{t.bestPct}%</div>
+                  <div className="trend-cell__label">最佳</div>
+                </div>
+                <div className="trend-cell">
+                  <div className="trend-cell__val">{t.avgPct}%</div>
+                  <div className="trend-cell__label">平均</div>
+                </div>
+              </div>
+              <div className="trend-summary" style={{ marginTop: 10 }}>
+                本次较首次
+                <span className={"rate-trend " + diffCls}>
+                  {arrow} {t.diff > 0 ? "+" : ""}
+                  {t.diff} 个百分点
+                </span>
+                {verdict}
+              </div>
+            </div>
+          );
+        })()}
+
         {r.details?.length > 0 && (
           <>
             <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
@@ -359,6 +403,17 @@ export default function Assessment() {
     setTimeout(() => setToast(""), 2000);
   }
 
+  // 成长趋势：基于历史测评记录计算首次/最佳/平均与本次对比（导出与内联展示共用）
+  function computeTrend(overallPct: number) {
+    if (history.length === 0) return null;
+    const asc = [...history].reverse(); // 时间升序（history 最新在前）
+    const firstPct = Math.round((asc[0].overall || 0) * 100);
+    const bestPct = Math.max(...history.map((h) => Math.round((h.overall || 0) * 100)));
+    const avgPct = Math.round((history.reduce((a, h) => a + (h.overall || 0), 0) / history.length) * 100);
+    const diff = overallPct - firstPct; // 本次较首次，单位百分点
+    return { count: history.length, firstPct, bestPct, avgPct, diff };
+  }
+
   function reportToMarkdown(rep: AssessmentReport | AssessmentRecordOut): string {
     const r = rep as any;
     const overall = Math.round((r.overall || 0) * 100);
@@ -396,19 +451,15 @@ export default function Assessment() {
           lines.push(`正确答案：${d.correct_answer}${d.selected ? `（你的作答：${d.selected}）` : ""}`);
       });
     }
-    // 成长趋势说明（基于历史测评记录）
+    // 成长趋势说明（基于历史测评记录，复用 computeTrend）
     lines.push("", "## 成长趋势");
-    if (history.length > 0) {
-      const asc = [...history].reverse(); // 时间升序（history 最新在前）
-      const firstPct = Math.round((asc[0].overall || 0) * 100);
-      const bestPct = Math.max(...history.map((h) => Math.round((h.overall || 0) * 100)));
-      const avgPct = Math.round((history.reduce((a, h) => a + (h.overall || 0), 0) / history.length) * 100);
-      lines.push(`- 历史测评次数：${history.length} 次`);
-      lines.push(`- 首次测评掌握度：${firstPct}%`);
-      lines.push(`- 历史最佳掌握度：${bestPct}%`);
-      lines.push(`- 历史平均掌握度：${avgPct}%`);
-      const diff = overall - firstPct;
-      lines.push(`- 本次较首次：${diff >= 0 ? "▲ 提升" : "▼ 下降"} ${Math.abs(diff)} 个百分点`);
+    const t = computeTrend(overall);
+    if (t) {
+      lines.push(`- 历史测评次数：${t.count} 次`);
+      lines.push(`- 首次测评掌握度：${t.firstPct}%`);
+      lines.push(`- 历史最佳掌握度：${t.bestPct}%`);
+      lines.push(`- 历史平均掌握度：${t.avgPct}%`);
+      lines.push(`- 本次较首次：${t.diff >= 0 ? "▲ 提升" : "▼ 下降"} ${Math.abs(t.diff)} 个百分点`);
     } else {
       lines.push("- 这是你的首次测评，已建立能力基线；完成后续测评即可对比成长轨迹。");
     }

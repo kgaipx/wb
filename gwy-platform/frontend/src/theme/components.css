@@ -856,6 +856,35 @@
 .fav-note-input { width: 100%; box-sizing: border-box; border: 1px solid var(--surface-2); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; background: var(--surface); color: var(--text); }
 .fav-note-input:focus { outline: none; border-color: var(--brand); }
 
+/* 收藏自定义标签 */
+.fav-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.fav-tag {
+  border: 1px solid var(--surface-2);
+  background: var(--surface);
+  color: var(--text-3);
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.fav-tag:hover { border-color: var(--brand); color: var(--brand); }
+.fav-tag--on { background: var(--brand); border-color: var(--brand); color: #fff; }
+.fav-tag--on:hover { color: #fff; }
+
+/* 测评成长趋势小结卡 */
+.trend-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.trend-cell {
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 10px 6px;
+  text-align: center;
+}
+.trend-cell__val { font-size: 20px; font-weight: 700; color: var(--text); }
+.trend-cell__label { font-size: 12px; color: var(--text-3); margin-top: 2px; }
+.trend-summary { font-size: 14px; color: var(--text-2); }
+.trend-summary .rate-trend { margin: 0 6px; }
+
 /* 学习计划：连续打卡高亮 */
 .plan-streak-badge { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: #B45309; background: #FEF3C7; border-radius: 999px; padding: 2px 10px; }
 .plan-cal__cell--streak { box-shadow: 0 0 0 2px var(--warning) inset; position: relative; }

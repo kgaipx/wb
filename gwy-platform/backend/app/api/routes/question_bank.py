@@ -19,6 +19,8 @@ from app.models import (
 )
 from app.schemas.question import (
     FavoriteIn,
+    FavoriteOut,
+    FavoritePatch,
     PracticeResult,
     PracticeSubmit,
     QuestionListItem,
@@ -115,7 +117,7 @@ def practice(
     )
 
 
-@router.get("/favorites", response_model=list[QuestionOut])
+@router.get("/favorites", response_model=list[FavoriteOut])
 def list_favorites(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     favs = (
         db.query(Favorite)
@@ -123,12 +125,57 @@ def list_favorites(current: User = Depends(get_current_user), db: Session = Depe
         .order_by(Favorite.created_at.desc())
         .all()
     )
-    ids = [f.question_id for f in favs]
-    if not ids:
+    if not favs:
         return []
+    ids = [f.question_id for f in favs]
     qs = db.query(Question).filter(Question.id.in_(ids)).all()
     by_id = {q.id: q for q in qs}
-    return [by_id[i] for i in ids if i in by_id]
+    out = []
+    for f in favs:
+        q = by_id.get(f.question_id)
+        if q is None:
+            continue
+        out.append(
+            FavoriteOut(
+                question=q,
+                note=f.note or "",
+                tags=f.tags or [],
+                created_at=f.created_at,
+            )
+        )
+    return out
+
+
+@router.patch("/favorites/{qid}", response_model=FavoriteOut)
+def patch_favorite(
+    qid: int,
+    payload: FavoritePatch,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    f = (
+        db.query(Favorite)
+        .filter(Favorite.user_id == current.id, Favorite.question_id == qid)
+        .first()
+    )
+    if f is None:
+        raise HTTPException(status_code=404, detail="收藏不存在")
+    if payload.note is not None:
+        f.note = payload.note
+    if payload.tags is not None:
+        # 仅保留白名单标签，去重并保序
+        allowed = {"易错", "重点"}
+        seen: set[str] = set()
+        f.tags = [t for t in payload.tags if t in allowed and not (t in seen or seen.add(t))]
+    db.commit()
+    db.refresh(f)
+    q = db.get(Question, f.question_id)
+    return FavoriteOut(
+        question=q,
+        note=f.note or "",
+        tags=f.tags or [],
+        created_at=f.created_at,
+    )
 
 
 @router.post("/favorites", response_model=dict)

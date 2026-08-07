@@ -86,7 +86,7 @@ export default function Practice() {
     if (!active) return;
     api
       .favoriteList()
-      .then((favs) => setFaved(favs.some((f) => f.id === active.id)))
+      .then((favs) => setFaved(favs.some((f) => f.question.id === active.id)))
       .catch(() => setFaved(false));
   }, [active]);
 
