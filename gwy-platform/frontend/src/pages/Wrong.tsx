@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, WrongItem } from "../api/client";
 import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
@@ -18,6 +18,7 @@ export default function Wrong() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [toast, setToast] = useState("");
+  const [wf, setWf] = useState<string>("全部"); // 错题本科目筛选
 
   function refresh() {
     api.wrongList().then(setItems).catch((e) => setErr(e.message));
@@ -32,6 +33,12 @@ export default function Wrong() {
   function patch(qid: number, patch: Partial<ItemState>) {
     setStates((prev) => ({ ...prev, [qid]: { ...s(qid), ...patch } }));
   }
+
+  const wSubjects = useMemo(
+    () => ["全部", ...Array.from(new Set(items.map((it) => it.question.subject)))],
+    [items]
+  );
+  const visible = wf === "全部" ? items : items.filter((it) => it.question.subject === wf);
 
   async function submit(qid: number) {
     const cur = s(qid);
@@ -150,7 +157,22 @@ export default function Wrong() {
         </div>
       )}
 
-      {items.map((it) => {
+      {items.length > 0 && (
+        <div className="chip-row" style={{ marginBottom: 10 }}>
+          {wSubjects.map((s) => (
+            <button key={s} className={"chip " + (wf === s ? "chip--on" : "")} onClick={() => setWf(s)}>
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
+      {items.length > 0 && visible.length === 0 && (
+        <div className="muted" style={{ marginTop: 12 }}>
+          该科目暂无错题。
+        </div>
+      )}
+
+      {visible.map((it) => {
         const q = it.question;
         const st = s(q.id);
         return (

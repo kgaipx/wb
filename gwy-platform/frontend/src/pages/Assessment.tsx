@@ -199,11 +199,23 @@ export default function Assessment() {
             <strong>薄弱知识点（诊断）</strong>
             <div className="chip-row" style={{ marginTop: 8 }}>
               {r.weak_points.map((w: string) => (
-                <span key={w} className="chip chip--warn">
+                <span
+                  key={w}
+                  className="chip chip--warn chip--click"
+                  onClick={() => nav(`/practice?kp=${encodeURIComponent(w)}`)}
+                  title="点击去专项练习"
+                >
                   {w}
                 </span>
               ))}
             </div>
+            <button
+              className="btn btn--primary btn--block"
+              style={{ marginTop: 10 }}
+              onClick={() => nav(`/practice?kp=${encodeURIComponent(r.weak_points[0])}`)}
+            >
+              针对薄弱点去专项练习 →
+            </button>
           </div>
         )}
 

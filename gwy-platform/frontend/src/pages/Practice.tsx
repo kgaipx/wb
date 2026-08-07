@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
 
@@ -16,6 +16,8 @@ export default function Practice() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [filter, setFilter] = useState<string>("全部");
+  const [kpFilter, setKpFilter] = useState<string>(""); // 测评弱项专项练习（按 knowledge_point）
+  const kpAutoOpened = useRef(false);
   const [upgrade, setUpgrade] = useState(false);
 
   useEffect(() => {
@@ -26,6 +28,11 @@ export default function Practice() {
         if (qid) {
           const target = qs.find((q) => String(q.id) === qid);
           if (target) setActive(target);
+        }
+        const kp = params.get("kp");
+        if (kp) {
+          setKpFilter(kp);
+          kpAutoOpened.current = false;
         }
       })
       .catch((e) => setErr(e.message));
@@ -44,10 +51,20 @@ export default function Practice() {
     const set = new Set(list.map((q) => q.subject));
     return ["全部", ...Array.from(set)];
   }, [list]);
-  const filtered = useMemo(
-    () => (filter === "全部" ? list : list.filter((q) => q.subject === filter)),
-    [list, filter]
-  );
+  const filtered = useMemo(() => {
+    let out = list;
+    if (kpFilter) out = out.filter((q) => q.knowledge_point === kpFilter);
+    if (filter !== "全部") out = out.filter((q) => q.subject === filter);
+    return out;
+  }, [list, filter, kpFilter]);
+
+  // 从测评弱项进入：自动打开第一道专项题（每轮 kp 仅触发一次）
+  useEffect(() => {
+    if (kpFilter && !kpAutoOpened.current && !active && filtered.length) {
+      kpAutoOpened.current = true;
+      setActive(filtered[0]);
+    }
+  }, [kpFilter, filtered, active]);
 
   function openQuestion(q: Question) {
     setActive(q);
@@ -107,6 +124,21 @@ export default function Practice() {
 
       {!active && (
         <div>
+          {kpFilter && (
+            <div className="filter-banner">
+              正在专项练习薄弱点：<b>{kpFilter}</b>
+              <button
+                className="link-btn"
+                onClick={() => {
+                  setKpFilter("");
+                  kpAutoOpened.current = false;
+                  nav("/practice");
+                }}
+              >
+                清除筛选
+              </button>
+            </div>
+          )}
           <div className="chip-row" style={{ marginBottom: 10 }}>
             {subjects.map((s) => (
               <button key={s} className={"chip " + (filter === s ? "chip--on" : "")} onClick={() => setFilter(s)}>

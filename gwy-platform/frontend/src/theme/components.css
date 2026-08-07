@@ -1104,6 +1104,29 @@
   border-color: transparent;
   color: var(--warning);
 }
+.chip--click {
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.chip--click:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.filter-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 10px;
+  border-radius: var(--r-md);
+  background: var(--warning-050);
+  color: var(--warning);
+  font-size: var(--fs-sm);
+}
+.filter-banner .link-btn {
+  color: var(--warning);
+  margin-left: auto;
+}
 .exam-bar {
   display: flex;
   align-items: center;
