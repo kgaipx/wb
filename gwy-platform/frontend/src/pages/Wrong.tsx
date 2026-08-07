@@ -43,6 +43,26 @@ export default function Wrong() {
   );
   const visible = wf === "全部" ? items : items.filter((it) => it.question.subject === wf);
 
+  // 全局概览（不受科目筛选影响，反映错题本全貌）
+  const overview = useMemo(() => {
+    if (!items.length) return null;
+    const total = items.length;
+    const highRisk = items.filter((it) => (it.recurrence_rate ?? 0) >= 0.6).length;
+    const avgRate = items.reduce((a, it) => a + (it.recurrence_rate ?? 0), 0) / total;
+    const bySubj = new Map<string, { count: number; sumRate: number }>();
+    for (const it of items) {
+      const subj = it.question.subject;
+      const cur = bySubj.get(subj) || { count: 0, sumRate: 0 };
+      cur.count += 1;
+      cur.sumRate += it.recurrence_rate ?? 0;
+      bySubj.set(subj, cur);
+    }
+    const subjRows = Array.from(bySubj.entries())
+      .map(([subj, v]) => ({ subj, count: v.count, avg: v.sumRate / v.count }))
+      .sort((a, b) => b.avg - a.avg); // 复错风险降序，最危险优先看
+    return { total, highRisk, avgRate, subjRows };
+  }, [items]);
+
   async function submit(qid: number) {
     const cur = s(qid);
     if (!cur.selected) return;
@@ -161,8 +181,47 @@ export default function Wrong() {
         </div>
       )}
 
+      {items.length > 0 && overview && (
+        <div className="card wrong-overview" style={{ marginTop: 12 }}>
+          <div className="wrong-overview__stats">
+            <div className="ov-stat">
+              <div className="ov-stat__num">{overview.total}</div>
+              <div className="ov-stat__label">待复盘</div>
+            </div>
+            <div className={"ov-stat " + (overview.highRisk > 0 ? "ov-stat--bad" : "")}>
+              <div className="ov-stat__num">{overview.highRisk}</div>
+              <div className="ov-stat__label">高危复错(≥60%)</div>
+            </div>
+            <div className="ov-stat">
+              <div className="ov-stat__num">{Math.round(overview.avgRate * 100)}%</div>
+              <div className="ov-stat__label">平均复错率</div>
+            </div>
+          </div>
+          <div className="wrong-overview__subj">
+            <div className="wrong-overview__title">按科目（复错风险降序，优先啃硬骨头）</div>
+            {overview.subjRows.map((r) => (
+              <div key={r.subj} className="ov-subj">
+                <div className="ov-subj__head">
+                  <span className="tag tag--brand">{r.subj}</span>
+                  <span className="text-3">{r.count} 题 · 复错 {Math.round(r.avg * 100)}%</span>
+                </div>
+                <div className="ov-bar">
+                  <div
+                    className={
+                      "ov-bar__fill " +
+                      (r.avg >= 0.6 ? "ov-bar__fill--bad" : r.avg >= 0.3 ? "ov-bar__fill--warn" : "ov-bar__fill--ok")
+                    }
+                    style={{ width: `${Math.max(6, Math.round(r.avg * 100))}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {items.length > 0 && (
-        <div className="chip-row" style={{ marginBottom: 10 }}>
+        <div className="chip-row" style={{ marginBottom: 10, marginTop: 12 }}>
           {wSubjects.map((s) => (
             <button key={s} className={"chip " + (wf === s ? "chip--on" : "")} onClick={() => setWf(s)}>
               {s}

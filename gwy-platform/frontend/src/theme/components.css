@@ -785,6 +785,31 @@
   color: var(--success);
 }
 
+/* 错题本概览卡片 */
+.wrong-overview__stats { display: flex; gap: 10px; }
+.ov-stat {
+  flex: 1;
+  text-align: center;
+  padding: 12px 6px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+.ov-stat--bad { background: var(--danger-050); border-color: var(--danger-100, var(--danger-050)); }
+.ov-stat__num { font-size: 24px; font-weight: 800; line-height: 1.1; color: var(--brand); }
+.ov-stat--bad .ov-stat__num { color: var(--danger); }
+.ov-stat__label { font-size: 12px; color: var(--muted, #8a8f98); margin-top: 3px; }
+.wrong-overview__subj { margin-top: 14px; }
+.wrong-overview__title { font-size: 13px; color: var(--muted, #8a8f98); margin-bottom: 9px; }
+.ov-subj { margin-bottom: 9px; }
+.ov-subj:last-child { margin-bottom: 0; }
+.ov-subj__head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.ov-bar { height: 8px; border-radius: 6px; background: var(--surface-2); overflow: hidden; border: 1px solid var(--border); }
+.ov-bar__fill { height: 100%; border-radius: 6px; transition: width 0.3s; }
+.ov-bar__fill--bad { background: var(--danger); }
+.ov-bar__fill--warn { background: var(--warning); }
+.ov-bar__fill--ok { background: var(--success); }
+
 /* 学习管理卡（我的页） */
 .manage-card {
   flex: 1;
