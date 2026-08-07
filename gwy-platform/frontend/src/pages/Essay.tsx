@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { api, EssayPrompt, EssayHistoryItem } from "../api/client";
-
-const DIM_ORDER = ["立意", "结构", "论证", "语言", "素材"];
+import { DimensionBars, ESSAY_DIMENSIONS } from "../components/DimensionBars";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -50,28 +49,6 @@ export default function Essay() {
     } finally {
       setHLoading(false);
     }
-  }
-
-  function DimensionBars({ dims }: { dims: Record<string, number> }) {
-    return (
-      <div style={{ marginTop: 8 }}>
-        {DIM_ORDER.map((d) => {
-          const v = dims[d] ?? 0;
-          const pct = Math.min(100, Math.round((v / 20) * 100));
-          return (
-            <div key={d} style={{ marginTop: 6 }}>
-              <div className="row row--between" style={{ fontSize: 13 }}>
-                <span>{d}</span>
-                <span className="text-3">{v} / 20</span>
-              </div>
-              <div className="progress">
-                <div className="progress__bar" style={{ width: pct + "%" }} />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    );
   }
 
   return (
@@ -162,7 +139,7 @@ export default function Essay() {
                 {h.needs_human_review && " · 已转人工"}
               </div>
               <div style={{ marginTop: 6 }}>
-                {DIM_ORDER.map((d) => (
+                {ESSAY_DIMENSIONS.map((d) => (
                   <span key={d} className="tag" style={{ marginRight: 6, fontSize: 12 }}>
                     {d} {h.dimensions[d] ?? 0}
                   </span>

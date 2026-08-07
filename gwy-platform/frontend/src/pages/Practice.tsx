@@ -303,6 +303,12 @@ export default function Practice() {
             </button>
           </div>
 
+          {!result && (
+            <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={busy} onClick={nextQuestion}>
+              跳过本题 →
+            </button>
+          )}
+
           {upgrade && (
             <div className="card card--warning" style={{ marginTop: 12 }}>
               <div className="muted" style={{ fontSize: 13 }}>

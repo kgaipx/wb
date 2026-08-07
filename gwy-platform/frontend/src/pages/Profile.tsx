@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Dashboard, EssayPrompt } from "../api/client";
 import { useAuth } from "../auth";
+import { DimensionBars } from "../components/DimensionBars";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -225,10 +226,8 @@ export default function Profile() {
               <b>总分：{grade.total}</b>{" "}
               {grade.needs_human_review && <span className="text-warning">（已转人工复核）</span>}
             </div>
-            <div className="muted" style={{ fontSize: 13 }}>
-              {Object.entries(grade.dimensions).map(([k, v]) => `${k} ${v}`).join(" · ")}
-            </div>
-            {grade.rationale && <div style={{ fontSize: 13, marginTop: 4 }}>{grade.rationale}</div>}
+            <DimensionBars dims={grade.dimensions} />
+            {grade.rationale && <div style={{ fontSize: 13, marginTop: 8 }}>{grade.rationale}</div>}
           </div>
         )}
       </div>
