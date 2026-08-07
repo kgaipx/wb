@@ -396,6 +396,23 @@ export default function Assessment() {
           lines.push(`正确答案：${d.correct_answer}${d.selected ? `（你的作答：${d.selected}）` : ""}`);
       });
     }
+    // 成长趋势说明（基于历史测评记录）
+    lines.push("", "## 成长趋势");
+    if (history.length > 0) {
+      const asc = [...history].reverse(); // 时间升序（history 最新在前）
+      const firstPct = Math.round((asc[0].overall || 0) * 100);
+      const bestPct = Math.max(...history.map((h) => Math.round((h.overall || 0) * 100)));
+      const avgPct = Math.round((history.reduce((a, h) => a + (h.overall || 0), 0) / history.length) * 100);
+      lines.push(`- 历史测评次数：${history.length} 次`);
+      lines.push(`- 首次测评掌握度：${firstPct}%`);
+      lines.push(`- 历史最佳掌握度：${bestPct}%`);
+      lines.push(`- 历史平均掌握度：${avgPct}%`);
+      const diff = overall - firstPct;
+      lines.push(`- 本次较首次：${diff >= 0 ? "▲ 提升" : "▼ 下降"} ${Math.abs(diff)} 个百分点`);
+    } else {
+      lines.push("- 这是你的首次测评，已建立能力基线；完成后续测评即可对比成长轨迹。");
+    }
+
     return lines.join("\n");
   }
 

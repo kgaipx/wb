@@ -849,6 +849,17 @@
 .mastery-badge { flex: 0 0 auto; }
 .wrong-item__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .wrong-item__top .q-item__meta { flex: 1; }
+
+/* 收藏夹：按知识点分组 + 私人笔记 */
+.fav-group-title { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; margin-bottom: 2px; font-weight: 600; font-size: 14px; }
+.fav-note-preview { margin-top: 8px; font-size: 13px; color: var(--text-3); background: var(--surface-2); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; }
+.fav-note-input { width: 100%; box-sizing: border-box; border: 1px solid var(--surface-2); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; background: var(--surface); color: var(--text); }
+.fav-note-input:focus { outline: none; border-color: var(--brand); }
+
+/* 学习计划：连续打卡高亮 */
+.plan-streak-badge { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: #B45309; background: #FEF3C7; border-radius: 999px; padding: 2px 10px; }
+.plan-cal__cell--streak { box-shadow: 0 0 0 2px var(--warning) inset; position: relative; }
+.plan-cal__fire { position: absolute; top: 1px; right: 3px; font-size: 9px; line-height: 1; }
 .result__head {
   display: flex;
   align-items: center;

@@ -142,6 +142,10 @@ export default function Plan() {
     : [];
   const typeTotal = Object.values(typeCounts).reduce((a, b) => a + b, 0) || 1;
 
+  // 连续打卡高亮：从今天往前 streak_days 天且已完成的天，在日历上凸显
+  const todayIdx = plan ? (plan.today_index ?? calDays.length) : 0;
+  const streakStart = plan && plan.progress.streak_days > 0 ? todayIdx - plan.progress.streak_days + 1 : todayIdx + 1;
+
   function planToMarkdown(): string {
     if (!plan) return "";
     const p = plan.progress;
@@ -231,7 +235,12 @@ export default function Plan() {
           {/* 计划日历：每日完成度可视化 */}
           <div className="card plan-cal-card">
             <div className="row row--between">
-              <strong>计划日历</strong>
+              <div className="row" style={{ gap: 8, alignItems: "center" }}>
+                <strong>计划日历</strong>
+                {plan.progress.streak_days > 0 && (
+                  <span className="plan-streak-badge">🔥 连续 {plan.progress.streak_days} 天</span>
+                )}
+              </div>
               <span className="muted" style={{ fontSize: 12 }}>
                 {plan.today_index != null ? `今天 · 第 ${plan.today_index} 天` : "整体进度"}
               </span>
@@ -249,16 +258,19 @@ export default function Plan() {
                     : c.done > 0
                     ? "part"
                     : "todo";
+                const inStreak = c.day >= streakStart && c.day <= todayIdx && state === "done";
                 return (
                   <div
                     key={c.day}
                     className={
                       "plan-cal__cell plan-cal__cell--" +
                       state +
-                      (isToday ? " plan-cal__cell--today" : "")
+                      (isToday ? " plan-cal__cell--today" : "") +
+                      (inStreak ? " plan-cal__cell--streak" : "")
                     }
-                    title={`第 ${c.day} 天：${c.done}/${c.total} 完成`}
+                    title={`第 ${c.day} 天：${c.done}/${c.total} 完成${inStreak ? " · 连续打卡" : ""}`}
                   >
+                    {inStreak && <span className="plan-cal__fire">🔥</span>}
                     <span className="plan-cal__num">{c.day}</span>
                     <span className="plan-cal__fill" style={{ height: `${pct}%` }} />
                     <span className="plan-cal__pct">{future ? "·" : `${pct}%`}</span>
