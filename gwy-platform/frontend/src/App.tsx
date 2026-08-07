@@ -91,16 +91,59 @@ const GaugeIcon: Icon = () => (
     <circle cx="12" cy="14" r="1.2" fill="currentColor" />
   </svg>
 );
+const StarIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z" />
+  </svg>
+);
+const PlanIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3.5" y="5" width="17" height="15" rx="2" />
+    <path d="M3.5 9.5h17M8 3.5v3M16 3.5v3" />
+    <path d="M8 13.5l2 2 4-4" />
+  </svg>
+);
+const CrownIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 8l3.5 3L12 5l4.5 6L20 8l-1 10H5z" />
+  </svg>
+);
+const EssayIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
+    <path d="M13 3v5h5" />
+    <path d="M8.5 12.5h7M8.5 16h5" />
+  </svg>
+);
+const MoreIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <circle cx="5" cy="12" r="1.9" />
+    <circle cx="12" cy="12" r="1.9" />
+    <circle cx="19" cy="12" r="1.9" />
+  </svg>
+);
 
-const tabs = [
+/** 主栏固定 5 个核心入口（首页 + 练习闭环 + 我的），保证小屏不拥挤。 */
+const PRIMARY = [
   { to: "/", label: "首页", end: true, icon: HomeIcon },
-  { to: "/learn", label: "学习", icon: BookIcon },
   { to: "/practice", label: "刷题", icon: PenIcon },
-  { to: "/exam", label: "模考", icon: ExamIcon },
   { to: "/assessment", label: "测评", icon: AssessIcon },
   { to: "/wrong", label: "错题", icon: WrongIcon },
-  { to: "/data", label: "数据", icon: ChartIcon },
   { to: "/profile", label: "我的", icon: UserIcon },
+];
+
+/** 次要入口收进「更多」抽屉；role 限定角色可见项（审核=reviewer/admin，运营=admin）。 */
+type MoreEntry = { to: string; label: string; icon: Icon; end?: boolean; role?: "reviewer" | "admin" };
+const MORE: MoreEntry[] = [
+  { to: "/learn", label: "学习", icon: BookIcon },
+  { to: "/exam", label: "模考", icon: ExamIcon },
+  { to: "/data", label: "数据", icon: ChartIcon },
+  { to: "/favorites", label: "收藏", icon: StarIcon },
+  { to: "/plan", label: "计划", icon: PlanIcon },
+  { to: "/membership", label: "会员", icon: CrownIcon },
+  { to: "/essay", label: "申论", icon: EssayIcon },
+  { to: "/review", label: "审核", icon: ShieldIcon, role: "reviewer" },
+  { to: "/admin", label: "运营", icon: GaugeIcon, role: "admin" },
 ];
 
 function FloatingTutor() {
@@ -247,14 +290,13 @@ function AppShell() {
     }
   };
 
-  // 角色专属入口：审核台(reviewer/admin)、运营后台(admin) 注入底部导航
-  const visibleTabs = [...tabs];
-  if (user && (user.role === "reviewer" || user.role === "admin")) {
-    visibleTabs.push({ to: "/review", label: "审核", icon: ShieldIcon });
-  }
-  if (user && user.role === "admin") {
-    visibleTabs.push({ to: "/admin", label: "运营", icon: GaugeIcon });
-  }
+  // —— 底部导航：主栏固定 5 个核心入口，其余收进「更多」抽屉（响应式防拥挤）——
+  const [moreOpen, setMoreOpen] = useState(false);
+  const role = user?.role;
+  const visibleMore = MORE.filter(
+    (m) => !m.role || m.role === role || (m.role === "reviewer" && role === "admin")
+  );
+  const inMore = visibleMore.some((m) => m.to === loc.pathname);
 
   return (
     <div className="app-shell">
@@ -358,7 +400,7 @@ function AppShell() {
 
       {!isAuth && (
         <nav className="nav-bar">
-          {visibleTabs.map((t) => {
+          {PRIMARY.map((t) => {
             const Icon = t.icon;
             return (
               <NavLink
@@ -374,7 +416,55 @@ function AppShell() {
               </NavLink>
             );
           })}
+          <button
+            type="button"
+            className={"nav-link" + (inMore ? " active" : "")}
+            onClick={() => setMoreOpen(true)}
+            aria-label="更多功能"
+          >
+            <span className="nav-link__ico">
+              <MoreIcon />
+            </span>
+            更多
+          </button>
         </nav>
+      )}
+
+      {!isAuth && moreOpen && (
+        <>
+          <div className="more-backdrop" onClick={() => setMoreOpen(false)} />
+          <div className="more-sheet" role="dialog" aria-label="全部功能">
+            <div className="more-sheet__head">
+              <span>全部功能</span>
+              <button
+                className="more-sheet__close"
+                onClick={() => setMoreOpen(false)}
+                aria-label="关闭"
+              >
+                ×
+              </button>
+            </div>
+            <div className="more-sheet__grid">
+              {visibleMore.map((t) => {
+                const Icon = t.icon;
+                return (
+                  <NavLink
+                    key={t.to}
+                    to={t.to}
+                    end={t.end}
+                    className={({ isActive }) => "more-item" + (isActive ? " active" : "")}
+                    onClick={() => setMoreOpen(false)}
+                  >
+                    <span className="more-item__ico">
+                      <Icon />
+                    </span>
+                    <span className="more-item__label">{t.label}</span>
+                  </NavLink>
+                );
+              })}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

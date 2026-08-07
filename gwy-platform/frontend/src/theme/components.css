@@ -104,7 +104,88 @@
   place-items: center;
 }
 
-/* 极窄屏（<380px，如 iPhone SE / 老安卓）：8 个 tab 收紧，避免文字挤出 */
+/* ===================== 更多抽屉 ===================== */
+.more-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 24, 40, 0.42);
+  z-index: 45;
+  animation: fade-in 0.18s ease;
+}
+.more-sheet {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--app-max);
+  background: var(--surface);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 30px rgba(16, 24, 40, 0.18);
+  z-index: 46;
+  padding: var(--sp-3) var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom));
+  animation: sheet-up 0.22s ease;
+}
+@keyframes sheet-up {
+  from { transform: translate(-50%, 100%); }
+  to { transform: translate(-50%, 0); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.more-sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-3);
+}
+.more-sheet__close {
+  border: none;
+  background: var(--surface-2);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text-2);
+  cursor: pointer;
+}
+.more-sheet__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--sp-2);
+}
+.more-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: var(--sp-3) var(--sp-2);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  text-decoration: none;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+}
+.more-item.active {
+  background: rgba(27, 79, 181, 0.1);
+  color: var(--brand);
+}
+.more-item__ico {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+.more-item__label {
+  line-height: 1.2;
+}
+
+/* 极窄屏（<380px，如 iPhone SE / 老安卓）：主栏 5 个 tab 收紧，避免文字挤出 */
 @media (max-width: 380px) {
   .nav-link {
     font-size: 11px;
