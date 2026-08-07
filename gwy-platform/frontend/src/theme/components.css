@@ -1598,6 +1598,27 @@
   border-color: transparent;
   color: var(--warning);
 }
+.chip--danger {
+  background: var(--danger-050, #fdecec);
+  border-color: transparent;
+  color: var(--danger);
+}
+.chip--danger.chip--on {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+.chip--warn.chip--on {
+  background: var(--warning);
+  border-color: var(--warning);
+  color: #fff;
+}
+.fav-quicktags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
 .chip--click {
   cursor: pointer;
   transition: transform 0.08s ease, box-shadow 0.08s ease;

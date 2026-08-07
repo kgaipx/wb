@@ -17,6 +17,7 @@ export default function Practice() {
   const [cites, setCites] = useState<string[]>([]);
   const [explainOffline, setExplainOffline] = useState<boolean>(false);
   const [faved, setFaved] = useState(false);
+  const [favTags, setFavTags] = useState<string[]>([]); // 当前题的收藏标签（易错/重点）
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [filter, setFilter] = useState<string>("全部");
@@ -86,8 +87,15 @@ export default function Practice() {
     if (!active) return;
     api
       .favoriteList()
-      .then((favs) => setFaved(favs.some((f) => f.question.id === active.id)))
-      .catch(() => setFaved(false));
+      .then((favs) => {
+        const cur = favs.find((f) => f.question.id === active.id);
+        setFaved(!!cur);
+        setFavTags(cur ? cur.tags : []);
+      })
+      .catch(() => {
+        setFaved(false);
+        setFavTags([]);
+      });
   }, [active]);
 
   // 从测评弱项进入：自动打开第一道专项题（每轮 kp 仅触发一次）
@@ -149,6 +157,24 @@ export default function Practice() {
       }
     }
     await nextQuestion();
+  }
+
+  // 收藏标签快捷切换（易错/重点）：确保已收藏后再 PATCH tags，本地即时反映
+  async function toggleFavTag(tag: "易错" | "重点") {
+    if (!active) return;
+    try {
+      if (!faved) {
+        await api.favoriteAdd(active.id);
+        setFaved(true);
+      }
+      const next = favTags.includes(tag)
+        ? favTags.filter((t) => t !== tag)
+        : [...favTags, tag];
+      await api.favoriteUpdate(active.id, { tags: next });
+      setFavTags(next);
+    } catch (e: any) {
+      setErr(e.message);
+    }
   }
 
   function flashEncourage(msg: string) {
@@ -307,9 +333,29 @@ export default function Practice() {
               <span className="tag tag--brand">{active.subject}</span>
               <span>{active.knowledge_point}</span>
             </div>
-            <button className={"chip " + (faved ? "chip--on" : "")} onClick={toggleFav}>
-              {faved ? "★ 已收藏" : "☆ 收藏"}
-            </button>
+            <div className="fav-quicktags">
+              <button className={"chip " + (faved ? "chip--on" : "")} onClick={toggleFav}>
+                {faved ? "★ 已收藏" : "☆ 收藏"}
+              </button>
+              {faved && (
+                <button
+                  className={"chip chip--danger " + (favTags.includes("易错") ? "chip--on" : "")}
+                  onClick={() => toggleFavTag("易错")}
+                  title="标记为易错题"
+                >
+                  🔴 易错
+                </button>
+              )}
+              {faved && (
+                <button
+                  className={"chip chip--warn " + (favTags.includes("重点") ? "chip--on" : "")}
+                  onClick={() => toggleFavTag("重点")}
+                  title="标记为重点题"
+                >
+                  🟡 重点
+                </button>
+              )}
+            </div>
           </div>
           <div style={{ fontSize: 16, margin: "6px 0 12px" }}>{active.stem}</div>
 
