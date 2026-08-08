@@ -34,29 +34,40 @@ router = APIRouter()
 
 
 def _order_by_mastery(db: Session, items: list[Question], user: User) -> list[Question]:
-    """掌握度加权排序：让「专项/混合练习包」优先覆盖最弱且未练熟的内容。
+    """掌握度自适应 + 间隔重复式加权排序：让「专项/混合练习包」优先覆盖
+    最弱、最久未练、最易错的内容，把练习 ROI 拉到最高。
 
     排序逻辑：
-    - 按知识点掌握度升序分桶（掌握度越低越靠前；无记录的知识点视为最弱，优先练）；
-    - 桶内按「作答次数升序（未做过的题优先）→ id」排列，让同一薄弱点下先练没练过的题；
-    - 桶间轮询交织（round-robin），保证混合练习包首屏就覆盖各薄弱点，同时最弱知识点略微靠前。
+    - 知识点分桶，桶优先级 = 0.5·(1-掌握度) + 0.3·近因衰减 + 0.2·错题率。
+        * 近因衰减：越久没练（last_practiced）越优先，21 天线性衰减到 1；从未练过记 1。
+        * 错题率：该知识点累计（作答-正确）/作答，越高越优先复盘。
+    - 桶内按「错题数降序 → 作答次数升序（未做过的先）→ id」排列：
+        先复盘高频错题，再补未做过的新题，最后才是已做对的老题。
+    - 桶间轮询交织（round-robin），保证混合练习包首屏就覆盖各薄弱点。
     全程确定性，分页（offset/limit）不会重复或遗漏。
     """
     if not user or not items:
         return items
     kps = list({q.knowledge_point for q in items})
-    ab_map: dict[str, float] = {}
+
+    # 知识点 → (掌握度, 最近练习时间)
+    ab_map: dict[str, tuple[float, datetime | None]] = {}
     if kps:
-        for mastery, kp in (
-            db.query(AbilityProfile.mastery, AbilityProfile.knowledge_point)
+        for mastery, lp, kp in (
+            db.query(
+                AbilityProfile.mastery,
+                AbilityProfile.last_practiced,
+                AbilityProfile.knowledge_point,
+            )
             .filter(
                 AbilityProfile.user_id == user.id,
                 AbilityProfile.knowledge_point.in_(kps),
             )
             .all()
         ):
-            ab_map[kp] = mastery
+            ab_map[kp] = (mastery, lp)
 
+    # 每题 → (作答次数, 正确数)
     ids = [q.id for q in items]
     ans_map: dict[int, tuple[int, int]] = {}
     if ids:
@@ -72,13 +83,42 @@ def _order_by_mastery(db: Session, items: list[Question], user: User) -> list[Qu
         ):
             ans_map[qid] = (attempts, int(correct or 0))
 
+    # 每个知识点累计错题率（用于桶优先级）
+    kp_err: dict[str, list[int]] = {kp: [0, 0] for kp in kps}  # [attempts, wrong]
+    for q in items:
+        att, cor = ans_map.get(q.id, (0, 0))
+        slot = kp_err[q.knowledge_point]
+        slot[0] += att
+        slot[1] += att - cor
+
+    now = datetime.utcnow()  # last_practiced 经 SQLite 读回为 naive UTC，用 naive now 相减
+
+    def _bucket_priority(kp: str) -> float:
+        mastery, lp = ab_map.get(kp, (0.0, None))
+        weak = 1.0 - mastery
+        if lp is None:
+            recency = 1.0
+        else:
+            days = max((now - lp).days, 0)
+            recency = min(days / 21.0, 1.0)
+        att, wrong = kp_err[kp]
+        err_rate = (wrong / att) if att else 0.0
+        return 0.5 * weak + 0.3 * recency + 0.2 * err_rate
+
     groups: dict[str, list[Question]] = {}
     for q in items:
         groups.setdefault(q.knowledge_point, []).append(q)
-    # 桶按掌握度升序（最弱在前；未知知识点掌握度记 0，排最前）
-    ordered_kps = sorted(groups.keys(), key=lambda kp: ab_map.get(kp, 0.0))
+    # 桶按综合优先级降序（最该练的薄弱/久未练/易错知识点在最前）
+    ordered_kps = sorted(groups.keys(), key=lambda kp: -_bucket_priority(kp))
     for kp in ordered_kps:
-        groups[kp].sort(key=lambda q: (ans_map.get(q.id, (0, 0))[0], q.id))
+        # 桶内：易错题优先复盘 → 未做过的新题 → 已做对的老题
+        groups[kp].sort(
+            key=lambda q: (
+                -(ans_map.get(q.id, (0, 0))[0] - ans_map.get(q.id, (0, 0))[1]),
+                ans_map.get(q.id, (0, 0))[0],
+                q.id,
+            )
+        )
 
     result: list[Question] = []
     max_len = max((len(v) for v in groups.values()), default=0)
