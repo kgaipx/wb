@@ -86,6 +86,16 @@ def delete_session(db: Session, user: User, session_id: int) -> bool:
     return True
 
 
+def rename_session(db: Session, user: User, session_id: int, title: str) -> bool:
+    """重命名会话（用户自定义标题，便于归档与快速识别）。"""
+    s = get_session(db, user, session_id)
+    if s is None:
+        return False
+    s.title = title.strip()[:50]
+    db.commit()
+    return True
+
+
 def send_message(
     db: Session,
     user: User,

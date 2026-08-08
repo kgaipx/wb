@@ -435,6 +435,34 @@
   cursor: pointer;
   font-weight: 600;
 }
+.notif-head__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.notif-filter {
+  display: inline-flex;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 2px;
+}
+.notif-filter__btn {
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.notif-filter__btn.on {
+  background: #fff;
+  color: var(--brand);
+  box-shadow: 0 1px 3px rgba(20, 40, 80, 0.1);
+}
 .notif-panel__body {
   overflow-y: auto;
   flex: 1;
@@ -1965,6 +1993,34 @@
 }
 .session-item__cancel {
   color: var(--text-2);
+}
+.session-item__rename {
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.session-item__rename:hover {
+  border-color: var(--brand);
+  background: var(--brand-050);
+}
+.session-item__edit {
+  width: 100%;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  padding: 4px 6px;
+  border: 1px solid var(--brand);
+  border-radius: 6px;
+  outline: none;
+  background: #fff;
+}
+.session-item__edit:focus {
+  box-shadow: 0 0 0 2px var(--brand-050);
 }
 
 /* ===================== 会员中心 ===================== */

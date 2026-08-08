@@ -15,6 +15,7 @@ export default function Notifications() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
+  const [filter, setFilter] = useState<"all" | "unread">("all");
 
   const load = useCallback(
     async (from: number, append: boolean) => {
@@ -71,15 +72,33 @@ export default function Notifications() {
     }
   };
 
+  const view = filter === "unread" ? items.filter((x) => !x.is_read) : items;
+
   return (
     <section>
       <div className="page-head">
         <h2>通知中心</h2>
-        {unread > 0 && (
-          <button className="notif-readall" onClick={readAll}>
-            全部已读
-          </button>
-        )}
+        <div className="notif-head__right">
+          <div className="notif-filter">
+            <button
+              className={"notif-filter__btn" + (filter === "all" ? " on" : "")}
+              onClick={() => setFilter("all")}
+            >
+              全部
+            </button>
+            <button
+              className={"notif-filter__btn" + (filter === "unread" ? " on" : "")}
+              onClick={() => setFilter("unread")}
+            >
+              未读{unread > 0 ? ` ${unread}` : ""}
+            </button>
+          </div>
+          {unread > 0 && (
+            <button className="notif-readall" onClick={readAll}>
+              全部已读
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -92,10 +111,14 @@ export default function Notifications() {
         <div className="notif-empty notif-empty--page">
           暂无通知，会员开通、测评完成等重要动态会在这里提醒你
         </div>
+      ) : view.length === 0 && filter === "unread" ? (
+        <div className="notif-empty notif-empty--page">
+          🎉 没有未读通知，所有提醒都已查看
+        </div>
       ) : (
         <>
           <div className="notif-list">
-            {items.map((n) => {
+            {view.map((n) => {
               const m = notifMeta(n.type);
               return (
                 <button

@@ -414,6 +414,11 @@ export const api = {
     }),
   chatDelete: (sessionId: number) =>
     request<void>(`/ai/chat/sessions/${sessionId}`, { method: "DELETE" }),
+  chatRename: (sessionId: number, title: string) =>
+    request<ChatSession>(`/ai/chat/sessions/${sessionId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    }),
   // 学习计划打卡 / 进度追踪（执行-复盘闭环）
   planGet: async (): Promise<PlanOut | null> => {
     try {

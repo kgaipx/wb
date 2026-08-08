@@ -8,7 +8,13 @@ from sqlalchemy.orm import Session
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
 from app.models import User
-from app.schemas.chat import ChatMessageOut, ChatSendIn, ChatSendOut, ChatSessionOut
+from app.schemas.chat import (
+    ChatMessageOut,
+    ChatSendIn,
+    ChatSendOut,
+    ChatSessionOut,
+    ChatSessionRenameIn,
+)
 from app.services import chat_service as cs
 
 router = APIRouter()
@@ -74,3 +80,17 @@ def delete_my_session(
     """删除会话及其全部消息（级联）。"""
     if not cs.delete_session(db, current, session_id):
         raise HTTPException(status_code=404, detail="会话不存在")
+
+
+@router.patch("/chat/sessions/{session_id}", response_model=ChatSessionOut)
+def rename_my_session(
+    session_id: int,
+    payload: ChatSessionRenameIn,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """重命名会话（用户自定义标题，便于归档与快速识别）。"""
+    if not cs.rename_session(db, current, session_id, payload.title):
+        raise HTTPException(status_code=404, detail="会话不存在")
+    s = cs.get_session(db, current, session_id)
+    return ChatSessionOut(**cs.session_to_out(s))

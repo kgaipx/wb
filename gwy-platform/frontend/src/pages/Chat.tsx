@@ -25,6 +25,8 @@ export default function Chat() {
   const [err, setErr] = useState("");
   const [drawer, setDrawer] = useState(false);
   const [confirmId, setConfirmId] = useState<number | null>(null);
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editText, setEditText] = useState("");
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -145,6 +147,32 @@ export default function Chat() {
     }
   }
 
+  function startRename(s: ChatSession) {
+    setConfirmId(null);
+    setEditId(s.id);
+    setEditText(s.title);
+  }
+  function cancelRename() {
+    setEditId(null);
+    setEditText("");
+  }
+  async function saveRename(s: ChatSession) {
+    const t = editText.trim();
+    if (!t || t === s.title) {
+      cancelRename();
+      return;
+    }
+    try {
+      const updated = await api.chatRename(s.id, t);
+      setSessions((prev) => prev.map((x) => (x.id === s.id ? { ...x, title: updated.title } : x)));
+      setEditId(null);
+      setEditText("");
+    } catch (e: any) {
+      setErr(e.message || "重命名失败");
+      cancelRename();
+    }
+  }
+
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
   const offline = lastAssistant?.offline ?? false;
 
@@ -199,15 +227,53 @@ export default function Chat() {
                   onClick={() => selectSession(s.id)}
                 >
                   <div className="session-item__main">
-                    <div className="session-item__title">{s.title}</div>
-                    {s.last_message && (
+                    {editId === s.id ? (
+                      <input
+                        className="session-item__edit"
+                        value={editText}
+                        autoFocus
+                        onChange={(e) => setEditText(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") saveRename(s);
+                          if (e.key === "Escape") cancelRename();
+                        }}
+                        onBlur={() => saveRename(s)}
+                      />
+                    ) : (
+                      <div className="session-item__title">{s.title}</div>
+                    )}
+                    {s.last_message && editId !== s.id && (
                       <div className="session-item__preview">{s.last_message}</div>
                     )}
                     <div className="session-item__meta">
                       {new Date(s.updated_at).toLocaleString("zh-CN", { hour12: false })} · {s.message_count} 条
                     </div>
                   </div>
-                  {confirmId === s.id ? (
+                  {editId === s.id ? (
+                    <>
+                      <button
+                        className="session-item__confirm"
+                        onPointerDown={(e) => e.preventDefault()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          saveRename(s);
+                        }}
+                      >
+                        保存
+                      </button>
+                      <button
+                        className="session-item__cancel"
+                        onPointerDown={(e) => e.preventDefault()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          cancelRename();
+                        }}
+                      >
+                        取消
+                      </button>
+                    </>
+                  ) : confirmId === s.id ? (
                     <>
                       <button
                         className="session-item__confirm"
@@ -230,17 +296,30 @@ export default function Chat() {
                       </button>
                     </>
                   ) : (
-                    <button
-                      className="session-item__del"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setConfirmId(s.id);
-                      }}
-                      aria-label="删除会话"
-                      title="删除会话"
-                    >
-                      🗑
-                    </button>
+                    <>
+                      <button
+                        className="session-item__rename"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          startRename(s);
+                        }}
+                        aria-label="重命名会话"
+                        title="重命名会话"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="session-item__del"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmId(s.id);
+                        }}
+                        aria-label="删除会话"
+                        title="删除会话"
+                      >
+                        🗑
+                      </button>
+                    </>
                   )}
                 </div>
               ))}

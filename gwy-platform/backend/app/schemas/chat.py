@@ -5,7 +5,7 @@
 """
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class ChatMessageOut(BaseModel):
@@ -30,6 +30,10 @@ class ChatSessionOut(BaseModel):
 class ChatSendIn(BaseModel):
     content: str  # 用户本条消息
     kp_hint: str | None = None  # 可选知识点提示，用于更精准检索
+
+
+class ChatSessionRenameIn(BaseModel):
+    title: str = Field(..., min_length=1, max_length=50)  # 用户自定义会话标题，限长便于归档
 
 
 class ChatSendOut(BaseModel):
