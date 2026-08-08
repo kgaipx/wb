@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { api, Question, Citation } from "../api/client";
+import { api, Question, Citation, Ability } from "../api/client";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
+import { RadarChart } from "../components/RadarChart";
 
 const PAGE = 60;
 
@@ -32,6 +33,7 @@ export default function Practice() {
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [ability, setAbility] = useState<Ability[]>([]); // 练习后最新能力概览（弱项升序最多 8），用于结果页雷达
   const didInit = useRef(false);
 
   // 初始加载（含 ?q= 直达 / ?kp= 专项练习）
@@ -141,6 +143,7 @@ export default function Practice() {
     setSelected("");
     setResult(null);
     setExplain("");
+    setAbility([]);
     setUpgrade(false);
   }
 
@@ -199,6 +202,13 @@ export default function Practice() {
     try {
       const r = await api.practice(active.id, selected);
       setResult(r);
+      // 拉取练习后最新能力概览（弱项升序最多 8），用于结果页雷达；匿名或接口失败静默跳过
+      try {
+        const s = await api.studentStats();
+        setAbility(s.ability || []);
+      } catch {
+        setAbility([]);
+      }
       if (r.is_correct) {
         const ns = streak + 1;
         setStreak(ns);
@@ -472,6 +482,15 @@ export default function Practice() {
                 </div>
                 <MasteryBadge value={result.mastery ?? 0} />
               </div>
+              {ability.length >= 3 && (
+                <div className="card" style={{ marginTop: 12 }}>
+                  <div className="row row--between">
+                    <strong>练习后能力图谱</strong>
+                    <span className="muted" style={{ fontSize: 12 }}>弱项雷达 · 凹陷处优先补</span>
+                  </div>
+                  <RadarChart data={ability.slice(0, 8).map((a) => ({ label: a.knowledge_point, value: a.mastery }))} />
+                </div>
+              )}
               {result.explanation && (
                 <div style={{ marginTop: 8 }}>
                   <Markdown>{result.explanation}</Markdown>

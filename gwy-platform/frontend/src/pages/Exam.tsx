@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
+import { RadarChart } from "../components/RadarChart";
 
 interface PaperQ {
   id: number;
@@ -256,6 +257,12 @@ export default function Exam() {
             <strong>各知识点正确率</strong>
             <span className="muted" style={{ fontSize: 12 }}>弱 → 强</span>
           </div>
+          {kpStats.length >= 3 && (
+            <div style={{ marginTop: 8 }}>
+              <div className="muted" style={{ fontSize: 12, marginBottom: 4 }}>本次模考能力雷达（轴越瘪越该补）</div>
+              <RadarChart data={kpStats.slice(0, 8).map((s) => ({ label: s.kp, value: s.rate }))} />
+            </div>
+          )}
           {kpStats.length === 0 ? (
             <div className="muted" style={{ fontSize: 13, marginTop: 8 }}>暂无维度数据</div>
           ) : (
