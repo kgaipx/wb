@@ -4,7 +4,8 @@
 """
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import case, or_
 from sqlalchemy.orm import Session
 
 from app.ai.adaptive import recommend_questions
@@ -14,7 +15,7 @@ from app.ai.tutor_agent import TutorAgent
 from app.api.routes.auth import get_current_user, require_admin
 from app.core.config import settings
 from app.db.session import get_db
-from app.models import AbilityProfile, EssayGradeRecord, EssayPrompt, Question, User
+from app.models import AbilityProfile, EssayGradeRecord, EssayPrompt, KnowledgeChunk, Question, User
 from app.schemas.ai import (
     AiQuota,
     ChatIn,
@@ -23,6 +24,7 @@ from app.schemas.ai import (
     EssayGradeOut,
     ExplainIn,
     ExplainOut,
+    KnowledgeChunkOut,
     PlanIn,
     PlanOut,
     PlanProgress,
@@ -231,3 +233,51 @@ def toggle_plan_task(
         },
         progress=PlanProgress(**progress_payload),
     )
+
+
+@router.get("/knowledge/lookup", response_model=list[KnowledgeChunkOut], tags=["ai"])
+def knowledge_lookup(
+    q: str = Query(..., min_length=1, description="检索词：知识点 / 来源 / 标题 / 正文片段"),
+    limit: int = Query(6, ge=1, le=20),
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """按引用反查知识原文（聊天/讲解旧字符串引用点开看详情时调用）。
+
+    匹配 kp / source / title / content（LIKE），排序：精确 kp 命中 > 模糊 kp 命中 >
+    已双签校验优先 > id。供前端在引用卡片详情里展示可追溯的知识片段正文。
+    """
+    term = q.strip()
+    if not term:
+        return []
+    # 排序：精确 kp 命中最前，其次含 kp，再已校验优先
+    order = case(
+        (KnowledgeChunk.kp == term, 0),
+        (KnowledgeChunk.kp.contains(term), 1),
+        else_=2,
+    )
+    chunks = (
+        db.query(KnowledgeChunk)
+        .filter(
+            or_(
+                KnowledgeChunk.kp.contains(term),
+                KnowledgeChunk.source.contains(term),
+                KnowledgeChunk.title.contains(term),
+                KnowledgeChunk.content.contains(term),
+            )
+        )
+        .order_by(order, KnowledgeChunk.is_verified.desc(), KnowledgeChunk.id)
+        .limit(limit)
+        .all()
+    )
+    return [
+        KnowledgeChunkOut(
+            id=c.id,
+            kp=c.kp,
+            title=c.title,
+            source=c.source,
+            content=c.content,
+            is_verified=bool(c.is_verified),
+        )
+        for c in chunks
+    ]

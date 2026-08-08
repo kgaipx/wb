@@ -1698,6 +1698,165 @@
   color: var(--text-2, #5b6478);
 }
 
+/* 可点击态：提示可展开详情 */
+.cite-card--btn {
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  width: 100%;
+}
+.cite-card--btn:focus-visible {
+  outline: 2px solid var(--brand, #3b6cff);
+  outline-offset: 2px;
+}
+.cite-card__more {
+  margin-top: 2px;
+  font-size: var(--fs-xs, 11px);
+  color: var(--brand, #3b6cff);
+  opacity: 0;
+  transition: opacity 0.18s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1));
+}
+.cite-card--btn:hover .cite-card__more,
+.cite-card--btn:focus-visible .cite-card__more {
+  opacity: 1;
+}
+
+/* ===================== 引用详情弹窗（点击引用卡片查看原文） ===================== */
+.cite-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(15, 20, 35, 0.45);
+  backdrop-filter: blur(2px);
+  padding: 0;
+  animation: cite-fade 0.16s ease-out;
+}
+@keyframes cite-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.cite-modal__panel {
+  width: 100%;
+  max-width: 560px;
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg, #fff);
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.18);
+  animation: cite-up 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes cite-up {
+  from { transform: translateY(16px); }
+  to { transform: translateY(0); }
+}
+.cite-modal__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border, #e6e8ee);
+}
+.cite-modal__headtext {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.cite-modal__title {
+  font-size: var(--fs-base, 15px);
+  color: var(--text, #1f2430);
+  line-height: 1.4;
+}
+.cite-modal__score {
+  font-size: var(--fs-xs, 11px);
+  color: var(--text-2, #5b6478);
+  background: var(--bg-2, rgba(127, 127, 127, 0.06));
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.cite-modal__close {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: var(--bg-2, rgba(127, 127, 127, 0.08));
+  color: var(--text-2, #5b6478);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.cite-modal__close:hover {
+  background: var(--border, #e6e8ee);
+}
+.cite-modal__src {
+  padding: 4px 16px 0;
+  font-size: var(--fs-xs, 11px);
+}
+.cite-modal__body {
+  overflow-y: auto;
+  padding: 10px 16px 20px;
+  -webkit-overflow-scrolling: touch;
+}
+.cite-modal__count {
+  font-size: var(--fs-xs, 11px);
+  margin-bottom: 8px;
+}
+.cite-modal__empty {
+  padding: 18px 4px;
+}
+.cite-modal__chunk {
+  padding: 12px;
+  border: 1px solid var(--border, #e6e8ee);
+  border-radius: var(--radius, 10px);
+  background: var(--bg-2, rgba(127, 127, 127, 0.04));
+  margin-bottom: 10px;
+}
+.cite-modal__chunkhead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cite-modal__chunktitle {
+  font-size: var(--fs-sm, 13px);
+  font-weight: 600;
+  color: var(--text, #1f2430);
+}
+.cite-modal__badge {
+  font-size: 10px;
+  color: #1a9d6b;
+  background: rgba(26, 157, 107, 0.12);
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.cite-modal__chunksrc {
+  font-size: var(--fs-xs, 11px);
+  margin: 2px 0 6px;
+}
+.cite-modal__content {
+  font-size: var(--fs-sm, 13px);
+  color: var(--text, #1f2430);
+  line-height: 1.6;
+}
+@media (min-width: 600px) {
+  .cite-modal {
+    align-items: center;
+    padding: 24px;
+  }
+  .cite-modal__panel {
+    border-radius: 16px;
+    max-height: 84vh;
+  }
+}
+
 /* ===================== Markdown（AI 回答） ===================== */
 .md {
   line-height: 1.6;

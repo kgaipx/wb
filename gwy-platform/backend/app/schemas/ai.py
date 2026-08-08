@@ -15,6 +15,16 @@ class CitationOut(BaseModel):
     score: float | None = None  # 检索相关度（0~1 混合分；纯词项路径可能更高）
 
 
+class KnowledgeChunkOut(BaseModel):
+    """知识片段（引用详情反查结果），用于前端展示知识原文。"""
+    id: int
+    kp: str
+    title: str
+    source: str
+    content: str
+    is_verified: bool
+
+
 class ExplainOut(BaseModel):
     knowledge_point: str
     explanation: str

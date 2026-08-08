@@ -27,7 +27,6 @@ from app.schemas.question import (
     FavoritePatch,
     PracticeResult,
     PracticeSubmit,
-    QuestionListItem,
     QuestionOut,
 )
 
@@ -91,7 +90,7 @@ def _order_by_mastery(db: Session, items: list[Question], user: User) -> list[Qu
     return result
 
 
-@router.get("/questions", response_model=list[QuestionListItem])
+@router.get("/questions", response_model=list[QuestionOut])
 def list_questions(
     subject: str | None = None,
     category: str | None = None,
@@ -181,6 +180,7 @@ def practice(
             mastery=0.0,
         )
         db.add(ab)
+    mastery_before = ab.mastery  # 练习前掌握度（用于结果页展示本题带来的变化）
     ab.attempts += 1
     if is_correct:
         ab.correct += 1
@@ -194,6 +194,7 @@ def practice(
         correct_answer="".join(correct_labels),
         explanation=q.explanation,
         mastery=ab.mastery,
+        mastery_before=mastery_before,
     )
 
 

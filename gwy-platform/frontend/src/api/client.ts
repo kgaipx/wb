@@ -104,6 +104,15 @@ export interface Citation {
   source?: string;
   score?: number; // 检索相关度（0~1 混合分）
 }
+// 引用详情反查的知识片段原文（点击引用卡片看详情时展示）
+export interface KnowledgeChunkOut {
+  id: number;
+  kp: string;
+  title: string;
+  source: string;
+  content: string;
+  is_verified: boolean;
+}
 export interface ChatMessage {
   id?: number;
   role: "user" | "assistant";
@@ -412,6 +421,11 @@ export const api = {
     ),
   // 会员配额（免费版每日 AI 讲解额度；pro 不限）
   quota: () => request<AiQuota>("/ai/quota"),
+  // 引用详情反查：按知识点/来源/标题/正文检索知识原文（点击引用卡片看详情）
+  knowledgeLookup: (q: string, limit = 6) =>
+    request<KnowledgeChunkOut[]>(
+      `/ai/knowledge/lookup?q=${encodeURIComponent(q)}&limit=${limit}`
+    ),
   // AI 私教对话历史持久化（WBS 3.1：会话可回溯、刷新不丢）
   chatSessions: () => request<ChatSession[]>("/ai/chat/sessions"),
   chatCreate: () => request<ChatSession>("/ai/chat/sessions", { method: "POST" }),

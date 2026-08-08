@@ -48,6 +48,7 @@ class PracticeResult(BaseModel):
     correct_answer: str | None
     explanation: str | None
     mastery: float
+    mastery_before: float = 0.0  # 练习前掌握度，用于结果页展示本题带来的变化
 
 
 class WrongItem(BaseModel):

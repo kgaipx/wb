@@ -480,7 +480,21 @@ export default function Practice() {
                     {result.is_correct ? "这一知识点又稳了一分" : "别担心，下方可看 AI 讲解复盘"}
                   </div>
                 </div>
-                <MasteryBadge value={result.mastery ?? 0} />
+                <div style={{ textAlign: "right" }}>
+                  <MasteryBadge value={result.mastery ?? 0} />
+                  {(() => {
+                    const before = result.mastery_before ?? 0;
+                    const after = result.mastery ?? 0;
+                    const delta = Math.round((after - before) * 100);
+                    const cls = delta > 0 ? "text-success" : delta < 0 ? "text-danger" : "text-3";
+                    const arrow = delta > 0 ? "▲ +" : delta < 0 ? "▼ " : "— ";
+                    return (
+                      <div className={cls} style={{ fontSize: 12, marginTop: 2 }}>
+                        {Math.round(before * 100)}% → {Math.round(after * 100)}% · {arrow}{Math.abs(delta)}%
+                      </div>
+                    );
+                  })()}
+                </div>
               </div>
               {ability.length >= 3 && (
                 <div className="card" style={{ marginTop: 12 }}>
