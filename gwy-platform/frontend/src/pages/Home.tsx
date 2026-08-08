@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, PlanOut, PlanTask } from "../api/client";
+import { api, PlanOut, PlanTask, StudentStats } from "../api/client";
 import { useAuth } from "../auth";
 
 const KIND_LABEL: Record<string, string> = {
@@ -22,6 +22,7 @@ export default function Home() {
   const [installed, setInstalled] = useState(false);
   const [examStat, setExamStat] = useState<any[]>([]);
   const [examLoading, setExamLoading] = useState(false);
+  const [stats, setStats] = useState<StudentStats | null>(null);
 
   // PWA 已安装态检测：standalone 显示模式（Android Chrome / 桌面）或 iOS Safari navigator.standalone
   useEffect(() => {
@@ -65,6 +66,12 @@ export default function Home() {
       .then(setExamStat)
       .catch(() => setExamStat([]))
       .finally(() => setExamLoading(false));
+  }, [user]);
+
+  // 已登录：拉学情概览，用于首页「学习概览」三宫格（复用 studentStats）
+  useEffect(() => {
+    if (!user) return;
+    api.studentStats().then(setStats).catch(() => setStats(null));
   }, [user]);
 
   const daily = dailyList[dailyIdx] || null;
@@ -315,13 +322,38 @@ export default function Home() {
         )}
       </div>
 
-      <div className="card card--soft" style={{ marginTop: 14 }}>
+      {/* 学习概览：首页首屏即展示核心状态，给出下一步方向感 */}
+      <div className="card" style={{ marginTop: 14 }}>
         <div className="row row--between">
-          <strong>学习数据中心</strong>
-          <button className="link-btn" onClick={() => nav("/data")}>查看 →</button>
+          <strong>学习概览</strong>
+          <button className="link-btn" onClick={() => nav("/data")}>数据中心 →</button>
         </div>
-        <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
-          复错率、正确率、弱项知识点与近 7 日趋势，一眼看清提分进度。
+        <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--accent)" }}>{stats ? stats.streak_days : "—"}</div>
+            <div className="metric__label">🔥连续打卡</div>
+          </div>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--brand)" }}>{stats ? Math.round(stats.correct_rate * 100) + "%" : "—"}</div>
+            <div className="metric__label">客观正确率</div>
+          </div>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--danger)" }}>{stats ? Math.max(0, stats.wrong_distinct - stats.reviewed_distinct) : "—"}</div>
+            <div className="metric__label">待攻克错题</div>
+          </div>
+        </div>
+        {stats && stats.wrong_distinct - stats.reviewed_distinct > 0 && (
+          <div className="row" style={{ gap: 8, marginTop: 10 }}>
+            <button className="btn btn--primary btn--sm" style={{ flex: 1 }} onClick={() => nav("/wrong")}>
+              攻克错题本
+            </button>
+            <button className="btn btn--ghost btn--sm" style={{ flex: 1 }} onClick={() => nav("/data")}>
+              看完整趋势
+            </button>
+          </div>
+        )}
+        <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
+          复错率、弱项知识点与近 7 日趋势，去数据中心看完整进步曲线。
         </div>
       </div>
 
