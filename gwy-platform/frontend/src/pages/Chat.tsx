@@ -24,6 +24,7 @@ export default function Chat() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [drawer, setDrawer] = useState(false);
+  const [confirmId, setConfirmId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
 
@@ -203,16 +204,41 @@ export default function Chat() {
                       {new Date(s.updated_at).toLocaleString("zh-CN", { hour12: false })} · {s.message_count} 条
                     </div>
                   </div>
-                  <button
-                    className="session-item__del"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeSession(s.id);
-                    }}
-                    aria-label="删除会话"
-                  >
-                    🗑
-                  </button>
+                  {confirmId === s.id ? (
+                    <>
+                      <button
+                        className="session-item__confirm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmId(null);
+                          removeSession(s.id);
+                        }}
+                      >
+                        确认
+                      </button>
+                      <button
+                        className="session-item__cancel"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setConfirmId(null);
+                        }}
+                      >
+                        取消
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className="session-item__del"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmId(s.id);
+                      }}
+                      aria-label="删除会话"
+                      title="删除会话"
+                    >
+                      🗑
+                    </button>
+                  )}
                 </div>
               ))}
             </div>

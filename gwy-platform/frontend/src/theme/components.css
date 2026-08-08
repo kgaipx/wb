@@ -1934,6 +1934,29 @@
   border-color: var(--danger);
   background: var(--danger-050);
 }
+.session-item__confirm,
+.session-item__cancel {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+}
+.session-item__confirm {
+  color: #fff;
+  background: var(--danger);
+  border-color: var(--danger);
+}
+.session-item__confirm:active {
+  transform: translateY(1px);
+}
+.session-item__cancel {
+  color: var(--text-2);
+}
 
 /* ===================== 会员中心 ===================== */
 .plans-grid {
