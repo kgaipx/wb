@@ -556,6 +556,19 @@ export default function Exam() {
                 {h.weak_points.length > 0 && (
                   <div className="text-3" style={{ fontSize: 12, marginTop: 4 }}>薄弱：{h.weak_points.slice(0, 3).join("、")}</div>
                 )}
+                {h.kp_mastery && h.kp_mastery.length > 0 && (() => {
+                  const deltas = h.kp_mastery.map((k: any) => k.delta || 0);
+                  const avg = Math.round((deltas.reduce((s: number, x: number) => s + x, 0) / deltas.length) * 100);
+                  const up = avg > 0;
+                  const flat = avg === 0;
+                  const cls = up ? "text-success" : flat ? "text-3" : "text-danger";
+                  const arrow = up ? "▲ +" : flat ? "— " : "▼ ";
+                  return (
+                    <div className="text-3" style={{ fontSize: 12, marginTop: 4 }}>
+                      能力变化：<span className={cls}>{arrow}{Math.abs(avg)}%</span> · {h.kp_mastery.length} 个知识点
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}

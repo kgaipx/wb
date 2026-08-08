@@ -151,18 +151,6 @@ def submit_exam(
     # 模考科目：取首题科目，混合则记为「全部」
     _subjects = {q.subject for q in (db.get(Question, it.question_id) for it in payload.answers) if q}
     record_subject = next(iter(_subjects)) if len(_subjects) == 1 else "全部"
-    record = ExamRecord(
-        user_id=current.id,
-        subject=record_subject,
-        total=total,
-        correct=correct,
-        correct_rate=rate,
-        weak_points=[k for k, _ in top_weak],
-        details=details,
-    )
-    db.add(record)
-    db.commit()
-    db.refresh(record)
     kp_mastery = [
         {
             "knowledge_point": kp,
@@ -172,6 +160,19 @@ def submit_exam(
         }
         for kp in kp_before
     ]
+    record = ExamRecord(
+        user_id=current.id,
+        subject=record_subject,
+        total=total,
+        correct=correct,
+        correct_rate=rate,
+        weak_points=[k for k, _ in top_weak],
+        details=details,
+        kp_mastery=kp_mastery,
+    )
+    db.add(record)
+    db.commit()
+    db.refresh(record)
     return {
         "id": record.id,
         "total": total,
