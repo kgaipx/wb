@@ -45,8 +45,20 @@ def list_questions(
     if category:
         q = q.filter(Question.category == category)
     if knowledge_point:
-        q = q.filter(Question.knowledge_point == knowledge_point)
-    return q.order_by(Question.id).offset(offset).limit(limit).all()
+        # 支持逗号分隔的多个知识点（混合练习包），向下兼容单值等值过滤
+        kps = [k.strip() for k in knowledge_point.split(",") if k.strip()]
+        if len(kps) == 1:
+            q = q.filter(Question.knowledge_point == kps[0])
+        else:
+            q = q.filter(Question.knowledge_point.in_(kps))
+    # 多知识点混合练习包：随机排序，让首屏即覆盖各薄弱点（单值专项练习保持 id 稳定序）
+    if knowledge_point and len(kps) > 1:
+        from sqlalchemy import func
+
+        q = q.order_by(func.random())
+    else:
+        q = q.order_by(Question.id)
+    return q.offset(offset).limit(limit).all()
 
 
 @router.get("/questions/{qid}", response_model=QuestionOut)

@@ -285,7 +285,16 @@ export default function Practice() {
         <div>
           {kpFilter && (
             <div className="filter-banner">
-              正在专项练习薄弱点：<b>{kpFilter}</b>
+              <span>正在专项练习薄弱点：</span>
+              <span className="chip-row" style={{ display: "inline-flex", flexWrap: "wrap", gap: 6, verticalAlign: "middle" }}>
+                {kpFilter.includes(",")
+                  ? kpFilter.split(",").map((k) => (
+                      <span key={k} className="chip chip--warn">
+                        {k.trim()}
+                      </span>
+                    ))
+                  : <b>{kpFilter}</b>}
+              </span>
               <button
                 className="link-btn"
                 onClick={() => {

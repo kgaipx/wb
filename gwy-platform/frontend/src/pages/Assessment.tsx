@@ -283,9 +283,9 @@ export default function Assessment() {
             <button
               className="btn btn--primary btn--block"
               style={{ marginTop: 10 }}
-              onClick={() => nav(`/practice?kp=${encodeURIComponent(r.weak_points[0])}`)}
+              onClick={() => nav(`/practice?kp=${encodeURIComponent(r.weak_points.join(","))}`)}
             >
-              针对薄弱点去专项练习 →
+              一键混合薄弱点练习包（{r.weak_points.length} 个）→
             </button>
             <button
               className="btn btn--ghost btn--block"
@@ -293,12 +293,12 @@ export default function Assessment() {
               onClick={() =>
                 nav(
                   `/chat?q=${encodeURIComponent(
-                    `帮我讲讲${r.weak_points[0]}怎么提分（含配套例题与口诀）`
+                    `帮我针对薄弱点（${r.weak_points.join("、")}）制定一份优先提分计划，每个点给一道配套例题与口诀`
                   )}`
                 )
               }
             >
-              问 AI 私教：{r.weak_points[0]} 怎么破 →
+              问 AI 私教：薄弱点怎么破 →
             </button>
           </div>
         )}
