@@ -1,4 +1,4 @@
-"""知识库语料回填：把 seed.json + knowledge_extra.json 中尚未入库的知识片段
+"""知识库语料回填：把 seed.json + knowledge_extra.json + knowledge_gen.json 中尚未入库的知识片段
 幂等插入 KnowledgeChunk（is_verified=True）。
 
 - 开发/本地：默认连 settings 的数据库。
@@ -32,8 +32,10 @@ def _load(path: str) -> list[dict]:
 
 
 def backfill() -> int:
-    items = _load(os.path.join(_DATA, "seed.json")) + _load(
-        os.path.join(_DATA, "knowledge_extra.json")
+    items = (
+        _load(os.path.join(_DATA, "seed.json"))
+        + _load(os.path.join(_DATA, "knowledge_extra.json"))
+        + _load(os.path.join(_DATA, "knowledge_gen.json"))
     )
     db = SessionLocal()
     existing = {c.content for c in db.query(KnowledgeChunk.content).all()}

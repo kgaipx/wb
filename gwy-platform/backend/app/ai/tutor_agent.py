@@ -7,7 +7,7 @@
 实现：检索题目相关知识片段 → 编排 prompt 约束 LLM 紧扣考点讲解 → 返回可追溯来源。
 """
 from app.ai.llm_gateway import LLMGateway
-from app.ai.rag import KnowledgeRetriever
+from app.ai.vector_retriever import HybridRetriever
 from app.models import AbilityProfile, Question
 
 
@@ -45,7 +45,7 @@ def _tech_hint(question: Question) -> str:
 class TutorAgent:
     def __init__(self) -> None:
         self.gateway = LLMGateway()
-        self.retriever = KnowledgeRetriever(self.gateway)
+        self.retriever = HybridRetriever(self.gateway)
 
     def explain_question(self, question: Question, user_selected: str | None = None) -> dict:
         """逐题讲解：返回思路、知识点、用户错因、易错点、练习建议、避坑口诀。

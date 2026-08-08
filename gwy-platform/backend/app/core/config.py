@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     # 向量库
     VECTOR_DB_URL: str = "http://127.0.0.1:19530"
     EMBEDDING_MODEL: str = ""
+    EMBEDDING_API_KEY: str = ""
 
     # CORS
     CORS_ORIGINS: str = "http://localhost:5173"
