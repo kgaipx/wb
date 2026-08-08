@@ -54,7 +54,7 @@ class TutorAgent:
         返回 {knowledge_point, explanation, citations, model, offline}。
         """
         query = f"{question.stem} 知识点：{question.knowledge_point} 题型：{question.category or question.subject}"
-        chunks = self.retriever.retrieve(query, top_k=4)
+        chunks = self.retriever.retrieve(query, top_k=4, focus_kp=question.knowledge_point)
 
         context = (
             "参考资料：\n" + "\n".join(f"- {c.content}（来源：{c.source}）" for c in chunks)
@@ -136,7 +136,7 @@ class TutorAgent:
                 last_user = (m.get("content") or "").strip()
                 break
         query = f"{kp_hint or ''} {last_user}".strip()
-        chunks = self.retriever.retrieve(query, top_k=4)
+        chunks = self.retriever.retrieve(query, top_k=4, focus_kp=kp_hint)
 
         context = (
             "参考资料：\n" + "\n".join(f"- {c.content}（来源：{c.source}）" for c in chunks)
