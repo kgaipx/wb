@@ -601,6 +601,7 @@ export default function Assessment() {
           )}
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>
             已加载 {history.length} 次测评记录（能力成长轨迹）
+            {history.length < 2 && " · 再完成 1 次即可解锁成长趋势曲线"}
           </div>
           {history.length === 0 && !hisLoading && (
             <div className="card">
@@ -622,9 +623,15 @@ export default function Assessment() {
               ))}
             </>
           )}
-          {history.map((h) => {
+          {history.map((h, idx) => {
             const rate = Math.round((h.overall || 0) * 100);
             const tone = rate >= 70 ? "rate--good" : rate >= 50 ? "rate--mid" : "rate--bad";
+            // 历史按时间倒序：当前记录的下一条即「上一次」测评，据此计算成长标记
+            const prev = idx + 1 < history.length ? Math.round((history[idx + 1].overall || 0) * 100) : null;
+            const diff = prev !== null ? rate - prev : null;
+            const trendCls = diff == null ? "" : diff > 0 ? "rate-trend--up" : diff < 0 ? "rate-trend--down" : "rate-trend--flat";
+            const trendText =
+              diff == null ? "" : diff > 0 ? `▲ +${diff} 较上次` : diff < 0 ? `▼ ${diff} 较上次` : "— 持平";
             return (
               <button key={h.id} className="q-item" onClick={() => openDetail(h.id)}>
                 <div className="q-item__meta">
@@ -638,6 +645,14 @@ export default function Assessment() {
                     <span>%</span>
                   </span>
                 </div>
+                {diff !== null && (
+                  <div className="row row--between" style={{ marginTop: 2 }}>
+                    <span className="text-3">较上次测评</span>
+                    <span className={"rate-trend " + trendCls} style={{ fontSize: 13 }}>
+                      {trendText}
+                    </span>
+                  </div>
+                )}
                 {h.weak_points.length > 0 && (
                   <div className="text-3" style={{ fontSize: 12, marginTop: 4 }}>
                     薄弱：{h.weak_points.slice(0, 3).join("、")}
