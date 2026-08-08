@@ -80,6 +80,9 @@ def submit_exam(
     total = len(payload.answers)
     correct = 0
     weak: dict[str, int] = {}
+    # 记录各知识点「本次模考前 → 模考后」掌握度，用于报告展示能力变化
+    kp_before: dict[str, float] = {}
+    kp_after: dict[str, float] = {}
     details = []
 
     for item in payload.answers:
@@ -121,11 +124,16 @@ def submit_exam(
                 mastery=0.0,
             )
             db.add(ab)
+        # 首次遇到该知识点时，记录模考前的掌握度（即本次模考尚未改动的值）
+        if q.knowledge_point not in kp_before:
+            kp_before[q.knowledge_point] = ab.mastery
         ab.attempts += 1
         if is_correct:
             ab.correct += 1
         ab.mastery = round(ab.correct / ab.attempts, 3)
         ab.last_practiced = datetime.now(timezone.utc)
+        # 每次更新后覆盖记录，循环结束时即为模考后的掌握度
+        kp_after[q.knowledge_point] = ab.mastery
 
         details.append(
             {
@@ -155,6 +163,15 @@ def submit_exam(
     db.add(record)
     db.commit()
     db.refresh(record)
+    kp_mastery = [
+        {
+            "knowledge_point": kp,
+            "before": kp_before[kp],
+            "after": kp_after[kp],
+            "delta": round(kp_after[kp] - kp_before[kp], 3),
+        }
+        for kp in kp_before
+    ]
     return {
         "id": record.id,
         "total": total,
@@ -162,6 +179,7 @@ def submit_exam(
         "correct_rate": rate,
         "weak_points": [k for k, _ in top_weak],
         "details": details,
+        "kp_mastery": kp_mastery,
     }
 
 

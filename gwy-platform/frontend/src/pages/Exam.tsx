@@ -246,6 +246,15 @@ export default function Exam() {
         .map(([kp, v]) => ({ kp, rate: v.t ? v.c / v.t : 0, c: v.c, t: v.t }))
         .sort((a, b) => a.rate - b.rate);
     })();
+    // 本次模考各知识点「模考前 → 模考后」掌握度变化（按提升幅度降序，负向置底）
+    const kpMastery = (rep.kp_mastery || [])
+      .map((k: any) => ({
+        kp: k.knowledge_point,
+        before: Math.round((k.before || 0) * 100),
+        after: Math.round((k.after || 0) * 100),
+        delta: Math.round((k.delta || 0) * 100),
+      }))
+      .sort((a: any, b: any) => b.delta - a.delta);
     return (
       <>
         <div className="card report-hero">
@@ -280,6 +289,37 @@ export default function Exam() {
                     </div>
                     <div className={"progress " + tone2}>
                       <div className="progress__bar" style={{ width: p + "%" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+        <div className="card" style={{ marginTop: 12 }}>
+          <div className="row row--between">
+            <strong>本次模考能力变化</strong>
+            <span className="muted" style={{ fontSize: 12 }}>模考前 → 模考后</span>
+          </div>
+          <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
+            基于你对各知识点的作答，掌握度的实时提升（绿色为涨、红色为降）
+          </div>
+          {kpMastery.length === 0 ? (
+            <div className="muted" style={{ fontSize: 13, marginTop: 8 }}>暂无能力变化数据</div>
+          ) : (
+            <div style={{ marginTop: 8 }}>
+              {kpMastery.map((s: any) => {
+                const up = s.delta > 0;
+                const flat = s.delta === 0;
+                const cls = up ? "text-success" : flat ? "text-3" : "text-danger";
+                const arrow = up ? "▲ +" : flat ? "— " : "▼ ";
+                return (
+                  <div key={s.kp} style={{ marginTop: 8 }}>
+                    <div className="row row--between" style={{ fontSize: 13 }}>
+                      <span>{s.kp}</span>
+                      <span className={cls}>
+                        {s.before}% → {s.after}% <b>{arrow}{up || !flat ? Math.abs(s.delta) : 0}%</b>
+                      </span>
                     </div>
                   </div>
                 );
