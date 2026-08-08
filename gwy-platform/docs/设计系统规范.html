@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AI 公考私教 · 设计系统规范 v1.0</title>
+<style>
+  :root {
+    --brand: #1B4FB5; --brand-600: #1B4FB5; --brand-700: #143E8C;
+    --brand-050: #EAF0FB; --brand-100: #DCE7F8;
+    --accent: #D92B1C; --accent-050: #FCEDEC;
+    --success: #1A9B57; --success-050: #E9F7EF;
+    --warning: #D98300; --warning-050: #FCF2E2;
+    --danger: #D92B1C; --danger-050: #FCEDEC;
+    --info: #2563EB; --info-050: #EFF4FF;
+    --bg: #F3F5F9; --surface: #FFFFFF; --surface-2: #F7F9FC; --border: #E6E9F0;
+    --text: #1F2733; --text-2: #5C6675; --text-3: #98A2B3; --on-brand: #FFFFFF;
+    --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --fs-xs: 12px; --fs-sm: 13px; --fs-base: 14px; --fs-md: 15px; --fs-lg: 16px; --fs-xl: 18px; --fs-2xl: 22px;
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;
+    --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-pill: 999px;
+    --sh-sm: 0 1px 3px rgba(16,24,40,.06), 0 1px 2px rgba(16,24,40,.04);
+    --sh-md: 0 6px 18px rgba(16,24,40,.08); --sh-lg: 0 10px 30px rgba(16,24,40,.12);
+    --app-max: 480px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-sans); color: var(--text); background: #EEF1F6; line-height: 1.55; }
+  .doc-wrap { max-width: 1040px; margin: 0 auto; padding: var(--sp-6) var(--sp-5) 64px; }
+  .doc-head h1 { font-size: 26px; margin: 0; }
+  .doc-head p { color: var(--text-2); margin: 6px 0 0; }
+  .section { margin-top: 40px; }
+  .section > h2 { font-size: 20px; border-left: 4px solid var(--brand); padding-left: 10px; margin-bottom: 16px; }
+  .grid { display: grid; gap: 16px; }
+  .grid.cols2 { grid-template-columns: 1fr 1fr; }
+  .grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+  .grid.cols4 { grid-template-columns: repeat(4, 1fr); }
+  @media (max-width: 720px) { .grid.cols2, .grid.cols3, .grid.cols4 { grid-template-columns: 1fr; } }
+
+  /* swatch */
+  .swatch { border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; background: #fff; }
+  .swatch .chip { height: 64px; }
+  .swatch .meta { padding: 10px 12px; }
+  .swatch .name { font-weight: 600; font-size: 13px; }
+  .swatch .hex { font-size: 12px; color: var(--text-3); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+  /* type samples */
+  .type-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+  .type-row .label { color: var(--text-3); font-size: 12px; width: 130px; }
+  .type-row .sample { flex: 1; }
+
+  /* spacing */
+  .sp-box { display: inline-block; background: var(--brand-050); border: 1px solid var(--brand-100); border-radius: 4px; }
+
+  /* token label pills */
+  .tok { display: inline-block; padding: 2px 8px; border-radius: var(--r-pill); background: var(--surface-2); color: var(--text-2); font-size: 12px; margin: 2px; font-family: ui-monospace, monospace; }
+
+  /* ===== 复用组件库（与前端一致）===== */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); padding: var(--sp-4); box-shadow: var(--sh-sm); }
+  .card--soft { background: var(--info-050); border-color: transparent; box-shadow: none; }
+  .card--accent { background: var(--accent-050); border-color: transparent; }
+  .card--success { background: var(--success-050); border-color: transparent; }
+  .card--warning { background: var(--warning-050); border-color: transparent; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 16px; border-radius: var(--r-sm); font-size: var(--fs-md); font-weight: 600; line-height: 1; border: 1px solid transparent; }
+  .btn--primary { background: var(--brand); color: var(--on-brand); box-shadow: 0 4px 12px rgba(27,79,181,.25); }
+  .btn--ghost { background: var(--surface); color: var(--brand); border-color: var(--brand); }
+  .btn--block { width: 100%; }
+  .btn--sm { padding: 7px 12px; font-size: var(--fs-sm); }
+  .input { width: 100%; padding: 11px 12px; margin-bottom: var(--sp-2); border: 1px solid var(--border); border-radius: var(--r-sm); font-size: var(--fs-md); }
+  .textarea { width: 100%; padding: 11px 12px; min-height: 84px; resize: vertical; border: 1px solid var(--border); border-radius: var(--r-sm); font-family: inherit; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: var(--r-pill); font-size: var(--fs-xs); font-weight: 500; background: var(--surface-2); color: var(--text-2); }
+  .tag--brand { background: var(--brand-050); color: var(--brand); }
+  .tag--verified { background: var(--success-050); color: var(--success); }
+  .tag--accent { background: var(--accent-050); color: var(--accent); }
+  .tag--warning { background: var(--warning-050); color: var(--warning); }
+  .progress { height: 7px; background: var(--surface-2); border-radius: var(--r-pill); overflow: hidden; }
+  .progress__bar { height: 100%; background: var(--brand); border-radius: var(--r-pill); }
+  .progress--success .progress__bar { background: var(--success); }
+  .progress--warn .progress__bar { background: var(--warning); }
+  .muted { color: var(--text-2); }
+  .text-3 { color: var(--text-3); }
+  .text-brand { color: var(--brand); }
+  .text-success { color: var(--success); }
+  .text-danger { color: var(--danger); }
+  .text-warning { color: var(--warning); }
+  .text-accent { color: var(--accent); }
+  .hero { position: relative; overflow: hidden; background: linear-gradient(135deg, var(--brand) 0%, #2F6BE0 60%, #3B7BF0 100%); color: #fff; border-radius: var(--r-lg); padding: var(--sp-5); box-shadow: var(--sh-md); }
+  .hero__title { font-size: var(--fs-2xl); font-weight: 700; }
+  .hero__sub { margin-top: 6px; opacity: .92; }
+  .cap-list { list-style: none; display: grid; gap: 9px; margin-top: 10px; }
+  .cap-list li { display: flex; gap: 8px; align-items: flex-start; font-size: var(--fs-base); color: var(--text-2); }
+  .cap-list li::before { content: "✓"; flex: 0 0 auto; width: 18px; height: 18px; margin-top: 1px; display: grid; place-items: center; border-radius: 50%; background: var(--success-050); color: var(--success); font-size: 11px; font-weight: 700; }
+  .q-item { text-align: left; width: 100%; display: block; padding: var(--sp-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md); cursor: pointer; }
+  .q-item__meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: var(--fs-sm); color: var(--text-3); }
+  .q-item__stem { margin-top: 5px; font-size: var(--fs-md); }
+  .opt { display: flex; gap: 9px; align-items: flex-start; padding: 11px 12px; border: 1px solid var(--border); border-radius: var(--r-sm); margin-bottom: 7px; background: var(--surface); }
+  .opt--selected { background: var(--brand-050); border-color: var(--brand); }
+  .result { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-sm); }
+  .result--ok { background: var(--success-050); }
+  .result--bad { background: var(--danger-050); }
+  .tutor-box { margin-top: 12px; padding: 12px 14px; background: var(--info-050); border-radius: var(--r-sm); }
+  .tutor-box__title { font-weight: 700; color: var(--brand); margin-bottom: 6px; }
+  .tutor-box__body { font-size: var(--fs-base); white-space: pre-wrap; line-height: 1.6; }
+
+  /* phone frame */
+  .phone { width: 320px; max-width: 100%; margin: 0 auto; background: var(--bg); border: 10px solid #1c2330; border-radius: 36px; box-shadow: var(--sh-lg); overflow: hidden; }
+  .phone .app-header { position: static; }
+  .phone .nav-bar { position: static; }
+  .phone .app-main { padding-bottom: 16px; }
+  .phone .nav-link__ico svg { width: 22px; height: 22px; }
+  .phone .nav-link.active { color: var(--brand); }
+  .phone .nav-link.active::before { content: ""; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 22px; height: 3px; border-radius: 0 0 3px 3px; background: var(--brand); }
+  .phone .nav-link { position: relative; }
+  .note { font-size: 12px; color: var(--text-3); margin-top: 6px; }
+  .demo-label { font-size: 12px; color: var(--text-3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="doc-wrap">
+  <div class="doc-head">
+    <h1>AI 公考私教 · 设计系统规范</h1>
+    <p>版本 v1.0 · 对应 WBS 1.1 · 政务蓝主色 + 中国红点缀 · 移动优先（app-max 480px）· 设计令牌与组件库与前端代码（<code>src/theme/*.css</code>）完全一致。</p>
+  </div>
+
+  <!-- 关键界面视觉稿 -->
+  <div class="section">
+    <h2>关键界面视觉稿（手机）</h2>
+    <div class="grid cols2" style="align-items:start">
+      <div>
+        <div class="demo-label">首页 / 登录</div>
+        <div class="phone">
+          <header class="app-header">
+            <div class="app-header__logo">公</div>
+            <div class="app-header__name">AI 公考私教</div>
+            <div class="app-header__tag">懂你短板 · 内容可信</div>
+          </header>
+          <main class="app-main">
+            <div class="hero">
+              <div class="hero__title">AI 公考私教</div>
+              <div class="hero__sub">更懂你短板 · 内容可信 · 花钱无忧 · 陪你上岸</div>
+            </div>
+            <div class="card">
+              <input class="input" placeholder="邮箱" />
+              <input class="input" type="password" placeholder="密码（≥6 位）" />
+              <input class="input" placeholder="昵称（可选）" />
+              <div style="display:flex; gap:8px">
+                <button class="btn btn--primary" style="flex:1">登录</button>
+                <button class="btn btn--ghost" style="flex:1">注册</button>
+              </div>
+            </div>
+            <div class="card card--soft" style="margin-top:12px">
+              <strong>平台能力</strong>
+              <ul class="cap-list">
+                <li>AI 私教逐题讲解（RAG 溯源）</li>
+                <li>自适应弱项推送 + 能力图谱</li>
+                <li>申论 AI 批改（一致性门禁）</li>
+              </ul>
+            </div>
+          </main>
+          <nav class="nav-bar">
+            <div class="nav-link active">首页</div>
+            <div class="nav-link">学习</div>
+            <div class="nav-link">刷题</div>
+            <div class="nav-link">我的</div>
+          </nav>
+        </div>
+      </div>
+      <div>
+        <div class="demo-label">刷题 / 学情</div>
+        <div class="phone">
+          <header class="app-header">
+            <div class="app-header__logo">公</div>
+            <div class="app-header__name">AI 公考私教</div>
+          </header>
+          <main class="app-main">
+            <h2 style="font-size:18px;font-weight:700;margin-bottom:12px">学习中心</h2>
+            <div class="card">
+              <strong>学情概览</strong>
+              <div class="muted" style="margin-top:4px">累计答题 12 次 · 正确率 75%</div>
+              <div style="margin-top:8px">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span>类比推理</span><span class="text-3">82%</span></div>
+                <div class="progress progress--success"><div class="progress__bar" style="width:82%"></div></div>
+              </div>
+              <div style="margin-top:8px">
+                <div style="display:flex;justify-content:space-between;font-size:13px"><span>常识判断</span><span class="text-3">41%</span></div>
+                <div class="progress progress--warn"><div class="progress__bar" style="width:41%"></div></div>
+              </div>
+            </div>
+            <div class="card" style="margin-top:12px">
+              <div class="q-item__meta"><span class="tag tag--brand">行测</span><span>类比推理</span></div>
+              <div class="q-item__stem" style="margin-top:6px">下列逻辑关系中，与「医生：病人」最为相似的是？</div>
+              <label class="opt opt--selected"><input type="radio" checked /> <b>A.</b> <span>教师：学生</span></label>
+              <label class="opt"><input type="radio" /> <b>B.</b> <span>司机：汽车</span></label>
+              <div class="result result--ok"><b>✔ 答对</b><div style="margin-top:6px">医生服务病人，教师服务学生，均为职业与服务对象关系。</div></div>
+              <div class="tutor-box"><div class="tutor-box__title">AI 私教讲解</div><div class="tutor-box__body">类比推理先判断关系类型：职业与服务对象 vs 职业与工具，二者不可混淆。</div></div>
+            </div>
+          </main>
+          <nav class="nav-bar">
+            <div class="nav-link">首页</div>
+            <div class="nav-link active">学习</div>
+            <div class="nav-link">刷题</div>
+            <div class="nav-link">我的</div>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 色彩 -->
+  <div class="section">
+    <h2>1 · 色彩令牌</h2>
+    <div class="grid cols4">
+      <div class="swatch"><div class="chip" style="background:var(--brand)"></div><div class="meta"><div class="name">品牌主色 Brand</div><div class="hex">#1B4FB5</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-700)"></div><div class="meta"><div class="name">品牌按下</div><div class="hex">#143E8C</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--brand-050)"></div><div class="meta"><div class="name">品牌浅底</div><div class="hex">#EAF0FB</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--accent)"></div><div class="meta"><div class="name">强调 中国红</div><div class="hex">#D92B1C</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--success)"></div><div class="meta"><div class="name">成功 / 答对</div><div class="hex">#1A9B57</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--warning)"></div><div class="meta"><div class="name">提示 / 待复核</div><div class="hex">#D98300</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--danger)"></div><div class="meta"><div class="name">风险 / 答错</div><div class="hex">#D92B1C</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--info)"></div><div class="meta"><div class="name">链接 / 讲解</div><div class="hex">#2563EB</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--bg)"></div><div class="meta"><div class="name">页面底色</div><div class="hex">#F3F5F9</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--surface)"></div><div class="meta"><div class="name">表面 / 卡片</div><div class="hex">#FFFFFF</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--border)"></div><div class="meta"><div class="name">描边</div><div class="hex">#E6E9F0</div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--text)"></div><div class="meta"><div class="name">主文本</div><div class="hex">#1F2733</div></div></div>
+    </div>
+    <p class="note">语义色用法：成功=答对/通过；危险=答错/风险（与强调红共用 #D92B1C）；警告=待人工复核；中国红仅用于「无忧退费」等关键强调，避免滥用。</p>
+  </div>
+
+  <!-- 字体 -->
+  <div class="section">
+    <h2>2 · 字体阶梯</h2>
+    <div class="card">
+      <div class="type-row"><span class="label">--fs-2xl · 标题</span><span class="sample" style="font-size:22px;font-weight:700">AI 公考私教 · 22px</span></div>
+      <div class="type-row"><span class="label">--fs-xl · 页标题</span><span class="sample" style="font-size:18px;font-weight:700">学习中心 · 18px</span></div>
+      <div class="type-row"><span class="label">--fs-lg · 区块标题</span><span class="sample" style="font-size:16px;font-weight:700">会员与透明定价 · 16px</span></div>
+      <div class="type-row"><span class="label">--fs-md · 正文</span><span class="sample" style="font-size:15px">类比推理先判断关系类型再匹配选项 · 15px</span></div>
+      <div class="type-row"><span class="label">--fs-base · 基础</span><span class="sample" style="font-size:14px">累计答题 12 次 · 正确率 75% · 14px</span></div>
+      <div class="type-row"><span class="label">--fs-sm / xs</span><span class="sample" style="font-size:13px">难度 2 · 已审核（13px / 12px）</span></div>
+      <div class="type-row"><span class="label">字体族</span><span class="sample" style="font-size:14px">PingFang SC / 微软雅黑 / system-ui</span></div>
+    </div>
+  </div>
+
+  <!-- 间距圆角 -->
+  <div class="section">
+    <h2>3 · 间距与圆角</h2>
+    <div class="grid cols2">
+      <div class="card">
+        <div class="demo-label">间距（4pt 栅格）</div>
+        <span class="tok">--sp-1 4</span><span class="tok">--sp-2 8</span><span class="tok">--sp-3 12</span>
+        <span class="tok">--sp-4 16</span><span class="tok">--sp-5 20</span><span class="tok">--sp-6 24</span>
+        <div style="margin-top:12px">
+          <div class="sp-box" style="width:16px;height:16px"></div> sp-4
+          <div class="sp-box" style="width:24px;height:24px;margin-left:8px"></div> sp-6
+        </div>
+      </div>
+      <div class="card">
+        <div class="demo-label">圆角</div>
+        <span class="tok">--r-sm 8</span><span class="tok">--r-md 12</span><span class="tok">--r-lg 16</span><span class="tok">--r-pill</span>
+        <div style="margin-top:12px; display:flex; gap:10px; align-items:center">
+          <div style="width:56px;height:36px;background:var(--brand-050);border-radius:8px"></div>
+          <div style="width:56px;height:36px;background:var(--brand-050);border-radius:12px"></div>
+          <div style="width:56px;height:36px;background:var(--brand-050);border-radius:16px"></div>
+          <div style="width:56px;height:36px;background:var(--brand-050);border-radius:999px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 组件 -->
+  <div class="section">
+    <h2>4 · 组件库</h2>
+    <div class="grid cols2">
+      <div class="card">
+        <div class="demo-label">按钮 Button</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <button class="btn btn--primary">主要按钮</button>
+          <button class="btn btn--ghost">幽灵按钮</button>
+          <button class="btn btn--primary btn--sm">小号</button>
+          <button class="btn btn--ghost" disabled>禁用</button>
+        </div>
+        <button class="btn btn--primary btn--block" style="margin-top:10px">块级主按钮</button>
+      </div>
+      <div class="card">
+        <div class="demo-label">输入 Input / Textarea</div>
+        <input class="input" placeholder="邮箱" />
+        <input class="input" type="password" placeholder="密码" />
+        <textarea class="textarea" placeholder="申论作答…"></textarea>
+      </div>
+      <div class="card">
+        <div class="demo-label">标签 Tag</div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap">
+          <span class="tag tag--brand">行测</span>
+          <span class="tag tag--verified">✓ 已审核</span>
+          <span class="tag tag--accent">退费</span>
+          <span class="tag tag--warning">待复核</span>
+          <span class="tag">默认</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="demo-label">进度条 Progress</div>
+        <div style="margin-top:6px"><span class="text-3" style="font-size:12px">已掌握</span>
+          <div class="progress progress--success" style="margin-top:4px"><div class="progress__bar" style="width:82%"></div></div></div>
+        <div style="margin-top:10px"><span class="text-3" style="font-size:12px">薄弱</span>
+          <div class="progress progress--warn" style="margin-top:4px"><div class="progress__bar" style="width:38%"></div></div></div>
+      </div>
+      <div class="card card--success"><div class="demo-label" style="color:var(--success)">成功态卡片</div><b>✔ 答对</b><div class="muted" style="margin-top:4px">医生服务病人，教师服务学生，均为职业与服务对象的关系。</div></div>
+      <div class="card card--warning"><div class="demo-label" style="color:var(--warning)">提示态卡片</div><b>薄弱知识点（AI 诊断）</b><div class="muted" style="margin-top:4px">常识判断、资料分析</div></div>
+      <div class="card">
+        <div class="demo-label">题目项 / 选项</div>
+        <div class="q-item" style="cursor:default">
+          <div class="q-item__meta"><span class="tag tag--brand">行测</span><span>类比推理</span></div>
+          <div class="q-item__stem" style="margin-top:6px">与「医生：病人」最相似的是？</div>
+        </div>
+        <label class="opt opt--selected" style="margin-top:8px"><input type="radio" checked /> <b>A.</b> <span>教师：学生</span></label>
+        <label class="opt"><input type="radio" /> <b>B.</b> <span>司机：汽车</span></label>
+      </div>
+      <div class="card">
+        <div class="demo-label">AI 讲解 / 结果框</div>
+        <div class="tutor-box"><div class="tutor-box__title">AI 私教讲解</div><div class="tutor-box__body">类比推理先判断关系类型：职业与服务对象 vs 职业与工具，二者不可混淆。</div><div class="text-3" style="font-size:12px;margin-top:6px">来源：行测判断推理专项（平台教研原创）</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>5 · 设计原则</h2>
+    <div class="grid cols3">
+      <div class="card"><b>政务可信</b><div class="muted" style="margin-top:6px">深蓝主色传递权威与稳重，红色仅做关键强调，避免廉价感。</div></div>
+      <div class="card"><b>移动优先</b><div class="muted" style="margin-top:6px">app-max 480px 单列布局，拇指可达的导航与操作。</div></div>
+      <div class="card"><b>反馈透明</b><div class="muted" style="margin-top:6px">答对/答错、掌握度、退费状态均即时可见，呼应「花钱无忧」。</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

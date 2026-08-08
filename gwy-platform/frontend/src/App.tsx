@@ -205,6 +205,9 @@ function AppShell() {
   const [panelOpen, setPanelOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [showInstall, setShowInstall] = useState(false);
+  const [online, setOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : true
+  );
 
   // —— PWA 安装引导 ——
   useEffect(() => {
@@ -224,6 +227,43 @@ function AppShell() {
       window.removeEventListener("beforeinstallprompt", onPrompt);
       window.removeEventListener("appinstalled", onInstalled);
     };
+  }, []);
+
+  // —— 离线状态指示（强化「离线轻量」差异化卖点）——
+  useEffect(() => {
+    const goOnline = () => setOnline(true);
+    const goOffline = () => setOnline(false);
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => {
+      window.removeEventListener("online", goOnline);
+      window.removeEventListener("offline", goOffline);
+    };
+  }, []);
+
+  // iOS / 移动端键盘遮挡修复：输入框获得焦点时，待键盘弹出后将其滚动到可视区中部。
+  // 这是跨平台通用的缓解方案（无法在沙箱内真机验证，需在 iOS Safari 实机确认效果）。
+  useEffect(() => {
+    const onFocusIn = (e: Event) => {
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.isContentEditable)
+      ) {
+        // 延迟到键盘弹出动画之后，避免被固定底部导航遮挡
+        window.setTimeout(() => {
+          try {
+            t.scrollIntoView({ block: "center", behavior: "smooth" });
+          } catch {
+            /* 老浏览器兼容 */
+          }
+        }, 300);
+      }
+    };
+    document.addEventListener("focusin", onFocusIn);
+    return () => document.removeEventListener("focusin", onFocusIn);
   }, []);
 
   const installApp = async () => {
@@ -301,8 +341,10 @@ function AppShell() {
       {!isAuth && (
         <header className="app-header">
           <div className="app-header__logo">公</div>
-          <div className="app-header__name">AI 公考私教</div>
-          <div className="app-header__tag">懂你短板 · 内容可信</div>
+          <div className="app-header__brand">
+            <div className="app-header__name">AI 公考私教</div>
+            <div className="app-header__tag">懂你短板 · 内容可信</div>
+          </div>
           <button
             className="bell-btn"
             aria-label="通知"
@@ -391,6 +433,13 @@ function AppShell() {
           >
             ×
           </button>
+        </div>
+      )}
+
+      {!online && (
+        <div className="offline-banner" role="status">
+          <span className="offline-banner__dot" />
+          <span>当前离线 · 已缓存内容可继续刷题，恢复网络后自动同步进度</span>
         </div>
       )}
 

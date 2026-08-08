@@ -1,0 +1,13 @@
+{
+  "name": "AI公务员考前培训学习平台",
+  "short_name": "公考私教",
+  "description": "AI-native 公考私教：懂你短板、内容可信、花钱无忧",
+  "theme_color": "#1B4FB5",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "icons": [
+    { "src": "pwa-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "pwa-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

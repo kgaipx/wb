@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI公务员考前培训学习平台 · 竞品分析报告</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --ink:#1f2733; --muted:#5b6675;
+    --line:#e6e9f0; --brand:#2f6df6; --brand-soft:#eaf1ff;
+    --good:#1f9d6b; --warn:#e0892b; --bad:#d6453d;
+    --p1:#2f6df6; --p2:#7b61ff; --p3:#13b6a6; --p4:#e0892b; --p5:#d6453d;
+    --shadow:0 2px 14px rgba(31,39,51,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    background:var(--bg);color:var(--ink);line-height:1.7;font-size:15px;}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 80px;}
+  header.hero{background:linear-gradient(135deg,#2f6df6,#7b61ff);color:#fff;border-radius:18px;padding:40px 38px;box-shadow:var(--shadow);}
+  header.hero .tag{display:inline-block;background:rgba(255,255,255,.18);padding:5px 12px;border-radius:999px;font-size:12.5px;letter-spacing:.5px;margin-bottom:14px;}
+  header.hero h1{margin:0 0 10px;font-size:30px;line-height:1.3;}
+  header.hero p{margin:0;opacity:.92;font-size:15px;max-width:760px;}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
+  .meta span{background:rgba(255,255,255,.15);padding:6px 12px;border-radius:8px;font-size:12.5px;}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:30px 30px;margin-top:24px;box-shadow:var(--shadow);}
+  h2{font-size:22px;margin:0 0 6px;display:flex;align-items:center;gap:10px;}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;background:var(--brand-soft);color:var(--brand);border-radius:9px;font-size:15px;font-weight:700;}
+  h3{font-size:17px;margin:24px 0 10px;color:var(--ink);}
+  h4{font-size:14.5px;margin:18px 0 8px;color:var(--muted);text-transform:none;letter-spacing:.3px;}
+  p.lead{color:var(--muted);margin:6px 0 18px;font-size:14.5px;}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:14px 0;}
+  th,td{border:1px solid var(--line);padding:11px 12px;vertical-align:top;text-align:left;}
+  thead th{background:#f1f4fa;color:var(--ink);font-weight:700;position:sticky;top:0;}
+  tbody tr:nth-child(even){background:#fafbfe;}
+  .prod{font-weight:700;white-space:nowrap;}
+  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+  .pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;}
+  .pill.good{background:#e6f6ee;color:var(--good);}
+  .pill.warn{background:#fdf0e1;color:var(--warn);}
+  .pill.bad{background:#fbe9e8;color:var(--bad);}
+  .rate{font-weight:700;color:var(--brand);}
+  .note{background:var(--brand-soft);border-left:4px solid var(--brand);padding:14px 16px;border-radius:8px;font-size:13.5px;margin:16px 0;color:#28457e;}
+  .note b{color:#1c3360;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr;}}
+  .card{border:1px solid var(--line);border-radius:12px;padding:16px 16px;background:#fff;}
+  .card h4{margin-top:0;color:var(--ink);}
+  .pros{color:var(--good);} .cons{color:var(--bad);}
+  ul{margin:8px 0 8px;padding-left:20px;} li{margin:5px 0;}
+  .kpi{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0;}
+  .kpi .box{flex:1;min-width:150px;background:#f7f9fc;border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .kpi .box .v{font-size:24px;font-weight:800;color:var(--brand);}
+  .kpi .box .l{font-size:12.5px;color:var(--muted);margin-top:4px;}
+  .oppty{background:#fff;border:1px solid var(--line);border-left:4px solid var(--p3);border-radius:10px;padding:14px 16px;margin:12px 0;}
+  .oppty h4{margin:0 0 6px;color:var(--ink);}
+  .rec{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 18px;margin:14px 0;position:relative;}
+  .rec .badge{position:absolute;top:-11px;left:18px;background:var(--p2);color:#fff;font-size:12px;padding:3px 12px;border-radius:999px;font-weight:600;}
+  .rec h4{margin:6px 0 8px;color:var(--ink);}
+  .rec .why{background:#f6f3ff;border-radius:8px;padding:10px 12px;font-size:13.5px;margin:8px 0;}
+  .rec .why b{color:var(--p2);}
+  .rec .val{font-size:13.5px;}
+  .rec .val b{color:var(--good);}
+  .rec.p1{border-left:4px solid var(--p1);}
+  .rec.p2{border-left:4px solid var(--p3);}
+  .rec.p3{border-left:4px solid var(--p4);}
+  .rec.p4{border-left:4px solid var(--p2);}
+  .rec.p6{border-left:4px solid #1f9d6b;}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:10px 0;}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .bar-row{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:13px;}
+  .bar-row .name{width:140px;flex-shrink:0;color:var(--muted);}
+  .bar-track{flex:1;background:#eef1f7;border-radius:8px;height:18px;overflow:hidden;}
+  .bar-fill{height:100%;border-radius:8px;}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;margin-top:30px;line-height:1.8;}
+  .part-divider{background:linear-gradient(135deg,#13b6a6,#2f6df6);color:#fff;border-radius:14px;padding:18px 24px;margin:8px 0 4px;font-size:18px;font-weight:700;letter-spacing:.5px;box-shadow:var(--shadow);}
+  .part-divider small{display:block;font-size:13px;font-weight:400;opacity:.92;margin-top:5px;}
+  .dc1{color:#ff6b35;} .dc2{color:#e8453c;} .dc3{color:#2f6df6;} .dc4{color:#13b6a6;}
+  .toc{columns:2;font-size:13.5px;column-gap:30px;}
+  @media(max-width:820px){.toc{columns:1;}}
+  .toc a{color:var(--brand);text-decoration:none;}
+  .score-chip{display:inline-block;font-weight:700;font-size:12px;padding:1px 7px;border-radius:6px;background:#eef1f7;color:var(--muted);margin-left:6px;}
+  .landmap{display:flex;flex-direction:column;gap:10px;margin:14px 0;}
+  .lyr{border-radius:12px;padding:14px 18px;border:1px solid var(--line);background:#fafbfd;}
+  .lyr.ours{border:1.6px solid var(--brand);background:#eef4ff;}
+  .lyr-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .lyr-kicker{font-size:11.5px;font-weight:700;color:#fff;padding:3px 10px;border-radius:20px;background:var(--muted);letter-spacing:.5px;}
+  .lyr.ours .lyr-kicker{background:var(--brand);}
+  .nodes{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{font-size:13px;padding:5px 12px;border-radius:8px;background:#eef1f7;color:#2b3140;border:1px solid var(--line);}
+  .chip.weak{opacity:.55;}
+  .lyr-note{font-size:12.5px;color:var(--muted);margin-top:9px;line-height:1.5;}
+  .sub{font-size:15px;font-weight:700;color:var(--brand);margin:18px 0 8px;}
+  .mod{font-size:13px;font-weight:700;color:var(--muted);margin:14px 0 2px;letter-spacing:.5px;border-left:3px solid var(--line);padding-left:10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="tag">竞品分析报告 · COMPETITIVE ANALYSIS</div>
+  <h1>AI 公务员考前培训学习平台<br>竞品分析报告</h1>
+  <p>对标对象：9 款产品 —— 5 个通用 AI 生产力工具（Notion AI · Coda AI · ClickUp AI · Monday.com AI · Linear）作为能力参照系，4 个公考垂直 App（粉笔 · 华图 · 中公 · 腰果）作为正面竞品。本报告先给竞争格局地图，再分两层拆解其 AI 能力、定价与用户痛点，识别未被满足的需求，并为本平台给出差异化方向与可落地的验证建议。</p>
+  <div class="meta">
+    <span>编制日期：2026-08-04</span>
+    <span>对标产品：9 款（通用工具 5 + 公考直竞 4）</span>
+    <span>数据来源：G2 / ProductHunt / Capterra / 黑猫投诉 / 新京报 / 官方定价页 / 第三方评测</span>
+    <span>报告版本：v1.1（综合终稿）</span>
+  </div>
+</header>
+
+<div class="note">
+  <b>⚠️ 阅读前必读（竞争格局三层结构）：</b> 本报告的"竞品"分两层——<b>参照系</b>：你列出的 5 个通用型 AI 生产力工具（Notion / Coda / ClickUp / Monday / Linear），它们并非公考平台，而是提供"AI 能力 + 协作 + 定价"的借鉴，并暴露"通用工具做不深垂直教学"的共性短板；<b>正面竞品</b>：公考赛道的粉笔 / 华图 / 中公 / 腰果，才是真正的付费对手。报告采用<b>「总—分—总」结构</b>：先综合总览给出竞争格局地图（含我们的卡位），再分两个模块深挖，最后收口到差异化方向与行动建议。
+</div>
+
+<!-- TOC -->
+<section>
+  <h2><span class="num">·</span>目录</h2>
+  <div class="toc">
+    <p><a href="#ov">综合总览：竞争格局地图与我们的卡位</a></p>
+    <p class="mod">模块一 · 通用 AI 工具参照系（第 1–5 章）</p>
+    <p><a href="#s1">一、竞品概览与定位矩阵</a></p>
+    <p><a href="#s2">二、功能对比矩阵（5 维度）</a></p>
+    <p><a href="#s3">三、用户评价汇总（G2 / ProductHunt）</a></p>
+    <p><a href="#s4">四、各产品差异化策略分析</a></p>
+    <p><a href="#s5">五、我们的机会点（通用工具未满足的需求）</a></p>
+    <p class="mod">模块二 · 公考垂直赛道直接竞品（B0–B5 章）</p>
+    <p><a href="#sb0">B0 · 赛道格局：三巨头与 AI 拐点</a></p>
+    <p><a href="#sb1">B1 · 直接竞品概览与定位</a></p>
+    <p><a href="#sb2">B2 · 功能对比矩阵（公考垂直维度）</a></p>
+    <p><a href="#sb3">B3 · 用户评价汇总（黑猫 / 新京报）</a></p>
+    <p><a href="#sb4">B4 · 各产品差异化策略分析</a></p>
+    <p><a href="#sb5">B5 · 机会点：直竞未满足的需求</a></p>
+    <p class="mod">收口 · 综合结论与行动建议</p>
+    <p><a href="#s6">六、推荐差异化方向（理由 + 验证建议）</a></p>
+    <p><a href="#s7">七、综合结论与行动优先级</a></p>
+    <p><a href="#s8">附录：研究方法与数据来源</a></p>
+  </div>
+</section>
+
+<!-- SECTION OV: 综合总览 -->
+<section id="ov">
+  <h2><span class="num">·</span>综合竞争格局总览</h2>
+  <p class="lead">本报告共覆盖 <b>9 个产品</b>，分两层看：<b>5 个通用 AI 生产力工具</b>（参照系，提供能力形态与商业模式借鉴）与 <b>4 个公考垂直 App</b>（正面竞品，真正的实地对手）。两者在能力、定价、痛点上各异，但共同勾勒出我们要进入的市场地形。先给一张"地图"，后续两个模块分别深挖，结尾收口到差异化方向。</p>
+
+  <div class="landmap">
+    <div class="lyr">
+      <div class="lyr-head"><span class="lyr-kicker">参照系</span><b>通用 AI 生产力 / 工作管理平台（5）</b></div>
+      <div class="nodes">
+        <span class="chip">Notion AI</span><span class="chip">Coda AI</span><span class="chip">ClickUp AI</span><span class="chip">Monday.com AI</span><span class="chip">Linear</span>
+      </div>
+      <div class="lyr-note">提供"AI 能力形态 + 协作 + 定价逻辑"的借鉴；非直接对手，但暴露了通用工具做不好垂直教学的共性短板。</div>
+    </div>
+    <div class="lyr">
+      <div class="lyr-head"><span class="lyr-kicker">正面竞品</span><b>公考垂直赛道 App（4）</b></div>
+      <div class="nodes">
+        <span class="chip">粉笔</span><span class="chip">华图</span><span class="chip">中公</span><span class="chip weak">腰果（已边缘化）</span>
+      </div>
+      <div class="lyr-note">真正的付费对手。体量大、份额流失中、AI 渗透浅；痛点在"内容准确性 + 退费信任"，而非功能多少。</div>
+    </div>
+    <div class="lyr ours">
+      <div class="lyr-head"><span class="lyr-kicker">我们</span><b>AI 公务员考前培训平台（AI-native 新进入者）</b></div>
+      <div class="nodes"><span class="chip" style="background:#2f6df6;color:#fff;border-color:#2f6df6;">垂直聚焦 · 真个性化教学闭环 · 透明信任型定价</span></div>
+      <div class="lyr-note">卡位：用 AI-native 的"私教"体验，同时击穿通用工具的"垂直空白"与直竞的"信任 / 教学深度洼地"。</div>
+    </div>
+  </div>
+
+  <h3 class="sub">综合对比快照（9 款统一视角）</h3>
+  <table>
+    <thead><tr><th>产品</th><th>层</th><th>AI 角色定位</th><th>核心壁垒</th><th>主要短板</th><th>典型定价</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">Notion AI</td><td>参照</td><td>知识库里的写作 / 问答助手</td><td>上下文主权、生态</td><td>非教学场景、AI 加价</td><td>$10/席/月</td></tr>
+      <tr><td class="prod">Coda AI</td><td>参照</td><td>文档 + 表格里的自动化</td><td>结构化数据、计费创新</td><td>小众、学习曲线</td><td>$10/席/月</td></tr>
+      <tr><td class="prod">ClickUp AI</td><td>参照</td><td>项目管理中的总结 / 生成</td><td>功能广度</td><td>大空间卡顿、AI 另购</td><td>$7 + $5 AI/席</td></tr>
+      <tr><td class="prod">Monday AI</td><td>参照</td><td>可视化看板里的智能填充</td><td>开箱即用、可视化</td><td>深度弱、AI 积分制</td><td>$9 + AI 积分</td></tr>
+      <tr><td class="prod">Linear</td><td>参照</td><td>极简工程追踪的辅助</td><td>克制体验、速度</td><td>仅工程场景</td><td>$8/席/月</td></tr>
+      <tr><td class="prod">粉笔</td><td>直竞</td><td>低价大班课的 AI 附赠</td><td>线上龙头、题库</td><td>AI 浅层、退费争议</td><td>会员 ¥199–¥598/年</td></tr>
+      <tr><td class="prod">华图</td><td>直竞</td><td>全渠道 + 面试 AI</td><td>线下网点、面试</td><td>教材出错、偏贵</td><td>线下班 ¥3000+</td></tr>
+      <tr><td class="prod">中公</td><td>直竞</td><td>协议班规模交付</td><td>协议班规模</td><td>退费灾难、信任崩</td><td>协议班 ¥1万–¥5万</td></tr>
+      <tr><td class="prod">腰果</td><td>直竞</td><td>早期个性化先驱</td><td>曾个性化领先</td><td>已失焦、边缘化</td><td>小众 / 停滞</td></tr>
+    </tbody>
+  </table>
+
+  <div class="note"><b>本平台定位声明：</b> 不做"又一个通用 AI 工具"，也不做"又一个卖课大班"。我们做 <b>AI-native 的公考私教</b>——以"千人千面的教学闭环 + 可信内容 + 透明退费"为核心，吸收通用工具已被验证的 AI 能力形态（自动生成、知识检索、协作），并规避其"垂直做不深、二次收费"的坑。地图已就位，进入模块一。</div>
+</section>
+
+<div class="part-divider">模块一 · 通用 AI 工具参照系（第 1–5 章）<small>Notion / Coda / ClickUp / Monday / Linear —— 能力形态与需求空白的来源。</small></div>
+
+<!-- SECTION 1 -->
+<section id="s1">
+  <h2><span class="num">1</span>竞品概览与定位矩阵</h2>
+  <p class="lead">五款产品都围绕"AI + 工作空间"展开，但基因与取舍截然不同——从 Notion 的文档知识库，到 Linear 的极简工程追踪。理解它们的定位，是判断"哪些能力可借鉴、哪些坑要避开"的前提。</p>
+
+  <div class="kpi">
+    <div class="box"><div class="v">4.6–4.7</div><div class="l">主流竞品 G2 评分区间<br>（用户满意度高度趋同）</div></div>
+    <div class="box"><div class="v">$0–$40</div><div class="l">单用户 AI 月费区间<br>（含基础费 + AI 附加费）</div></div>
+    <div class="box"><div class="v">3 类</div><div class="l">AI 收费模式：<br>捆绑 / 席位附加 / 用量积分</div></div>
+    <div class="box"><div class="v">0 款</div><div class="l">真正面向"考试 / 学习"的<br>垂直 AI 产品（空白）</div></div>
+  </div>
+
+  <table>
+    <thead><tr><th>产品</th><th>核心定位</th><th>AI 基因</th><th>典型用户</th><th>G2 评分</th><th>起价（含 AI 最低）</th></tr></thead>
+    <tbody>
+      <tr><td class="prod"><span class="dot" style="background:var(--p1)"></span>Notion AI</td><td>All-in-one 知识库 / 文档 / Wiki</td><td>工作空间感知的"写作 + 搜索 + 智能体"</td><td>知识型团队、个人</td><td><span class="rate">4.6★</span> (12,135)</td><td>Business $20/席位（AI 捆绑）</td></tr>
+      <tr><td class="prod"><span class="dot" style="background:var(--p2)"></span>Coda AI</td><td>文档 + 表格 + 应用（已更名 Superhuman Docs）</td><td>结构化数据驱动的"AI 列 / 公式 / 智能体"</td><td>运营、产品、初创团队</td><td><span class="rate">4.7★</span> (~489)</td><td>Pro $10–12/Doc Maker</td></tr>
+      <tr><td class="prod"><span class="dot" style="background:var(--p3)"></span>ClickUp AI</td><td>Everything App 项目管理</td><td>"知识管理 + 项目经理 + 写作"三模式 Agent</td><td>跨职能团队、代理商</td><td><span class="rate">4.7★</span> (9,000+)</td><td>Unlimited $7 + Brain $9 = $16</td></tr>
+      <tr><td class="prod"><span class="dot" style="background:var(--p4)"></span>Monday.com AI</td><td>可视化 Work OS（看板）</td><td>上下文感知 Sidekick + 自主 Agent + 无代码 App</td><td>5–50 人可视化团队</td><td><span class="rate">4.7★</span> (17,695)</td><td>Basic $9 + AI 积分（捆绑）</td></tr>
+      <tr><td class="prod"><span class="dot" style="background:var(--p5)"></span>Linear</td><td>极简工程问题追踪</td><td>Agent 起草问题、智能分诊（Triage Intelligence）</td><td>软件工程团队</td><td><span class="rate">4.7★</span></td><td>Business $16/席位（AI 捆绑）</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>洞察：</b> 五款产品的用户满意度高度集中在 4.6–4.7，说明"AI 生产力工具"已是<b>红海且同质化</b>。"体验好"不再是护城河，<b>垂直场景的深度</b>才是。这正是我们切入公考培训的机会窗口。</div>
+</section>
+
+<!-- SECTION 2 -->
+<section id="s2">
+  <h2><span class="num">2</span>功能对比矩阵（5 维度）</h2>
+  <p class="lead">按你要求的五个维度逐项对比：<b>自动生成能力 · 数据源集成 · 自定义模板 · 协作功能 · 定价</b>。评级含义：● 强 ／ ◐ 中 ／ ○ 弱。最后一列给出"对本平台的可借鉴点"。</p>
+
+  <table>
+    <thead><tr>
+      <th style="width:130px">维度</th>
+      <th>Notion AI</th><th>Coda AI</th><th>ClickUp AI</th><th>Monday.com AI</th><th>Linear</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td class="prod">自动生成能力</td>
+        <td>● 文档/摘要/翻译/问答/会议纪要/智能体</td>
+        <td>● AI 列批量生成、AI 公式、表格级内容</td>
+        <td>● 任务/子任务/状态报告/写作/图像</td>
+        <td>● Sidekick、Agent、Vibe 无代码 App、AI Blocks</td>
+        <td>◐ 仅问题起草/分诊，生成面窄</td>
+      </tr>
+      <tr>
+        <td class="prod">数据源集成</td>
+        <td>● 70+ 连接器（Slack/Drive/GitHub 等）</td>
+        <td>● 600+ Packs，双向嵌入表格</td>
+        <td>● 1000+ 集成，Brain 连 50+ 应用</td>
+        <td>● 200+ 原生，1000+ via Zapier</td>
+        <td>◐ 深度但仅开发者栈（GitHub/GitLab/Slack）</td>
+      </tr>
+      <tr>
+        <td class="prod">自定义模板</td>
+        <td>● 100+ 模板 + 社区模板</td>
+        <td>● 模板库 + 启动套件（偏构建）</td>
+        <td>◐ 内置 PM 模板，灵活度高</td>
+        <td>● 200+ 行业模板，开箱即用</td>
+        <td>○ 刻意少模板，强 Opinionated</td>
+      </tr>
+      <tr>
+        <td class="prod">协作功能</td>
+        <td>● 实时编辑/评论/Teamspace/分享</td>
+        <td>● 实时编辑/评论/免费访客与编辑者</td>
+        <td>● 文档/白板/聊天/评论一体</td>
+        <td>● 看板/仪表盘/访客/实时</td>
+        <td>◐ 评论/跨团队可见，无原生文档（2026 才加）</td>
+      </tr>
+      <tr>
+        <td class="prod">定价</td>
+        <td>Free/Plus$10/<b>Business$20</b>(AI)/Ent 定制；智能体按积分$10/千</td>
+        <td>Free/Pro$10–12/<b>Team$30–33</b>/Ent；AI 积分$2–12/千</td>
+        <td>Free/Unlimited$7/<b>Business$12</b>+ Brain$9 / Everything$28</td>
+        <td>Free/Basic$9/Standard$12/<b>Pro$19</b>+AI 积分(千$0.01)；AI 附加$200/月起</td>
+        <td>Free(Basic 上限)/<b>Basic$10</b>/Business$16/Ent；部分功能需 AI 积分</td>
+      </tr>
+      <tr style="background:#f0f5ff">
+        <td class="prod">对本平台<br>可借鉴点</td>
+        <td>工作空间级 AI 搜索 + 多模型切换</td>
+        <td>"Doc Maker"计费 + 数据驱动 AI</td>
+        <td>AI 三模式（知识/PM/写作）分离</td>
+        <td>开箱即用模板 + 可视化上手快</td>
+        <td>极简、快、克制（少即是多）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4>定价模式三维对比（单用户含 AI 月费，年付口径）</h4>
+  <div class="bar-row"><div class="name">Notion (Business)</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--p1)"></div></div><span>$20</span></div>
+  <div class="bar-row"><div class="name">Coda (Team)</div><div class="bar-track"><div class="bar-fill" style="width:83%;background:var(--p2)"></div></div><span>$30–33</span></div>
+  <div class="bar-row"><div class="name">ClickUp (Biz+AI)</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:var(--p3)"></div></div><span>$40(顶配)</span></div>
+  <div class="bar-row"><div class="name">Monday (Pro+AI)</div><div class="bar-track"><div class="bar-fill" style="width:48%;background:var(--p4)"></div></div><span>~$19+积分</span></div>
+  <div class="bar-row"><div class="name">Linear (Business)</div><div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--p5)"></div></div><span>$16</span></div>
+  <p class="lead">注：ClickUp 的 AI 为"席位外附加费"（用户最大槽点之一），Monday 采用"席位 + AI 积分"双轨，Notion/Linear 已将 AI 捆绑进主套餐。对本平台的启示见第六节。</p>
+</section>
+
+<!-- SECTION 3 -->
+<section id="s3">
+  <h2><span class="num">3</span>用户评价汇总（G2 / ProductHunt）</h2>
+  <p class="lead">从 G2、ProductHunt、Capterra、Trustpilot 及第三方评测中提炼各产品的<b>真实好评与槽点</b>。这些来自真实用户的痛点和赞点，是判断"竞品哪里没做好"的最直接证据。</p>
+
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="dot" style="background:var(--p1)"></span>Notion AI <span class="score-chip">G2 4.6★</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul>
+        <li>易用、灵活，AI 集成提升效率（会议纪要多语言转写获高频好评）</li>
+        <li>工作空间级问答"用自家文档回答"是核心差异化</li>
+        <li>自定义智能体可 24/7 跑定时任务</li>
+      </ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul>
+        <li>学习曲线陡，大数据库性能下降</li>
+        <li>AI 改为积分/套餐后定价混乱；Reddit/Trustpilot 抱怨"功能答应了又锁进加购"</li>
+        <li>不支持离线（最大持续吐槽）</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4><span class="dot" style="background:var(--p2)"></span>Coda AI <span class="score-chip">G2 4.7★</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul>
+        <li>仅按 Doc Maker 计费，用户称"成本仅为 Notion 的 1/6"</li>
+        <li>公式/Packs 强大，把文档变成应用</li>
+        <li>AI 落在结构化数据（逐行分类/生成）是独门能力</li>
+      </ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul>
+        <li>学习曲线陡（公式语言像编程）</li>
+        <li>大文档性能差、移动端体验弱</li>
+        <li>近期定价/权限变更让协作体验变差（ProductHunt 尖锐批评）</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4><span class="dot" style="background:var(--p3)"></span>ClickUp AI <span class="score-chip">G2 4.7★</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul>
+        <li>一体化 + 灵活工作流，可替代 2–4 个工具</li>
+        <li>免费版慷慨（无限成员/任务）；$7 基础价性价比极高</li>
+        <li>报表/仪表盘强，多 LLM 接入（Brain MAX）</li>
+      </ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul>
+        <li>功能过载、界面令新手 overwhelmed</li>
+        <li>大空间性能卡顿；AI 为"席位外附加费"且不捆绑（最大槽点）</li>
+        <li>聊天体验不及专用工具</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h4><span class="dot" style="background:var(--p4)"></span>Monday.com AI <span class="score-chip">G2 4.7★</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul>
+        <li>可视化、色彩看板，10 分钟搭好，上手极快</li>
+        <li>自动化免代码、200+ 模板开箱即用</li>
+        <li>AI Agent / Vibe 无代码建 App 受好评</li>
+      </ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul>
+        <li>按席位计费叠加快（3 席起、5 人一加）；Trustpilot 仅 2.8★</li>
+        <li>大看板严重卡顿（卡片加载 25s+）</li>
+        <li>AI 附加费高达 $200/月起；基础版支持差；无真正离线</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h4><span class="dot" style="background:var(--p5)"></span>Linear <span class="score-chip">G2 4.7★ · PH 极正面</span></h4>
+    <div class="grid2">
+      <div>
+        <p class="pros"><b>正面：</b></p>
+        <ul>
+          <li>极速、键盘优先、界面干净；GitHub 集成深</li>
+          <li>"Jira 替代品"口碑强，工程师自发安利</li>
+          <li>Agent 能从会议/讨论起草问题，离线可用</li>
+        </ul>
+      </div>
+      <div>
+        <p class="cons"><b>负面：</b></p>
+        <ul>
+          <li>无原生时间追踪、定制性差（强 Opinionated）</li>
+          <li>非技术团队/市场营销水土不服（适配度 3/10）</li>
+          <li>访客/外部协作贵；担心"变臃肿成下一个 Jira"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="note"><b>跨产品共性结论：</b> 用户最爱的是"省时间、集成、模板/上手快"；最恨的是"<b>学习曲线陡、大空间卡顿、AI 二次收费、定价不透明、非目标场景水土不服</b>"。这五条"恨"，恰好是可被垂直学习平台逐一破解的切入点。</div>
+</section>
+
+<!-- SECTION 4 -->
+<section id="s4">
+  <h2><span class="num">4</span>各产品差异化策略分析</h2>
+  <p class="lead">每个产品并非"功能更多就赢"，而是靠一条清晰的战略主线建立壁垒。理解它们的"怎么赢"，才能找到我们的"怎么不同"。</p>
+
+  <h4><span class="dot" style="background:var(--p1)"></span>Notion AI —— "上下文主权"策略</h4>
+  <p>不靠更强模型，而靠"AI 跑在你的数据所在之处"。Enterprise Search 跨 70+ 应用、自定义智能体 24/7 自主执行。壁垒 = <b>数据沉淀 + 工作流绑定</b>。弱点：通用写作模型质量仍落后顶级 LLM，且离线缺失。</p>
+
+  <h4><span class="dot" style="background:var(--p2)"></span>Coda AI —— "结构化数据 + 计费创新"策略</h4>
+  <p>把 AI 落到"表格行级"（AI 列、AI 公式），让 AI 真正作用于结构化运营数据。计费上用"Doc Maker 制"——编辑者/访客免费，大幅降低规模化成本。壁垒 = <b>公式语言 + Packs 生态 + 成本结构</b>。弱点：构建门槛高，非技术用户劝退。</p>
+
+  <h4><span class="dot" style="background:var(--p3)"></span>ClickUp AI —— "广度即价值"策略</h4>
+  <p>Everything App，用"一个工具替代多个"讲故事；AI 拆成知识/项目经理/写手三模式 + 多 LLM 接入（Brain MAX）。壁垒 = <b>功能面 + 免费版慷慨度</b>。弱点：广度牺牲深度与性能，AI 额外收费伤口碑。</p>
+
+  <h4><span class="dot" style="background:var(--p4)"></span>Monday.com AI —— "可视化 + 开箱即用"策略</h4>
+  <p>用色彩看板与 200+ 模板把"上手难度"压到最低，再把 AI 设计为"随处可触发的能力"（Sidekick/Agent/Vibe）。壁垒 = <b>视觉化体验 + 低门槛采纳</b>。弱点：按席位叠加快、大空间性能崩、AI 加购贵。</p>
+
+  <h4><span class="dot" style="background:var(--p5)"></span>Linear —— "克制即体验"策略</h4>
+  <p>反主流：少模板、强约束、键盘优先、极快。靠"为软件团队而生"的精准定位建立信仰级忠诚。壁垒 = <b>极致聚焦 + 产品工艺</b>。弱点：刻意不做通用化，非工程场景直接放弃。</p>
+
+  <div class="note"><b>策略启示：</b> 五家的"赢法"各不相同，但共同点是从<b>某一具体场景/人群</b>深挖，而非泛泛地"做更多"。我们最该学的不是功能清单，而是 Linear 式的<b>垂直聚焦</b>——把"公考备考"做成别人替代不了的场景。</div>
+</section>
+
+<!-- SECTION 5 -->
+<section id="s5">
+  <h2><span class="num">5</span>我们的机会点（竞品未满足的需求）</h2>
+  <p class="lead">综合功能矩阵与用户评价，以下需求被五大通用工具系统性地"忽略或做不好"。其中每一项，都是公考学习平台可正面击穿的缺口。</p>
+
+  <div class="oppty">
+    <h4>① 领域化 AI 教学能力（最大空白）</h4>
+    五大产品都是"通用写作 / 总结 / 生成"，没有任何一个理解"行测、申论、面试、公基"的考试逻辑。用户要的是<b>讲题、纠错、押题、个性化薄弱点诊断</b>，而非把会议纪要比作散文。通用 AI 在"教学反馈闭环"上为零。
+  </div>
+
+  <div class="oppty">
+    <h4>② 学习科学方法的内置（间隔重复 / 自适应）</h4>
+    竞品全是"内容容器"，没有"记忆曲线、错题本、能力图谱、学习路径"。备考是典型的高强度记忆 + 刷题场景，而现有工具把"背"和"练"丢给用户自己用看板/表格拼凑。
+  </div>
+
+  <div class="oppty">
+    <h4>③ 备考全流程闭环（学—练—测—评—报）</h4>
+    现有工具能管"任务"却管不了"掌握度"。学员需要的是"学完一章→立即模考→AI 批改申论→生成提分报告"的闭环，竞品没有任何一个提供行业内容 + 测评 + 反馈的一体化。
+  </div>
+
+  <div class="oppty">
+    <h4>④ 离线 + 轻量（被反复吐槽的痛点）</h4>
+    Notion "不支持离线"、Monday "无真正离线"是高频槽点。公考学员大量在通勤、图书馆弱网环境学习——<b>离线缓存 + 纯前端轻量体验</b>是现成可被满足的硬需求。
+  </div>
+
+  <div class="oppty">
+    <h4>⑤ 低门槛 + 透明定价（对抗"叠加快 / 积分黑盒"）</h4>
+    ClickUp 的 AI 二次收费、Monday 的 $200/月 AI 附加 + 5 人一加、Notion 积分改价被骂"套路"，说明<b>学习者对隐性收费极敏感</b>。一个"学生友好、按月清晰、含 AI 不另收费"的定价，本身就是差异化卖点。
+  </div>
+
+  <div class="oppty">
+    <h4>⑥ 垂直内容与社群（竞品完全没有）</h4>
+    ClickUp/Monday 模板再多也是"项目管理模板"；公考需要的"历年真题库、时政热点、岗位招录数据、备考搭子社群"是垂直资产，通用工具的数据集成再强也接不进这个领域。
+  </div>
+</section>
+
+<!-- ============ PART B: 直接竞品（公考垂直赛道） ============ -->
+<div class="part-divider">模块二 · 公考垂直赛道直接竞品（B0–B5 章）<small>粉笔 / 华图 / 中公 / 腰果 —— 真正的正面竞品。补全"通用工具参照 + 垂直实地对手"的完整格局。</small></div>
+
+<!-- SECTION B0 -->
+<section id="sb0">
+  <h2><span class="num">·</span>公考培训赛道：三巨头格局与 AI 拐点</h2>
+  <p class="lead">真正的竞争对手不在硅谷，而在这三家"公考三巨头"与一批低价小机构之间。理解赛道体量、集中度与 AI 渗透阶段，才能判断我们切入的时机与切法。</p>
+  <div class="kpi">
+    <div class="box"><div class="v">371.8万</div><div class="l">2026 国考报名人数<br>（参考 283.1 万，报录比 74:1，热度持续攀升）</div></div>
+    <div class="box"><div class="v">19.2%</div><div class="l">2024 年招录考培 CR3<br>（中公曾高达 38%，份额被小机构侵蚀）</div></div>
+    <div class="box"><div class="v">1.4%</div><div class="l">粉笔 2025 AI 类课程收入占比<br>（AI 刚起步，远未定型——窗口期）</div></div>
+    <div class="box"><div class="v">≈3000万</div><div class="l">粉笔 AI 产品累计服务用户<br>（付费 238 万，渗透率仍低）</div></div>
+  </div>
+  <h4>三巨头画像</h4>
+  <ul>
+    <li><b class="dc1">粉笔（02469.HK）</b>：线上起家，主打性价比与题库，2025 年营收 26.77 亿（营利双降）；最早自研招录垂域大模型，AI 刷题系统班 / AI 面试点评已跑通。</li>
+    <li><b class="dc2">华图</b>：全渠道（线上+线下）职教龙头，品类最全，面试 AI（千面面试 AI）与综应 AI 专项班成熟；但内容质量管控与退费口碑承压。</li>
+    <li><b class="dc3">中公（002607.SZ）</b>：以"不过退费"协议班驱动规模，线下网点广；但退费危机与资金链问题严重，信任受损。</li>
+    <li><b class="dc4">腰果公考</b>：早期个性化学习计划（上岸计划）先驱，2017 年获华图投资后被并购融合失败，现规模萎缩（51–100 人），已非主流玩家。</li>
+  </ul>
+  <div class="note"><b>核心判断：</b> 赛道体量大、需求旺，但<b>头部份额在流失、AI 渗透仍极浅</b>。巨头把 AI 当作"低价大班课的附赠"，尚未形成真正个性化的教学闭环——这正是我们作为 AI-native 新进入者的最大空档。</div>
+</section>
+
+<!-- SECTION B1 -->
+<section id="sb1">
+  <h2><span class="num">B1</span>直接竞品概览与定位</h2>
+  <p class="lead">四家产品的基因、AI 能力成熟度与定价结构对比。腰果因已边缘化，仅作格局补充。</p>
+  <table>
+    <thead><tr><th style="width:110px">产品</th><th>核心定位</th><th>AI 能力成熟度</th><th>会员 / 课程定价（人民币）</th><th>规模与口碑信号</th></tr></thead>
+    <tbody>
+      <tr><td class="prod"><span class="dot" style="background:#ff6b35"></span>粉笔</td><td>线上公考龙头，"AI+教育"先发</td><td><b>高</b>：自研垂域大模型、AI 刷题系统班（千人千面）、AI 面试点评、AI 学情分析</td><td>会员 ¥20–70/月；系统班 ¥300–1280；<b>AI 刷题班 ¥399</b>；面试 AI 点评 ¥1 体验</td><td>月活 912 万；AI 付费 238 万；黑猫投诉 1626 条</td></tr>
+      <tr><td class="prod"><span class="dot" style="background:#e8453c"></span>华图</td><td>全渠道职教龙头，品类最全</td><td><b>中高</b>：千面面试 AI、智能 AI 题库、综应 AI 专项班、申论 AI 批改（D 类）</td><td>会员 ¥29–359/月；系统班 ¥960；悦享伴学 ¥5980；面试 AI 班 ¥680</td><td>品类最全；黑猫投诉 2798 条；教材质量争议</td></tr>
+      <tr><td class="prod"><span class="dot" style="background:#2f6df6"></span>中公</td><td>协议班（不过退费）规模驱动</td><td><b>中</b>：AI 就业学习机（AI 规划/助学）、网校会员、部分免费批改</td><td>会员 ¥39.9–122；省考专项 ¥1580–2980；<b>协议班最高 ¥53800</b></td><td>规模最大但信任受损；黑猫投诉 <b>115052 条</b></td></tr>
+      <tr><td class="prod"><span class="dot" style="background:#13b6a6"></span>腰果</td><td>早期个性化先驱，现边缘化</td><td><b>低</b>：上岸计划（动态学习计划）、每日一题、题库；教研薄弱</td><td>曾小班 ¥3280–6900；现规模萎缩</td><td>51–100 人；C 轮估值 1.5 亿；非主流</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- SECTION B2 -->
+<section id="sb2">
+  <h2><span class="num">B2</span>功能对比矩阵（公考垂直维度）</h2>
+  <p class="lead">按公考学习的关键能力维度对比四家。评级：● 强 ／ ◐ 中 ／ ○ 弱 ／ ✕ 明显短板。</p>
+  <table>
+    <thead><tr><th style="width:150px">维度</th><th>粉笔</th><th>华图</th><th>中公</th><th>腰果</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">自研 AI 模型</td><td>● 行业首个招录垂域大模型</td><td>◐ 未公开自研，依赖通用模型</td><td>◐ AI 学习机（偏硬件封装）</td><td>○ 无</td></tr>
+      <tr><td class="prod">千人千面诊断</td><td>● AI 刷题班动态规划学习路径</td><td>◐ 智能推送习题</td><td>◐ AI 职业规划/助学</td><td>◐ 上岸计划早期个性化（已停滞）</td></tr>
+      <tr><td class="prod">申论智能批改</td><td>● 不限次 AI 批改 + 人工 4 次/月</td><td>● AI 批改（D 类）+ 大咖批改</td><td>◐ 部分免费，功能有限</td><td>○ 弱</td></tr>
+      <tr><td class="prod">面试点评 AI</td><td>● AI 面试点评（累计 432 万次）</td><td>● 千面面试 AI、AI 点评随心练</td><td>◐ 有 AI 面试点评课程</td><td>○ 弱</td></tr>
+      <tr><td class="prod">题库质量与时效</td><td>◐ 题库强，但更新依赖人工</td><td>◐ 地方题偏多、更新较慢</td><td>◐ 基础题丰富、真题偏少</td><td>○ 陈旧、维护弱</td></tr>
+      <tr><td class="prod">价格透明 / 退费口碑</td><td>✕ 退费纠纷（1626 条）</td><td>✕ 退费难、教材出错（2798 条）</td><td>✕ 退费灾难（115052 条）、以物抵债</td><td>◐ 规模小、风险相对低</td></tr>
+      <tr style="background:#f0f5ff"><td class="prod">对我们的启示</td><td>垂域模型是壁垒，但体验未拉满</td><td>品类全但质量/信任有洞</td><td>规模大却信任崩塌</td><td>个性化方向对，执行没跟上</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>洞察：</b> 四家在"AI 批改 / 面试点评"上已铺开，但在<b>"真正千人千面的教学闭环"与"信任/退费"</b>两个维度普遍薄弱——前者是技术纵深，后者是品牌洼地，都是我们的切入口。</div>
+</section>
+
+<!-- SECTION B3 -->
+<section id="sb3">
+  <h2><span class="num">B3</span>用户评价汇总（黑猫 / 新京报 / 应用商店）</h2>
+  <p class="lead">公考赛道的用户槽点高度集中在"内容质量"与"退费/信任"，与通用工具"学习曲线/卡顿"的痛点截然不同。以下来自黑猫投诉、新京报 2025–2026 调查与公开评测。</p>
+  <div class="grid2">
+    <div class="card">
+      <h4><span class="dot" style="background:#ff6b35"></span>粉笔 <span class="score-chip">黑猫 1626 条</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul><li>题库质量与真题更新业内领先，月活高</li><li>AI 刷题性价比高（¥399）、AI 面试点评"堪比真人老师"</li><li>线上体验流畅，自学友好</li></ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul><li>退费纠纷频发（黑猫 1626 条），客服协调为主</li><li>创始人张小龙 2026.7 辞任，争议言论伤品牌</li><li>AI 课单价低，对业绩贡献有限，被质疑"噱头"</li></ul>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:#e8453c"></span>华图 <span class="score-chip">黑猫 2798 条</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul><li>全渠道、品类最全，线下护城河深</li><li>面试 AI、综应 AI 专项班成熟</li><li>适合系统班/协议班偏好者</li></ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul><li>教材内容出错（2026 新闻教材把"传播性"当新闻根本属性，应为"真实性"）</li><li>录播课陈旧、退费难（"14 天超期不退"被指显失公平）</li><li>退费算法不合理，出现"倒欠机构钱"</li></ul>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card">
+      <h4><span class="dot" style="background:#2f6df6"></span>中公 <span class="score-chip">黑猫 115052 条</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul><li>规模最大、线下网点最广，协议班选择多</li><li>品牌认知度高，适合"保过/退费"心理诉求者</li></ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul><li>退费灾难：黑猫 11.5 万条投诉，"1.7 万退款分 17 年还"</li><li>出现"以物抵债"（茅台、二手车）等争议操作</li><li>经营承压、信任崩塌，创始人直播致歉</li></ul>
+    </div>
+    <div class="card">
+      <h4><span class="dot" style="background:#13b6a6"></span>腰果公考 <span class="score-chip">小众 · 边缘化</span></h4>
+      <p class="pros"><b>正面：</b></p>
+      <ul><li>早期"上岸计划"动态学习计划理念超前</li><li>每日一题碎片化学习、性价比定位清晰</li></ul>
+      <p class="cons"><b>负面：</b></p>
+      <ul><li>被华图并购后融合失败，教研/技术投入不足</li><li>师资流失、口碑崩塌，规模萎缩至 51–100 人</li><li>已非主流玩家，参考价值主要在"个性化方向对、执行没跟上"</li></ul>
+    </div>
+  </div>
+  <div class="note"><b>跨产品共性结论：</b> 公考用户最在意的不是"功能多"，而是<b>"内容准不准、花了钱能不能退、机构靠不靠谱"</b>。信任与确定性，是这个赛道被严重低估的购买决策因子。</div>
+</section>
+
+<!-- SECTION B4 -->
+<section id="sb4">
+  <h2><span class="num">B4</span>各产品差异化策略分析</h2>
+  <p class="lead">四家的"赢法"与"命门"各不相同。我们既要学其有效打法，更要避开其已暴露的雷。</p>
+  <h4><span class="dot" style="background:#ff6b35"></span>粉笔 —— "垂域大模型 + 低价 AI 大班课"降维策略</h4>
+  <p>行业首个自研招录垂域大模型，用 ¥399 的 AI 刷题系统班（名师+AI 数字人双师、千人千面）以低价切走传统千元大班课份额。壁垒 = <b>数据积累 + 技术先发 + 线上口碑</b>。命门：AI 收入仅占 1.4%，个性化仍停留在"推送/数字人"层，未形成诊断—反馈真闭环；退费与品牌争议。</p>
+  <h4><span class="dot" style="background:#e8453c"></span>华图 —— "全渠道 + 最全品类 + 面试 AI"策略</h4>
+  <p>线下网点 + 线上品类最全，千面面试 AI 与综应 AI 专项班成熟。壁垒 = <b>线下交付能力 + 品类宽度</b>。命门：内容质量管控漏洞（教材出错）、退费口碑差、线上体验不及粉笔。</p>
+  <h4><span class="dot" style="background:#2f6df6"></span>中公 —— "协议班（不过退费）+ 规模"策略</h4>
+  <p>以"不过包退"高客单价协议班驱动规模与现金流，线下网点最广。壁垒 = <b>品牌 + 规模 + 线下网络</b>。命门：退费反噬、资金链与信任崩塌——规模驱动模式的系统性风险。</p>
+  <h4><span class="dot" style="background:#13b6a6"></span>腰果 —— "个性化学习计划"先驱策略（已失焦）</h4>
+  <p>早期"上岸计划"按学习行为动态修正复习计划，理念领先。但因教研/技术投入不足、被并购后失焦，未能规模化。启示：<b>个性化方向正确，但必须靠技术与教研双轮落地</b>。</p>
+  <div class="note"><b>策略启示：</b> 直竞的"命门"恰好是可被 AI-native 新玩家正面解决的——把"个性化教学"做深（而非粉笔式浅层推送），把"信任/退费"做透明（而非中公式套路）。</div>
+</section>
+
+<!-- SECTION B5 -->
+<section id="sb5">
+  <h2><span class="num">B5</span>机会点：直竞未满足的需求（对我们最关键的空白）</h2>
+  <p class="lead">结合矩阵与用户评价，以下需求被四家直竞系统性地"做浅或做砸"。每一条都可直接转化为我们的产品主张。</p>
+  <div class="oppty">
+    <h4>① 真正个性化的 AI 教学闭环（最大空白）</h4>
+    粉笔虽先发，但 AI 收入仅占 1.4%，体验多为"数字人讲解 + 习题推送"，未形成"<b>诊断薄弱点 → 动态规划 → 精准推送 → 反馈纠正</b>"的闭环。自研垂域模型门槛高，但体验远未拉满——AI-native 玩家可从"教学闭环深度"反超。
+  </div>
+  <div class="oppty">
+    <h4>② 信任与退费确定性（行业信任洼地）</h4>
+    中公 11.5 万条退费投诉、"以物抵债"、华图"14 天不退/倒欠机构"——行业信任度极低。一个"<b>清晰定价、可退、按效果付费、无套路</b>"的产品，本身就是强购买理由。
+  </div>
+  <div class="oppty">
+    <h4>③ 内容时效与准确性（被实锤的硬伤）</h4>
+    华图教材把"传播性"当新闻根本属性、机构录播还在讲"十三五"——内容陈旧/错误是头部实锤短板。用 <b>AI 实时更新时政、自动校验答案、版本化管理题库</b>，可建立"内容可信"差异点。
+  </div>
+  <div class="oppty">
+    <h4>④ 透明价格 vs 协议班套路</h4>
+    "不过退费"变陷阱、客单价虚高（协议班最高 5.38 万）。学生群体价格敏感且厌恶隐性收费，<b>清晰订阅制 / 按模块付费 / 效果对赌</b>是差异化定价的空间。
+  </div>
+  <div class="oppty">
+    <h4>⑤ "低价无 AI"与"高价无灵活"之间的中间地带</h4>
+    小机构以低价抢市场但无体系无 AI；巨头有体系但贵且僵。中间存在"<b>高性价比 + 真 AI 个性化 + 轻量灵活</b>"的空白市场，正是我们作为新进入者的最佳卡位。
+  </div>
+</section>
+
+<!-- SECTION 6 -->
+<section id="s6">
+  <h2><span class="num">6</span>推荐差异化方向（理由 + 验证建议）</h2>
+  <p class="lead">综合<b>模块一（通用工具空白）</b>与<b>模块二（直竞未满足需求）</b>，并承接<b>综合总览</b>的竞争格局地图，提炼出 5 个差异化方向，按优先级排序。每个方向均附<b>差异化理由</b>与<b>可落地验证建议</b>（低成本、可在 2–4 周内测出信号）。方向 1–4 由通用工具分析提出、被直竞分析双重验证；方向 5 由直竞"信任/退费/内容准确性"痛点新增。</p>
+
+  <div class="rec p1">
+    <span class="badge">方向 1 · 最高优先级</span>
+    <h4>AI 私教闭环：讲题 → 诊断 → 自适应推送</h4>
+    <p>把 AI 从"生成内容"升级为"教学 Agent"——能逐题讲解、识别错题根因、构建个人能力图谱，并按记忆曲线自动推送复习与针对性练习。</p>
+    <div class="why"><b>差异化理由：</b> 这是五款竞品<b>结构性为零</b>的能力（机会点 ①②③）。Notion 的"上下文主权"可借鉴，但我们要把上下文换成"学员的答题与掌握数据"，形成教学反馈闭环，而非文档问答。</div>
+    <div class="val"><b>验证建议：</b> ① 用 20–30 名真实备考学员做 2 周影子测试，对比"用 AI 私教 vs 自己刷题"的错题率下降幅度；② 设计"能力图谱"原型，测学员是否愿意为"薄弱点诊断"付费；③ 关键指标：错题复错率、日均有效学习时长、续费意向（WTP）。</div>
+  </div>
+
+  <div class="rec p2">
+    <span class="badge">方向 2 · 强烈推荐</span>
+    <h4>公考垂直内容 + 测评一体化（学练测评报）</h4>
+    <p>内置行测/申论/公基题库、历年真题、时政库、岗位招录数据，并打通"学完即测、AI 批改申论、生成提分报告"的闭环，而非让用户用看板自建。</p>
+    <div class="why"><b>差异化理由：</b> 竞品模板再多是"项目管理模板"（机会点 ⑥），永远接不进考试领域内容。垂直内容资产 + 测评闭环构成别人难以复制的数据与版权壁垒。</div>
+    <div class="val"><b>验证建议：</b> ① 先做一个"申论 AI 批改"单点 MVP，找 50 份真实申论答卷做人工 vs AI 评分一致性测试（目标相关系数 ≥0.8）；② 上线"模考报告"功能，看分享率与回流率；③ 关键指标：AI 批改接受度、模考完课率。</div>
+  </div>
+
+  <div class="rec p3">
+    <span class="badge">方向 3 · 体验差异化</span>
+    <h4>离线优先 + 极简轻量（学 Linear 的"克制"）</h4>
+    <p>主打弱网/通勤场景的离线缓存、纯前端轻量体验、键盘/移动端流畅刷题。避开 Monday/Notion 被吐槽的"卡顿 + 无离线"。</p>
+    <div class="why"><b>差异化理由：</b> 直接命中机会点 ④。竞品把"重工作空间"当优势，却牺牲了移动学习场景——我们用"轻 + 离线"反向切位，且开发成本远低于做全功能工作空间。</div>
+    <div class="val"><b>验证建议：</b> ① 在题库页做 PWA 离线缓存 demo，招募通勤族实测；② A/B 对比"离线可用 vs 仅在线"的次日留存；③ 关键指标：弱网环境崩溃率、离线使用占比、移动端 7 日留存。</div>
+  </div>
+
+  <div class="rec p4">
+    <span class="badge">方向 4 · 商业差异化</span>
+    <h4>学生友好的透明定价（AI 全捆绑、不另收费）</h4>
+    <p>采用"基础免费 + 进阶会员"的简洁结构，AI 私教/批改等核心能力<b>全部含在会员内</b>，不学 ClickUp 的"AI 附加费"和 Monday 的"积分黑盒"。对在校生提供认证折扣。</p>
+    <div class="why"><b>差异化理由：</b> 机会点 ⑤ 显示学习者对隐性收费极度敏感，且学生群体价格弹性高。透明捆绑既是信任卖点，也是对抗通用工具"按席位/积分叠加快"的降维打击。</div>
+    <div class="val"><b>验证建议：</b> ① 定价页 A/B 测试"全含 AI"vs"AI 另购"，看转化率与客服咨询中的价格疑虑占比；② 学生认证折扣对付费率的影响；③ 关键指标：付费转化率、价格相关流失原因占比、LTV/CAC。</div>
+  </div>
+
+  <div class="rec p6">
+    <span class="badge" style="background:#1f9d6b">方向 5 · 新增（来自直竞痛点）</span>
+    <h4>信任优先型产品：透明定价 + 无忧退费 + 内容可信</h4>
+    <p>直面直竞最大的品牌洼地——把"定价清晰、无套路退费、内容经 AI 校验准确、可效果对赌"做成产品级承诺，而非营销话术。建立"花了钱一定值、不值能退"的确定性。</p>
+    <div class="why"><b>差异化理由：</b> 直竞 B5 ②③：中公 11.5 万条退费投诉、华图"14 天不退/倒欠机构"、教材答案错误——行业信任度极低。通用工具分析（机会点 ⑤）也指出学习者对隐性收费极度敏感。信任，是这个赛道被严重低估的购买决策因子。</div>
+    <div class="val"><b>验证建议：</b> ① 推出"7 天无理由 + 未过退部分款"保障，与协议班套路做 A/B，测转化率与信任 NPS；② 内容端上线"AI 实时更新时政 + 答案校验"，抽检准确率对标华图错误案例；③ 关键指标：信任相关 NPS、退费纠纷率、付费转化率。</div>
+  </div>
+</section>
+
+<!-- SECTION 7 -->
+<section id="s7">
+  <h2><span class="num">7</span>综合结论与行动优先级</h2>
+  <p class="lead">综合总览地图 + 两大模块分析指向同一结论：通用 AI 工具（参照系）在满意度上已同质（4.6–4.7★），拼功能无意义；而公考直竞虽体量大，却在 AI 教学深度与信任/内容质量上普遍薄弱、份额正在流失。<b>我们的胜机 = 垂直聚焦（公考）+ 真个性化教学闭环 + 体验克制（离线轻量）+ 透明信任型定价</b>。建议按以下顺序推进：</p>
+  <table>
+    <thead><tr><th>优先级</th><th>动作</th><th>周期</th><th>目标信号</th><th>来源</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">P0</td><td>方向 1 MVP：AI 私教 + 错题诊断</td><td>2–4 周</td><td>错题复错率下降、WTP 明确</td><td>通用 + 直竞</td></tr>
+      <tr><td class="prod">P0</td><td>方向 2 单点：申论 AI 批改</td><td>2–3 周</td><td>人 AI 评分一致性 ≥0.8</td><td>通用 + 直竞</td></tr>
+      <tr><td class="prod">P0</td><td>方向 5 单点：信任保障 + 内容校验</td><td>2–3 周</td><td>信任 NPS、退费纠纷率下降</td><td>直竞（新）</td></tr>
+      <tr><td class="prod">P1</td><td>方向 3：离线刷题 PWA demo</td><td>3 周</td><td>移动端 7 日留存提升</td><td>通用</td></tr>
+      <tr><td class="prod">P1</td><td>方向 4：定价 A/B 测试</td><td>持续</td><td>付费转化率、价格流失下降</td><td>通用 + 直竞</td></tr>
+      <tr><td class="prod">P2</td><td>垂直内容资产积累（题库/时政/招录）</td><td>长期</td><td>内容独家性、版权壁垒</td><td>通用 + 直竞</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>一句话总结：</b> 通用工具把 AI 做成"更会写文档的同事"，直竞把 AI 做成"低价大班课的附赠"；我们要把 AI 做成"<b>更懂你短板、内容可信、花钱无忧、陪你上岸的私教</b>"——场景越垂直、信任越扎实，巨头与小机构都越难抄。</div>
+</section>
+
+<!-- APPENDIX -->
+<section id="s8">
+  <h2><span class="num">8</span>附录：研究方法与数据来源</h2>
+  <h4>数据来源</h4>
+  <ul>
+    <li><b>官方定价页</b>（2026-08 核实）：Notion、Coda/Superhuman、ClickUp、Monday.com、Linear 官网及定价公告。</li>
+    <li><b>用户评价聚合</b>：G2（各产品 489–17,695 条评论）、ProductHunt（Coda 39–40 条、Linear 社区）、Capterra、Trustpilot（Monday 2.8★）、AWS Marketplace 评论。</li>
+    <li><b>第三方评测</b>：ToolChase、UsagePricing、PlainAI、UserReviews.io、SaaSOffers、Rock.so、TryOrBye 等 2026 年独立评测。</li>
+  </ul>
+  <h4>方法说明</h4>
+  <ul>
+    <li>功能评级基于公开功能清单与评测交叉验证，●/◐/○ 为主观综合判定，供战略参考。</li>
+    <li>定价为年付口径、含最低 AI 能力，汇率按 1 USD≈7.2 CNY 仅作量级参考（本平台应以人民币定价）。</li>
+    <li>本报告采用「总—分—总」结构：综合总览给出竞争格局地图，模块一（通用 AI 工具参照系）对标通用生产力工具，模块二（公考垂直赛道直竞）直击真实竞品（粉笔 / 华图 / 中公 / 腰果），已补全完整竞争格局。</li>
+    <li>直竞数据来源：粉笔 2025 年报 / 港交所公告（02469）、华图官网价目、中公网校价目与黑猫投诉、新京报 2025–2026 公考培训乱象调查、亿欧/界面/网易等公开报道。</li>
+    <li>黑猫投诉量为检索时点公开数据，动态变化；退费类投诉为行业普遍现象，非单一机构问题。</li>
+  </ul>
+</section>
+
+<footer>
+  本报告由 WorkBuddy 基于公开资料整理生成 · 仅供内部战略决策参考 · 数据截至 2026-08-04<br>
+  对标产品评分与定价会随时间变动，落地前请二次核实官方最新信息。
+</footer>
+
+</div>
+</body>
+</html>

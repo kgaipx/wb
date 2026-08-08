@@ -1,0 +1,72 @@
+# ===== WorkBuddy 内部数据（含个人记忆/隐私，绝不入库） =====
+.workbuddy/
+
+# ===== 环境变量 / 密钥（只提交 .example 模板） =====
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+
+# ===== Python =====
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+# 本地开发数据库（SQLite，不入库；生产用 MySQL）
+*.db
+*.sqlite3
+*.sqlite
+
+# ===== Node / 前端 =====
+node_modules/
+dist/
+build/
+*.local
+# tsc -b 增量构建产物与声明文件（不应入库）
+*.tsbuildinfo
+gwy-platform/frontend/vite.config.js
+gwy-platform/frontend/vite.config.d.ts
+
+# ===== 日志 / 系统 =====
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# ===== 部署临时打包产物（本地构建后投递用，不入库） =====
+gwy-platform/deploy_*.tar.gz
+
+# ===== 第三方题库导入暂存区（用户从百度网盘等下载的参考材料，不入库） =====
+gwy-platform/backend/data/incoming/*
+!gwy-platform/backend/data/incoming/.gitkeep
+!gwy-platform/backend/data/incoming/README.md
+
+# ===== 导入管线预览产物（OCR/解析中间产物，含第三方内容，不入库） =====
+gwy-platform/backend/_preview*.json
+gwy-platform/backend/**/_preview*.json
+
+# ===== SSH 私钥 / 凭证（绝不入库） =====
+*.pem
+*.key
+*.p12
+*.pfx
+id_*
+
+# ===== OCR / 解析管线一次性中间产物与临时调试脚本（非正式 ingest 管线，不入库） =====
+gwy-platform/backend/_*.json
+gwy-platform/backend/_*.py
+gwy-platform/backend/_*.txt
+gwy-platform/backend/parse_daan*.py
+gwy-platform/backend/run_daan_robust.py
+gwy-platform/backend/wait_then_*.py
+gwy-platform/backend/scripts_fix/
+
+# ===== 本地临时提交信息/脚本（agent 流程产生，不入库） =====
+_gwy_commitmsg.txt
+_gwy_tmp_index
+.gwy_msg.tmp

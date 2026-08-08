@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 公务员考前培训学习平台 · 软件开发计划与实施方案</title>
+<style>
+  :root{
+    --brand:#2f6df6; --brand2:#13b6a6; --ink:#1f2733; --muted:#6b7480;
+    --line:#e6e9ef; --bg:#f5f7fb; --card:#fff; --shadow:0 2px 14px rgba(20,40,80,.06);
+    --p0:#e8543f; --p1:#f5a623; --p2:#2f6df6; --p3:#13b6a6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.72;font-size:15px;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px 80px;}
+  .hero{background:linear-gradient(135deg,#1f3a8a,#2f6df6 60%,#13b6a6);color:#fff;border-radius:0 0 22px 22px;padding:46px 22px 38px;margin-bottom:26px;}
+  .wrap > .hero{margin-left:-22px;margin-right:-22px;}
+  .hero .tag{display:inline-block;background:rgba(255,255,255,.16);padding:5px 14px;border-radius:30px;font-size:13px;letter-spacing:1px;margin-bottom:14px;}
+  .hero h1{margin:0 0 12px;font-size:30px;line-height:1.3;font-weight:800;}
+  .hero p{margin:0;max-width:840px;opacity:.94;font-size:15px;}
+  .meta{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:20px;font-size:13px;opacity:.92;}
+  .meta span{display:flex;align-items:center;gap:6px;}
+  section{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 28px;margin:16px 0;box-shadow:var(--shadow);}
+  h2{font-size:21px;margin:0 0 6px;display:flex;align-items:center;gap:12px;}
+  h2 .num{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff;font-size:15px;font-weight:700;flex:none;}
+  h3{font-size:16.5px;margin:22px 0 8px;color:var(--brand);}
+  h4{font-size:14.5px;margin:16px 0 6px;color:#283042;}
+  p{margin:8px 0;}
+  .lead{color:var(--muted);font-size:14.5px;margin:4px 0 14px;}
+  ul,ol{margin:8px 0;padding-left:22px;}
+  li{margin:5px 0;}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;}
+  th,td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;}
+  th{background:#eef3fb;color:#2b3a55;font-weight:700;}
+  tbody tr:nth-child(even){background:#fafbfe;}
+  .prod{font-weight:700;color:var(--brand);white-space:nowrap;}
+  .note{background:#eef5ff;border-left:4px solid var(--brand);border-radius:0 10px 10px 0;padding:12px 16px;margin:14px 0;font-size:13.8px;color:#2b3a55;}
+  .note b{color:#1f3a8a;}
+  .warn{background:#fff4ec;border-left:4px solid var(--p0);}
+  .ok{background:#eafaf3;border-left:4px solid var(--p3);}
+  .toc{columns:2;font-size:13.5px;column-gap:30px;}
+  @media(max-width:820px){.toc{columns:1;}}
+  .toc a{color:var(--brand);text-decoration:none;}
+  .pill{display:inline-block;font-size:11.5px;font-weight:700;padding:2px 9px;border-radius:20px;color:#fff;margin-right:6px;}
+  .pill.p0{background:var(--p0);} .pill.p1{background:var(--p1);} .pill.p2{background:var(--p2);}
+  .pill.p3{background:var(--p3);} .pill.g{background:#1f9d6b;}
+  /* 架构图 */
+  .arch{display:flex;flex-direction:column;gap:9px;margin:16px 0;}
+  .layer{border:1px solid var(--line);border-radius:11px;padding:12px 16px;background:#fafbfd;}
+  .layer .lt{font-size:12.5px;font-weight:700;color:var(--muted);margin-bottom:8px;letter-spacing:.5px;}
+  .boxes{display:flex;flex-wrap:wrap;gap:7px;}
+  .box{font-size:12.5px;padding:5px 11px;border-radius:8px;background:#eef3fb;border:1px solid #d8e2f5;color:#2b3a55;}
+  .box.b{background:#e7f7f3;border-color:#bfe9df;color:#0f6b56;}
+  .box.c{background:#eef0ff;border-color:#d3d8ff;color:#3730a3;}
+  .arrow{text-align:center;color:var(--brand);font-size:15px;line-height:1;margin:-1px 0;}
+  /* 时间线 */
+  .timeline{position:relative;margin:18px 0 6px;padding-left:8px;}
+  .tl-row{display:flex;gap:16px;margin-bottom:14px;align-items:stretch;}
+  .tl-when{width:130px;flex:none;text-align:right;padding-top:2px;}
+  .tl-when .wk{font-weight:800;color:var(--brand);font-size:14px;}
+  .tl-when .dt{font-size:12px;color:var(--muted);}
+  .tl-dot{width:14px;flex:none;position:relative;display:flex;justify-content:center;}
+  .tl-dot::before{content:"";width:13px;height:13px;border-radius:50%;background:var(--brand);margin-top:4px;box-shadow:0 0 0 4px #dbe7ff;}
+  .tl-dot::after{content:"";position:absolute;top:17px;bottom:-14px;width:2px;background:#cdddf7;}
+  .tl-row:last-child .tl-dot::after{display:none;}
+  .tl-body{flex:1;background:#fafbfd;border:1px solid var(--line);border-radius:11px;padding:11px 15px;}
+  .tl-body h4{margin:0 0 5px;}
+  .tl-body .sig{font-size:12.5px;color:var(--muted);}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  @media(max-width:760px){.grid2{grid-template-columns:1fr;}}
+  .kpi{background:#fafbfd;border:1px solid var(--line);border-radius:12px;padding:13px 15px;}
+  .kpi .k{font-size:12px;color:var(--muted);}
+  .kpi .v{font-size:20px;font-weight:800;color:var(--brand);margin-top:2px;}
+  .kpi .d{font-size:12px;color:var(--p0);margin-top:3px;}
+  .num-sm{color:var(--brand);font-weight:700;}
+  code{background:#eef3fb;padding:1px 6px;border-radius:5px;font-size:13px;color:#3730a3;}
+  .part-divider{background:linear-gradient(135deg,#13b6a6,#2f6df6);color:#fff;border-radius:14px;padding:16px 22px;margin:8px 0 4px;font-size:17px;font-weight:700;}
+  .part-divider small{display:block;font-size:12.5px;font-weight:400;opacity:.92;margin-top:5px;}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;padding:20px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="tag">软件开发计划与实施方案 · DEVELOPMENT PLAN</div>
+  <h1>AI 公务员考前培训学习平台<br>软件开发计划与实施方案</h1>
+  <p>本方案依据《AI 公务员考前培训学习平台 · 竞品分析报告（v1.1）》的结论编制。报告明确了平台定位（AI-native 公考私教）、5 个差异化方向及 P0/P1/P2 行动优先级；本方案将其工程化，给出可落地的架构、功能、技术、路线图、组织与验收标准。</p>
+  <div class="meta">
+    <span>编制日期：2026-08-04</span>
+    <span>方案版本：v1.0</span>
+    <span>依据文档：竞品分析报告 v1.1</span>
+    <span>适用阶段：MVP → 公测 → 规模化</span>
+    <span>密级：内部</span>
+  </div>
+</header>
+
+<section>
+  <h2><span class="num">·</span>目录</h2>
+  <div class="toc">
+    <p><a href="#c1">一、项目背景与建设目标</a></p>
+    <p><a href="#c2">二、产品愿景与差异化定位</a></p>
+    <p><a href="#c3">三、总体架构设计</a></p>
+    <p><a href="#c4">四、功能模块规划</a></p>
+    <p><a href="#c5">五、关键技术方案</a></p>
+    <p><a href="#c6">六、迭代路线图与里程碑</a></p>
+    <p><a href="#c7">七、项目组织与团队配置</a></p>
+    <p><a href="#c8">八、研发管理与工程流程</a></p>
+    <p><a href="#c9">九、质量保障与测试方案</a></p>
+    <p><a href="#c10">十、数据安全与合规</a></p>
+    <p><a href="#c11">十一、风险识别与应对</a></p>
+    <p><a href="#c12">十二、验收标准与成功指标</a></p>
+    <p><a href="#c13">十三、资源估算与成本</a></p>
+    <p><a href="#c14">附录 A · WBS 任务分解</a></p>
+  </div>
+</section>
+
+<!-- C1 -->
+<section id="c1">
+  <h2><span class="num">1</span>项目背景与建设目标</h2>
+  <p class="lead">竞品分析已验证：公考培训是<b>体量大、需求旺、但 AI 渗透极浅、头部份额流失</b>的赛道，存在清晰的产品空白。本节把行业事实转化为我们的建设目标。</p>
+
+  <h3>1.1 行业背景（来自竞品报告）</h3>
+  <ul>
+    <li><b>需求旺盛：</b>2026 年国考报名 <span class="num-sm">371.8 万</span>人，报录比约 <span class="num-sm">74:1</span>，省考、事业单位、选调生等叠加，备考是长周期、高频、强焦虑的刚需。</li>
+    <li><b>头部松动：</b>公考 CR3（粉笔 / 华图 / 中公）市占率从巅峰 <span class="num-sm">38%</span> 回落至 <span class="num-sm">19.2%</span>（2024），用户正在外流，新进入者有机会。</li>
+    <li><b>AI 刚起步：</b>标杆粉笔 2025 年 AI 相关收入仅占总收入 <span class="num-sm">1.4%</span>，直竞把 AI 当作"低价大班课的附赠"，尚未形成真正的个性化教学闭环。</li>
+    <li><b>信任洼地：</b>直竞最大品牌短板在"内容准确性 + 退费信任"——中公退费投诉 <span class="num-sm">11.5 万</span>条、华图"14 天不退 / 倒欠机构"、教材答案错误等，行业信任度极低。</li>
+  </ul>
+
+  <h3>1.2 竞争缺口（我们切入的依据）</h3>
+  <div class="grid2">
+    <div class="note"><b>通用 AI 工具的空白：</b> Notion / Coda / ClickUp / Monday / Linear 在"垂直教学"上结构性为零——没有考试领域内容、没有学情闭环、AI 另收费。我们不需要和它们拼功能广度。</div>
+    <div class="note ok"><b>直竞的洼地：</b> 直竞有内容但"AI 浅、教学不个性化、信任崩"。我们用 AI-native 的私教体验 + 透明信任型产品，正面击穿这两点。</div>
+  </div>
+
+  <h3>1.3 建设目标</h3>
+  <table>
+    <thead><tr><th>维度</th><th>目标</th><th>量化锚点</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">产品目标</td><td>上线"AI 私教 + 公考内容测评 + 离线轻量 + 透明信任"的一体化学习平台</td><td>MVP 覆盖行测/申论核心模块</td></tr>
+      <tr><td class="prod">体验目标</td><td>做到"更懂短板、内容可信、花钱无忧、陪你上岸"的私教体验</td><td>移动端 7 日留存 ≥ 行业 Top3</td></tr>
+      <tr><td class="prod">商业目标</td><td>以学生友好的透明定价跑通付费转化，建立信任壁垒</td><td>付费转化率、LTV/CAC 健康</td></tr>
+      <tr><td class="prod">阶段目标</td><td>按 P0→P1→P2 推进，每阶段有明确可测信号，快速验证 PMF</td><td>见第六章路线图</td></tr>
+    </tbody>
+  </table>
+
+  <h3>1.4 方案编制依据（直接映射报告结论）</h3>
+  <p>报告第 6 章给出 <b>5 个差异化方向</b>、第 7 章给出 <b>P0/P1/P2 行动优先级</b>。本方案的功能模块（第四章）、技术方案（第五章）、路线图（第六章）、验收指标（第十二章）均与之一一对应：</p>
+  <table>
+    <thead><tr><th>方向</th><th>优先级</th><th>核心交付（本报告 → 本方案）</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">方向1 AI 私教闭环</td><td><span class="pill p0">P0</span></td><td>讲题→诊断→自适应推送 → 第四章 4.2 / 第五章 5.1·5.3</td></tr>
+      <tr><td class="prod">方向2 垂直内容+测评</td><td><span class="pill p0">P0</span></td><td>学练测评报、申论 AI 批改 → 第四章 4.3 / 第五章 5.2</td></tr>
+      <tr><td class="prod">方向3 离线轻量</td><td><span class="pill p1">P1</span></td><td>PWA 离线刷题 → 第四章 4.4 / 第五章 5.4</td></tr>
+      <tr><td class="prod">方向4 透明定价</td><td><span class="pill p1">P1</span></td><td>会员全含 AI、学生折扣 → 第四章 4.5 / 第五章 5.6</td></tr>
+      <tr><td class="prod">方向5 信任保障</td><td><span class="pill p0">P0</span></td><td>无忧退费+内容校验 → 第四章 4.6 / 第五章 5.5·5.6</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- C2 -->
+<section id="c2">
+  <h2><span class="num">2</span>产品愿景与差异化定位</h2>
+  <p class="lead">定位不是口号，而是决定我们"做什么、不做什么"的边界。本节把报告"定位声明"工程化为可执行的边界。</p>
+
+  <h3>2.1 一句话定位</h3>
+  <div class="note"><b>AI-native 的公考私教：</b> 以"千人千面的教学闭环 + 可信内容 + 透明退费"为核心，<b>不做</b>又一个通用 AI 工具，也<b>不做</b>又一个卖课大班。</div>
+
+  <h3>2.2 核心价值主张（三支柱）</h3>
+  <div class="grid2">
+    <div class="kpi"><div class="k">支柱一 · 懂你</div><div class="v" style="font-size:16px;">千人千面教学闭环</div><div class="d" style="color:var(--muted)">逐题诊断短板，按记忆曲线自适应推题，而非题库堆量</div></div>
+    <div class="kpi"><div class="k">支柱二 · 可信</div><div class="v" style="font-size:16px;">内容准确·时效</div><div class="d" style="color:var(--muted)">时政实时更新、答案 AI 校验+人工复核，直面华图错误教训</div></div>
+    <div class="kpi"><div class="k">支柱三 · 无忧</div><div class="v" style="font-size:16px;">透明定价·退费</div><div class="d" style="color:var(--muted)">AI 全含会员、学生认证折扣、7天无理由+未过退部分款</div></div>
+    <div class="kpi"><div class="k">体验基线</div><div class="v" style="font-size:16px;">离线·轻量</div><div class="d" style="color:var(--muted)">弱网/通勤可用，学 Linear 的"克制"，避开卡顿无离线</div></div>
+  </div>
+
+  <h3>2.3 目标用户画像</h3>
+  <table>
+    <thead><tr><th>画像</th><th>特征</th><th>核心诉求</th><th>对应能力</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">应届备考生</td><td>时间紧、预算低、手机为主</td><td>高效提分、性价比</td><td>AI 私教 + 透明学生价</td></tr>
+      <tr><td class="prod">在职备考族</td><td>碎片化、通勤、弱网</td><td>随时随地、离线</td><td>PWA 离线 + 自适应推送</td></tr>
+      <tr><td class="prod">二战/多战考生</td><td>有基础、求突破</td><td>精准补短板</td><td>能力图谱 + 针对性练习</td></tr>
+      <tr><td class="prod">申论薄弱者</td><td>主观题无反馈</td><td>批改与范文</td><td>申论 AI 批改 + 提分报告</td></tr>
+    </tbody>
+  </table>
+
+  <h3>2.4 与竞品的差异化卡位</h3>
+  <p>承接报告"综合总览"地图：通用工具卡"通用生产力"、直竞卡"大班课/卖课"；我们卡 <b>"AI-native 垂直私教"</b>——既吸收通用工具被验证的 AI 能力形态（自动生成、知识检索、协作），又规避其"垂直做不深、二次收费"的坑，同时正面解决直竞"教学不个性、信任崩"的痛点。</p>
+</section>
+
+<!-- C3 -->
+<section id="c3">
+  <h2><span class="num">3</span>总体架构设计</h2>
+  <p class="lead">架构遵循四条原则：<b>离线优先</b>（方向3）、<b>AI-native</b>（能力内建而非外挂）、<b>模块化</b>（按 5 方向解耦）、<b>合规内建</b>（内容版权 + 个人信息保护）。</p>
+
+  <h3>3.1 技术架构（分层）</h3>
+  <div class="arch">
+    <div class="layer"><div class="lt">表现层（多端统一体验）</div><div class="boxes"><span class="box">移动端 H5 / PWA（离线优先）</span><span class="box">微信小程序</span><span class="box">Web 学习台</span><span class="box">教研 / 运营后台</span></div></div>
+    <div class="arrow">▲</div>
+    <div class="layer"><div class="lt">接入层</div><div class="boxes"><span class="box">API Gateway</span><span class="box">统一鉴权（JWT/OAuth）</span><span class="box">限流 / 防刷</span><span class="box">CDN 静态与题库分发</span></div></div>
+    <div class="arrow">▲</div>
+    <div class="layer"><div class="lt">业务服务层（微服务，按功能域拆分）</div><div class="boxes"><span class="box b">用户 / 学员中心</span><span class="box b">学习 / 进度</span><span class="box b">题库 / 内容</span><span class="box b">测评 / 模考</span><span class="box b">支付 / 会员 / 退费</span><span class="box b">内容审核 / 时效</span><span class="box b">运营 / 数据</span></div></div>
+    <div class="arrow">▲</div>
+    <div class="layer"><div class="lt">AI 能力层（平台差异化核心）</div><div class="boxes"><span class="box c">LLM 网关（多模型路由 + 兜底）</span><span class="box c">RAG 知识库（公考法规/时政/真题）</span><span class="box c">AI 私教 Agent（讲题/诊断）</span><span class="box c">申论评分引擎</span><span class="box c">自适应学习引擎（能力诊断+SM-2）</span><span class="box c">内容校验管道</span></div></div>
+    <div class="arrow">▲</div>
+    <div class="layer"><div class="lt">数据层</div><div class="boxes"><span class="box">MySQL（业务事务）</span><span class="box">向量库（知识 / 学情画像）</span><span class="box">Redis（缓存 / 会话）</span><span class="box">对象存储（题图/讲解视频/报告）</span><span class="box">数据仓库（行为分析）</span></div></div>
+    <div class="arrow">▲</div>
+    <div class="layer"><div class="lt">基础设施与平台</div><div class="boxes"><span class="box">云（腾讯云：CVM / TKE / SCF）</span><span class="box">CI/CD</span><span class="box">监控告警 / 日志</span><span class="box">模型推理资源（GPU 弹性）</span></div></div>
+  </div>
+
+  <h3>3.2 业务功能架构（功能域）</h3>
+  <p>七大功能域，对应报告 5 方向 + 基础能力：① 学员中心；② AI 私教（方向1）；③ 公考内容 & 测评（方向2）；④ 离线轻量学习（方向3）；⑤ 透明定价 & 会员（方向4）；⑥ 信任保障（方向5）；⑦ 运营 & 数据。</p>
+
+  <h3>3.3 关键选型（初版建议，可随 POC 调整）</h3>
+  <table>
+    <thead><tr><th>层面</th><th>选型建议</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">前端</td><td>React / TypeScript + Vite；PWA（Workbox）</td><td>组件化、离线缓存成熟、招聘面广</td></tr>
+      <tr><td class="prod">后端</td><td>Python（FastAPI）/ Go 微服务</td><td>AI 生态好（FastAPI）+ 高并发（Go 网关）</td></tr>
+      <tr><td class="prod">LLM</td><td>国内合规大模型（如混元 / 通义）+ 自研 prompt/评分层</td><td>合规、中文公考语料优、成本可控</td></tr>
+      <tr><td class="prod">向量库</td><td>Milvus / Tencent Cloud VectorDB</td><td>RAG 知识检索、学情画像</td></tr>
+      <tr><td class="prod">数据库</td><td>MySQL（业务）+ Redis（缓存）</td><td>成熟稳定</td></tr>
+      <tr><td class="prod">基础设施</td><td>腾讯云（CVM/TKE/SCF/CDN）</td><td>国内合规、与微信生态打通</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>选型原则：</b> 先验证再定型。MVP 阶段用托管服务与最少组件跑通价值闭环（方向1/2/5 单点），规模化阶段再补微服务拆分与弹性推理。</div>
+</section>
+
+<!-- C4 -->
+<section id="c4">
+  <h2><span class="num">4</span>功能模块规划</h2>
+  <p class="lead">以下模块严格对应报告 5 个差异化方向。每个模块标注优先级（P0/P1/P2）与 MVP 范围，确保"先验证核心价值，再铺规模"。</p>
+
+  <h3>4.1 学员中心与学习主页（基础，P0）</h3>
+  <ul>
+    <li>注册 / 登录 / 微信绑定；学员档案（报考类别、目标岗位、基础测评）</li>
+    <li>学习主页：今日任务、能力雷达图入口、薄弱点提醒、学习日历</li>
+    <li>学情看板：刷题量、正确率趋势、各模块掌握度（能力图谱雏形）</li>
+  </ul>
+
+  <h3>4.2 AI 私教闭环（方向1 · <span class="pill p0">P0</span>）— 差异化核心</h3>
+  <ul>
+    <li><b>逐题讲解：</b> 错题/难题一键 AI 讲解（考点、思路、易错点、同类题推荐）</li>
+    <li><b>短板诊断：</b> 基于答题数据构建个人能力图谱（知识点 × 掌握度）</li>
+    <li><b>自适应推送：</b> 按记忆曲线（SM-2 类算法）自动推送复习与针对性练习</li>
+    <li><b>答疑助手：</b> 基于 RAG 的公考知识问答（政策、流程、考点）</li>
+    <li>MVP 范围：错题讲解 + 能力图谱 v1 + 基础自适应推送（报告验证信号：错题复错率下降）</li>
+  </ul>
+
+  <h3>4.3 公考垂直内容 + 测评一体化（方向2 · <span class="pill p0">P0</span>）</h3>
+  <ul>
+    <li><b>结构化题库：</b> 行测（言语/数量/判断/资料）、申论、公基；知识点标签 + 难度 + 年份</li>
+    <li><b>历年真题 & 时政库：</b> 国考/省考真题 + 实时时政（对接 5.5 时效管道）</li>
+    <li><b>在线模考：</b> 限时模考 + 自动判分 + 排名</li>
+    <li><b>申论 AI 批改（单点 MVP）：</b> 多维评分（立意/结构/论证/语言）+ 范文对比 + 修改建议（验证信号：人 AI 评分一致性 ≥0.8）</li>
+    <li><b>提分报告：</b> 模考后生成可分享的薄弱点与提分路径</li>
+  </ul>
+
+  <h3>4.4 离线优先 + 极简轻量（方向3 · <span class="pill p1">P1</span>）</h3>
+  <ul>
+    <li><b>PWA 离线缓存：</b> Service Worker 缓存题库包与学习进度，IndexedDB 本地存储</li>
+    <li><b>弱网同步：</b> 答题/进度离线记录，网络恢复后增量同步</li>
+    <li><b>移动刷题体验：</b> 流畅切换、键盘/手势操作、零白屏（学 Linear 的"克制"）</li>
+    <li>MVP 范围：题库页离线缓存 demo + 通勤族实测（验证信号：移动端 7 日留存提升）</li>
+  </ul>
+
+  <h3>4.5 学生友好透明定价（方向4 · <span class="pill p1">P1</span>）</h3>
+  <ul>
+    <li><b>简洁会员结构：</b> 基础免费 + 进阶会员，<b>AI 私教 / 批改等核心能力全部含在会员内</b>，不学 ClickUp 的 AI 附加费、Monday 的积分黑盒</li>
+    <li><b>学生认证折扣：</b> 学信网/在校认证 → 专属价</li>
+    <li><b>定价 A/B：</b> "全含 AI" vs "AI 另购"对照，监测转化率与价格疑虑（验证信号：付费转化率、价格流失下降）</li>
+  </ul>
+
+  <h3>4.6 信任优先型产品（方向5 · <span class="pill p0">P0</span>）</h3>
+  <ul>
+    <li><b>无忧退费：</b> "7 天无理由 + 未过退部分款"的透明规则引擎，自动可查，直面中公退费灾难</li>
+    <li><b>内容可信：</b> 时政实时更新 + 答案 AI 校验 + 人工复核流程，抽检准确率对标（避免华图教材错误）</li>
+    <li><b>信任可视化：</b> 退费进度可追踪、内容更新时间可见、评分依据可解释</li>
+    <li>验证信号：信任 NPS、退费纠纷率下降</li>
+  </ul>
+
+  <h3>4.7 功能优先级矩阵</h3>
+  <table>
+    <thead><tr><th>模块</th><th>优先级</th><th>MVP 是否包含</th><th>核心价值</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">学员中心</td><td><span class="pill p0">P0</span></td><td>✅</td><td>承载与数据基础</td></tr>
+      <tr><td class="prod">AI 私教闭环</td><td><span class="pill p0">P0</span></td><td>✅（单点）</td><td>差异化核心</td></tr>
+      <tr><td class="prod">内容+测评/申论批改</td><td><span class="pill p0">P0</span></td><td>✅（批改单点）</td><td>垂直壁垒+变现</td></tr>
+      <tr><td class="prod">信任保障/退费</td><td><span class="pill p0">P0</span></td><td>✅（规则+校验）</td><td>信任壁垒</td></tr>
+      <tr><td class="prod">离线轻量 PWA</td><td><span class="pill p1">P1</span></td><td>demo</td><td>体验差异化</td></tr>
+      <tr><td class="prod">透明定价/会员</td><td><span class="pill p1">P1</span></td><td>基础版</td><td>商业差异化</td></tr>
+      <tr><td class="prod">垂直内容资产积累</td><td><span class="pill p2">P2</span></td><td>持续</td><td>长期版权壁垒</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- C5 -->
+<section id="c5">
+  <h2><span class="num">5</span>关键技术方案</h2>
+  <p class="lead">本章给出差异化能力的工程实现要点，重点在 AI 私教、申论批改、自适应引擎、离线、内容可信与计费退费。</p>
+
+  <h3>5.1 AI 私教 Agent 架构</h3>
+  <ul>
+    <li><b>上下文=学情：</b> 借鉴 Notion"上下文主权"，但把上下文换成"学员画像（错题、掌握度、目标岗位）"，形成教学反馈闭环而非文档问答。</li>
+    <li><b>RAG 知识层：</b> 公考法规/时政/真题/考点入库向量检索，约束大模型幻觉、保证答案有出处。</li>
+    <li><b>Agent 编排：</b> 讲题 / 诊断 / 答疑 / 推题 四类子能力，由编排层按场景路由；统一输出结构化（含考点、易错点、推荐题 ID）。</li>
+    <li><b>可观测：</b> 每次讲解打点（是否被采纳、是否追问），反哺诊断与推送。</li>
+  </ul>
+
+  <h3>5.2 申论智能批改引擎</h3>
+  <ul>
+    <li><b>评分框架：</b> 按官方评分要素拆维度（立意准确 / 结构完整 / 论证充分 / 语言规范 / 对策可行），每维配 rubric 与权重。</li>
+    <li><b>两阶段：</b> LLM 初评（多视角采分点抽取）→ 校准层（与历史样卷/人工标注对齐，抑制打分漂移）。</li>
+    <li><b>验收门槛：</b> 50 份真实答卷人工 vs AI 评分相关系数 <span class="num-sm">≥0.8</span> 方可上线（报告验证建议）。</li>
+    <li><b>可解释：</b> 不仅给分，给"失分点 + 修改建议 + 范文片段"，降低用户对黑盒的抵触。</li>
+  </ul>
+
+  <h3>5.3 自适应学习引擎</h3>
+  <ul>
+    <li><b>能力诊断：</b> 基于 Item Response Theory（IRT）或知识追踪（BKT/Deep Knowledge Tracing）估算各知识点掌握度。</li>
+    <li><b>推送策略：</b> 结合 SM-2 记忆曲线与掌握度，生成"复习旧知 + 攻克薄弱 + 适度挑战"的日计划。</li>
+    <li><b>闭环：</b> 推送 → 作答 → 重新诊断 → 再推送，形成报告强调的"教学 Agent 闭环"。</li>
+  </ul>
+
+  <h3>5.4 离线 PWA 方案</h3>
+  <ul>
+    <li>Service Worker（Workbox）预缓存题库包（按考点分包）、讲解资源；答题与进度写入 IndexedDB。</li>
+    <li>增量同步：网络恢复后按"最后写入胜出 + 冲突检测"同步，保证多端一致。</li>
+    <li>性能基线：首屏 &lt;1.5s、题库切换无白屏、弱网（3G）可用。</li>
+  </ul>
+
+  <h3>5.5 内容可信与时效管道</h3>
+  <ul>
+    <li><b>时政时效：</b> 定时抓取权威来源（政府网/新华社等）+ AI 摘要 + 人工复核后入库，标注更新时间。</li>
+    <li><b>答案校验：</b> 新题/更新题经"AI 交叉验证 + 教研人工复核"双签，错题进入更正流并通知受影响用户。</li>
+    <li><b>合规留痕：</b> 内容版本与复核记录可追溯，应对版权与准确性争议。</li>
+  </ul>
+
+  <h3>5.6 计费与退费系统</h3>
+  <ul>
+    <li><b>透明会员：</b> 价格页明示"AI 全含"，无隐藏积分/席位叠加。</li>
+    <li><b>退费规则引擎：</b> 把"7 天无理由 / 未过退部分款"固化为可配置规则，进度可查、到账时限明确（治理中公式套路）。</li>
+    <li><b>学生认证：</b> 对接学信网/在校证明，发放折扣权益。</li>
+  </ul>
+</section>
+
+<!-- C6 -->
+<section id="c6">
+  <h2><span class="num">6</span>迭代路线图与里程碑</h2>
+  <p class="lead">严格承接报告第 7 章 P0/P1/P2 行动优先级，采用"价值验证优先"的节奏：先用最小成本验证 3 个 P0 单点，再补体验与商业，最后规模化。周期为相对周数，可按资源浮动 ±20%。</p>
+
+  <div class="timeline">
+    <div class="tl-row">
+      <div class="tl-when"><div class="wk">第 1–2 周</div><div class="dt">筹备</div></div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><h4>阶段 0 · 筹备与立项</h4>团队组建、技术选型 POC、内容合作/版权谈判、需求冻结（MVP 范围）、设计系统搭建。<div class="sig">交付：PRD/MVP 范围、架构决策记录、内容授权意向。</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-when"><div class="wk">第 3–8 周</div><div class="dt">MVP · P0</div></div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><h4>阶段 1 · MVP（三大 P0 单点）</h4>
+        ① 方向1：AI 私教 + 错题诊断 MVP（2–4 周）；② 方向2：申论 AI 批改单点（2–3 周）；③ 方向5：信任保障 + 内容校验单点（2–3 周）；并搭好学员中心与基础题库。<div class="sig">目标信号：错题复错率下降、人 AI 评分一致性 ≥0.8、WTP 明确、信任 NPS 提升。</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-when"><div class="wk">第 9–14 周</div><div class="dt">公测 · P1</div></div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><h4>阶段 2 · 公测（体验 + 商业）</h4>
+        ① 方向3：离线刷题 PWA demo（3 周）；② 方向4：透明定价 + 学生折扣 + 定价 A/B（持续）；③ 内容资产扩充（真题/时政/公基）；④ 小范围公测获客与口碑验证。<div class="sig">目标信号：移动端 7 日留存提升、付费转化率、价格相关流失下降、模考完课率。</div></div>
+    </div>
+    <div class="tl-row">
+      <div class="tl-when"><div class="wk">第 15 周+</div><div class="dt">规模化 · P2</div></div>
+      <div class="tl-dot"></div>
+      <div class="tl-body"><h4>阶段 3 · 规模化与商业化</h4>
+        垂直内容资产持续积累（版权壁垒）、自适应引擎深化、推荐/社群、全渠道（小程序/App）、品牌信任建设、规模化获客与营收模型跑通。<div class="sig">目标信号：内容独家性、LTV/CAC、续费率、北极星指标稳定增长。</div></div>
+    </div>
+  </div>
+
+  <div class="note"><b>节奏纪律：</b> 每个阶段结束做一次"信号评审"——达标才进下一阶段并加投，不达标则回退打磨。这把报告"2–4 周测出信号"的方法论变成发布闸门。</div>
+</section>
+
+<!-- C7 -->
+<section id="c7">
+  <h2><span class="num">7</span>项目组织与团队配置</h2>
+  <p class="lead">MVP 阶段以"小而全"为主，规模阶段按需扩编。以下为推荐配置（约 13 人核心 + 外部教研）。</p>
+  <table>
+    <thead><tr><th>角色</th><th>人数</th><th>职责</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">产品经理</td><td>1</td><td>需求、优先级、路线图、数据指标（对接本报告结论）</td></tr>
+      <tr><td class="prod">UI/UX 设计</td><td>1</td><td>设计系统、移动端/PWA 体验、可信感视觉</td></tr>
+      <tr><td class="prod">前端工程师</td><td>2</td><td>React/PWA、多端学习台、离线体验</td></tr>
+      <tr><td class="prod">后端工程师</td><td>3</td><td>微服务、题库/测评/支付/会员、网关</td></tr>
+      <tr><td class="prod">算法 / AI 工程师</td><td>2</td><td>私教 Agent、申论评分、自适应引擎、RAG</td></tr>
+      <tr><td class="prod">测试工程师</td><td>1</td><td>功能/性能/AI 评测、质量门禁</td></tr>
+      <tr><td class="prod">教研 / 内容运营</td><td>2（含外部）</td><td>题库建设、时政更新、答案复核、版权</td></tr>
+      <tr><td class="prod">运维 / DevOps</td><td>1</td><td>云、CI/CD、监控、模型推理资源</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>RACI 要点：</b> 产品对"做什么/优先级"负责（A）；算法+后端对 AI 能力质量负责（R）；教研对内容准确性负"双签"责任（R）；测试对发布门禁说"No"（C）。外部内容合作方以"授权 + 复核"方式纳入。</div>
+</section>
+
+<!-- C8 -->
+<section id="c8">
+  <h2><span class="num">8</span>研发管理与工程流程</h2>
+  <ul>
+    <li><b>敏捷双周迭代：</b> 2 周一个 Sprint，MVP 阶段约 3 个 Sprint 完成阶段1。</li>
+    <li><b>需求流：</b> Epic（方向）→ Story（功能点）→ Task；需求评审冻结 MVP 范围，避免范围蔓延。</li>
+    <li><b>开发流：</b> 分支开发 → PR + Code Review → CI 自动化测试 → 预发 → 灰度发布（先小流量验证 AI 能力）。</li>
+    <li><b>环境：</b> 开发 / 测试 / 预发 / 生产 四环境隔离；AI 能力设"影子模式"先观测后放量。</li>
+    <li><b>指标驱动：</b> 每个 Sprint 复盘对照第十二章 KPI，未达信号则下个 Sprint 优先补。</li>
+  </ul>
+</section>
+
+<!-- C9 -->
+<section id="c9">
+  <h2><span class="num">9</span>质量保障与测试方案</h2>
+  <table>
+    <thead><tr><th>测试类型</th><th>重点</th><th>准入门槛</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">单元测试/接口</td><td>业务服务、规则引擎</td><td>核心模块覆盖率 ≥70%</td></tr>
+      <tr><td class="prod">UI / 端到端</td><td>刷题、批改、支付、退费主流程</td><td>主流程 0 阻塞缺陷</td></tr>
+      <tr><td class="prod">性能</td><td>弱网/高并发刷题、首屏</td><td>首屏 &lt;1.5s、3G 可用</td></tr>
+      <tr><td class="prod">AI 能力评测</td><td>申论人 AI 一致性、讲解采纳率、诊断准确率</td><td>一致性 ≥0.8、幻觉率可控</td></tr>
+      <tr><td class="prod">内容准确性</td><td>答案/时政抽检、复核留痕</td><td>抽检准确率 ≥99%</td></tr>
+      <tr><td class="prod">兼容 / 离线</td><td>多机型、PWA 离线同步</td><td>离线可用、同步无丢失</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>AI 质量门禁：</b> 申论批改与私教讲解上线前必须经过"人工评测集"校验；生产环境持续采样人工抽检，漂移超阈值自动回退到上一稳定版本。</div>
+</section>
+
+<!-- C10 -->
+<section id="c10">
+  <h2><span class="num">10</span>数据安全与合规</h2>
+  <ul>
+    <li><b>个人信息保护（PIPL）：</b> 学员实名/学习数据最小化收集、加密存储、明确授权；提供注销与数据导出。</li>
+    <li><b>内容版权：</b> 题库/真题/时政通过授权或原创生产，建立版权台账；引用政策注明来源，规避侵权。</li>
+    <li><b>宣传合规：</b> "未过退部分款""AI 批改"等承诺须真实可履行，避免《广告法》绝对化用语与虚假宣传（直竞信任崩的前车之鉴）。</li>
+    <li><b>AI 合规：</b> 生成内容标注"AI 辅助"，关键结论（如法律/政策）提供溯源，限制未成年人不适内容。</li>
+    <li><b>支付与资金：</b> 退费规则透明、到账时限明确，资金流合规，避免"协议班"式预收款风险。</li>
+  </ul>
+</section>
+
+<!-- C11 -->
+<section id="c11">
+  <h2><span class="num">11</span>风险识别与应对</h2>
+  <table>
+    <thead><tr><th>风险</th><th>等级</th><th>表现</th><th>应对</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">内容准确性</td><td><span class="pill p0">高</span></td><td>答案/时政错误，重演华图教材事故</td><td>5.5 双签校验 + 抽检 ≥99% + 版本留痕 + 更正通知</td></tr>
+      <tr><td class="prod">AI 幻觉/偏差</td><td><span class="pill p0">高</span></td><td>申论评分漂移、讲解误导</td><td>RAG 约束 + 人工评测集门禁 + 生产抽检回退</td></tr>
+      <tr><td class="prod">合规/信任</td><td><span class="pill p0">高</span></td><td>退费纠纷、宣传不实</td><td>透明规则引擎 + 真实承诺 + 可追溯</td></tr>
+      <tr><td class="prod">竞品低价挤压</td><td><span class="pill p1">中</span></td><td>粉笔低价大班课</td><td>以"个性化+信任"差异化，不打价格战；透明价即卖点</td></tr>
+      <tr><td class="prod">获客成本高</td><td><span class="pill p1">中</span></td><td>公考流量贵</td><td>口碑/模考报告裂变 + 学生社群 + 内容 SEO</td></tr>
+      <tr><td class="prod">模型成本</td><td><span class="pill p1">中</span></td><td>大模型推理费用</td><td>路由小模型+缓存+批量；会员毛利覆盖</td></tr>
+      <tr><td class="prod">范围蔓延</td><td><span class="pill p2">低</span></td><td>贪多导致 MVP 延期</td><td>严格 P0 冻结 + 阶段信号评审闸门</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- C12 -->
+<section id="c12">
+  <h2><span class="num">12</span>验收标准与成功指标</h2>
+  <p class="lead">验收以"阶段信号 + 北极星"双轨。阶段信号直接取自报告第 6/7 章验证建议，确保方案与竞品分析闭环。</p>
+
+  <h3>12.1 北极星指标</h3>
+  <div class="note"><b>北极星建议：</b> <b>"付费学员的有效学习产出"</b>——以「7 日留存 × 周有效学习时长 × 模考/诊断完课率 × 续费率」复合衡量，而非单纯 DAU（避免刷量幻觉）。最终可收敛为"学员提分/上岸率感知"。</div>
+
+  <h3>12.2 分阶段验收信号（对接报告）</h3>
+  <table>
+    <thead><tr><th>阶段</th><th>验收信号</th><th>目标值</th><th>来源</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">P0 私教</td><td>错题复错率下降、WTP</td><td>复错率明显下降、付费意向明确</td><td>报告方向1</td></tr>
+      <tr><td class="prod">P0 批改</td><td>人 AI 评分一致性</td><td>相关系数 ≥0.8</td><td>报告方向2</td></tr>
+      <tr><td class="prod">P0 信任</td><td>信任 NPS、退费纠纷率</td><td>NPS 提升、纠纷率下降</td><td>报告方向5</td></tr>
+      <tr><td class="prod">P1 离线</td><td>移动端 7 日留存</td><td>较仅在线显著提升</td><td>报告方向3</td></tr>
+      <tr><td class="prod">P1 定价</td><td>付费转化率、价格流失</td><td>转化升、价格流失降</td><td>报告方向4</td></tr>
+      <tr><td class="prod">P2 规模</td><td>内容独家性、LTV/CAC</td><td>壁垒形成、单元经济健康</td><td>报告机会点⑥</td></tr>
+    </tbody>
+  </table>
+
+  <h3>12.3 发布验收清单（阶段门禁）</h3>
+  <ul>
+    <li>功能：P0 三大单点可用，主流程 0 阻塞；AI 能力通过人工评测集。</li>
+    <li>质量：核心覆盖率 ≥70%、首屏 &lt;1.5s、离线同步无丢失、内容抽检 ≥99%。</li>
+    <li>合规：隐私授权、退费规则、宣传口径、版权台账齐备。</li>
+    <li>信号：阶段目标信号达阈值，方可进入下一阶段并加投。</li>
+  </ul>
+</section>
+
+<!-- C13 -->
+<section id="c13">
+  <h2><span class="num">13</span>资源估算与成本</h2>
+  <p class="lead">以下为数量级估算，用于立项预算与节奏把控，实际以详细排期为准。</p>
+  <table>
+    <thead><tr><th>类别</th><th>估算（MVP 阶段·约 3.5 个月）</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">人力</td><td>约 13 人核心团队</td><td>含算法/教研，见第七章</td></tr>
+      <tr><td class="prod">云与推理</td><td>中等（弹性 GPU）</td><td>模型推理随调用量增长</td></tr>
+      <tr><td class="prod">内容资产</td><td>版权授权 + 原创生产</td><td>长期壁垒投入，P2 持续</td></tr>
+      <tr><td class="prod">获客</td><td>公测起逐步投入</td><td>口碑+内容裂变优先，付费投放谨慎</td></tr>
+      <tr><td class="prod">隐性成本</td><td>合规与内容复核流程</td><td>不可省，关系信任壁垒</td></tr>
+    </tbody>
+  </table>
+  <div class="note"><b>成本控制纪律：</b> MVP 用托管/最少组件，先验证 PMF 再重投；模型成本通过"小模型路由 + 缓存 + 批处理"压降，确保会员毛利为正。</div>
+</section>
+
+<!-- APPENDIX A -->
+<section id="c14">
+  <h2><span class="num">·</span>附录 A · WBS 任务分解（MVP 阶段）</h2>
+  <table>
+    <thead><tr><th>WBS</th><th>任务</th><th>归属方向</th><th>优先级</th></tr></thead>
+    <tbody>
+      <tr><td class="prod">1.1</td><td>立项/PRD/架构决策/设计系统</td><td>基础</td><td>P0</td></tr>
+      <tr><td class="prod">2.1</td><td>学员中心、注册登录、学情看板</td><td>基础</td><td>P0</td></tr>
+      <tr><td class="prod">2.2</td><td>结构化题库 + 真题/时政基础库</td><td>方向2</td><td>P0</td></tr>
+      <tr><td class="prod">3.1</td><td>AI 私教：逐题讲解 + RAG 知识层</td><td>方向1</td><td>P0</td></tr>
+      <tr><td class="prod">3.2</td><td>能力图谱 v1 + 自适应推送（SM-2）</td><td>方向1</td><td>P0</td></tr>
+      <tr><td class="prod">4.1</td><td>申论 AI 批改引擎 + 人工评测集</td><td>方向2</td><td>P0</td></tr>
+      <tr><td class="prod">4.2</td><td>在线模考 + 提分报告</td><td>方向2</td><td>P0</td></tr>
+      <tr><td class="prod">5.1</td><td>无忧退费规则引擎 + 进度可查</td><td>方向5</td><td>P0</td></tr>
+      <tr><td class="prod">5.2</td><td>内容校验管道 + 时政时效更新</td><td>方向5</td><td>P0</td></tr>
+      <tr><td class="prod">6.1</td><td>PWA 离线缓存 demo（题库页）</td><td>方向3</td><td>P1</td></tr>
+      <tr><td class="prod">7.1</td><td>会员体系 + 学生认证 + 定价 A/B</td><td>方向4</td><td>P1</td></tr>
+      <tr><td class="prod">8.1</td><td>质量门禁 + AI 评测 + 合规台账</td><td>基础</td><td>P0</td></tr>
+    </tbody>
+  </table>
+  <div class="note ok"><b>与竞品报告的闭环：</b> 本方案每一章都可在报告 v1.1 找到出处——定位（总览定位声明）、5 方向（第6章）、优先级与信号（第7章）、痛点应对（直竞 B3/B5）。方案不是另起炉灶，而是把分析结论工程化。</div>
+</section>
+
+<footer>AI 公务员考前培训学习平台 · 软件开发计划与实施方案 v1.0 ｜ 依据《竞品分析报告 v1.1》编制 ｜ 内部资料</footer>
+
+</div>
+</body>
+</html>

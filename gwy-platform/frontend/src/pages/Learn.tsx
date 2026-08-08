@@ -55,6 +55,7 @@ export default function Learn() {
   const [recTopN, setRecTopN] = useState(REC_PAGE);
   const [recLoadingMore, setRecLoadingMore] = useState(false);
   const [recHasMore, setRecHasMore] = useState(false);
+  const [recRefreshing, setRecRefreshing] = useState(false);
 
   async function load() {
     try {
@@ -85,6 +86,25 @@ export default function Learn() {
       setErr(e.message);
     } finally {
       setRecLoadingMore(false);
+    }
+  }
+
+  async function refreshRec() {
+    if (recRefreshing) return;
+    setRecRefreshing(true);
+    setErr("");
+    try {
+      // 随机种子驱动后端在「薄弱优先」基础上重排候选池，给出不同题目
+      const seed = Math.floor(Math.random() * 1_000_000);
+      const r = await api.recommend(REC_PAGE, seed);
+      setRec(r);
+      setRecTopN(REC_PAGE);
+      setRecHasMore(r.questions.length === REC_PAGE);
+      setExplain({}); // 清空已展开的讲解，避免与新题错位
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setRecRefreshing(false);
     }
   }
   useEffect(() => {
@@ -175,20 +195,38 @@ export default function Learn() {
         </button>
       </div>
 
-      <h3 className="section-title" style={{ marginTop: 16 }}>
-        为你推荐练习
-      </h3>
+      <div className="row row--between" style={{ marginTop: 16 }}>
+        <h3 className="section-title" style={{ marginTop: 0 }}>为你推荐练习</h3>
+        <button className="btn btn--ghost btn--sm" disabled={recRefreshing} onClick={refreshRec}>
+          {recRefreshing ? "换题中…" : "🔄 换一批"}
+        </button>
+      </div>
+      {rec && rec.questions.length === 0 && (
+        <div className="empty empty--tight">
+          <div className="empty__icon">🧭</div>
+          <div className="empty__title">暂无可推荐题目</div>
+          <div className="empty__desc">去「刷题」或「模考」积累数据后再回来。</div>
+        </div>
+      )}
       {rec &&
         rec.questions.map((q: any) => (
           <div key={q.id} className="q-item">
             <div className="q-item__meta">
               <span className="tag tag--brand">{q.subject}</span>
               <span>{q.knowledge_point}</span>
+              {typeof q.difficulty === "number" && (
+                <span className="text-3" style={{ fontSize: 12 }}>难度 {q.difficulty}</span>
+              )}
             </div>
             <div className="q-item__stem">{q.stem}</div>
-            <button className="btn btn--ghost btn--sm" style={{ marginTop: 8 }} disabled={busy} onClick={() => tutor(q.id)}>
-              AI 私教讲解
-            </button>
+            <div className="row" style={{ gap: 8, marginTop: 8 }}>
+              <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => tutor(q.id)}>
+                AI 私教讲解
+              </button>
+              <button className="btn btn--ghost btn--sm" onClick={() => nav(`/practice?q=${q.id}`)}>
+                去练习
+              </button>
+            </div>
             {upgradeFor === q.id && (
               <div className="card card--warning" style={{ marginTop: 8 }}>
                 <div className="muted" style={{ fontSize: 13 }}>

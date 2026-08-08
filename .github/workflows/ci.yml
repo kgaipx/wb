@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend tests (FastAPI + pytest)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gwy-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run tests
+        env:
+          # conftest 会覆盖这些值以隔离测试库；此处仅兜底，确保 CI 可离线运行
+          APP_ENV: test
+          SECRET_KEY: ci-test-secret
+        run: pytest -q
+
+  frontend:
+    name: Frontend type-check + build (React + Vite)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gwy-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install dependencies
+        run: npm ci
+      - name: Type check
+        run: npx tsc --noEmit
+      - name: Build
+        run: npm run build

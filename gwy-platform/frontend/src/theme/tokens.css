@@ -1,0 +1,75 @@
+:root {
+  /* ===== 品牌 / 主题色（政务蓝 + 中国红点缀）===== */
+  --brand: #1B4FB5;          /* 主品牌：政务蓝 */
+  --brand-600: #1B4FB5;
+  --brand-700: #143E8C;      /* hover / active */
+  --brand-050: #EAF0FB;      /* 极浅蓝底 */
+  --brand-100: #DCE7F8;      /* 浅蓝描边 */
+
+  --accent: #D92B1C;         /* 中国红，仅用于关键强调 */
+  --accent-050: #FCEDEC;
+
+  --success: #1A9B57;        /* 答对 / 通过 */
+  --success-050: #E9F7EF;
+  --warning: #D98300;        /* 待复核 / 提示 */
+  --warning-050: #FCF2E2;
+  --danger: #D92B1C;         /* 答错 / 风险 */
+  --danger-050: #FCEDEC;
+  --info: #2563EB;           /* 链接 / 讲解 */
+  --info-050: #EFF4FF;
+
+  /* ===== 中性色 ===== */
+  --bg: #F3F5F9;             /* 页面底色 */
+  --surface: #FFFFFF;        /* 卡片 / 表面 */
+  --surface-2: #F7F9FC;      /* 次级表面 / 进度槽 */
+  --border: #E6E9F0;         /* 描边 */
+  --text: #1F2733;           /* 主文本 */
+  --text-2: #5C6675;         /* 次文本 */
+  --text-3: #98A2B3;         /* 弱文本 / 元信息 */
+  --on-brand: #FFFFFF;
+
+  /* ===== 品牌渐变（header logo / fab / hero / 主按钮统一复用）===== */
+  --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
+  --grad-brand-soft: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 100%);
+
+  /* ===== 统一缓动曲线（hover / active / tap 一致手感，与 auth-in 同源）===== */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ===== 字体 ===== */
+  --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui,
+    -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --fs-xs: 12px;
+  --fs-sm: 13px;
+  --fs-base: 14px;
+  --fs-md: 15px;
+  --fs-lg: 16px;
+  --fs-xl: 18px;
+  --fs-2xl: 22px;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* ===== 间距（4pt 栅格）===== */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-8: 32px;
+
+  /* ===== 圆角 ===== */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-pill: 999px;
+
+  /* ===== 阴影 ===== */
+  --sh-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
+  --sh-md: 0 6px 18px rgba(16, 24, 40, 0.08);
+  --sh-lg: 0 10px 30px rgba(16, 24, 40, 0.12);
+
+  /* ===== 布局 ===== */
+  --app-max: 480px;
+}
