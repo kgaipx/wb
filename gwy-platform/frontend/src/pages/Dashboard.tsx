@@ -15,7 +15,7 @@ function recurColor(rate: number) {
   return "var(--danger)";
 }
 
-function MasteryRow({ name, mastery }: { name: string; mastery: number }) {
+function MasteryRow({ name, mastery, onPractice }: { name: string; mastery: number; onPractice?: () => void }) {
   const color = mastery >= 0.8 ? "var(--success)" : mastery >= 0.5 ? "var(--brand)" : "var(--warning)";
   return (
     <div className="kp-row">
@@ -26,6 +26,15 @@ function MasteryRow({ name, mastery }: { name: string; mastery: number }) {
         </div>
       </div>
       <div className="kp-row__val">{pct(mastery)}%</div>
+      {onPractice && (
+        <button
+          className="btn btn--ghost btn--sm"
+          style={{ marginLeft: 8, padding: "2px 10px", whiteSpace: "nowrap" }}
+          onClick={onPractice}
+        >
+          去练
+        </button>
+      )}
     </div>
   );
 }
@@ -201,8 +210,23 @@ export default function Dashboard() {
               </div>
             </div>
             {stats.ability.map((a) => (
-              <MasteryRow key={a.knowledge_point} name={a.knowledge_point} mastery={a.mastery} />
+              <MasteryRow
+                key={a.knowledge_point}
+                name={a.knowledge_point}
+                mastery={a.mastery}
+                onPractice={() => nav("/practice?kp=" + a.knowledge_point)}
+              />
             ))}
+            <button
+              className="btn btn--primary"
+              style={{ marginTop: 12, width: "100%" }}
+              onClick={() => nav("/practice?kp=" + stats.ability.map((a) => a.knowledge_point).join(","))}
+            >
+              一键混合薄弱点练习包（{stats.ability.length}）→
+            </button>
+            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+              按掌握度自适应加权出题：优先练最弱、且尚未练熟的知识点
+            </div>
           </div>
         )}
       </div>
