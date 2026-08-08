@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { api, ChatMessage, ChatSession } from "../api/client";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
@@ -18,6 +18,8 @@ const LS_KEY = "activeChatSession";
 
 export default function Chat() {
   const nav = useNavigate();
+  const [params] = useSearchParams();
+  const didAutoSend = useRef(false);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeId, setActiveId] = useState<number | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -42,6 +44,14 @@ export default function Chat() {
         if (target) {
           setActiveId(target.id);
           loadMessages(target.id);
+        }
+        // 测评/其他页跳转过来的预填问题：自动开新会话并发问（如 /chat?q=帮我讲讲数量关系怎么提分）
+        const q = params.get("q");
+        if (q && !didAutoSend.current) {
+          didAutoSend.current = true;
+          setActiveId(null);
+          localStorage.removeItem(LS_KEY);
+          void send(q);
         }
       })
       .catch(() => setErr("加载会话失败"))

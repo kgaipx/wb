@@ -287,6 +287,19 @@ export default function Assessment() {
             >
               针对薄弱点去专项练习 →
             </button>
+            <button
+              className="btn btn--ghost btn--block"
+              style={{ marginTop: 8 }}
+              onClick={() =>
+                nav(
+                  `/chat?q=${encodeURIComponent(
+                    `帮我讲讲${r.weak_points[0]}怎么提分（含配套例题与口诀）`
+                  )}`
+                )
+              }
+            >
+              问 AI 私教：{r.weak_points[0]} 怎么破 →
+            </button>
           </div>
         )}
 
