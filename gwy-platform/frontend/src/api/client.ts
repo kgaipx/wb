@@ -399,7 +399,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ question_id, selected }),
     }),
-  recommend: (top_n = 10) => request<{ knowledge_points: string[]; questions: any[] }>(`/ai/recommend?top_n=${top_n}`),
+  recommend: (top_n = 10, seed?: number) =>
+    request<{ knowledge_points: string[]; questions: any[] }>(
+      `/ai/recommend?top_n=${top_n}${seed != null ? `&seed=${seed}` : ""}`
+    ),
   // 会员配额（免费版每日 AI 讲解额度；pro 不限）
   quota: () => request<AiQuota>("/ai/quota"),
   // AI 私教对话历史持久化（WBS 3.1：会话可回溯、刷新不丢）

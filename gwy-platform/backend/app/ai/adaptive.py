@@ -6,7 +6,9 @@
 
 验证信号（方案 c12）：个性化推送可用、学情画像形成。
 """
+import random
 from dataclasses import dataclass, field
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
@@ -51,9 +53,12 @@ class AdaptiveEngine:
 
 
 def recommend_questions(
-    db: Session, user_id: int, top_n: int = 10, weak_threshold: float = 0.7
+    db: Session, user_id: int, top_n: int = 10, weak_threshold: float = 0.7, seed: Optional[int] = None
 ) -> list[Question]:
     """从薄弱知识点抽取候选题（掌握度低于阈值优先）；不足则用已校验题补足。
+
+    若提供 seed，则在保持「薄弱优先」的前提下对候选题池做确定性随机重排，
+    使「换一批」能给出不同题目而不破坏相关性（无需迁移）。
 
     返回去重后的 Question 列表，供 /api/ai/recommend 与刷题流使用。
     """
@@ -74,22 +79,29 @@ def recommend_questions(
                 picked.append(q)
                 seen.add(q.id)
 
+    # seed 为 None 时保持原有确定性排序（难度序 / id 序），行为不变
+    rng = random.Random(seed) if seed is not None else None
+
     if weak_kps:
-        q1 = (
+        c1 = (
             db.query(Question)
             .filter(Question.knowledge_point.in_(weak_kps), Question.is_verified == True)  # noqa: E712
             .order_by(Question.difficulty)
-            .limit(top_n)
+            .all()
         )
-        _collect(q1, top_n)
+        if rng:
+            rng.shuffle(c1)
+        _collect(c1, top_n)
 
     if len(picked) < top_n:
-        q2 = (
+        c2 = (
             db.query(Question)
             .filter(Question.is_verified == True)  # noqa: E712
             .order_by(Question.id)
-            .limit(top_n - len(picked))
+            .all()
         )
-        _collect(q2, top_n)
+        if rng:
+            rng.shuffle(c2)
+        _collect(c2, top_n)
 
     return picked

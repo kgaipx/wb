@@ -81,14 +81,14 @@ def explain(payload: ExplainIn, current: User = Depends(get_current_user), db: S
 
 
 @router.get("/recommend", response_model=RecommendOut)
-def recommend(top_n: int = 10, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def recommend(top_n: int = 10, seed: int | None = None, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     abilities = (
         db.query(AbilityProfile).filter(AbilityProfile.user_id == current.id).all()
     )
     from app.ai.tutor_agent import TutorAgent
 
     weak = TutorAgent.diagnose_mistakes(abilities)
-    questions = recommend_questions(db, current.id, top_n=top_n)
+    questions = recommend_questions(db, current.id, top_n=top_n, seed=seed)
     return RecommendOut(
         knowledge_points=weak,
         questions=[
