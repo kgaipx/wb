@@ -521,7 +521,11 @@ export default function Review() {
           )}
           {qPending.length === 0 && !qBusy && (
             <div className="card review-empty">
-              <div className="muted">暂无待核实题目，全部已双签通过 🎉</div>
+              <div className="empty empty--tight">
+                <div className="empty__icon">✅</div>
+                <div className="empty__title">暂无待核实题目</div>
+                <div className="empty__desc">全部已双签通过 🎉</div>
+              </div>
             </div>
           )}
 

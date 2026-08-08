@@ -166,8 +166,10 @@ export default function Dashboard() {
           <span className="muted" style={{ fontSize: 12 }}>掌握度升序</span>
         </div>
         {stats.ability.length === 0 ? (
-          <div className="muted" style={{ fontSize: 13, marginTop: 10 }}>
-            暂无作答记录，去刷几道题，这里会显示你的能力图谱。
+          <div className="empty empty--tight">
+            <div className="empty__icon">📈</div>
+            <div className="empty__title">暂无作答记录</div>
+            <div className="empty__desc">去刷几道题，这里会显示你的能力图谱。</div>
           </div>
         ) : (
           <div style={{ marginTop: 10 }}>

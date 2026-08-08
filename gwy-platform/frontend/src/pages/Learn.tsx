@@ -202,7 +202,11 @@ export default function Learn() {
         </button>
       </div>
       {rec && rec.questions.length === 0 && (
-        <div className="muted" style={{ marginTop: 8 }}>暂无可推荐题目，去「刷题」或「模考」积累数据后再回来。</div>
+        <div className="empty empty--tight">
+          <div className="empty__icon">🧭</div>
+          <div className="empty__title">暂无可推荐题目</div>
+          <div className="empty__desc">去「刷题」或「模考」积累数据后再回来。</div>
+        </div>
       )}
       {rec &&
         rec.questions.map((q: any) => (

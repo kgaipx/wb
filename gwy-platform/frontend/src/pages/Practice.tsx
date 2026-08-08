@@ -306,7 +306,12 @@ export default function Practice() {
               <div className="q-item__stem">{q.stem}</div>
             </button>
           ))}
-          {list.length === 0 && (loading ? <div className="muted">加载中…</div> : <div className="muted">该科目暂无题目</div>)}
+          {list.length === 0 && (loading ? <div className="muted">加载中…</div> : (
+            <div className="empty empty--tight">
+              <div className="empty__icon">📚</div>
+              <div className="empty__title">该科目暂无题目</div>
+            </div>
+          ))}
           {hasMore && (
             <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={loadingMore} onClick={loadMore}>
               {loadingMore ? "加载中…" : "加载更多"}

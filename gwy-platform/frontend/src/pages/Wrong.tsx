@@ -195,8 +195,10 @@ export default function Wrong() {
       {loading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
 
       {!loading && items.length === 0 && (
-        <div className="muted" style={{ marginTop: 16 }}>
-          暂无待复盘错题。多做「刷题」和「模考」，这里会自动收集你的错答。
+        <div className="empty">
+          <div className="empty__icon">📕</div>
+          <div className="empty__title">暂无待复盘错题</div>
+          <div className="empty__desc">多做「刷题」和「模考」，这里会自动收集你的错答。</div>
         </div>
       )}
 
@@ -255,8 +257,9 @@ export default function Wrong() {
         </div>
       )}
       {items.length > 0 && visible.length === 0 && (
-        <div className="muted" style={{ marginTop: 12 }}>
-          该科目暂无错题。
+        <div className="empty empty--tight">
+          <div className="empty__icon">📭</div>
+          <div className="empty__title">该科目暂无错题</div>
         </div>
       )}
 

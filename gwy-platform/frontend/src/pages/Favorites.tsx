@@ -175,13 +175,16 @@ export default function Favorites() {
 
       {!loading && list.length === 0 && (
         <div className="card fav-empty">
-          <div className="muted">还没有收藏。</div>
-          <div className="muted" style={{ fontSize: 13, marginTop: 4 }}>
-            在「刷题」「模考」或「错题本」中可把题目加入收藏。
+          <div className="empty empty--tight">
+            <div className="empty__icon">⭐</div>
+            <div className="empty__title">还没有收藏</div>
+            <div className="empty__desc">在「刷题」「模考」或「错题本」中可把题目加入收藏。</div>
+            <div className="empty__action">
+              <button className="btn btn--primary btn--sm" onClick={() => nav("/practice")}>
+                去题库练习 →
+              </button>
+            </div>
           </div>
-          <button className="btn btn--primary btn--sm" style={{ marginTop: 12 }} onClick={() => nav("/practice")}>
-            去题库练习 →
-          </button>
         </div>
       )}
 

@@ -274,7 +274,12 @@ export default function Membership() {
       {/* 账单记录 */}
       <h3 className="section-title" style={{ marginTop: 16 }}>账单记录</h3>
       <div className="card">
-        {!me?.orders?.length && !me?.refunds?.length && <div className="muted">暂无订单记录</div>}
+        {!me?.orders?.length && !me?.refunds?.length && (
+          <div className="empty empty--tight">
+            <div className="empty__icon">💳</div>
+            <div className="empty__title">暂无订单记录</div>
+          </div>
+        )}
         {me?.orders?.map((o) => (
           <div key={o.id} className="bill-row">
             <div>

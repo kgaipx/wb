@@ -129,7 +129,13 @@ export default function Essay() {
       {tab === "history" && (
         <>
           {hLoading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
-          {!hLoading && history.length === 0 && <div className="muted" style={{ marginTop: 16 }}>暂无批改记录，去「写 & 批改」完成首次申论批改吧。</div>}
+          {!hLoading && history.length === 0 && (
+            <div className="empty empty--tight">
+              <div className="empty__icon">📝</div>
+              <div className="empty__title">暂无批改记录</div>
+              <div className="empty__desc">去「写 & 批改」完成首次申论批改吧。</div>
+            </div>
+          )}
           {!hLoading && history.length > 0 && (() => {
             const sorted = [...history].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
             const totals = sorted.map((h) => h.total);

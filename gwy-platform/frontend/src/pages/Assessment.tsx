@@ -605,10 +605,16 @@ export default function Assessment() {
           </div>
           {history.length === 0 && !hisLoading && (
             <div className="card">
-              <div className="muted">还没有测评记录，去完成一次能力测评吧。</div>
-              <button className="btn btn--primary btn--sm" style={{ marginTop: 10 }} onClick={start}>
-                开始测评 →
-              </button>
+              <div className="empty empty--tight">
+                <div className="empty__icon">📊</div>
+                <div className="empty__title">还没有测评记录</div>
+                <div className="empty__desc">去完成一次能力测评，生成你的能力雷达图。</div>
+                <div className="empty__action">
+                  <button className="btn btn--primary btn--sm" onClick={start}>
+                    开始测评 →
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
