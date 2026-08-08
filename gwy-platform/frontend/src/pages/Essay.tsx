@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { api, EssayPrompt, EssayHistoryItem } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
+import { LineChart } from "../components/LineChart";
 import Markdown from "../components/Markdown";
 
 export default function Essay() {
@@ -129,6 +130,61 @@ export default function Essay() {
         <>
           {hLoading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
           {!hLoading && history.length === 0 && <div className="muted" style={{ marginTop: 16 }}>暂无批改记录，去「写 & 批改」完成首次申论批改吧。</div>}
+          {!hLoading && history.length > 0 && (() => {
+            const sorted = [...history].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+            const totals = sorted.map((h) => h.total);
+            const first = totals[0];
+            const last = totals[totals.length - 1];
+            const best = Math.max(...totals);
+            const avg = Math.round(totals.reduce((a, b) => a + b, 0) / totals.length);
+            const prev = totals.length > 1 ? totals[totals.length - 2] : null;
+            const delta = prev !== null ? last - prev : 0;
+            const deltaCls = delta > 0 ? "rate-trend--up" : delta < 0 ? "rate-trend--down" : "rate-trend--flat";
+            return (
+              <div className="card" style={{ marginTop: 12 }}>
+                <div className="row row--between">
+                  <strong>申论得分趋势</strong>
+                  <span className="tag tag--brand">已批改 {history.length} 篇</span>
+                </div>
+                {sorted.length > 1 ? (
+                  <LineChart
+                    points={sorted.map((h) => ({ label: h.created_at.slice(5, 10), value: h.total }))}
+                    max={100}
+                    min={0}
+                    unit="分"
+                    color="var(--success)"
+                  />
+                ) : (
+                  <div className="muted" style={{ fontSize: 13, marginTop: 8 }}>
+                    再完成 1 篇批改即可解锁得分趋势曲线。
+                  </div>
+                )}
+                <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginTop: 10 }}>
+                  <div className="metric">
+                    <div className="metric__num" style={{ color: "var(--brand)" }}>{first}</div>
+                    <div className="metric__label">首次得分</div>
+                  </div>
+                  <div className="metric">
+                    <div className="metric__num" style={{ color: "var(--success)" }}>{best}</div>
+                    <div className="metric__label">最佳得分</div>
+                  </div>
+                  <div className="metric">
+                    <div className="metric__num">{avg}</div>
+                    <div className="metric__label">平均得分</div>
+                  </div>
+                </div>
+                {prev !== null && (
+                  <div className="row row--between" style={{ marginTop: 8, fontSize: 12 }}>
+                    <span className="muted">较上次批改</span>
+                    <span className={"rate-trend " + deltaCls}>
+                      {delta > 0 ? "▲ +" : delta < 0 ? "▼ " : "— "}
+                      {Math.abs(delta)} 分
+                    </span>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
           {history.map((h) => (
             <div key={h.id} className="card" style={{ marginTop: 12 }}>
               <div className="row row--between">
