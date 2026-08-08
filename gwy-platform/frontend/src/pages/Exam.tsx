@@ -485,7 +485,19 @@ export default function Exam() {
             const rate = Math.round((h.correct_rate || 0) * 100);
             const tone = rate >= 70 ? "rate--good" : rate >= 50 ? "rate--mid" : "rate--bad";
             return (
-              <button key={h.id} className="q-item" onClick={() => openDetail(h.id)}>
+              <div
+                key={h.id}
+                className="q-item"
+                role="button"
+                tabIndex={0}
+                onClick={() => openDetail(h.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openDetail(h.id);
+                  }
+                }}
+              >
                 <div className="q-item__meta">
                   <span className="tag tag--brand">{h.subject}</span>
                   <span className="text-3">{fmtDate(h.created_at)}</span>
@@ -497,7 +509,7 @@ export default function Exam() {
                 {h.weak_points.length > 0 && (
                   <div className="text-3" style={{ fontSize: 12, marginTop: 4 }}>薄弱：{h.weak_points.slice(0, 3).join("、")}</div>
                 )}
-              </button>
+              </div>
             );
           })}
           {hisHasMore && (

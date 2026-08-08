@@ -1439,11 +1439,22 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   cursor: pointer;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out);
 }
 .q-item:hover {
   border-color: var(--brand-100);
   box-shadow: var(--sh-sm);
+  transform: translateY(-2px);
+}
+.q-item:active {
+  transform: scale(0.99);
+  transition-duration: 0.08s;
+}
+.q-item:focus-visible {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-050);
 }
 .q-item + .q-item {
   margin-top: var(--sp-2);
