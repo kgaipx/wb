@@ -304,6 +304,9 @@ export default function Practice() {
               >
                 清除筛选
               </button>
+              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+                已按你的掌握度智能排序：优先练习最薄弱、且尚未练熟的知识点。
+              </div>
             </div>
           )}
           <div className="chip-row" style={{ marginBottom: 10 }}>

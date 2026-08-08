@@ -2,12 +2,16 @@
 
 /practice 提交作答后会：①记录 UserAnswer ②更新能力图谱（掌握度 SM-2 简化）③返回判分与解析。
 错题复错率、正确率等方案 c12 信号均可由这些数据派生。
+
+list_questions 支持「按掌握度自适应加权」：登录用户针对某知识点（单点专项 / 多点混合练习包）
+刷题时，优先练最弱、且尚未练熟的知识点与题目，让练习 ROI 最高；匿名浏览保持原有稳定序。
 """
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import case, func
 from sqlalchemy.orm import Session
 
-from app.api.routes.auth import get_current_user
+from app.api.routes.auth import get_current_user, get_optional_user
 from app.db.session import get_db
 from app.models import (
     AbilityProfile,
@@ -30,6 +34,63 @@ from app.schemas.question import (
 router = APIRouter()
 
 
+def _order_by_mastery(db: Session, items: list[Question], user: User) -> list[Question]:
+    """掌握度加权排序：让「专项/混合练习包」优先覆盖最弱且未练熟的内容。
+
+    排序逻辑：
+    - 按知识点掌握度升序分桶（掌握度越低越靠前；无记录的知识点视为最弱，优先练）；
+    - 桶内按「作答次数升序（未做过的题优先）→ id」排列，让同一薄弱点下先练没练过的题；
+    - 桶间轮询交织（round-robin），保证混合练习包首屏就覆盖各薄弱点，同时最弱知识点略微靠前。
+    全程确定性，分页（offset/limit）不会重复或遗漏。
+    """
+    if not user or not items:
+        return items
+    kps = list({q.knowledge_point for q in items})
+    ab_map: dict[str, float] = {}
+    if kps:
+        for mastery, kp in (
+            db.query(AbilityProfile.mastery, AbilityProfile.knowledge_point)
+            .filter(
+                AbilityProfile.user_id == user.id,
+                AbilityProfile.knowledge_point.in_(kps),
+            )
+            .all()
+        ):
+            ab_map[kp] = mastery
+
+    ids = [q.id for q in items]
+    ans_map: dict[int, tuple[int, int]] = {}
+    if ids:
+        for qid, attempts, correct in (
+            db.query(
+                UserAnswer.question_id,
+                func.count(UserAnswer.id),
+                func.sum(case((UserAnswer.is_correct == True, 1), else_=0)),
+            )
+            .filter(UserAnswer.user_id == user.id, UserAnswer.question_id.in_(ids))
+            .group_by(UserAnswer.question_id)
+            .all()
+        ):
+            ans_map[qid] = (attempts, int(correct or 0))
+
+    groups: dict[str, list[Question]] = {}
+    for q in items:
+        groups.setdefault(q.knowledge_point, []).append(q)
+    # 桶按掌握度升序（最弱在前；未知知识点掌握度记 0，排最前）
+    ordered_kps = sorted(groups.keys(), key=lambda kp: ab_map.get(kp, 0.0))
+    for kp in ordered_kps:
+        groups[kp].sort(key=lambda q: (ans_map.get(q.id, (0, 0))[0], q.id))
+
+    result: list[Question] = []
+    max_len = max((len(v) for v in groups.values()), default=0)
+    for d in range(max_len):
+        for kp in ordered_kps:
+            bucket = groups[kp]
+            if d < len(bucket):
+                result.append(bucket[d])
+    return result
+
+
 @router.get("/questions", response_model=list[QuestionListItem])
 def list_questions(
     subject: str | None = None,
@@ -37,6 +98,7 @@ def list_questions(
     knowledge_point: str | None = None,
     offset: int = Query(0, ge=0),
     limit: int = Query(20, le=500, ge=1),
+    current: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
     q = db.query(Question)
@@ -44,6 +106,7 @@ def list_questions(
         q = q.filter(Question.subject == subject)
     if category:
         q = q.filter(Question.category == category)
+    kps: list[str] = []
     if knowledge_point:
         # 支持逗号分隔的多个知识点（混合练习包），向下兼容单值等值过滤
         kps = [k.strip() for k in knowledge_point.split(",") if k.strip()]
@@ -51,10 +114,15 @@ def list_questions(
             q = q.filter(Question.knowledge_point == kps[0])
         else:
             q = q.filter(Question.knowledge_point.in_(kps))
-    # 多知识点混合练习包：随机排序，让首屏即覆盖各薄弱点（单值专项练习保持 id 稳定序）
-    if knowledge_point and len(kps) > 1:
-        from sqlalchemy import func
 
+    # 掌握度自适应加权：仅当明确针对某知识点（专项/混合练习包）且已登录时生效，
+    # 让练习包优先练最弱、未练熟的内容；无用户（匿名/公开浏览）或纯科目浏览保持原有稳定序。
+    if knowledge_point and current is not None:
+        items = _order_by_mastery(db, q.all(), current)
+        return items[offset : offset + limit]
+
+    # 兼容路径：纯浏览/匿名/无知识点——保持原有确定序（混合包回退随机）
+    if knowledge_point and len(kps) > 1:
         q = q.order_by(func.random())
     else:
         q = q.order_by(Question.id)

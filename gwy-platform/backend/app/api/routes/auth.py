@@ -5,7 +5,7 @@
 import secrets
 from datetime import datetime, timedelta, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
@@ -74,6 +74,34 @@ def get_current_user(
     if user is None or not user.is_active:
         raise cred_exc
     _maybe_downgrade_expired(user, db)
+    return user
+
+
+def get_optional_user(
+    request: Request, db: Session = Depends(get_db)
+) -> User | None:
+    """非强制鉴权：携带有效 token 则返回用户，否则返回 None（不抛 401）。
+
+    直接读取 Authorization 头而非依赖 oauth2_scheme（其 auto_error 会对匿名请求抛 401/403），
+    用于「题库列表」这类既支持登录态自适应排序、又对匿名公开浏览保持兼容的接口。
+    """
+    auth = request.headers.get("Authorization")
+    if not auth or not auth.startswith("Bearer "):
+        return None
+    token = auth[len("Bearer ") :]
+    try:
+        sub = decode_access_token(token)
+    except Exception:
+        return None
+    if sub is None:
+        return None
+    try:
+        user_id = int(sub)
+    except (TypeError, ValueError):
+        return None
+    user = db.get(User, user_id)
+    if user is None or not user.is_active:
+        return None
     return user
 
 
