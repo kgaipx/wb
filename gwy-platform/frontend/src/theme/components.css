@@ -1634,6 +1634,16 @@
   border-color: var(--warning);
   color: #fff;
 }
+.chip--btn {
+  font-family: inherit;
+}
+.chip--btn:hover {
+  filter: brightness(0.97);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+}
+.chip--btn:active {
+  transform: translateY(1px);
+}
 .fav-quicktags {
   display: flex;
   flex-wrap: wrap;

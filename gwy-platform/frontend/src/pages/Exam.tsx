@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 
 interface PaperQ {
@@ -98,6 +99,8 @@ export default function Exam() {
   const [hisOffset, setHisOffset] = useState(0);
   const [hisLoadingMore, setHisLoadingMore] = useState(false);
   const [hisHasMore, setHisHasMore] = useState(false);
+
+  const nav = useNavigate();
 
   async function loadHistory(reset = true) {
     const off = reset ? 0 : hisOffset;
@@ -281,11 +284,18 @@ export default function Exam() {
           <strong>薄弱知识点（AI 诊断）</strong>
           <div className="chip-row" style={{ marginTop: 8 }}>
             {rep.weak_points.length ? (
-              rep.weak_points.map((w: string) => <span key={w} className="chip chip--warn">{w}</span>)
+              rep.weak_points.map((w: string) => (
+                <button key={w} className="chip chip--warn chip--btn" onClick={() => nav("/learn")}>
+                  {w}
+                </button>
+              ))
             ) : (
               <span className="muted">无明显薄弱点，保持节奏 👍</span>
             )}
           </div>
+          <button className="btn btn--ghost btn--sm" style={{ marginTop: 8 }} onClick={() => nav("/learn")}>
+            去学习中心针对性重练 →
+          </button>
         </div>
         <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
         {rep.details.map((d: any, i: number) => (
@@ -301,6 +311,14 @@ export default function Exam() {
               <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
                 正确答案：<b className="text-brand">{d.correct_answer}</b>
                 {d.selected ? `（你的作答：${d.selected}）` : ""}
+                <div style={{ marginTop: 6 }}>
+                  <button
+                    className="btn btn--ghost btn--sm"
+                    onClick={() => nav(`/practice?q=${d.question_id}`)}
+                  >
+                    🔁 重练这道题
+                  </button>
+                </div>
               </div>
             )}
           </div>
