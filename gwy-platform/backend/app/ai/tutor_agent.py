@@ -126,9 +126,11 @@ class TutorAgent:
                 "offline": True,
             }
 
-    def chat(self, messages: list[dict], kp_hint: str | None = None) -> dict:
+    def chat(self, messages: list[dict], kp_hint: str | None = None, weak_points: list[dict] | None = None) -> dict:
         """多轮对话：基于 RAG 检索 + LLM 生成；离线（LLM 不可用）时降级为检索摘要。
 
+        weak_points：可选，学员能力画像（最弱知识点 + 掌握度），用于让私教给出个性化、
+        针对最薄弱处的提升建议（诊断→练习闭环的最后一块拼图）。
         返回 {answer, citations, model, offline}。offline=True 表示走降级分支。
         """
         last_user = ""
@@ -138,6 +140,19 @@ class TutorAgent:
                 break
         query = f"{kp_hint or ''} {last_user}".strip()
         chunks = self.retriever.retrieve(query, top_k=4, focus_kp=kp_hint)
+
+        # 学员能力画像：把最薄弱知识点与掌握度注入，驱动个性化建议
+        profile_text = ""
+        if weak_points:
+            items = "；".join(
+                f"{w['knowledge_point']}（掌握度 {int(round(w['mastery'] * 100))}%）"
+                for w in weak_points
+            )
+            profile_text = (
+                f"\n\n【学员能力画像·薄弱项】{items}。"
+                "请优先结合其最薄弱的知识点给出针对性、可操作的提升建议；"
+                "合适时建议其前往「刷题」专项或「错题本」巩固对应知识点（不要编造具体题目编号）。"
+            )
 
         context = (
             "参考资料：\n" + "\n".join(f"- {c.content}（来源：{c.source}）" for c in chunks)
@@ -149,12 +164,18 @@ class TutorAgent:
             "解题技巧、申论写作、心态与时间规划等给出可操作建议。讲解要直击要点，"
             "避免空话。若资料不足以支撑，可基于通用公考常识作答，并提示『此为通用建议，非官方口径』。"
         )
+        if weak_points:
+            system += (
+                "\n你已了解该学员的能力画像（下方会给出其薄弱知识点及掌握度），"
+                "回答时请优先针对最薄弱处给出具体提升动作，并视情况引导其练习巩固。"
+            )
         history = "\n".join(
             f"{'学员' if m.get('role') == 'user' else '私教'}：{m.get('content', '')}" for m in messages
         )
         prompt = (
             f"{context}\n\n【对话历史】\n{history}\n\n"
             "请基于上述资料与历史，针对学员最新问题给出清晰、分点、可操作的回答。"
+            f"{profile_text}"
         )
         try:
             resp = self.gateway.complete(prompt, system=system, temperature=0.4, max_tokens=900)
@@ -165,7 +186,7 @@ class TutorAgent:
                 "offline": False,
             }
         except Exception:
-            # 离线降级：仅用检索片段拼接摘要，绝不抛 500
+            # 离线降级：仅用检索片段拼接摘要，绝不抛 500；仍带个性化提示
             if chunks:
                 answer = (
                     "（当前为离线检索模式，未接入大模型）根据资料：\n"
@@ -175,6 +196,12 @@ class TutorAgent:
                 answer = (
                     "（当前为离线模式，暂未接入大模型，也未检索到相关资料。）"
                     "你可以先去「刷题」或「错题本」练习，或换更具体的关键词再问。"
+                )
+            if profile_text:
+                answer += (
+                    "\n\n你的薄弱项："
+                    + "；".join(f"{w['knowledge_point']}（{int(round(w['mastery'] * 100))}%）" for w in weak_points)
+                    + "。建议优先巩固这些知识点。"
                 )
             return {
                 "answer": answer,

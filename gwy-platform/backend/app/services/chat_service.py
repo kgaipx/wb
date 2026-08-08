@@ -8,7 +8,7 @@ import json
 from sqlalchemy.orm import Session
 
 from app.ai.tutor_agent import TutorAgent
-from app.models import ChatMessage, ChatSession, User
+from app.models import AbilityProfile, ChatMessage, ChatSession, User
 
 
 def _msg_to_out(m: ChatMessage) -> dict:
@@ -117,8 +117,25 @@ def send_message(
     # 全量历史（含刚落库的用户消息）交给私教，保证多轮上下文连续
     history = [{"role": m.role, "content": m.content} for m in get_messages(db, session)]
 
+    # 注入学员能力画像：取掌握度最低的若干知识点，让私教给出个性化、针对最薄弱处的建议
+    abilities = (
+        db.query(AbilityProfile)
+        .filter(AbilityProfile.user_id == user.id)
+        .order_by(AbilityProfile.mastery.asc())
+        .all()
+    )
+    weak_points = (
+        [
+            {"knowledge_point": a.knowledge_point, "mastery": a.mastery}
+            for a in abilities
+            if a.mastery < 0.85
+        ]
+        if abilities
+        else None
+    )
+
     tutor = TutorAgent()
-    resp = tutor.chat(history, kp_hint)
+    resp = tutor.chat(history, kp_hint, weak_points=weak_points)
 
     assistant_msg = ChatMessage(
         session_id=session.id,

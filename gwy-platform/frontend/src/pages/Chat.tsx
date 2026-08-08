@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { api, ChatMessage, ChatSession } from "../api/client";
+import { api, Ability, ChatMessage, ChatSession } from "../api/client";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
 
@@ -32,6 +32,7 @@ export default function Chat() {
   const [editText, setEditText] = useState("");
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
+  const [weak, setWeak] = useState<Ability[]>([]);
 
   // 挂载即恢复会话列表与上次会话（DB 为真相源，刷新不丢）
   useEffect(() => {
@@ -56,6 +57,16 @@ export default function Chat() {
       })
       .catch(() => setErr("加载会话失败"))
       .finally(() => setLoading(false));
+
+  // 拉取学员能力画像（最弱知识点），让私教对话首屏即可针对性引导
+  api
+    .studentStats()
+    .then((st) => {
+      if (st?.ability?.length) setWeak(st.ability.slice(0, 5));
+    })
+    .catch(() => {
+      /* 画像缺失不影响对话主流程 */
+    });
   }, []);
 
   useEffect(() => {
@@ -357,6 +368,28 @@ export default function Chat() {
 
         {!loading && messages.length === 0 && activeId == null && (
           <div className="bubble bubble--assistant">{WELCOME}</div>
+        )}
+
+        {!loading && messages.length === 0 && activeId == null && weak.length > 0 && (
+          <div className="bubble bubble--assistant profile-card">
+            <div className="profile-card__title">📊 私教已了解你的薄弱点</div>
+            <div className="profile-card__desc">
+              依据你的练习数据，以下知识点掌握度偏低。点选其一，私教会给出针对性突破建议：
+            </div>
+            <div className="chip-row">
+              {weak.map((w) => (
+                <button
+                  key={w.knowledge_point}
+                  className="chip chip--click chip--btn"
+                  onClick={() => send(`帮我重点突破「${w.knowledge_point}」这个知识点`)}
+                  disabled={busy}
+                >
+                  {w.knowledge_point}
+                  <span className="profile-card__pct">{Math.round(w.mastery * 100)}%</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
 
         {messages.map((m, i) => (
