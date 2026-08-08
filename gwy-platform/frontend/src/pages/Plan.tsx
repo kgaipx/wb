@@ -113,15 +113,23 @@ export default function Plan() {
   }
 
   async function onToggle(t: PlanTask) {
+    const wasDone = t.done;
     // 乐观更新
-    setPlan((prev) => applyTaskDone(prev, t.id, !t.done));
+    setPlan((prev) => applyTaskDone(prev, t.id, !wasDone));
     try {
       const res = await api.planToggle(t.id);
       setPlan((prev) => applyProgress(prev, res.progress, t.id, res.task.done));
+      if (
+        !wasDone &&
+        res.progress.today_total > 0 &&
+        res.progress.today_done >= res.progress.today_total
+      ) {
+        flash("🎉 今日任务全部完成，太棒了！");
+      }
     } catch (e: any) {
       setErr(e.message);
       // 回滚
-      setPlan((prev) => applyTaskDone(prev, t.id, t.done));
+      setPlan((prev) => applyTaskDone(prev, t.id, wasDone));
     }
   }
 
@@ -141,6 +149,8 @@ export default function Plan() {
       })
     : [];
   const typeTotal = Object.values(typeCounts).reduce((a, b) => a + b, 0) || 1;
+  const todayAllDone =
+    plan && plan.progress.today_total > 0 && plan.progress.today_done >= plan.progress.today_total;
 
   // 连续打卡高亮：从今天往前 streak_days 天且已完成的天，在日历上凸显
   const todayIdx = plan ? (plan.today_index ?? calDays.length) : 0;
@@ -198,6 +208,17 @@ export default function Plan() {
 
       {plan && (
         <>
+          {todayAllDone && (
+            <div className="card plan-celebrate">
+              <div className="plan-celebrate__emoji">🎉</div>
+              <div>
+                <strong>今日任务已全部清空！</strong>
+                <div className="muted" style={{ marginTop: 2 }}>
+                  连续打卡 {plan.progress.streak_days} 天 · 保持节奏，明天也来点亮 ✅
+                </div>
+              </div>
+            </div>
+          )}
           {/* 进度总览 */}
           <div className="card plan-progress">
             <Ring rate={plan.progress.rate} />
