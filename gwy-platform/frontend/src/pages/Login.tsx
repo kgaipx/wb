@@ -112,6 +112,7 @@ export default function Login() {
 
   return (
     <div className="auth-screen">
+      <div className="auth-wrap">
       <div className="auth-card">
         <div className="auth-head">
           <div className="auth-logo">
@@ -257,6 +258,14 @@ export default function Login() {
             </div>
           </>
         )}
+      </div>
+
+      <div className="auth-values">
+        <div className="auth-value"><span className="auth-value__ico">🤖</span><span>AI 私教陪跑</span></div>
+        <div className="auth-value"><span className="auth-value__ico">📝</span><span>申论 AI 批改</span></div>
+        <div className="auth-value"><span className="auth-value__ico">📊</span><span>能力雷达诊断</span></div>
+        <div className="auth-value"><span className="auth-value__ico">🔁</span><span>错题复错闭环</span></div>
+      </div>
       </div>
     </div>
   );
