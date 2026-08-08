@@ -36,6 +36,7 @@ def backfill() -> int:
         _load(os.path.join(_DATA, "seed.json"))
         + _load(os.path.join(_DATA, "knowledge_extra.json"))
         + _load(os.path.join(_DATA, "knowledge_gen.json"))
+        + _load(os.path.join(_DATA, "knowledge_bigcat.json"))
     )
     db = SessionLocal()
     existing = {c.content for c in db.query(KnowledgeChunk.content).all()}
