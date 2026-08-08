@@ -76,6 +76,9 @@ export default function Home() {
 
   const daily = dailyList[dailyIdx] || null;
 
+  // 冷启动引导：零作答的纯新手用户，首登即给「三步开启」引导；做第一题后自动消失
+  const isNew = stats ? stats.total_answers === 0 : false;
+
   const onPlanTask = (t: PlanTask) => {
     if (t.kind === "mock") {
       nav("/exam");
@@ -150,6 +153,42 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* 冷启动新手引导：零作答用户首登破冰，做第一题后自动消失 */}
+      {isNew && (
+        <div className="card onboard" style={{ marginTop: 14 }}>
+          <strong>👋 欢迎！三步开启你的 AI 私教</strong>
+          <div className="muted" style={{ fontSize: 13, marginTop: 2 }}>
+            先测评定位短板，再每日一练破冰，随时问 AI 私教。
+          </div>
+          <div className="onboard__steps" style={{ marginTop: 10 }}>
+            <button className="onboard__step" onClick={() => nav("/assessment")}>
+              <span className="onboard__no">1</span>
+              <span className="onboard__txt">
+                <b>做一次能力测评</b>
+                <span className="muted">定位你的真实薄弱点</span>
+              </span>
+              <span className="onboard__go">→</span>
+            </button>
+            <button className="onboard__step" onClick={() => nav("/practice")}>
+              <span className="onboard__no">2</span>
+              <span className="onboard__txt">
+                <b>刷一组每日一练</b>
+                <span className="muted">从薄弱点开始破冰</span>
+              </span>
+              <span className="onboard__go">→</span>
+            </button>
+            <button className="onboard__step" onClick={() => nav("/chat")}>
+              <span className="onboard__no">3</span>
+              <span className="onboard__txt">
+                <b>体验 AI 私教</b>
+                <span className="muted">随时问解题技巧与规划</span>
+              </span>
+              <span className="onboard__go">→</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* PWA 引导徽章：强化「离线轻量」卖点，已安装用户给正向反馈 */}
       <div className="home-pwa">

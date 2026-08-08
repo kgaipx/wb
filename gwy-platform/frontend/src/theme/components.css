@@ -2790,6 +2790,58 @@
   gap: 8px;
   margin-top: 12px;
 }
+.onboard__steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.onboard__step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  background: var(--surface-2, #f5f7fb);
+  border: 1px solid var(--border, #e8ebf2);
+  border-radius: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.onboard__step:active {
+  background: #eef3ff;
+  border-color: var(--brand);
+}
+.onboard__no {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--brand);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.onboard__txt {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.onboard__txt b {
+  font-size: 14px;
+}
+.onboard__txt .muted {
+  font-size: 12px;
+}
+.onboard__go {
+  flex: 0 0 auto;
+  color: var(--brand);
+  font-size: 16px;
+  font-weight: 700;
+}
 .home-pwa__badge {
   display: inline-flex;
   align-items: center;
