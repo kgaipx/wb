@@ -164,7 +164,7 @@ def patch_favorite(
         f.note = payload.note
     if payload.tags is not None:
         # 仅保留白名单标签，去重并保序
-        allowed = {"易错", "重点"}
+        allowed = {"易错", "重点", "已掌握"}
         seen: set[str] = set()
         f.tags = [t for t in payload.tags if t in allowed and not (t in seen or seen.add(t))]
     db.commit()

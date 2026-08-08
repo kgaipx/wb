@@ -11,6 +11,7 @@ interface ItemState {
   result: any;
   explain: string;
   cites: string[];
+  suggestDismissed: boolean;
 }
 
 export default function Wrong() {
@@ -33,7 +34,7 @@ export default function Wrong() {
   }, []);
 
   function s(qid: number): ItemState {
-    return states[qid] || { open: false, selected: "", result: null, explain: "", cites: [] };
+    return states[qid] || { open: false, selected: "", result: null, explain: "", cites: [], suggestDismissed: false };
   }
   function patch(qid: number, patch: Partial<ItemState>) {
     setStates((prev) => ({ ...prev, [qid]: { ...s(qid), ...patch } }));
@@ -79,13 +80,7 @@ export default function Wrong() {
     try {
       const r = await api.practice(qid, cur.selected);
       patch(qid, { result: r });
-      if (r.is_correct) {
-        // 答对即视为已掌握，移出错题本，闭环降复错率
-        await api.wrongReview(qid);
-        setItems((prev) => prev.filter((it) => it.question.id !== qid));
-        setToast(`已掌握「${r.correct_answer}」并移出错题本`);
-        setTimeout(() => setToast(""), 2200);
-      }
+      // 答对不直接移出：交由结果区「标记已掌握」建议闭环（markMastered），把掌控权交给用户
     } catch (e: any) {
       setErr(e.message);
     } finally {
@@ -105,12 +100,28 @@ export default function Wrong() {
     }
   }
 
-  async function markReviewed(qid: number) {
+  // 收藏标签联动：若该题已收藏且带「易错」，重练掌握后演进为「已掌握」（移除易错）
+  async function syncMasteredTag(qid: number) {
+    try {
+      const favs = await api.favoriteList();
+      const fav = favs.find((f) => f.question.id === qid);
+      if (fav) {
+        const tags = Array.from(new Set([...fav.tags.filter((t) => t !== "易错"), "已掌握"]));
+        await api.favoriteUpdate(qid, { tags });
+      }
+    } catch {
+      // 收藏联动失败不应阻断「标记为已掌握」主流程
+    }
+  }
+
+  // 统一「标记已掌握」：移出错题本 + 收藏标签演进为「已掌握」
+  async function markMastered(qid: number) {
     setBusy(true);
     try {
       await api.wrongReview(qid);
+      await syncMasteredTag(qid);
       setItems((prev) => prev.filter((it) => it.question.id !== qid));
-      setToast("已标记掌握并移出错题本");
+      setToast("已标记为「已掌握」并移出错题本");
       setTimeout(() => setToast(""), 2200);
     } catch (e: any) {
       setErr(e.message);
@@ -168,7 +179,7 @@ export default function Wrong() {
     <section>
       <h2 className="page-title">错题本</h2>
       <div className="card card--hint">
-        把做错的题在这里重练，<b>答对即移出错题本</b>——这正是对抗「错题复错率」的核心闭环。
+        把做错的题在这里重练，<b>答对后建议标记为「已掌握」并移出错题本</b>——这正是对抗「错题复错率」的核心闭环。
       </div>
       <div className="export-bar">
         <button className="btn btn--sm btn--ghost" disabled={busy} onClick={exportWrong}>
@@ -296,14 +307,42 @@ export default function Wrong() {
                   <button className="btn btn--primary" style={{ flex: 1 }} disabled={busy || !st.selected} onClick={() => submit(q.id)}>
                     提交重练
                   </button>
-                  <button className="btn btn--ghost" style={{ flex: 1 }} onClick={() => markReviewed(q.id)}>
+                  <button className="btn btn--ghost" style={{ flex: 1 }} onClick={() => markMastered(q.id)}>
                     标记已掌握
                   </button>
                 </div>
                 {st.result && (
                   <div className={"result " + (st.result.is_correct ? "result--ok" : "result--bad")}>
-                    <b>                    {st.result.is_correct ? "✔ 答对，已移出错题本" : `✘ 还是错了，正确答案：${st.result.correct_answer}`}</b>
-                    {st.result.explanation && <div style={{ marginTop: 6 }}><Markdown>{st.result.explanation}</Markdown></div>}
+                    <b>
+                      {st.result.is_correct
+                        ? "✔ 答对了！"
+                        : `✘ 还是错了，正确答案：${st.result.correct_answer}`}
+                    </b>
+                    {st.result.explanation && (
+                      <div style={{ marginTop: 6 }}>
+                        <Markdown>{st.result.explanation}</Markdown>
+                      </div>
+                    )}
+                    {st.result.is_correct && !st.suggestDismissed && (
+                      <div className="master-suggest">
+                        <div className="master-suggest__title">🎉 已答对，建议标记为「已掌握」</div>
+                        <div className="master-suggest__actions">
+                          <button
+                            className="btn btn--primary btn--sm"
+                            disabled={busy}
+                            onClick={() => markMastered(q.id)}
+                          >
+                            ✅ 标记已掌握
+                          </button>
+                          <button
+                            className="btn btn--ghost btn--sm"
+                            onClick={() => patch(q.id, { suggestDismissed: true })}
+                          >
+                            稍后再说
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>

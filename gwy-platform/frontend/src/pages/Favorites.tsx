@@ -7,6 +7,7 @@ import { triggerDownload, stamp } from "../utils/exportUtils";
 const TAG_DEFS: { key: string; icon: string; label: string }[] = [
   { key: "易错", icon: "🔴", label: "易错" },
   { key: "重点", icon: "🟡", label: "重点" },
+  { key: "已掌握", icon: "✅", label: "已掌握" },
 ];
 
 export default function Favorites() {
@@ -64,7 +65,7 @@ export default function Favorites() {
   }, [filtered]);
 
   const tagCounts = useMemo(() => {
-    const c: Record<string, number> = { 易错: 0, 重点: 0 };
+    const c: Record<string, number> = { 易错: 0, 重点: 0, 已掌握: 0 };
     list.forEach((it) => it.tags.forEach((t) => (c[t] = (c[t] || 0) + 1)));
     return c;
   }, [list]);
@@ -87,7 +88,7 @@ export default function Favorites() {
     list.forEach((it, i) => {
       const q = it.question;
       lines.push(`**${i + 1}. [${q.subject}] ${q.knowledge_point || ""}**`);
-      if (it.tags.length) lines.push(`- 🏷 标签：${it.tags.map((t) => (t === "易错" ? "🔴易错" : "🟡重点")).join("、")}`);
+      if (it.tags.length) lines.push(`- 🏷 标签：${it.tags.map((t) => (t === "易错" ? "🔴易错" : t === "重点" ? "🟡重点" : "✅已掌握")).join("、")}`);
       lines.push(q.stem);
       q.options.forEach((o) => lines.push(`- ${o.label}. ${o.content}`));
       if (it.note && it.note.trim()) lines.push(`- 📝 笔记：${it.note.trim()}`);

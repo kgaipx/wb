@@ -1385,6 +1385,27 @@
 .result b {
   font-weight: 700;
 }
+/* 错题本：重练答对后的「已掌握」建议卡 */
+.master-suggest {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(16, 185, 129, 0.05));
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+.master-suggest__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #047857;
+}
+.master-suggest__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+.master-suggest__actions .btn--sm {
+  flex: 1;
+}
 .tutor-box {
   margin-top: 12px;
   padding: 12px 14px;
