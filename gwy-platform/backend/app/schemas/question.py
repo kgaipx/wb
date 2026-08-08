@@ -59,6 +59,7 @@ class WrongItem(BaseModel):
     last_selected: str | None
     attempts: int = 0  # 该用户在该题的总作答次数
     recurrence_rate: float | None = None  # 错答占比 0-1（复错倾向，越高越需重点攻克）
+    last_attempted_at: datetime | None = None  # 最近一次（含做对）作答时间，用于间隔复习提醒
 
     model_config = {"from_attributes": False}
 

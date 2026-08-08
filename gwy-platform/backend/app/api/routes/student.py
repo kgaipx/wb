@@ -83,12 +83,13 @@ def wrong_questions(current: User = Depends(get_current_user), db: Session = Dep
             UserAnswer.question_id,
             func.count(UserAnswer.id).label("attempts"),
             func.sum(case((UserAnswer.is_correct == False, 1), else_=0)).label("wrong_total"),  # noqa: E712
+            func.max(UserAnswer.submitted_at).label("last_at"),
         )
         .filter(UserAnswer.user_id == current.id, UserAnswer.question_id.in_(qids))
         .group_by(UserAnswer.question_id)
         .all()
     )
-    agg_map = {r.question_id: (r.attempts, int(r.wrong_total or 0)) for r in agg}
+    agg_map = {r.question_id: (r.attempts, int(r.wrong_total or 0), r.last_at) for r in agg}
     for q, cnt in joined:
         last = (
             db.query(UserAnswer.selected)
@@ -101,7 +102,7 @@ def wrong_questions(current: User = Depends(get_current_user), db: Session = Dep
             .order_by(UserAnswer.submitted_at.desc())
             .first()
         )
-        attempts, wrong_total = agg_map.get(q.id, (0, 0))
+        attempts, wrong_total, last_at = agg_map.get(q.id, (0, 0, None))
         recurrence_rate = round(wrong_total / attempts, 3) if attempts else None
         items.append(
             WrongItem(
@@ -110,6 +111,7 @@ def wrong_questions(current: User = Depends(get_current_user), db: Session = Dep
                 last_selected=last.selected if last else None,
                 attempts=attempts,
                 recurrence_rate=recurrence_rate,
+                last_attempted_at=last_at,
             )
         )
     return items

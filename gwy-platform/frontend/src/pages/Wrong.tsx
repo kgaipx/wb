@@ -15,6 +15,20 @@ interface ItemState {
   suggestDismissed: boolean;
 }
 
+/** 距离最近一次作答（含做对）已过多少天；无记录返回 null。本地时区计算，规避服务端 naive UTC 与前端时区差异。 */
+function daysSinceLast(it: WrongItem): number | null {
+  if (!it.last_attempted_at) return null;
+  const t = new Date(it.last_attempted_at).getTime();
+  if (Number.isNaN(t)) return null;
+  return Math.max(0, Math.floor((Date.now() - t) / 86400000));
+}
+
+/** 间隔复习提醒：复错风险较高且已 ≥3 天没练，判定为「该复习」。 */
+function isReviewDue(it: WrongItem): boolean {
+  const d = daysSinceLast(it);
+  return d !== null && d >= 3 && (it.recurrence_rate ?? 0) >= 0.3;
+}
+
 export default function Wrong() {
   const nav = useNavigate();
   const [items, setItems] = useState<WrongItem[]>([]);
@@ -79,7 +93,8 @@ export default function Wrong() {
     const subjRows = Array.from(bySubj.entries())
       .map(([subj, v]) => ({ subj, count: v.count, avg: v.sumRate / v.count }))
       .sort((a, b) => b.avg - a.avg); // 复错风险降序，最危险优先看
-    return { total, highRisk, avgRate, subjRows };
+    const dueCount = items.filter((it) => isReviewDue(it)).length;
+    return { total, highRisk, avgRate, subjRows, dueCount };
   }, [items]);
 
   async function submit(qid: number) {
@@ -256,6 +271,10 @@ export default function Wrong() {
               <div className="ov-stat__num">{Math.round(overview.avgRate * 100)}%</div>
               <div className="ov-stat__label">平均复错率</div>
             </div>
+            <div className={"ov-stat " + (overview.dueCount > 0 ? "ov-stat--warn" : "")}>
+              <div className="ov-stat__num">⏰ {overview.dueCount}</div>
+              <div className="ov-stat__label">该复习(≥3天)</div>
+            </div>
           </div>
           <div className="wrong-overview__subj">
             <div className="wrong-overview__title">按科目（复错风险降序，优先啃硬骨头）</div>
@@ -316,6 +335,18 @@ export default function Wrong() {
                     复错率 {Math.round(it.recurrence_rate * 100)}%
                   </span>
                 )}
+                {(() => {
+                  const d = daysSinceLast(it);
+                  if (d === null) return null;
+                  if (d === 0) return <span className="tag tag--ok" title="间隔复习提醒">✅ 今天练过</span>;
+                  const due = isReviewDue(it);
+                  const cls = due ? "tag--bad" : d >= 3 ? "tag--warn" : "tag--ok";
+                  return (
+                    <span className={"tag " + cls} title="基于最近一次作答时间的间隔复习提醒">
+                      {due ? "⏰ 已 " : "🕒 "} {d} 天未练
+                    </span>
+                  );
+                })()}
                 {it.attempts > 0 && <span className="text-3">共答 {it.attempts} 次</span>}
                 <span>{q.knowledge_point}</span>
               </div>

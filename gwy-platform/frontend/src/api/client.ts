@@ -97,6 +97,7 @@ export interface WrongItem {
   last_selected: string | null;
   attempts: number; // 该用户在该题的总作答次数
   recurrence_rate: number | null; // 错答占比 0-1（复错倾向）
+  last_attempted_at: string | null; // 最近一次（含做对）作答时间，用于间隔复习提醒
 }
 export interface Citation {
   title: string;
