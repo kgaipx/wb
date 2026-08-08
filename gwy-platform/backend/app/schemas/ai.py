@@ -7,10 +7,18 @@ class ExplainIn(BaseModel):
     selected: str | None = None  # 用户作答标签，如 "A"
 
 
+class CitationOut(BaseModel):
+    """富引用：知识点 + 标题 + 来源 + 相关度，供前端渲染知识卡片。"""
+    title: str
+    kp: str | None = None
+    source: str | None = None
+    score: float | None = None  # 检索相关度（0~1 混合分；纯词项路径可能更高）
+
+
 class ExplainOut(BaseModel):
     knowledge_point: str
     explanation: str
-    citations: list[str] = []
+    citations: list[CitationOut] = []
     model: str | None = None
     quota_remaining: int | None = None  # 免费版剩余配额（pro 为 None）
     offline: bool = False  # True 表示 LLM 不可用时走了离线降级讲解
@@ -37,7 +45,7 @@ class ChatIn(BaseModel):
 
 class ChatOut(BaseModel):
     answer: str
-    citations: list[str] = []
+    citations: list[CitationOut] = []
     model: str | None = None
     offline: bool = False  # True 表示 LLM 不可用时走了离线降级
 

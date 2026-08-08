@@ -7,6 +7,7 @@
 实现：检索题目相关知识片段 → 编排 prompt 约束 LLM 紧扣考点讲解 → 返回可追溯来源。
 """
 from app.ai.llm_gateway import LLMGateway
+from app.ai.rag import _chunk_cite
 from app.ai.vector_retriever import HybridRetriever
 from app.models import AbilityProfile, Question
 
@@ -97,7 +98,7 @@ class TutorAgent:
             return {
                 "knowledge_point": question.knowledge_point,
                 "explanation": resp.content,
-                "citations": [c.source for c in chunks],
+                "citations": [_chunk_cite(c) for c in chunks],
                 "model": resp.model,
                 "offline": False,
             }
@@ -120,7 +121,7 @@ class TutorAgent:
             return {
                 "knowledge_point": question.knowledge_point,
                 "explanation": explanation,
-                "citations": [c.source for c in chunks],
+                "citations": [_chunk_cite(c) for c in chunks],
                 "model": "offline-fallback",
                 "offline": True,
             }
@@ -159,7 +160,7 @@ class TutorAgent:
             resp = self.gateway.complete(prompt, system=system, temperature=0.4, max_tokens=900)
             return {
                 "answer": resp.content,
-                "citations": [c.source for c in chunks],
+                "citations": [_chunk_cite(c) for c in chunks],
                 "model": resp.model,
                 "offline": False,
             }
@@ -177,7 +178,7 @@ class TutorAgent:
                 )
             return {
                 "answer": answer,
-                "citations": [c.source for c in chunks],
+                "citations": [_chunk_cite(c) for c in chunks],
                 "model": "offline-fallback",
                 "offline": True,
             }

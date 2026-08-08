@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, WrongItem } from "../api/client";
+import { api, WrongItem, Citation } from "../api/client";
 import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
+import CiteCards from "../components/CiteCards";
 
 interface ItemState {
   open: boolean;
   selected: string;
   result: any;
   explain: string;
-  cites: string[];
+  cites: Citation[];
   suggestDismissed: boolean;
 }
 
@@ -368,7 +369,7 @@ export default function Wrong() {
               <div className="tutor-box" style={{ marginTop: 8 }}>
                 <div className="tutor-box__title">AI 私教讲解</div>
                 <div className="tutor-box__body"><Markdown>{st.explain}</Markdown></div>
-                {st.cites.length > 0 && <div className="tutor-box__cite">来源：{st.cites.join("；")}</div>}
+                {st.cites.length > 0 && <CiteCards cites={st.cites} />}
               </div>
             )}
 

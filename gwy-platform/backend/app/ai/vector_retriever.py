@@ -276,33 +276,44 @@ class HybridRetriever:
         if not vec:
             return lex[:top_k]
 
-        lex_norm = {it.content: it.score / (max((i.score for i in lex), default=1.0) or 1.0) for it in lex}
-        vec_norm = {v[1].content: v[0] / (max((x[0] for x in vec), default=1.0) or 1.0) for v in vec}
+        lex_norm = {
+            it.content: (it.score / (max((i.score for i in lex), default=1.0) or 1.0), it.kp, it.title)
+            for it in lex
+        }
+        vec_norm = {
+            v[1].content: (v[0] / (max((x[0] for x in vec), default=1.0) or 1.0), v[1].kp, v[1].title)
+            for v in vec
+        }
 
-        src = {it.content: it.source for it in lex}
+        meta: dict[str, tuple[str | None, str | None, str]] = {}
+        for it in lex:
+            meta.setdefault(it.content, (it.kp, it.title, it.source))
         for _, c in vec:
-            src.setdefault(c.content, c.source)
+            meta.setdefault(c.content, (c.kp, c.title, c.source))
+        src = {content: m[2] for content, m in meta.items()}
 
-        merged: list[tuple[float, str, str]] = []
+        merged: list[tuple[float, str, str | None, str | None, str]] = []
         for content in set(lex_norm) | set(vec_norm):
-            l = lex_norm.get(content, 0.0)
-            v = vec_norm.get(content, 0.0)
-            combined = 0.6 * v + 0.4 * l  # 向量为主(0.6) + 词项为辅(0.4)
-            merged.append((combined, content, src.get(content, "平台原创")))
+            l_score, l_kp, l_title = lex_norm.get(content, (0.0, None, None))
+            v_score, v_kp, v_title = vec_norm.get(content, (0.0, None, None))
+            combined = 0.6 * v_score + 0.4 * l_score  # 向量为主(0.6) + 词项为辅(0.4)
+            kp = v_kp or l_kp
+            title = v_title or l_title
+            merged.append((combined, content, kp, title, src.get(content, "平台原创")))
 
         merged.sort(key=lambda x: x[0], reverse=True)
-        picked: list[tuple[float, str, str]] = []
+        picked: list[tuple[float, str, str | None, str | None, str]] = []
         picked_terms: list[set[str]] = []
-        for score, content, source in merged:
+        for score, content, kp, title, source in merged:
             ct = _tokenize(content)
             if any(_jaccard(ct, pct) > 0.82 for pct in picked_terms):
                 continue
-            picked.append((score, content, source))
+            picked.append((score, content, kp, title, source))
             picked_terms.append(ct)
             if len(picked) >= top_k:
                 break
 
         return [
-            RetrievedChunk(content=c, source=s, score=round(sc, 3))
-            for sc, c, s in picked
+            RetrievedChunk(content=c, source=s, score=round(sc, 3), kp=kp, title=title)
+            for sc, c, kp, title, s in picked
         ]

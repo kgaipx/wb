@@ -98,11 +98,17 @@ export interface WrongItem {
   attempts: number; // 该用户在该题的总作答次数
   recurrence_rate: number | null; // 错答占比 0-1（复错倾向）
 }
+export interface Citation {
+  title: string;
+  kp?: string;
+  source?: string;
+  score?: number; // 检索相关度（0~1 混合分）
+}
 export interface ChatMessage {
   id?: number;
   role: "user" | "assistant";
   content: string;
-  citations?: string[];
+  citations?: Citation[];
   model?: string | null;
   offline?: boolean;
   created_at?: string;
@@ -396,7 +402,7 @@ export const api = {
 
   // AI 私教 / 自适应（WBS 3.1 / 3.2）
   explain: (question_id: number, selected?: string) =>
-    request<{ knowledge_point: string; explanation: string; citations: string[]; model: string | null; offline?: boolean }>("/ai/explain", {
+    request<{ knowledge_point: string; explanation: string; citations: Citation[]; model: string | null; offline?: boolean }>("/ai/explain", {
       method: "POST",
       body: JSON.stringify({ question_id, selected }),
     }),

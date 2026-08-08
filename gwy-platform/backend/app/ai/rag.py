@@ -23,6 +23,18 @@ class RetrievedChunk:
     content: str
     source: str  # 必须可追溯来源（政策/真题出处）
     score: float
+    kp: str | None = None  # 知识点标签（用于前端展示知识卡片）
+    title: str | None = None  # 片段标题（缺省回退 source）
+
+
+def _chunk_cite(c: "RetrievedChunk") -> dict:
+    """把检索片段转成富引用对象（知识点 + 标题 + 来源 + 相关度），供前端渲染知识卡片。"""
+    return {
+        "title": c.title or c.source or "知识片段",
+        "kp": c.kp,
+        "source": c.source,
+        "score": c.score,
+    }
 
 
 # 大类 → 该大类下的技能知识点集合（与 KnowledgeChunk.kp 对齐）。
@@ -149,7 +161,7 @@ class KnowledgeRetriever:
                 break
 
         return [
-            RetrievedChunk(content=c.content, source=c.source, score=round(s, 3))
+            RetrievedChunk(content=c.content, source=c.source, score=round(s, 3), kp=c.kp, title=c.title)
             for s, c in picked
         ]
 
@@ -165,7 +177,7 @@ class KnowledgeRetriever:
             f"【用户问题】\n{query}\n\n请基于参考资料作答并标注引用。"
         )
         resp = self.gateway.complete(prompt, system=_SYSTEM, temperature=0.2, max_tokens=800)
-        return {"answer": resp.content, "citations": [c.source for c in chunks]}
+        return {"answer": resp.content, "citations": [_chunk_cite(c) for c in chunks]}
 
     @staticmethod
     def _jaccard(a: set[str], b: set[str]) -> float:

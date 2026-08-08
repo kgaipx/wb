@@ -7,12 +7,14 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+from app.schemas.ai import CitationOut
+
 
 class ChatMessageOut(BaseModel):
     id: int
     role: str  # user | assistant
     content: str
-    citations: list[str] = []
+    citations: list[CitationOut] = []
     model: str | None = None
     offline: bool = False
     created_at: datetime

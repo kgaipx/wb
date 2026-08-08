@@ -13,9 +13,11 @@ from app.models import ChatMessage, ChatSession, User
 
 def _msg_to_out(m: ChatMessage) -> dict:
     try:
-        cites = json.loads(m.citations) if m.citations else []
+        raw = json.loads(m.citations) if m.citations else []
     except (json.JSONDecodeError, TypeError):
-        cites = []
+        raw = []
+    # 兼容旧版：历史消息曾以字符串来源列表存储，归一化为 {source} 富引用
+    cites = [c if isinstance(c, dict) else {"source": c} for c in raw]
     return {
         "id": m.id,
         "role": m.role,

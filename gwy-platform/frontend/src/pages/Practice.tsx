@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { api, Question } from "../api/client";
+import { api, Question, Citation } from "../api/client";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
+import CiteCards from "../components/CiteCards";
 
 const PAGE = 60;
 
@@ -14,7 +15,7 @@ export default function Practice() {
   const [selected, setSelected] = useState("");
   const [result, setResult] = useState<any>(null);
   const [explain, setExplain] = useState<string>("");
-  const [cites, setCites] = useState<string[]>([]);
+  const [cites, setCites] = useState<Citation[]>([]);
   const [explainOffline, setExplainOffline] = useState<boolean>(false);
   const [faved, setFaved] = useState(false);
   const [favTags, setFavTags] = useState<string[]>([]); // 当前题的收藏标签（易错/重点）
@@ -477,7 +478,7 @@ export default function Practice() {
                 {explainOffline && <span className="badge badge--warn">离线模式</span>}
               </div>
               <div className="tutor-box__body"><Markdown>{explain}</Markdown></div>
-              {cites.length > 0 && <div className="tutor-box__cite">来源：{cites.join("；")}</div>}
+              {cites.length > 0 && <CiteCards cites={cites} />}
             </div>
           )}
         </div>
