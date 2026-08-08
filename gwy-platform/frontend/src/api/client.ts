@@ -85,6 +85,12 @@ export interface Question {
   is_verified: boolean;
   options: { id: number; label: string; content: string }[];
 }
+export interface FavoriteItem {
+  question: Question;
+  note: string; // 私人笔记（云端同步）
+  tags: string[]; // 自定义标签，如 ["易错","重点"]
+  created_at: string;
+}
 export interface WrongItem {
   question: Question;
   wrong_count: number;
@@ -107,6 +113,7 @@ export interface ChatSession {
   created_at: string;
   updated_at: string;
   message_count: number;
+  last_message?: string | null;
 }
 export interface ChatSendOut {
   session_id: number;
@@ -227,6 +234,10 @@ export interface SubjectCount {
   subject: string;
   count: number;
 }
+export interface DayMetric {
+  date: string; // YYYY-MM-DD (UTC)
+  value: number;
+}
 export interface AdminOverview {
   users_total: number;
   users_new_7d: number;
@@ -243,6 +254,9 @@ export interface AdminOverview {
   avg_correct_rate: number;
   essays_graded: number;
   mock_exams: number;
+  daily_new_users: DayMetric[];
+  daily_answers: DayMetric[];
+  daily_revenue: DayMetric[]; // 单位：元
   recent_users: AdminUserRow[];
 }
 export interface EssayHistoryItem {
@@ -289,6 +303,16 @@ export interface AssessmentRecordOut {
   weak_points: string[];
   suggestions: string[];
   questions_total: number;
+  correct?: number | null;
+  details?: Array<{
+    question_id: number;
+    is_correct: boolean;
+    correct_answer: string;
+    selected: string;
+    stem: string;
+    knowledge_point: string;
+    options?: Array<{ label: string; content: string; is_correct: boolean }>;
+  }> | null;
   created_at: string;
 }
 
@@ -351,6 +375,7 @@ export const api = {
     if (params.limit) q.set("limit", String(params.limit));
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
+  bankGet: (id: number) => request<Question>(`/bank/questions/${id}`),
   practice: (question_id: number, selected: string) =>
     request<{ question_id: number; is_correct: boolean; correct_answer: string; explanation: string | null; mastery: number }>(
       "/bank/practice",
@@ -358,11 +383,16 @@ export const api = {
     ),
 
   // 收藏夹（WBS 2.2 衍生 / 学习管理）
-  favoriteList: () => request<Question[]>("/bank/favorites"),
+  favoriteList: () => request<FavoriteItem[]>("/bank/favorites"),
   favoriteAdd: (question_id: number) =>
     request<{ ok: boolean }>("/bank/favorites", { method: "POST", body: JSON.stringify({ question_id }) }),
   favoriteRemove: (question_id: number) =>
     request<{ ok: boolean }>(`/bank/favorites/${question_id}`, { method: "DELETE" }),
+  favoriteUpdate: (question_id: number, body: { note?: string; tags?: string[] }) =>
+    request<FavoriteItem>(`/bank/favorites/${question_id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
 
   // AI 私教 / 自适应（WBS 3.1 / 3.2）
   explain: (question_id: number, selected?: string) =>
@@ -370,7 +400,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ question_id, selected }),
     }),
-  recommend: (top_n = 10) => request<{ knowledge_points: string[]; questions: any[] }>(`/ai/recommend?top_n=${top_n}`),
+  recommend: (top_n = 10, seed?: number) =>
+    request<{ knowledge_points: string[]; questions: any[] }>(
+      `/ai/recommend?top_n=${top_n}${seed != null ? `&seed=${seed}` : ""}`
+    ),
   // 会员配额（免费版每日 AI 讲解额度；pro 不限）
   quota: () => request<AiQuota>("/ai/quota"),
   // AI 私教对话历史持久化（WBS 3.1：会话可回溯、刷新不丢）
@@ -385,6 +418,11 @@ export const api = {
     }),
   chatDelete: (sessionId: number) =>
     request<void>(`/ai/chat/sessions/${sessionId}`, { method: "DELETE" }),
+  chatRename: (sessionId: number, title: string) =>
+    request<ChatSession>(`/ai/chat/sessions/${sessionId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title }),
+    }),
   // 学习计划打卡 / 进度追踪（执行-复盘闭环）
   planGet: async (): Promise<PlanOut | null> => {
     try {

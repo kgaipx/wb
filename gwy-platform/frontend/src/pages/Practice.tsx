@@ -47,7 +47,15 @@ export default function Practice() {
         setHasMore(qs.length === PAGE);
         if (qid) {
           const target = qs.find((q) => String(q.id) === qid);
-          if (target) setActive(target);
+          if (target) {
+            setActive(target);
+          } else {
+            // 目标题不在首页（题库共数千题、每页 60）：单独按 id 拉取，确保深链复盘闭环可靠打开
+            api
+              .bankGet(Number(qid))
+              .then((q) => setActive(q))
+              .catch(() => {});
+          }
         }
         if (kp) {
           setKpFilter(kp);
