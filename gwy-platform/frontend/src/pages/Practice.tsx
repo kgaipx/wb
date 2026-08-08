@@ -306,7 +306,17 @@ export default function Practice() {
               <div className="q-item__stem">{q.stem}</div>
             </button>
           ))}
-          {list.length === 0 && (loading ? <div className="muted">加载中…</div> : (
+          {list.length === 0 && (loading ? (
+            <div className="sk-card" style={{ marginTop: 8 }}>
+              <div className="sk-head">
+                <div className="sk sk-circle" style={{ width: 30, height: 30 }} />
+                <div className="sk sk-line" style={{ width: "40%" }} />
+              </div>
+              <div className="sk sk-line" style={{ width: "100%" }} />
+              <div className="sk sk-line" style={{ width: "88%" }} />
+              <div className="sk sk-line" style={{ width: "70%" }} />
+            </div>
+          ) : (
             <div className="empty empty--tight">
               <div className="empty__icon">📚</div>
               <div className="empty__title">该科目暂无题目</div>

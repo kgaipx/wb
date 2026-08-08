@@ -53,7 +53,25 @@ export default function Dashboard() {
     return (
       <section>
         <div className="page-title">学习数据中心</div>
-        <div className="splash">加载中…</div>
+        <div className="sk-stack">
+          <div className="sk-card">
+            <div className="sk-head">
+              <div className="sk sk-circle" style={{ width: 38, height: 38 }} />
+              <div className="sk sk-line" style={{ width: "40%" }} />
+            </div>
+            <div className="sk-row">
+              <div className="sk sk-circle" style={{ width: 64, height: 64 }} />
+              <div style={{ flex: 1 }}>
+                <div className="sk sk-line" style={{ width: "60%" }} />
+                <div className="sk sk-line" style={{ width: "80%" }} />
+              </div>
+            </div>
+          </div>
+          <div className="sk-card">
+            <div className="sk sk-line" style={{ width: "35%" }} />
+            <div className="sk sk-line" style={{ width: "100%", height: 120 }} />
+          </div>
+        </div>
       </section>
     );
   }

@@ -93,7 +93,32 @@ export default function Home() {
     else loadDaily(); // 当前批次看完，重新拉一批
   };
 
-  if (loading) return <section><div className="splash">加载中…</div></section>;
+  if (loading) return (
+    <section>
+      <div className="sk-stack">
+        <div className="sk-card">
+          <div className="sk-head">
+            <div className="sk sk-circle" style={{ width: 44, height: 44 }} />
+            <div style={{ flex: 1 }}>
+              <div className="sk sk-line" style={{ width: "55%" }} />
+              <div className="sk sk-line" style={{ width: "35%", height: 10 }} />
+            </div>
+          </div>
+          <div className="sk sk-line" style={{ width: "100%" }} />
+          <div className="sk sk-line" style={{ width: "88%" }} />
+        </div>
+        <div className="sk-card">
+          <div className="sk sk-line" style={{ width: "42%" }} />
+          <div className="sk sk-line" style={{ width: "100%" }} />
+          <div className="sk sk-line" style={{ width: "76%" }} />
+        </div>
+        <div className="sk-card">
+          <div className="sk sk-line" style={{ width: "50%" }} />
+          <div className="sk sk-line" style={{ width: "100%" }} />
+        </div>
+      </div>
+    </section>
+  );
 
   // 未登录：引导注册 / 登录
   if (!user) {

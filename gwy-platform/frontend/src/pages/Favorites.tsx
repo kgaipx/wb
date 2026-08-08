@@ -165,11 +165,11 @@ export default function Favorites() {
       )}
 
       {loading && (
-        <div className="card" style={{ marginTop: 12 }}>
-          <div className="skeleton-line" style={{ width: "40%" }} />
-          <div className="skeleton-line" style={{ width: "90%", marginTop: 10 }} />
-          <div className="skeleton-line" style={{ width: "70%", marginTop: 8 }} />
-          <div className="skeleton-line" style={{ width: "55%", marginTop: 8 }} />
+        <div className="sk-card" style={{ marginTop: 12 }}>
+          <div className="sk sk-line" style={{ width: "40%" }} />
+          <div className="sk sk-line" style={{ width: "90%" }} />
+          <div className="sk sk-line" style={{ width: "70%" }} />
+          <div className="sk sk-line" style={{ width: "55%" }} />
         </div>
       )}
 

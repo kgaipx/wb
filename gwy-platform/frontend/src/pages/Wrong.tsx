@@ -192,7 +192,20 @@ export default function Wrong() {
       </div>
       {err && <div className="err-text">{err}</div>}
       {toast && <div className="ok-text ok-text--float">{toast}</div>}
-      {loading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
+      {loading && (
+        <div className="sk-stack">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="sk-card">
+              <div className="sk-head">
+                <div className="sk sk-circle" style={{ width: 28, height: 28 }} />
+                <div className="sk sk-line" style={{ width: "30%" }} />
+              </div>
+              <div className="sk sk-line" style={{ width: "100%" }} />
+              <div className="sk sk-line" style={{ width: "82%" }} />
+            </div>
+          ))}
+        </div>
+      )}
 
       {!loading && items.length === 0 && (
         <div className="empty">

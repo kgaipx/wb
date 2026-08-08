@@ -128,7 +128,20 @@ export default function Essay() {
 
       {tab === "history" && (
         <>
-          {hLoading && <div className="muted" style={{ marginTop: 16 }}>加载中…</div>}
+          {hLoading && (
+            <div className="sk-stack">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="sk-card">
+                  <div className="sk-head">
+                    <div className="sk sk-circle" style={{ width: 26, height: 26 }} />
+                    <div className="sk sk-line" style={{ width: "45%" }} />
+                  </div>
+                  <div className="sk sk-line" style={{ width: "100%" }} />
+                  <div className="sk sk-line" style={{ width: "60%" }} />
+                </div>
+              ))}
+            </div>
+          )}
           {!hLoading && history.length === 0 && (
             <div className="empty empty--tight">
               <div className="empty__icon">📝</div>
