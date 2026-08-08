@@ -275,6 +275,11 @@ export default function Chat() {
           placeholder="问点什么，例如：资料分析怎么提速？"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onFocus={(e) => {
+            const el = e.currentTarget;
+            // iOS 键盘弹起后把输入框滚到可视区，避免被键盘遮挡（真机时序微调仍待真机验证）
+            setTimeout(() => el.scrollIntoView({ block: "center" }), 300);
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
