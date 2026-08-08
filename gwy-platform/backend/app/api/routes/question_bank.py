@@ -95,6 +95,7 @@ def list_questions(
     subject: str | None = None,
     category: str | None = None,
     knowledge_point: str | None = None,
+    ids: list[int] | None = Query(None, description="指定题集出题（错题本/收藏夹智能重练）"),
     offset: int = Query(0, ge=0),
     limit: int = Query(20, le=500, ge=1),
     current: User | None = Depends(get_optional_user),
@@ -113,6 +114,14 @@ def list_questions(
             q = q.filter(Question.knowledge_point == kps[0])
         else:
             q = q.filter(Question.knowledge_point.in_(kps))
+
+    # 指定题集出题（错题重练 / 收藏重练）：用户已明确题集，按传入 id 顺序返回，
+    # 分页安全；不做掌握度加权。可与 subject/category 过滤叠加（本场景通常不传）。
+    if ids:
+        q = q.filter(Question.id.in_(ids))
+        found = {x.id: x for x in q.all()}
+        items = [found[i] for i in ids if i in found]
+        return items[offset : offset + limit]
 
     # 掌握度自适应加权：仅当明确针对某知识点（专项/混合练习包）且已登录时生效，
     # 让练习包优先练最弱、未练熟的内容；无用户（匿名/公开浏览）或纯科目浏览保持原有稳定序。

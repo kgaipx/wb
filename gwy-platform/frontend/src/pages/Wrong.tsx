@@ -53,6 +53,15 @@ export default function Wrong() {
     return arr;
   }, [visible, sortBy]);
 
+  // 一键智能重练：把错题 id 集合传给刷题页（?ids=），由后端按指定题集出题
+  const highRiskCount = items.filter((it) => (it.recurrence_rate ?? 0) >= 0.6).length;
+  function navigateRetry(arr: WrongItem[]) {
+    const ids = arr.map((it) => it.question.id);
+    if (ids.length) nav(`/practice?ids=${ids.join(",")}`);
+  }
+  function retryAll() { navigateRetry(items); }
+  function retryHigh() { navigateRetry(items.filter((it) => (it.recurrence_rate ?? 0) >= 0.6)); }
+
   // 全局概览（不受科目筛选影响，反映错题本全貌）
   const overview = useMemo(() => {
     if (!items.length) return null;
@@ -182,6 +191,22 @@ export default function Wrong() {
       <div className="card card--hint">
         把做错的题在这里重练，<b>答对后建议标记为「已掌握」并移出错题本</b>——这正是对抗「错题复错率」的核心闭环。
       </div>
+      {items.length > 0 && (
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 12 }}>
+          <button className="btn btn--primary" disabled={busy} onClick={retryAll}>
+            🎯 智能重练全部（{items.length}）
+          </button>
+          <button
+            className="btn btn--ghost"
+            disabled={busy || highRiskCount === 0}
+            onClick={retryHigh}
+            title="仅重练复错率 ≥ 60% 的高危错题"
+          >
+            🔴 只重练高危（{highRiskCount}）
+          </button>
+          <span className="text-3" style={{ fontSize: 12 }}>按错误优先级出题，练完回到错题本标记已掌握</span>
+        </div>
+      )}
       <div className="export-bar">
         <button className="btn btn--sm btn--ghost" disabled={busy} onClick={exportWrong}>
           导出错题本

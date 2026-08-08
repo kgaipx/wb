@@ -35,20 +35,32 @@ export default function Practice() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [ability, setAbility] = useState<Ability[]>([]); // 练习后最新能力概览（弱项升序最多 8），用于结果页雷达
   const didInit = useRef(false);
+  const [mode, setMode] = useState<"practice" | "retry">("practice"); // retry=错题/收藏智能重练
+  const [retryCount, setRetryCount] = useState(0);
 
-  // 初始加载（含 ?q= 直达 / ?kp= 专项练习）
+  // 初始加载（含 ?q= 直达 / ?kp= 专项练习 / ?ids= 错题本智能重练）
   useEffect(() => {
     setLoading(true);
     setErr("");
     const qid = params.get("q");
     const kp = params.get("kp");
+    const idsParam = params.get("ids");
+    const ids = idsParam ? idsParam.split(",").map(Number).filter((n) => !Number.isNaN(n)) : [];
+    const isRetry = ids.length > 0;
+    setMode(isRetry ? "retry" : "practice");
+    if (isRetry) setRetryCount(ids.length);
     api
-      .bankList({ limit: PAGE, offset: 0, knowledge_point: kp || undefined })
+      .bankList({
+        limit: isRetry ? 500 : PAGE,
+        offset: 0,
+        ids: isRetry ? ids : undefined,
+        knowledge_point: !isRetry && kp ? kp : undefined,
+      })
       .then((qs) => {
         setList(qs);
         setOffset(qs.length);
-        setHasMore(qs.length === PAGE);
-        if (qid) {
+        setHasMore(!isRetry && qs.length === PAGE);
+        if (!isRetry && qid) {
           const target = qs.find((q) => String(q.id) === qid);
           if (target) {
             setActive(target);
@@ -60,7 +72,7 @@ export default function Practice() {
               .catch(() => {});
           }
         }
-        if (kp) {
+        if (!isRetry && kp) {
           setKpFilter(kp);
           kpAutoOpened.current = false;
         }
@@ -76,6 +88,7 @@ export default function Practice() {
       return;
     }
     if (active) return; // 做题中不重拉
+    if (mode === "retry") return; // 重练模式不响应科目/弱项筛选，保持题集稳定
     setLoading(true);
     setErr("");
     api
@@ -269,8 +282,12 @@ export default function Practice() {
         return;
       }
     }
-    // 没有更多题：回到题库列表
-    setActive(null);
+    // 没有更多题：重练模式回到错题本，常规模式回到题库列表
+    if (mode === "retry") {
+      nav("/wrong");
+    } else {
+      setActive(null);
+    }
   }
 
   const subjects = useMemo(() => {
@@ -289,6 +306,15 @@ export default function Practice() {
   return (
     <section>
       <h2 className="page-title">刷题练习</h2>
+      {mode === "retry" && (
+        <div className="filter-banner">
+          <span>🎯 智能重练 · 共 <b>{retryCount}</b> 题（来自错题本）</span>
+          <button className="link-btn" onClick={() => nav("/wrong")}>← 返回错题本</button>
+          <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+            按错误优先级出题，练完可在错题本将答对的题标记为「已掌握」移出。
+          </div>
+        </div>
+      )}
       {err && <div className="err-text">{err}</div>}
 
       {!active && (
@@ -319,6 +345,7 @@ export default function Practice() {
               </div>
             </div>
           )}
+          {mode === "practice" && (
           <div className="chip-row" style={{ marginBottom: 10 }}>
             {subjects.map((s) => (
               <button key={s} className={"chip " + (filter === s ? "chip--on" : "")} onClick={() => setFilter(s)}>
@@ -326,6 +353,7 @@ export default function Practice() {
               </button>
             ))}
           </div>
+          )}
           {list.map((q) => (
             <div
               key={q.id}
