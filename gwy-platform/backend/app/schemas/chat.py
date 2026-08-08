@@ -24,6 +24,7 @@ class ChatSessionOut(BaseModel):
     created_at: datetime
     updated_at: datetime
     message_count: int = 0
+    last_message: str | None = None  # 末条消息预览（截断），便于快速识别会话
 
 
 class ChatSendIn(BaseModel):

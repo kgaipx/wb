@@ -113,6 +113,7 @@ export interface ChatSession {
   created_at: string;
   updated_at: string;
   message_count: number;
+  last_message?: string | null;
 }
 export interface ChatSendOut {
   session_id: number;

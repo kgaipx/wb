@@ -62,12 +62,18 @@ def get_messages(db: Session, session: ChatSession) -> list[ChatMessage]:
 
 
 def session_to_out(s: ChatSession) -> dict:
+    last = None
+    if s.messages:
+        last_msg = sorted(s.messages, key=lambda m: m.id)[-1]
+        content = (last_msg.content or "").strip()
+        last = (content[:60] + "…") if len(content) > 60 else content
     return {
         "id": s.id,
         "title": s.title,
         "created_at": s.created_at,
         "updated_at": s.updated_at,
         "message_count": len(s.messages),
+        "last_message": last,
     }
 
 

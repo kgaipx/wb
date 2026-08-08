@@ -200,6 +200,9 @@ export default function Chat() {
                 >
                   <div className="session-item__main">
                     <div className="session-item__title">{s.title}</div>
+                    {s.last_message && (
+                      <div className="session-item__preview">{s.last_message}</div>
+                    )}
                     <div className="session-item__meta">
                       {new Date(s.updated_at).toLocaleString("zh-CN", { hour12: false })} · {s.message_count} 条
                     </div>

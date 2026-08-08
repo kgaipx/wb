@@ -1920,6 +1920,15 @@
   color: var(--text-3);
   margin-top: 2px;
 }
+.session-item__preview {
+  font-size: 13px;
+  color: var(--text-2);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 78vw;
+}
 .session-item__del {
   flex: 0 0 auto;
   width: 32px;
