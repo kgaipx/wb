@@ -28,6 +28,10 @@
   --text-3: #98A2B3;         /* 弱文本 / 元信息 */
   --on-brand: #FFFFFF;
 
+  /* ===== 品牌渐变（header logo / fab / hero / 主按钮统一复用）===== */
+  --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
+  --grad-brand-soft: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 100%);
+
   /* ===== 字体 ===== */
   --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui,
     -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

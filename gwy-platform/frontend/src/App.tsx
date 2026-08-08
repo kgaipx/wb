@@ -341,8 +341,10 @@ function AppShell() {
       {!isAuth && (
         <header className="app-header">
           <div className="app-header__logo">公</div>
-          <div className="app-header__name">AI 公考私教</div>
-          <div className="app-header__tag">懂你短板 · 内容可信</div>
+          <div className="app-header__brand">
+            <div className="app-header__name">AI 公考私教</div>
+            <div className="app-header__tag">懂你短板 · 内容可信</div>
+          </div>
           <button
             className="bell-btn"
             aria-label="通知"

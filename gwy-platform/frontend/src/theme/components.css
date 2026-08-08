@@ -29,27 +29,44 @@
   border-radius: 9px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--brand), #2f6be0);
+  background: var(--grad-brand);
   color: #fff;
   font-weight: 700;
   font-size: 16px;
   box-shadow: var(--sh-sm);
 }
+.app-header__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
 .app-header__name {
   font-weight: 700;
   font-size: var(--fs-lg);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  line-height: 1.2;
 }
 .app-header__tag {
-  margin-left: auto;
-  font-size: var(--fs-xs);
+  font-size: 11px;
   color: var(--text-3);
+  letter-spacing: 0.2px;
+  line-height: 1.25;
 }
 .app-main {
   flex: 1;
   padding: var(--sp-4);
   /* 给固定底部导航留出空间，并叠加底部安全区 */
   padding-bottom: calc(84px + env(safe-area-inset-bottom));
+}
+
+/* 页面切换：路由变更时新页面淡入，营造顺畅的 App 级过渡（仅 opacity，不破坏页面内 fixed 定位） */
+@keyframes page-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.app-main > * {
+  animation: page-in 0.26s ease-out both;
 }
 
 /* ===================== 底部导航 ===================== */
@@ -202,11 +219,15 @@
 .page-title {
   font-size: var(--fs-xl);
   font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
   margin-bottom: var(--sp-3);
 }
 .section-title {
   font-size: var(--fs-lg);
   font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
   margin-bottom: var(--sp-3);
 }
 
@@ -281,14 +302,33 @@
   padding: 7px 12px;
   font-size: var(--fs-sm);
 }
+/* 渐变底色上的反白按钮（hero 主操作） */
+.btn--inverse {
+  background: #fff;
+  color: var(--brand);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12);
+}
+.btn--inverse:not(:disabled):hover {
+  background: #f1f5ff;
+}
+/* 渐变底色上的描边幽灵按钮（hero 次操作） */
+.btn--ghost-on {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+.btn--ghost-on:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.26);
+}
 
 /* ===================== 卡片 ===================== */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: var(--r-md);
+  border-radius: var(--r-lg);
   padding: var(--sp-4);
   box-shadow: var(--sh-sm);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .card--soft {
   background: var(--info-050);
@@ -327,7 +367,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--brand), #2f6be0);
+  background: var(--grad-brand);
   color: #fff;
   display: grid;
   place-items: center;
@@ -366,7 +406,7 @@
 /* ===================== 站内通知（Notification Center） ===================== */
 .bell-btn {
   position: relative;
-  margin-left: var(--sp-2);
+  margin-left: auto;
   width: 36px;
   height: 36px;
   border: none;
@@ -1286,7 +1326,7 @@
 .hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
+  background: var(--grad-brand);
   color: #fff;
   border-radius: var(--r-lg);
   padding: var(--sp-5);
@@ -1303,10 +1343,22 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.12);
 }
+.hero::before {
+  content: "";
+  position: absolute;
+  left: -40px;
+  bottom: -50px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0) 70%);
+}
 .hero__title {
+  position: relative;
   font-size: var(--fs-2xl);
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
 }
 .hero__sub {
   margin-top: 6px;
@@ -2164,7 +2216,7 @@
   border-radius: 14px;
   display: grid;
   place-items: center;
-  background: linear-gradient(135deg, var(--brand), #2f6be0);
+  background: var(--grad-brand);
   color: #fff;
   box-shadow: var(--sh-md);
 }

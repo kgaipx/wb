@@ -104,8 +104,7 @@ export default function Home() {
           <div className="hero__sub">更懂你短板 · 内容可信 · 花钱无忧 · 陪你上岸</div>
           <div className="hero__actions">
             <button
-              className="btn"
-              style={{ background: "#fff", color: "var(--brand)" }}
+              className="btn btn--inverse"
               onClick={() => nav("/login", { state: { from: "/" } })}
             >
               登录 / 注册，开启 AI 私教
@@ -140,12 +139,12 @@ export default function Home() {
         </div>
         <div className="hero__actions">
           <div className="row" style={{ gap: 8 }}>
-            <button className="btn" style={{ flex: 1, background: "#fff", color: "var(--brand)" }} onClick={() => nav("/practice")}>
+            <button className="btn btn--inverse" style={{ flex: 1 }} onClick={() => nav("/practice")}>
               开始刷题
             </button>
             <button
-              className="btn"
-              style={{ flex: 1, background: "rgba(255,255,255,.16)", color: "#fff", border: "1px solid rgba(255,255,255,.5)" }}
+              className="btn btn--ghost-on"
+              style={{ flex: 1 }}
               onClick={() => nav("/learn")}
             >
               学习中心
