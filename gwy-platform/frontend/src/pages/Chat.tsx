@@ -216,8 +216,10 @@ export default function Chat() {
                 </div>
               )}
               {!loading && sessions.length === 0 && (
-                <div className="muted" style={{ padding: 12 }}>
-                  还没有历史对话
+                <div className="empty empty--tight" style={{ paddingTop: 28, paddingBottom: 28 }}>
+                  <div className="empty__icon">💬</div>
+                  <div className="empty__title">还没有历史对话</div>
+                  <div className="empty__desc">开启一段新对话，AI 私教会记住你的薄弱点。</div>
                 </div>
               )}
               {sessions.map((s) => (

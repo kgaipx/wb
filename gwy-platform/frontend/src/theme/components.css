@@ -269,11 +269,11 @@
   font-weight: 600;
   line-height: 1;
   border: 1px solid transparent;
-  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.12s cubic-bezier(0.2, 0, 0.2, 1);
   white-space: nowrap;
 }
 .btn:active:not(:disabled) {
-  transform: translateY(1px);
+  transform: scale(0.98);
 }
 .btn:disabled {
   opacity: 0.5;
@@ -719,10 +719,10 @@
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px; border-radius: 10px;
   background: var(--surface-2); font-size: 14px;
-  transition: background .15s ease;
+  transition: background .15s ease, transform .12s cubic-bezier(0.2, 0, 0.2, 1);
 }
 .home-plan__task.is-link { cursor: pointer; }
-.home-plan__task.is-link:active { background: var(--surface-3); }
+.home-plan__task.is-link:active { background: var(--surface-3); transform: scale(0.985); }
 .home-plan__task.is-done { opacity: .6; }
 .home-plan__check {
   flex: none; width: 18px; height: 18px; border-radius: 50%;
@@ -922,7 +922,7 @@
 .fav-group-title { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; margin-bottom: 2px; font-weight: 600; font-size: 14px; }
 .fav-note-preview { margin-top: 8px; font-size: 13px; color: var(--text-3); background: var(--surface-2); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; }
 .fav-note-input { width: 100%; box-sizing: border-box; border: 1px solid var(--surface-2); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; background: var(--surface); color: var(--text); }
-.fav-note-input:focus { outline: none; border-color: var(--brand); }
+.fav-note-input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-050); }
 
 /* 收藏自定义标签 */
 .fav-tags { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -1743,7 +1743,7 @@
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 .chip--btn:active {
-  transform: translateY(1px);
+  transform: scale(0.97);
 }
 .fav-quicktags {
   display: flex;
@@ -2977,11 +2977,12 @@
   border-radius: 12px;
   padding: 10px 12px;
   cursor: pointer;
-  transition: background .15s, border-color .15s;
+  transition: background .15s, border-color .15s, transform .12s cubic-bezier(0.2, 0, 0.2, 1);
 }
 .onboard__step:active {
   background: #eef3ff;
   border-color: var(--brand);
+  transform: scale(0.985);
 }
 .onboard__no {
   flex: 0 0 auto;
@@ -3035,4 +3036,97 @@
   height: 7px;
   border-radius: 50%;
   background: currentColor;
+}
+
+/* ===================== 滚动条（webkit 细滚动条，全局精致） ===================== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
+}
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(16, 24, 40, 0.18);
+  border-radius: 999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 24, 40, 0.32);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===================== 分隔线（inset 变体，iOS 列表观感） ===================== */
+.divider--inset {
+  margin-left: var(--sp-4);
+  margin-right: var(--sp-4);
+}
+
+/* ===================== 可点击卡片按压态（统一实体感） ===================== */
+.card--tap {
+  cursor: pointer;
+  transition: transform 0.14s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.14s ease,
+    border-color 0.14s ease;
+}
+.card--tap:active {
+  transform: scale(0.985);
+  border-color: var(--brand-100);
+  box-shadow: var(--sh-md);
+}
+
+/* ===================== 空状态统一组件 ===================== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 44px 24px;
+  gap: 8px;
+}
+.empty__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--brand-050);
+  color: var(--brand);
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+.empty__title {
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}
+.empty__desc {
+  font-size: var(--fs-sm);
+  color: var(--text-3);
+  max-width: 248px;
+  line-height: 1.55;
+}
+.empty__action {
+  margin-top: 10px;
+}
+/* 卡片内嵌空态：收窄留白，避免撑开卡片 */
+.empty--tight {
+  padding: 18px 12px;
+  gap: 6px;
+}
+.empty--tight .empty__icon {
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+  margin-bottom: 2px;
+}
+.empty--tight .empty__title {
+  font-size: var(--fs-sm);
+}
+.empty--tight .empty__desc {
+  font-size: 12px;
 }
