@@ -32,6 +32,9 @@
   --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
   --grad-brand-soft: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 100%);
 
+  /* ===== 统一缓动曲线（hover / active / tap 一致手感，与 auth-in 同源）===== */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
   /* ===== 字体 ===== */
   --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui,
     -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;

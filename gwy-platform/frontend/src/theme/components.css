@@ -328,7 +328,7 @@
   border-radius: var(--r-lg);
   padding: var(--sp-4);
   box-shadow: var(--sh-sm);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 .card--soft {
   background: var(--info-050);
@@ -742,9 +742,15 @@
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px; border-radius: 10px;
   background: var(--surface-2); font-size: 14px;
-  transition: background .15s ease, transform .12s cubic-bezier(0.2, 0, 0.2, 1);
+  transition: background .18s var(--ease-out), transform .18s var(--ease-out),
+    box-shadow .18s var(--ease-out);
 }
 .home-plan__task.is-link { cursor: pointer; }
+.home-plan__task.is-link:hover {
+  background: var(--surface-3);
+  box-shadow: var(--sh-sm);
+  transform: translateY(-1px);
+}
 .home-plan__task.is-link:active { background: var(--surface-3); transform: scale(0.985); }
 .home-plan__task.is-done { opacity: .6; }
 .home-plan__check {
@@ -3035,7 +3041,13 @@
   border-radius: 12px;
   padding: 10px 12px;
   cursor: pointer;
-  transition: background .15s, border-color .15s, transform .12s cubic-bezier(0.2, 0, 0.2, 1);
+  transition: background .2s var(--ease-out), border-color .2s var(--ease-out),
+    transform .2s var(--ease-out), box-shadow .2s var(--ease-out);
+}
+.onboard__step:hover {
+  border-color: rgba(27, 79, 181, 0.22);
+  box-shadow: var(--sh-sm);
+  transform: translateY(-1px);
 }
 .onboard__step:active {
   background: #eef3ff;
@@ -3125,8 +3137,13 @@
 /* ===================== 可点击卡片按压态（统一实体感） ===================== */
 .card--tap {
   cursor: pointer;
-  transition: transform 0.14s cubic-bezier(0.2, 0, 0.2, 1), box-shadow 0.14s ease,
-    border-color 0.14s ease;
+  transition: transform 0.22s var(--ease-out), box-shadow 0.22s var(--ease-out),
+    border-color 0.22s var(--ease-out);
+}
+.card--tap:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sh-md);
+  border-color: rgba(27, 79, 181, 0.16);
 }
 .card--tap:active {
   transform: scale(0.985);
