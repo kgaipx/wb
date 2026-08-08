@@ -242,14 +242,34 @@ def _build_suggestions(weak: list[str], dims: list[AssessmentDim], overall: floa
         verdict = "整体偏弱，建议先夯实基础概念，再进入系统性刷题。"
     out.append(f"总体诊断（正确率 {pct(overall)}）：{verdict}")
 
-    # 2. 薄弱点突破（掌握度升序，前 4）
+    # 2. 薄弱点突破（掌握度升序，前 4）——模块感知建议 + 学习闭环牵引
     weak_dims = sorted([d for d in dims if d.mastery < WEAK_THRESHOLD], key=lambda x: x.mastery)
+
+    # 模块级突破建议（与知识库方法论锚点一致，确定性输出，避免泛泛而谈）
+    MODULE_TIPS = {
+        "数量关系": "建议『果断取舍、不为单题恋战』：简单题必拿，难题用代入排除法秒验，单题时间红线≤90s，把正确率托在 60%+。",
+        "资料分析": "资料分析是『性价比之王』：先读问题再定位数据，速算用截位直除+差分法双保险，警惕单位/百分点陷阱，目标正确率≥90%。",
+        "判断推理": "按『图形→类比→定义→逻辑』顺序抢分：图形推理先过规律清单，逻辑判断优先削弱/加强，拿不准果断弃题保时间。",
+        "言语理解与表达": "言语重在语境与语感：逻辑填空先辨逻辑关系再找搭配，片段阅读抓主旨句，每篇控制在≤60s，不纠结第一直觉。",
+        "常识判断": "常识靠日常积累+考场策略：历史/法律/时政分块记忆，不会的相信第一直觉、绝不空耗时间。",
+        "申论": "申论重在要点提炼：审题圈定作答范围，按『材料原词+分条』作答，归纳概括先找核心词再抽象概括。",
+    }
+
+    def weak_tip(kp: str, mastery: float) -> str:
+        for key, tip in MODULE_TIPS.items():
+            if key in kp:
+                return tip
+        # 细粒度知识点：仍按掌握度给两级通用建议
+        if mastery >= 0.4:
+            return "已具备基本解法，重点攻克易错变式并配合限时训练提速，把会做的题做对、做快。"
+        return "从基础概念入手，先单知识点刷 10 题逐题复盘，再进入混合练习，务必先求懂再求快。"
+
     for d in weak_dims[:4]:
-        if d.mastery >= 0.4:
-            tip = "已具备基本解法，重点攻克易错变式并配合限时训练提速"
-        else:
-            tip = "从基础概念入手，先单知识点刷 10 题逐题复盘，再进入混合练习"
-        out.append(f"突破【{d.knowledge_point}】（掌握度 {pct(d.mastery)}，{band(d.mastery)}）：{tip}")
+        tip = weak_tip(d.knowledge_point, d.mastery)
+        out.append(
+            f"突破【{d.knowledge_point}】（掌握度 {pct(d.mastery)}，{band(d.mastery)}）：{tip}"
+            f" → 已在 AI 私教备好该点专项讲解，对话框输入知识点即可获取配套例题与口诀。"
+        )
 
     # 3. 优势保持
     mastered = [d for d in dims if d.mastery >= 0.8]
@@ -259,16 +279,17 @@ def _build_suggestions(weak: list[str], dims: list[AssessmentDim], overall: floa
             f"保持优势：{names} 掌握扎实，可适度提升难度或做提速训练，把优势转化为稳定得分。"
         )
 
-    # 4. 行动清单（优先级排序）
+    # 4. 行动清单（优先级排序，牵引至学习闭环与 AI 私教）
     if weak_dims:
         out.append(
             "下一步行动：① 本周优先专项突破上述薄弱点；② 每刷完一组即用『错题本』复盘错因；"
-            "③ 周末用『在线模考』检验提升，再回到『能力测评』闭环校准。"
+            "③ 周末用『在线模考』检验提升，再回『能力测评』闭环校准；"
+            "④ 任意薄弱点可在『AI 私教』对话框输入知识点，获取一对一讲解与配套例题。"
         )
     else:
         out.append(
             "下一步行动：① 保持当前节奏，针对良好模块挑战更高难度；② 用『在线模考』模拟真实考场；"
-            "③ 阶段性复测，防止已掌握知识点回生。"
+            "③ 阶段性复测防止已掌握知识点回生；④ 用『AI 私教』把优势模块的训练经验沉淀成可复用方法论。"
         )
 
     return out
