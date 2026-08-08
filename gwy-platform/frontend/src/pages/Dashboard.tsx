@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, StudentStats } from "../api/client";
 import { LineChart } from "../components/LineChart";
+import { RadarChart } from "../components/RadarChart";
 
 function pct(v: number) {
   return Math.round(v * 100);
@@ -191,6 +192,14 @@ export default function Dashboard() {
           </div>
         ) : (
           <div style={{ marginTop: 10 }}>
+            <div className="radar-wrap">
+              <RadarChart
+                data={stats.ability.map((a) => ({ label: a.knowledge_point, value: a.mastery }))}
+              />
+              <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
+                雷达越“瘪”说明该模块越薄弱，优先补最凹处
+              </div>
+            </div>
             {stats.ability.map((a) => (
               <MasteryRow key={a.knowledge_point} name={a.knowledge_point} mastery={a.mastery} />
             ))}
