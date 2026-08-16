@@ -285,6 +285,12 @@ export interface EssayHistoryItem {
   rationale: string | null;
   created_at: string;
 }
+export interface EssayModel {
+  model_essay: string; // 生成的高分范文正文（markdown）
+  outline: string[]; // 结构提纲
+  key_points: string[]; // 高分要点
+  offline?: boolean; // True 表示 LLM 不可用走了降级提示
+}
 
 // 能力测评（WBS 3.2 自适应诊断）
 export interface AssessmentDim {
@@ -479,6 +485,16 @@ export const api = {
       { method: "POST", body: JSON.stringify({ essay_text, prompt_material, requirement, max_score, prompt_id }) }
     ),
   essayHistory: () => request<EssayHistoryItem[]>("/ai/essay-history"),
+  // 申论范文参考（WBS 4.1 增强）：生成高分范文 + 结构提纲 + 高分要点
+  essayModel: (
+    material = "",
+    requirement = "",
+    prompt_id: number | null = null,
+  ) =>
+    request<EssayModel>("/ai/essay/model", {
+      method: "POST",
+      body: JSON.stringify({ material, requirement, prompt_id }),
+    }),
 
   // 在线模考（WBS 4.2）
   examStart: (subject?: string, count = 20) =>

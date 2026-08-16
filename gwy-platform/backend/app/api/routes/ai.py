@@ -22,6 +22,8 @@ from app.schemas.ai import (
     ChatOut,
     EssayGradeIn,
     EssayGradeOut,
+    EssayModelIn,
+    EssayModelOut,
     ExplainIn,
     ExplainOut,
     KnowledgeChunkOut,
@@ -151,6 +153,25 @@ def essay_grade(payload: EssayGradeIn, current: User = Depends(get_current_user)
         consistency=getattr(score, "consistency", {}),
         record_id=record_id,
     )
+
+
+@router.post("/essay/model", response_model=EssayModelOut, tags=["ai"])
+def essay_model(
+    payload: EssayModelIn,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """申论范文参考：基于材料/要求生成高分范文 + 结构提纲 + 高分要点（LLM 不可用时降级）。"""
+    material = payload.material
+    requirement = payload.requirement
+    if (not material and not requirement) and payload.prompt_id:
+        p = db.get(EssayPrompt, payload.prompt_id)
+        if p:
+            material = material or p.material
+            requirement = requirement or p.requirement
+    from app.ai.essay_model import generate_model_essay
+
+    return EssayModelOut(**generate_model_essay(material, requirement))
 
 
 @router.get("/essay/consistency", tags=["ai"])

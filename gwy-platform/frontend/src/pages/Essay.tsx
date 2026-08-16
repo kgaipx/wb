@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api, EssayPrompt, EssayHistoryItem } from "../api/client";
+import { api, EssayPrompt, EssayHistoryItem, EssayModel } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
 import { LineChart } from "../components/LineChart";
 import Markdown from "../components/Markdown";
@@ -17,6 +17,8 @@ export default function Essay() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [hLoading, setHLoading] = useState(false);
+  const [model, setModel] = useState<EssayModel | null>(null);
+  const [modelBusy, setModelBusy] = useState(false);
 
   useEffect(() => {
     api.essayPrompts().then(setPrompts).catch((e) => setErr(e.message));
@@ -58,6 +60,18 @@ export default function Essay() {
     setEssay("");
     setGrade(null);
     setErr("");
+  }
+
+  async function loadModel() {
+    setModelBusy(true);
+    setErr("");
+    try {
+      setModel(await api.essayModel(material, requirement, promptId));
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setModelBusy(false);
+    }
   }
 
   return (
@@ -118,6 +132,9 @@ export default function Essay() {
             <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={busy || !essay.trim()} onClick={doGrade}>
               {busy ? "批改中…" : "AI 批改（满分 100）"}
             </button>
+            <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadModel}>
+              {modelBusy ? "生成范文中…" : "📝 查看范文参考"}
+            </button>
           </div>
 
           {grade && (
@@ -141,6 +158,38 @@ export default function Essay() {
               <div className="row row--between" style={{ marginTop: 10 }}>
                 <button className="btn btn--ghost btn--sm" onClick={resetEssay}>✍ 再写一篇</button>
                 <span className="muted" style={{ fontSize: 12 }}>双阶段评分（初评 + 一致性校准），异常自动转人工</span>
+              </div>
+            </div>
+          )}
+
+          {model && (
+            <div className="card report-hero" style={{ marginTop: 12 }}>
+              <div className="row row--between">
+                <strong>📝 高分范文参考</strong>
+                {model.offline && <span className="text-warning" style={{ fontSize: 12 }}>范文生成暂不可用</span>}
+              </div>
+              {model.outline.length > 0 && (
+                <div className="tutor-box" style={{ marginTop: 10 }}>
+                  <div className="tutor-box__title">结构提纲</div>
+                  <ul className="tutor-box__body" style={{ margin: 0, paddingLeft: 18 }}>
+                    {model.outline.map((o, i) => <li key={i}>{o}</li>)}
+                  </ul>
+                </div>
+              )}
+              {model.key_points.length > 0 && (
+                <div className="tutor-box" style={{ marginTop: 10 }}>
+                  <div className="tutor-box__title">高分要点</div>
+                  <ul className="tutor-box__body" style={{ margin: 0, paddingLeft: 18 }}>
+                    {model.key_points.map((o, i) => <li key={i}>{o}</li>)}
+                  </ul>
+                </div>
+              )}
+              <div className="tutor-box" style={{ marginTop: 10 }}>
+                <div className="tutor-box__title">范文</div>
+                <div className="tutor-box__body"><Markdown>{model.model_essay}</Markdown></div>
+              </div>
+              <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
+                AI 生成范文，仅供参考学习，请结合本题材料与自身理解使用。
               </div>
             </div>
           )}

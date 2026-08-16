@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Dashboard, EssayPrompt } from "../api/client";
+import { api, Dashboard, EssayPrompt, EssayModel } from "../api/client";
 import { useAuth } from "../auth";
 import { DimensionBars } from "../components/DimensionBars";
 import Markdown from "../components/Markdown";
@@ -24,6 +24,8 @@ export default function Profile() {
   const [essay, setEssay] = useState("");
   const [grade, setGrade] = useState<any>(null);
   const [essayPrompt, setEssayPrompt] = useState<EssayPrompt | null>(null);
+  const [essayModel, setEssayModel] = useState<EssayModel | null>(null);
+  const [modelBusy, setModelBusy] = useState(false);
 
   const [nickname, setNickname] = useState("");
   const [province, setProvince] = useState("");
@@ -82,6 +84,17 @@ export default function Profile() {
   function resetProfileEssay() {
     setEssay("");
     setGrade(null);
+  }
+
+  async function loadProfileModel() {
+    setModelBusy(true);
+    try {
+      setEssayModel(await api.essayModel(essayPrompt?.material ?? "", essayPrompt?.requirement ?? "", essayPrompt?.id ?? null));
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setModelBusy(false);
+    }
   }
 
   async function changePwd() {
@@ -240,6 +253,9 @@ export default function Profile() {
         <button className="btn btn--primary btn--block" style={{ marginTop: 8 }} disabled={!essay} onClick={gradeEssay}>
           批改（满分 100）
         </button>
+        <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadProfileModel}>
+          {modelBusy ? "生成范文中…" : "📝 查看范文参考"}
+        </button>
         {grade && (
           <div className="tutor-box" style={{ marginTop: 8 }}>
             <div className="row row--between">
@@ -255,6 +271,32 @@ export default function Profile() {
                 <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
               </div>
             )}
+          </div>
+        )}
+        {essayModel && (
+          <div className="tutor-box" style={{ marginTop: 10 }}>
+            <div className="row row--between">
+              <div className="tutor-box__title">📝 高分范文参考</div>
+              {essayModel.offline && <span className="text-warning" style={{ fontSize: 12 }}>范文生成暂不可用</span>}
+            </div>
+            {essayModel.outline.length > 0 && (
+              <>
+                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>结构提纲</div>
+                <ul className="tutor-box__body" style={{ margin: "4px 0 0 18px" }}>
+                  {essayModel.outline.map((o, i) => <li key={i}>{o}</li>)}
+                </ul>
+              </>
+            )}
+            {essayModel.key_points.length > 0 && (
+              <>
+                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>高分要点</div>
+                <ul className="tutor-box__body" style={{ margin: "4px 0 0 18px" }}>
+                  {essayModel.key_points.map((o, i) => <li key={i}>{o}</li>)}
+                </ul>
+              </>
+            )}
+            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>范文</div>
+            <div className="tutor-box__body"><Markdown>{essayModel.model_essay}</Markdown></div>
           </div>
         )}
       </div>

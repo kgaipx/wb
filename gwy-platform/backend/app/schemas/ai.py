@@ -78,6 +78,19 @@ class EssayGradeOut(BaseModel):
     record_id: int | None = None  # 落库后的记录 id（save=True 时返回）
 
 
+class EssayModelIn(BaseModel):
+    material: str = ""  # 给定材料（供生成上下文）
+    requirement: str = ""  # 作答要求（供生成上下文）
+    prompt_id: int | None = None  # 可选：关联申论题库题目，缺 material/requirement 时回查
+
+
+class EssayModelOut(BaseModel):
+    model_essay: str  # 生成的高分范文正文（markdown）
+    outline: list[str] = []  # 结构提纲
+    key_points: list[str] = []  # 高分要点
+    offline: bool = False  # True 表示 LLM 不可用时走了降级提示
+
+
 class PlanTaskOut(BaseModel):
     """已落库的计划任务（含打卡状态）。"""
     id: int
