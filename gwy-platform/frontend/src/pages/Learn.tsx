@@ -141,6 +141,16 @@ export default function Learn() {
         <button className="link-btn" style={{ marginTop: 6 }} onClick={() => nav("/wrong")}>
           去错题本针对性重练 →
         </button>
+        {rec && rec.knowledge_points.length > 0 && (
+          <button
+            className="btn btn--primary btn--sm"
+            style={{ marginTop: 8 }}
+            onClick={() => nav(`/practice?kp=${encodeURIComponent(rec.knowledge_points[0])}`)}
+            title="按最弱知识点专项刷题"
+          >
+            🎯 针对薄弱点练习 →
+          </button>
+        )}
       </div>
 
       <div className="card card--soft" style={{ marginTop: 12 }}>

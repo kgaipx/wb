@@ -3,27 +3,7 @@ import { api, EssayPrompt, EssayHistoryItem } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
 import { LineChart } from "../components/LineChart";
 import Markdown from "../components/Markdown";
-
-/** 从作答要求中解析字数区间，如「1000-1200字」「800~1000 字」。 */
-function parseWordTarget(req: string): [number, number] | null {
-  const m = req.match(/(\d{3,4})\s*[-~到至]\s*(\d{3,4})\s*字/);
-  if (m) {
-    const lo = parseInt(m[1], 10);
-    const hi = parseInt(m[2], 10);
-    if (hi > lo) return [lo, hi];
-  }
-  return null;
-}
-
-/** 字数状态：返回提示文案与配色类（复用 global text-success/warning/danger）。 */
-function wordStatus(n: number, t: [number, number] | null): { cls: string; text: string } {
-  if (!t) return { cls: "muted", text: "申论大作文一般建议 1000–1200 字" };
-  const [lo, hi] = t;
-  if (n >= lo && n <= hi) return { cls: "text-success", text: "✓ 字数达标" };
-  if (n < lo) return n < lo * 0.85 ? { cls: "text-danger", text: "字数偏少，建议充实" } : { cls: "text-warning", text: "接近下限，还差一点" };
-  if (n > hi * 1.15) return { cls: "text-warning", text: "已超出建议上限" };
-  return { cls: "text-warning", text: "略超上限，可精简" };
-}
+import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -123,7 +103,7 @@ export default function Essay() {
               placeholder="在此粘贴或输入你的申论作答…"
             />
             {(() => {
-              const n = essay.replace(/\s/g, "").length;
+              const n = countEssayChars(essay);
               const t = parseWordTarget(requirement);
               const st = wordStatus(n, t);
               return (

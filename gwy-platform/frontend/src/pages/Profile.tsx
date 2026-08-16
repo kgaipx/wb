@@ -4,6 +4,7 @@ import { api, Dashboard, EssayPrompt } from "../api/client";
 import { useAuth } from "../auth";
 import { DimensionBars } from "../components/DimensionBars";
 import Markdown from "../components/Markdown";
+import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -76,6 +77,11 @@ export default function Profile() {
     } catch (e: any) {
       setErr(e.message);
     }
+  }
+
+  function resetProfileEssay() {
+    setEssay("");
+    setGrade(null);
   }
 
   async function changePwd() {
@@ -218,14 +224,30 @@ export default function Profile() {
           value={essay}
           onChange={(e) => setEssay(e.target.value)}
         />
+        {(() => {
+          const n = countEssayChars(essay);
+          const t = parseWordTarget(essayPrompt?.requirement ?? "");
+          const st = wordStatus(n, t);
+          return (
+            <div className="row row--between" style={{ marginTop: 4, fontSize: 12 }}>
+              <span className="muted">
+                已写 <b className={st.cls}>{n}</b> 字{t ? ` · 要求 ${t[0]}–${t[1]} 字` : ""}
+              </span>
+              <span className={st.cls}>{st.text}</span>
+            </div>
+          );
+        })()}
         <button className="btn btn--primary btn--block" style={{ marginTop: 8 }} disabled={!essay} onClick={gradeEssay}>
           批改（满分 100）
         </button>
         {grade && (
           <div className="tutor-box" style={{ marginTop: 8 }}>
-            <div>
-              <b>总分：{grade.total}</b>{" "}
-              {grade.needs_human_review && <span className="text-warning">（已转人工复核）</span>}
+            <div className="row row--between">
+              <div>
+                <b>总分：{grade.total}</b>{" "}
+                {grade.needs_human_review && <span className="text-warning">（已转人工复核）</span>}
+              </div>
+              <button className="btn btn--ghost btn--sm" onClick={resetProfileEssay}>✍ 再写一篇</button>
             </div>
             <DimensionBars dims={grade.dimensions} />
             {grade.rationale && (
