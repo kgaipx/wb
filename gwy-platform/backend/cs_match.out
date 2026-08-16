@@ -1,0 +1,50 @@
+[init] tb=1319 usable_blocks=1462
+[index] distinct bigrams=96365
+[progress] 0/1319 cands=0
+[progress] 200/1319 cands=80
+[progress] 400/1319 cands=151
+[progress] 600/1319 cands=233
+[progress] 800/1319 cands=330
+[progress] 1000/1319 cands=412
+[progress] 1200/1319 cands=510
+
+candidates before resolution: 561; after collision resolution: 512
+
+题本 total: 1319
+MATCHED (accepted, safe): 512  (38.8%)
+UNMATCHED (answer=null, safe): 807
+matched_opts/n_opt distribution: {(2, 2): 13, (3, 3): 12, (3, 4): 170, (4, 4): 317}
+
+--- SAMPLES (stem[:38] | ans | matched/n | per-opt appears-in-block) ---
+  （2017年广东） 世界上多数国家都采用以区时为单位的标准时。关于时间，以下 | ans=B | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2018年吉林）发源于长白山的松花江滋养了东北大地，与东北人的生活息息相  | ans=C | 3/3 | {'A': False, 'B': False, 'C': False}
+  （2018年江西）国家生态安全主要是指一国具有支撑国家生存发展的较为完整和  | ans=D | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  风是相对于地表的空气运动。形成风的直接原因是气压在水平方向分布的不均 匀。另 | ans=A | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2018年广东）海又称为大海”，是指与“大洋”相连接的大面积咸水区域，即大 | ans=A | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2017江苏）下列有关世界地理的说法错误的是（）。 | ans=A | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  下列关于大气层知识的描述正确的是（）。 | ans=A | 3/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  古人归纳总结出许多观天象识天气的谚语。下列与天气变化无关的语是（）。 | ans=D | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2017年山东）旅行者2号探测器于1977年8月20日在肯尼迪航天中心成功 | ans=C | 4/4 | {'A': False, 'B': False, 'C': True, 'D': False}
+  （2017年河南）根据右侧地图，下列说法中正确的是（ San DiegoAR | ans=D | 3/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  下列湖泊及其成因对应错误的是（）。 | ans=C | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2018年吉林）生态环境部正在制定蓝天保卫战三年作战计划。下列措施不利于  | ans=B | 3/4 | {'A': True, 'B': True, 'C': True, 'D': False}
+  以下现象，产生的原因与其他选项不一样的是（）。 | ans=A | 4/4 | {'A': True, 'B': False, 'C': False, 'D': False}
+  世界大河中，与长江流向大致相同的是（）。 | ans=C | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  下列关于地理位置的描述与城市之间对应关系错误的是（）。 | ans=B | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2017年四川（下半年））关于气候，下列表述不正确的是（）。 | ans=D | 3/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2018年国家（省部级））关于北斗七星，下列说法正确的是（ | ans=C | 3/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2017年江西）“天无三日晴，地无三尺平”说的是（）。 | ans=D | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2017年江西）江西的气候类型是（ | ans=D | 4/4 | {'A': True, 'B': False, 'C': True, 'D': True}
+  每年春分和秋分前后，太阳穿过赤道，这段时间太阳位于地球赤道上空。由于通 讯卫 | ans=C | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2019年山东）中国的极地事业已经走过30多个年头。下列属于我国北极科学  | ans=C | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2017年广州）茶马古道是位于我国西南地区的贸易通道。它从云南和四川茶叶  | ans=A | 3/4 | {'A': True, 'B': True, 'C': True, 'D': False}
+  （2019年黑龙江）下列表述正确的是： | ans=A | 3/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2019年广东）港珠澳大桥跨越（），东接香港，西接广东珠海和澳门，总长 约 | ans=D | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2018年江西）水是人类及一切生物赖以生存的不可缺少的重要物质。关于水的  | ans=C | 3/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  当海面上空气各层的密度有较大差异时，远处的光线通过密度不同的空气层发生 折射 | ans=B | 4/4 | {'A': True, 'B': True, 'C': True, 'D': True}
+  （2019年河北）关于京杭大运河，下列说法不正确的是 | ans=D | 4/4 | {'A': False, 'B': True, 'C': False, 'D': False}
+  （2019年黑龙江）下列关于我国河流的说法不正确的是： | ans=A | 3/3 | {'A': False, 'B': False, 'C': False}
+  （2018年新疆）下列关于新疆，错误的是（）。 | ans=D | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+  （2017年江西）四大洋面积从大到小的排列顺序是（ | ans=B | 4/4 | {'A': False, 'B': False, 'C': False, 'D': False}
+
+wrote _merged_常识_v2.json (1319 items)

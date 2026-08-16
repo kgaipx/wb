@@ -385,11 +385,13 @@ export default function Wrong() {
                   </button>
                 </div>
                 {st.result && (
-                  <div className={"result " + (st.result.is_correct ? "result--ok" : "result--bad")}>
+                  <div className={"result " + (st.result.is_correct ? "result--ok" : st.result.skipped ? "result--skip" : "result--bad")}>
                     <b>
-                      {st.result.is_correct
+                      {st.result.skipped
+                        ? "⚠ 本题暂无标准答案，已跳过"
+                        : st.result.is_correct
                         ? "✔ 答对了！"
-                        : `✘ 还是错了，正确答案：${st.result.correct_answer}`}
+                        : `✘ 还是错了，正确答案：${st.result.correct_answer ?? ""}`}
                     </b>
                     {st.result.explanation && (
                       <div style={{ marginTop: 6 }}>

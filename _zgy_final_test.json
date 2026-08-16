@@ -1,0 +1,7260 @@
+[
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）农村电网升级，事关广大农村地区的长远发展。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "改造",
+    true
+   ],
+   [
+    "B",
+    "改线",
+    false
+   ],
+   [
+    "C",
+    "改变",
+    false
+   ],
+   [
+    "D",
+    "改良",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 1
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·天津）陕西林业厅公布了猎人周某用数码相机和胶片相机拍摄的华南虎照片。随后，照片真实性受到来自部分网友、华南虎专家和中科院专家等方面的质疑。华南虎照：真相，努力填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·天津",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "不致不只",
+    false
+   ],
+   [
+    "B",
+    "不致不止",
+    false
+   ],
+   [
+    "C",
+    "不至不只",
+    false
+   ],
+   [
+    "D",
+    "不至不止",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 2
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）在过去十年里，中国南部几乎每个省都发现了古人类化石，其中许多都来自可以追溯到10万年或者更多年头之前的沉积物，但是从解剖学来看，这些人类跟生活在今天的中国人几乎没有什么不同。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "外形",
+    false
+   ],
+   [
+    "B",
+    "特征",
+    true
+   ],
+   [
+    "C",
+    "样貌",
+    false
+   ],
+   [
+    "D",
+    "特质",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 3
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）作为全国最高的货币管理机构，央行独具优势，颇有“惯看秋月春风”的。由此而一展“任凭风浪起，稳坐钓鱼台”的“定力”是毫无疑问的。不过，一旦说到“精准发力”，央行究竞是为了稳定预期，还是真的自信能“精确打击”，倒是值得一番的。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "气度琢磨",
+    true
+   ],
+   [
+    "B",
+    "气概捉摸",
+    false
+   ],
+   [
+    "C",
+    "气质期待",
+    false
+   ],
+   [
+    "D",
+    "气派商椎",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 4
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）个人成长进步靠什么？有人说靠组织培养，有人说靠自身努力，实际上二者并不，在现实生活中，绝大多数的人的成长进步既离不开组织培养，也离不开自己努力。题本·言语理解与表达填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "相关",
+    false
+   ],
+   [
+    "B",
+    "统一",
+    false
+   ],
+   [
+    "C",
+    "重复",
+    false
+   ],
+   [
+    "D",
+    "矛盾",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 5
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广州）文化遗产不可复制，也不能再造，不管是申遗还是人选之后，应该始终放在第一位。只有这样，文化遗产才能更好地造福于民，传之子孙。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "开发",
+    false
+   ],
+   [
+    "B",
+    "保护",
+    true
+   ],
+   [
+    "C",
+    "重建",
+    false
+   ],
+   [
+    "D",
+    "研究",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 6
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·国家）有研究者认为人类大脑处理高级数学问题的能力与人类使用语言的能力息息相关，语言中的抽象化能力是处理高级数学问题的。但是，不少数学家和物理学家这种观点的可靠性，爱因斯坦就曾宣称：“词汇和语言，不管是写下来的还是说出口的，对我的思考过程似乎都没什么用处。”填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "条件赞同",
+    false
+   ],
+   [
+    "B",
+    "起点质疑",
+    true
+   ],
+   [
+    "C",
+    "前提相信",
+    false
+   ],
+   [
+    "D",
+    "关键否认",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 7
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）互联网与旅游各环节的深度融合，的确给人们的旅行带来很多，例如扫一扫二维码就能收到景点的介绍。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "便利",
+    true
+   ],
+   [
+    "B",
+    "选择",
+    false
+   ],
+   [
+    "C",
+    "趣味",
+    false
+   ],
+   [
+    "D",
+    "快捷",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 8
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）科学研究的各种方法，都有各自不同的优劣势，都有不同的领域。研究者选择不同的研究方法，往往意味着选取了不同的研究填画横线部分最恰当的一项是：目的",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "特长结果",
+    false
+   ],
+   [
+    "B",
+    "适合方向",
+    false
+   ],
+   [
+    "C",
+    "适用思路",
+    true
+   ],
+   [
+    "D",
+    "使用",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 9
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）干部走进基层，在实践中增长，是锻炼干部、培养人才的重要途径。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "才学",
+    false
+   ],
+   [
+    "B",
+    "才华",
+    false
+   ],
+   [
+    "C",
+    "才干",
+    true
+   ],
+   [
+    "D",
+    "才智",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 10
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）一个作家要成为著名作家、伟大作家，就不能做时代的旁观者，而是要以“在场者”的姿态切人当下，展现社会，反映民生疾苦，讴歌人性光辉。行测必做5000题即使写小人物，也可写出生活的幽微之处和时代的现实关照，给主人公上时代光影，染上时代色彩。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "责任描绘",
+    false
+   ],
+   [
+    "B",
+    "全貌描摹",
+    false
+   ],
+   [
+    "C",
+    "现实映射",
+    false
+   ],
+   [
+    "D",
+    "变迁投射",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 11
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）广义相对论发表以来，一直是最成功的引力理论，已经了无数次的天文观测和各种实验的检验。但是几乎所有这些都是在弱引力场下，检验爱因斯坦引力和牛顿引力的微小差别。如果想使爱因斯坦引力的效应比较明显，则需要在强引力场中才能发生，而这方面的检验还是非常的。填人画横线部分最恰当的一项是：缺乏",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "经历罕见",
+    false
+   ],
+   [
+    "B",
+    "经过需要",
+    false
+   ],
+   [
+    "C",
+    "通过迫切",
+    false
+   ],
+   [
+    "D",
+    "经受",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 12
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）环保的每一点进步，都离不开生活方式的，在这方面得到群众的支持，跟在治理雾霾上取得共识同等重要。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "提高",
+    false
+   ],
+   [
+    "B",
+    "转变",
+    true
+   ],
+   [
+    "C",
+    "提升",
+    false
+   ],
+   [
+    "D",
+    "转化",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 13
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）在新一轮国际秩序的重构中，国际社会对中国寄予,我们不仅应该自觉地起区域乃至全球治理的责任，而且要善于提出中国方案，贡献中国智慧。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "热望担当",
+    false
+   ],
+   [
+    "B",
+    "厚望承担",
+    true
+   ],
+   [
+    "C",
+    "希望承接",
+    false
+   ],
+   [
+    "D",
+    "期望担任",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 14
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）读书时对感兴趣的东西深钻细研，无疑有助于我们更全面、系统、深入地了解这些东西。但不感兴趣的东西，有的也可能恰恰是我们所的。这不仅因为兴趣本身有一定的局限性，而且因为在特定领域浸染日久，往往会这种兴趣，形成越不感兴趣越排斥的恶性循环，导致短板更短。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "需要泛化",
+    false
+   ],
+   [
+    "B",
+    "忽视僵化",
+    false
+   ],
+   [
+    "C",
+    "欠缺固化",
+    true
+   ],
+   [
+    "D",
+    "提倡弱化",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 15
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广东）宪法是治国安邦的总，是党和人民意志的集中，在我们党治国理政活动中具有十分重要的地位和作用。题本·言语理解与表达填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "规范呈现",
+    false
+   ],
+   [
+    "B",
+    "章法展现",
+    false
+   ],
+   [
+    "C",
+    "章程体现",
+    true
+   ],
+   [
+    "D",
+    "标准表现",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 16
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·河南）在“地球村”形势下，21世纪的人类需要面对的共同问题远远超过起来。的利益。我们不应把东方文化同西方文化各民族填人画横线部分最恰当的一项是：对立",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·河南",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "狭",
+    true
+   ],
+   [
+    "B",
+    "各自混淆",
+    false
+   ],
+   [
+    "C",
+    "有限 统一",
+    false
+   ],
+   [
+    "D",
+    "根本'联系",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 17
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广东）总理在两会上所做的政府工作报告是一民心、民意、体现民情的报告，也是一个增强信心、鼓舞士气、催人奋进的报告。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "代表反应",
+    false
+   ],
+   [
+    "B",
+    "表现反映",
+    false
+   ],
+   [
+    "C",
+    "表现反应",
+    false
+   ],
+   [
+    "D",
+    "代表 反映",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 18
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）一个人不能失忆，一个国家当然就更不能失忆了，但是我们这个国家因为历史的原因使得有时候会有意无意地试图某方面的回忆。对于这种无奈的现实，我们能够理解，但是并不是说就应该支持或者默许这么做。在具备了条件之后，我们还是应该寻找和我们的记忆。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "回避恢复",
+    true
+   ],
+   [
+    "B",
+    "隐藏修复",
+    false
+   ],
+   [
+    "C",
+    "躲避还原",
+    false
+   ],
+   [
+    "D",
+    "掩盖复原",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 19
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广东）这些亮相于世界互联网大会的中国创新成果，勾勒出未来生活的,也诱人着“创新中国”的蓬勃生机。填人画横线部分最恰当的一项是：彰显呈现凸显显示",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "图景",
+    true
+   ],
+   [
+    "B",
+    "图画",
+    false
+   ],
+   [
+    "C",
+    "画面",
+    false
+   ],
+   [
+    "D",
+    "景象",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 20
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）“直播”不等于年轻貌美的网红，当“直播+正能量”成为新，就可以网络让正能量得到广泛的传播，让这一新媒体成为关注生活、融入生活、积极担当的新工具。填人画横线部分最恰当的一项是：倚重借助行测必做5000题",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "风尚",
+    false
+   ],
+   [
+    "B",
+    "风范倚重",
+    false
+   ],
+   [
+    "C",
+    "风尚",
+    true
+   ],
+   [
+    "D",
+    "风范借助",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 21
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·河南）作为一个单纯的图书设计者，设计师需要尊重书籍本身而适度地”自已，即不能“过度设计”而使形式偕越了书籍内容。但是，作为一个创意表达者，设计师一旦参与了图书的创作，就使书籍成为表达自已独特创意的，此时设计师已不仅仅干预了图书的形式，而是直接参与了内容的创作。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·河南",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "压抑工具",
+    false
+   ],
+   [
+    "B",
+    "贬低渠道",
+    false
+   ],
+   [
+    "C",
+    "遗忘符号",
+    false
+   ],
+   [
+    "D",
+    "隐藏媒介",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 22
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广州）“学如弓弩，才如箭。”学识是才能的才能是学识的，学习的弓弩弯如满月，才识的箭才能飞似流星。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "基调升华",
+    false
+   ],
+   [
+    "B",
+    "基本延伸",
+    false
+   ],
+   [
+    "C",
+    "指导释放",
+    false
+   ],
+   [
+    "D",
+    "引导发挥",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 23
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）人口迁移改变了中国城乡的人口格局，以最的方式推动了移民城市的形成，这一城市形态与传统的城市在性质上有着本质的区别。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "直接地域",
+    true
+   ],
+   [
+    "B",
+    "一般●地方",
+    false
+   ],
+   [
+    "C",
+    "简单地区",
+    false
+   ],
+   [
+    "D",
+    "基本区域",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 24
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）现代白话文与文言文的区别只是语体的不同，但它们使用的象形表意的方块字，作为中华民族文化的独特创造，其中的民族精神、民族生命是血的。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "蕴含贯通",
+    true
+   ],
+   [
+    "B",
+    "沉积相通",
+    false
+   ],
+   [
+    "C",
+    "呈现流通",
+    false
+   ],
+   [
+    "D",
+    "体现连通",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 25
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）在养老举措、制度设计等各方面更多“老吾老以及人之老”的同理心，是一座城市、一个社会对待老年人应有的温情与敬意。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "灌注",
+    true
+   ],
+   [
+    "B",
+    "灌溉",
+    false
+   ],
+   [
+    "C",
+    "灌输",
+    false
+   ],
+   [
+    "D",
+    "灌制",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 26
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）和西方的《荷马史诗》《圣经》一样，中国历史上早期的一些典籍获得了备受的地位。当然，这些典籍之后无一例外地经受了历史时代的文本筛选、价值的复杂过程。题本·言语理解与表达填人画横线部分最恰当的一项是：诠释",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "尊崇阐释",
+    true
+   ],
+   [
+    "B",
+    "膜拜",
+    false
+   ],
+   [
+    "C",
+    "拥戴注释",
+    false
+   ],
+   [
+    "D",
+    "青睐解释",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 27
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）只有一个人静静对内心着自已的人生故事,其中最为充实、最有意义的那段，会被你们做出的一系列决定所填满。最终，是选择了我们的人生。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "诉说决定",
+    false
+   ],
+   [
+    "B",
+    "讲述塑造",
+    true
+   ],
+   [
+    "C",
+    "叙述描绘",
+    false
+   ],
+   [
+    "D",
+    "描述修正",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 28
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·山东）不可否认，的阻隔，是阻碍情感交流的一个重要原因。但无论是语音聊天，还是视频通信，其便是不断缩短空间的距离。我们或许无法做到“父母在，不远游”，但至少可以多跟家人分享一下自己的喜怒哀乐，让父母在亲情的喃语中得到心灵的慰藉。填人画横线部分最恰当的一项是：目的",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "时空意义",
+    false
+   ],
+   [
+    "B",
+    "地域初衷",
+    true
+   ],
+   [
+    "C",
+    "环境作用",
+    false
+   ],
+   [
+    "D",
+    "信息",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 29
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）乡镇政府作为国家最基层的一级政府，的工作十分复杂，的压力十分巨大。填入画横线部分最恰当的一项是：承载",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "承担",
+    false
+   ],
+   [
+    "B",
+    "承担承受",
+    true
+   ],
+   [
+    "C",
+    "承接承受",
+    false
+   ],
+   [
+    "D",
+    "承接承载",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 30
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）对大多数人来说，逻辑学是一门的学问。但是思想史上的重大事件无一不是人们在自己的思维和研究方法上所做的改进。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "神秘处于",
+    false
+   ],
+   [
+    "B",
+    "枯燥基于",
+    true
+   ],
+   [
+    "C",
+    "神奇 源于",
+    false
+   ],
+   [
+    "D",
+    "烦琐由于",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 31
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·国家）各国在对外交往中常常会形成一套相对的话语体系，特别是拥有自已的核心话语。对外话语不仅体现一国的外交政策，更了一国对外沟通的基本态度和价值。填人画横线部分最恰当的一项是：说明体现行测必做5000题",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "灵活承载",
+    false
+   ],
+   [
+    "B",
+    "独立",
+    false
+   ],
+   [
+    "C",
+    "固定代表",
+    true
+   ],
+   [
+    "D",
+    "集中",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 32
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·吉林）青山隐隐，芳草，春天的脚步总是来去匆匆。“二月里来好春光”的余音还在耳畔之间便到了细雨纷纷、祭扫亲人的清明时节。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "缭绕葛然",
+    false
+   ],
+   [
+    "B",
+    "回响忽然",
+    false
+   ],
+   [
+    "C",
+    "飘荡遵然",
+    false
+   ],
+   [
+    "D",
+    "蒙绕候忽",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 33
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·吉林）如今越来越多没营养的综艺节目占据了市场的,而《朗读者》却别具一格，“慢下来”用“朗读”做电视，这才是真正稀缺而有价值的电视文化。《朗读者》证明文化类节目未必“冷”。《朗读者》节目组把这份对精神文化的尊重到节目中来。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "主体移植",
+    true
+   ],
+   [
+    "B",
+    "主流传达",
+    false
+   ],
+   [
+    "C",
+    "首席延伸",
+    false
+   ],
+   [
+    "D",
+    "份额演绎",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 34
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）在经济社会不断发展的今天，我们应将明礼知耻于社会主义核心价值观的实践中。同时，应古今中外礼仪礼教之精华，把明礼提升到一个新高度、新水平。填入画横线部分最恰当的一项是：继承",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "贯穿融汇",
+    true
+   ],
+   [
+    "B",
+    "贯彻融合",
+    false
+   ],
+   [
+    "C",
+    "落实吸取",
+    false
+   ],
+   [
+    "D",
+    "实行",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 35
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·山东）只要观察一下语言的变迁史，就会发现，语言体系一直具有强悍的自我机制，会以一种温和的集体模式，淘汰那些失效的语词。这意味着语言会利用时间效应来进行自我筛选和自我净化，只有数量很少的新语词能够穿越这种“时间筛子”，成为上一历史时段的“舌尖遗产”填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "更新清洁",
+    false
+   ],
+   [
+    "B",
+    "完善舍弃",
+    false
+   ],
+   [
+    "C",
+    "过滤遗忘",
+    true
+   ],
+   [
+    "D",
+    "修正扫除",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 36
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·深圳）①德国总理昨天在德法首脑中，试图弥合法国与美国在关贸总协定谈判方面的分歧，但没有取得进展。②走上政商关系极端的商人和腐败官员们，通过政策资源的货币化完成了权力和利益输送，实现了“特权的获取”。填入画横线部分最恰当的一项是：挤兑题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·深圳",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "会晤勾兑",
+    true
+   ],
+   [
+    "B",
+    "会见勾兑",
+    false
+   ],
+   [
+    "C",
+    "会唔挤兑",
+    false
+   ],
+   [
+    "D",
+    "会见",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 37
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·国家）卫星轨道数据是一类需要严格保密的数据，卫星所有人将卫星的位置和运行路线视为机密资料。拥有卫星的那些企业担心泄密会使自已丧失竞争，因为把的定位信息泄露出去，可能会向竞争对手暴露自已的实力，政府也担心这会危害国家安全。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "机遇隐藏",
+    false
+   ],
+   [
+    "B",
+    "筹码详细",
+    false
+   ],
+   [
+    "C",
+    "优势确切",
+    true
+   ],
+   [
+    "D",
+    "能力准确",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 38
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·深圳）①现在果园开始，老村长觉得要做的事情依然很多，“种果树看似简单，其实不简单”。②在遇难宇航员的追悼会上，当罗明杰最后说“他们永远活在我们心中，我们微笑着等待他们回来”时，表情一直轻松的他忍不住流下了眼泪，会场一片填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·深圳",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "盈利晞嘘",
+    true
+   ],
+   [
+    "B",
+    "营利叹息",
+    false
+   ],
+   [
+    "C",
+    "营利晞嘘",
+    false
+   ],
+   [
+    "D",
+    "盈利叹息",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 39
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）在经济全球化时代，面对多元文化思潮的交流与交锋，人们常常有精神迷失的困惑。如何西方文化思潮的渗透，始终保持本民族的文化特色？如何实现精神富有，起源源不断的精神力量？这些都是当代文化发展需要深入思考的命题。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "抵挡集聚",
+    false
+   ],
+   [
+    "B",
+    "抵触汇集",
+    false
+   ],
+   [
+    "C",
+    "抵御汇聚",
+    true
+   ],
+   [
+    "D",
+    "抵制积累",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 40
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·深圳）当企业逐步完成原始积累后，企业家都开始思考更深层次的问题，越来越多的企业家不再自已的信仰，其中就有人开始从名利场走向教堂。这种心灵将如何改变企业的发展，现在尚不明朗。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·深圳",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "忌讳皈依",
+    false
+   ],
+   [
+    "B",
+    "避讳回归",
+    false
+   ],
+   [
+    "C",
+    "忌讳回归",
+    false
+   ],
+   [
+    "D",
+    "避讳皈依",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 41
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·四川）在进化心理学理论中，人类的情绪可以指引和我们的行为，从而更好地适应周围的环境。早在远古时代，原始人处于的环境中，就会产生防卫反应，比如，当有野兽进入自已的领域时，便开始不安和愤怒，并试图用凶狠的表情和咆哮吓走侵人者。行测必做5000题10填人画横线部分最恰当的一项是：不利",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·四川",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "调控危险",
+    true
+   ],
+   [
+    "B",
+    "改善",
+    false
+   ],
+   [
+    "C",
+    "影响动荡",
+    false
+   ],
+   [
+    "D",
+    "支配陌生",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 42
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·天津）欧洲科学家历时两年，230万欧元，开发出了一种“智能安全摄像头”。这种“智能安全摄像头”能够利用电脑，以某种运算法则分析在公共场所拍下的录像画面，查找可疑，从中发现潜在的安全威胁。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·天津",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "耗费行迹",
+    false
+   ],
+   [
+    "B",
+    "耗资行迹",
+    false
+   ],
+   [
+    "C",
+    "耗资形迹",
+    true
+   ],
+   [
+    "D",
+    "耗费形迹",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 43
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）法治和礼治发生在两种不同的社会中,这里所谓的礼治也许就是通常所谓的人治，但是礼治一词不会像人治一词那样容易引起，以致有人觉得社会秩序是可以由个人好恶来维持的了。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "形态歧义",
+    false
+   ],
+   [
+    "B",
+    "模式偏差",
+    false
+   ],
+   [
+    "C",
+    "情态误解",
+    true
+   ],
+   [
+    "D",
+    "形势干扰",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 44
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广东）党的十八大以来，中央以猛药去、重典治乱的，以刮骨疗毒、壮士断腕的，不断加大党风廉政建设和巡视的力度，效果显著。填人画横线部分最恰当的一项是：勇气",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "意念底气",
+    false
+   ],
+   [
+    "B",
+    "恒心气势",
+    false
+   ],
+   [
+    "C",
+    "意志气魄",
+    false
+   ],
+   [
+    "D",
+    "决心",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 45
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）很多人都说哭过之后他们感觉更舒服，这是因为哭能够紧张，情绪的平衡。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "缓冲 平复",
+    false
+   ],
+   [
+    "B",
+    "延缓修复",
+    false
+   ],
+   [
+    "C",
+    "缓和回复",
+    false
+   ],
+   [
+    "D",
+    "缓解恢复",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 46
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·天津）近年来，涉及权钱交易的违纪违法案件出现了一些新情况、新问题。为教育各级党员、领导干部严格自律，加大对涉及权钱交易行为的力度，《中共中央纪委关于严格禁止利用职务上的便利不正当利益的若干规定》日前印发。填入画横线部分最恰当的一项是：牟取谋取谋取11题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·天津",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "惩罚牟取",
+    false
+   ],
+   [
+    "B",
+    "惩处",
+    false
+   ],
+   [
+    "C",
+    "惩处",
+    true
+   ],
+   [
+    "D",
+    "惩罚",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 47
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）会议强调，要牢固树立大边防观念，和谐边疆，铸就稳固边防。要建设繁荣富裕的边防，把强边固防和兴边富民有机统一起来，互相促进、双向发展，努力边防建设的良好氛围。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "构架塑造",
+    false
+   ],
+   [
+    "B",
+    "架构制造",
+    false
+   ],
+   [
+    "C",
+    "构建营造",
+    true
+   ],
+   [
+    "D",
+    "建构打造",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 48
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）在诗的最后一节，诗人写出了现代文明的冲击对他本人的影响。从寒寒数笔的中，我们不难体味到诗人对现代文明的大胆填人画横线部分最恰当的一项是：嘲讽玩弄",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "描绘捉弄",
+    false
+   ],
+   [
+    "B",
+    "刻画",
+    false
+   ],
+   [
+    "C",
+    "勾勒嘲弄",
+    true
+   ],
+   [
+    "D",
+    "勾画",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 49
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）芭蕾这门艺术不仅要用肢体演绎，还需要文化的全方位和浸染，否则的就不只是四肢，而是整个形态和表演。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "熏陶僵硬",
+    true
+   ],
+   [
+    "B",
+    "培养笨拙",
+    false
+   ],
+   [
+    "C",
+    "洗礼死板",
+    false
+   ],
+   [
+    "D",
+    "渗透禁铜",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 50
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·浙江）在偶像级人物的背后，往往有追逐经济利益的资本力量的，它们利用舆论制造全民的娱乐狂欢，以此牟利。因此，对于追星现象，我们也要保持一分清醒,在狂热追星之前，看一些不同角度不同观点的文章，多一些思考和冷静，就不会旦看清偶像背后的真相，就不会轻易陷人狂热与沉迷。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·浙江",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "操纵迷失",
+    false
+   ],
+   [
+    "B",
+    "操控盲从",
+    true
+   ],
+   [
+    "C",
+    "换制冲动",
+    false
+   ],
+   [
+    "D",
+    "辖制跟风",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 51
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江西）回顾历史，东方文化与西方文化的渊源，打破将西方文化等同于现代文化的逻辑，将西方文化为一个地域性文化，有助于我们今天确立文化自信。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "明白看作",
+    false
+   ],
+   [
+    "B",
+    "了解贬抑",
+    false
+   ],
+   [
+    "C",
+    "熟悉 回归",
+    false
+   ],
+   [
+    "D",
+    "明晰还原",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 52
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）对当代中国而言，研究草原文化的意义并非仅仅为了表现文化由，由典雅走向质朴，而是要透过草原民俗与草原风情，精细走向草原风貌中保存尚好的历史文化精髓以及民族的精神和灵魂。行测必做5000题12填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "全面传承",
+    false
+   ],
+   [
+    "B",
+    "简单探寻",
+    false
+   ],
+   [
+    "C",
+    "粗扩发掘",
+    true
+   ],
+   [
+    "D",
+    "豪放领略",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 53
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·吉林）社会在变，家庭也在变。但不管交通如何便捷，通信如何发达，过年回家，都是每个家庭最的梦想。此后时空流转，纵使百转千回，改善生活也好，追逐理想也罢，走出去的中国人，还是会被故土的浓烈情思所填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "美好吸引",
+    false
+   ],
+   [
+    "B",
+    "寻常羁绊",
+    false
+   ],
+   [
+    "C",
+    "朴实牵绊",
+    true
+   ],
+   [
+    "D",
+    "终极引领",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 54
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）雪的可爱处在于它覆盖大地没有差别。冬夜拥被而眠，觉寒气袭人，蜷缩不敢动，凌晨张开眼皮，窗窗帘隙处有强光，大异往日，起来推窗一看，啊！白茫茫一片银世界。竹枝松叶顶着一堆堆的白雪，权芽老树也都镶了银边，朱门与蓬户同样的蒙受它的沾被，没有差别待遇。地面上的坑穴洼溜,冰面上的枯枝断梗，路面上的残台败屑，全都罩在天公下的一件鹤之下。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "闪烁撒",
+    false
+   ],
+   [
+    "B",
+    "闪映抛",
+    true
+   ],
+   [
+    "C",
+    "闪现洒",
+    false
+   ],
+   [
+    "D",
+    "映照织",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 55
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）网络对儿童而言是一把双刃剑，一方面可以让儿童更早现代人必备的网络知识和技能，为他们打开通往未知世界的大门；另一方面，过早触网也容易让儿童于网络游戏等虚拟空间不能自拔，容易对儿童的正常学习和成长造成影响和干扰。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "接触沉溺",
+    true
+   ],
+   [
+    "B",
+    "触摸享受",
+    false
+   ],
+   [
+    "C",
+    "了解迷惑",
+    false
+   ],
+   [
+    "D",
+    "熟练堕落",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 56
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）海洋酸化会影响珊瑚、贝类等钙化生物的正常生长，们的碳酸钙外壳，甚至对它们造成的影响，进而破坏整个食物链。为了保护自己，这些钙化生物会长得越来越小、外壳越来越厚，这会对食用贝类养殖产业造成很大的打击。填人画横线部分最恰当的一项是：深远13题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "腐化恶劣",
+    false
+   ],
+   [
+    "B",
+    "腐蚀致命",
+    true
+   ],
+   [
+    "C",
+    "侵蚀严重",
+    false
+   ],
+   [
+    "D",
+    "侵人",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 57
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）网络主权概念的提出，意味着国家行使主权去维护网络安全，但网络空间的特殊性决定了政府作用有限。政府决策者应关注如何在维护网络主权的同互联网行业的健康发展，并且在维护网络主权与行业发展之间寻求恰当填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "保证平衡",
+    true
+   ],
+   [
+    "B",
+    "保护转换",
+    false
+   ],
+   [
+    "C",
+    "保障立场",
+    false
+   ],
+   [
+    "D",
+    "保持时机",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 58
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）目前，我国杂技院团和杂技从业者以及杂技市场之间缺乏有效的，杂技院团还未对市场有充分的了解，就锁定目标，按照杂技先练技巧再拼接的传统方法把节目先排出来，这样虽然能保证杂技表演的质量，但未必是目前杂技演艺市场最为需要的。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "磨合精准",
+    false
+   ],
+   [
+    "B",
+    "磨合 盲目",
+    true
+   ],
+   [
+    "C",
+    "摩擦精准",
+    false
+   ],
+   [
+    "D",
+    "摩擦盲目",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 59
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）过去，城市规模基本上是由政策决定的。如果把城市当作一个的系统，它的吞吐、消耗以及内部运转，所有的生态流是完全能够定量计算的。我们的城市设计，必须跟周围的生态环境形成良好的共生关系，与其生态承载力相。根据周围生态承载力确立城市规模，才是科学态度。填人画横线部分最恰当的一项是：匹配",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "循环支持",
+    false
+   ],
+   [
+    "B",
+    "封闭",
+    true
+   ],
+   [
+    "C",
+    "机械符合",
+    false
+   ],
+   [
+    "D",
+    "动态平衡",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 60
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广东）冷静观察，直面现实，正视困难，我们的双脚就能站到大地上，拥有牢固的立足点，就能看到远方的地平线，找到的方位感。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "结实正确",
+    false
+   ],
+   [
+    "B",
+    "坚韧精准",
+    false
+   ],
+   [
+    "C",
+    "坚实准确",
+    true
+   ],
+   [
+    "D",
+    "坚硬精确",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 61
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）现代人对微信不已，乃至几乎不能有一朝一夕的分离，与其说是微信的功能强大，不如将之理解成空虚寂寞冷的人们，需要某种精神层面填人画横线部分最恰当的一项是：行测必做5000题14",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "崇拜皈依",
+    false
+   ],
+   [
+    "B",
+    "痴狂抚慰",
+    false
+   ],
+   [
+    "C",
+    "卷恋寄托",
+    false
+   ],
+   [
+    "D",
+    "痴迷慰籍",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 62
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·辽宁）S县城玲珑娇小，整洁可爱，人口不足五万，是个风光疗养胜地。但川流不息的游客当中又有几人知晓这是在反动派过的废墟上建立起来的呢？填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·辽宁",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "诱人洗劫",
+    false
+   ],
+   [
+    "B",
+    "宜人 血洗",
+    true
+   ],
+   [
+    "C",
+    "迷人血染",
+    false
+   ],
+   [
+    "D",
+    "诱人掠夺",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 63
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）纪录片也要注重挖掘人的情感和历史，因为一部好的纪录片不仅是对人和事物的简单，更是对世界的发现。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "记录独特",
+    true
+   ],
+   [
+    "B",
+    "记叙独到",
+    false
+   ],
+   [
+    "C",
+    "记述独立",
+    false
+   ],
+   [
+    "D",
+    "记载独创",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 64
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江西）马克思曾说，文明如果是地发展，而不是地发展，则留给自己的是荒漠。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "自由自觉",
+    false
+   ],
+   [
+    "B",
+    "自发自觉",
+    true
+   ],
+   [
+    "C",
+    "自由自发",
+    false
+   ],
+   [
+    "D",
+    "自发自然",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 65
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）装在司机座位上的这个系统可以在司机疲劳驾驶的时候，发出或者自动刹车。此外，这个系统不但可以提醒车辆被盗，还可以通过到的数据识别出盗贼的身份。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "警戒采集",
+    false
+   ],
+   [
+    "B",
+    "警报汇集",
+    false
+   ],
+   [
+    "C",
+    "警示收集",
+    true
+   ],
+   [
+    "D",
+    "警告搜集",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 66
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广西）大脑的衰老和疾病已经成为影响社会发展的巨大负担。中国的脑科学计划需要攀登高峰的，也需要接地气的先锋队。在社会资源有限的当下,如何两者，在不忘攀登高峰搞好基础研究的同时，造福社会大众，做好转化研究，是国家科技政策的决策者和基础研究的工作者都需要深思的问题。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·广西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "火车头整合",
+    false
+   ],
+   [
+    "B",
+    "马前卒协调",
+    false
+   ],
+   [
+    "C",
+    "多面手兼顾",
+    false
+   ],
+   [
+    "D",
+    "排头兵平衡",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 67
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·国家）作为一种现代产权制度，知识产权制度的本质是通过保护产权形成，“给天才之火添加利益之油”，使全社会创新活力，创新成果涌流。15题本·言语理解与表达填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "吸引释放",
+    false
+   ],
+   [
+    "B",
+    "刺激膨胀",
+    false
+   ],
+   [
+    "C",
+    "促进凸显",
+    false
+   ],
+   [
+    "D",
+    "激励进发",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 68
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）所谓“儒商”，主要是指那些以儒家思想作为自已经营理念和行为的商人。这些商人在自已长期的商业实践中，把中国传统文化特别是儒家文化同商品经济法则互补，形成了一种具有东方特色的商业文化精神———儒商精神。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "风范整合",
+    true
+   ],
+   [
+    "B",
+    "风度结合",
+    false
+   ],
+   [
+    "C",
+    "风习融合",
+    false
+   ],
+   [
+    "D",
+    "风致统合",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 69
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·国家）在某种程度上，各地博物馆收藏化石，是对我国化石资源最大程度的保护。但的是，这种方式的收藏也不能被，因为这就像吃鱼翅的人越多，遭到杀戳的鲨鱼就越多一样。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "遗撼复制",
+    false
+   ],
+   [
+    "B",
+    "矛盾鼓励",
+    true
+   ],
+   [
+    "C",
+    "不幸推广",
+    false
+   ],
+   [
+    "D",
+    "尴尬宣传",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 70
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）“质疑”其实是最基本的科学精神，也就是对于以前的结果、结论，甚至广泛得到证实和接受的理论体系都需要以怀疑的眼光进行。但是“质疑”并不完全等同于“怀疑”，更不是全面否定。“质疑”实际上是批评地学习和接受，其目的以前工作的漏洞、缺陷、不完善的地方。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "审察发掘",
+    false
+   ],
+   [
+    "B",
+    "检视洞悉",
+    false
+   ],
+   [
+    "C",
+    "审视发现",
+    true
+   ],
+   [
+    "D",
+    "核查揭露",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 71
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）目前，社会上对种种迷信现象，笃信、盲从者不在少数，根源就在于思辨和理性的。在社会的进步和发展中，科学精神是消除各种一、破除种种迷信的利器。科学精神的核心，就是不盲从、不迷信。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "失效误解",
+    false
+   ],
+   [
+    "B",
+    "遗乏罪恶",
+    false
+   ],
+   [
+    "C",
+    "缺失愚味",
+    true
+   ],
+   [
+    "D",
+    "苍白无知",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 72
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·辽宁）在奥斯维辛解放60周年纪念活动的电视实况转播里，看到奥斯维辛正飘飞着鹅毛大雪。远处苍茫的背景下，奥斯维辛集中营那些处在低洼之地的木制和砖砌的营房和毒气室，在洁白飞舞的雪花中，静静地着，无言地出示着历史的一行测必做5000题16着血泪的证言。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·辽宁",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "立浸透",
+    true
+   ],
+   [
+    "B",
+    "肃立书写",
+    false
+   ],
+   [
+    "C",
+    "站立浸染",
+    false
+   ],
+   [
+    "D",
+    "树立饱含",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 73
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）治理环境确为政府职责，环境出现问题，其监管、执法不严难逃其责。但是，当大家不断政府不作为时，是不是也应该下自已：我们有没有污染环境？填入画横线部分最恰当的一项是：斥责 检查指责检讨",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "不当遣责检察",
+    false
+   ],
+   [
+    "B",
+    "不周",
+    false
+   ],
+   [
+    "C",
+    "不善苛责检点",
+    false
+   ],
+   [
+    "D",
+    "不力",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 74
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江西）“一带一路\"更是“达则兼济天下”和“一花独放不是春，百花齐放春满园”的理念，准确沿线国家发展，沿线国家人民的现实诉求。填入画横线部分最恰当的一项是：响应助力回应",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "秉承助力",
+    false
+   ],
+   [
+    "B",
+    "坚持",
+    false
+   ],
+   [
+    "C",
+    "秉承对接回应",
+    true
+   ],
+   [
+    "D",
+    "坚持对接响应",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 75
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）多名全国人大代表提出议案，建议修订我国土地管理法，兼顾土，坚持物权平等保护地的资源与资产双重，提高补偿标准。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "特征规定征用",
+    false
+   ],
+   [
+    "B",
+    "要素法案征调",
+    false
+   ],
+   [
+    "C",
+    "标准措施征集",
+    false
+   ],
+   [
+    "D",
+    "属性原则征收",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 76
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）魔术是一门的艺术，要想产生惊奇的效果，就要制造假象，将物体真实的状态起来。一般，魔术师们总是会将各种物体藏起来，让人们对物体的状态产生错误的想象，而事实上，魔术表演还能制造出更加有趣的如：在观众的脑子里创造出一件并不存在的魔术道具。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "真实展现幻觉",
+    false
+   ],
+   [
+    "B",
+    "误导隐藏错觉",
+    true
+   ],
+   [
+    "C",
+    "错误掩盖想象",
+    false
+   ],
+   [
+    "D",
+    "欺骗珍藏画面",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 77
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江西）三千多年来浩若烟海的歌谣诗词经史曲赋铭文典籍，中华民族博大精深的思想智慧，了中华文化不尽不竭的精神源泉。中国的语言文字在抑扬顿挫平韵律之中，在点横撇擦篆隶楷行之间，构建了中华民族文化图谱。17题本·言语理解与表达填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "保护蕴含华丽",
+    false
+   ],
+   [
+    "B",
+    "保存滋养亮丽",
+    false
+   ],
+   [
+    "C",
+    "保全蕴含绚烂",
+    false
+   ],
+   [
+    "D",
+    "保有涵养绚丽",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 78
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）很多时候，我们的问题在于不能正确地个人和社会的界了个人，就不可能加强集体；如果限。事实上，如果了个人,集体也不可能获得自由。填人画横线部分最恰当的一项是：限制",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "区别削减约束",
+    false
+   ],
+   [
+    "B",
+    "分清减弱",
+    false
+   ],
+   [
+    "C",
+    "划清削弱束缚",
+    true
+   ],
+   [
+    "D",
+    "区分降低压制",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 79
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）生命只有一次，而人生也不过是时间的若让今天的时光白白,就等于毁掉人生最后一页。珍惜今天的一分一秒,因为它们将一去不复返。人无法把今天存入银行，明天再来取用。时间像风一样不可。每一分一秒，要用双手捧住，用爱心抚摸，因为它们如此宝贵。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "累积流失捕捉",
+    true
+   ],
+   [
+    "B",
+    "累计流走捕捉",
+    false
+   ],
+   [
+    "C",
+    "累计流失捕获",
+    false
+   ],
+   [
+    "D",
+    "累积流走捕获",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 80
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·深圳）①我在听先生这篇讲演后二十余年，获得机缘在茅津渡候船渡河。②市长在两会特别节目《又是一年春来到》上，谈到他乡的农民工也可成为这座城市的主人。③今天要的新机器非常先进，因为它们采用了很多先进技术。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·深圳",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "偶尔 做客 试验",
+    false
+   ],
+   [
+    "B",
+    "偶然作客试验",
+    true
+   ],
+   [
+    "C",
+    "偶然 做客 实验",
+    false
+   ],
+   [
+    "D",
+    "偶尔作客实验",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 81
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·陕西）黄帝是中华文明的开拓者和奠基者，黄帝陵是中华民族记忆最的教科书，是凝聚全体炎黄子孙的鲜艳，是我们文化自信的重填入画横线部分最恰当的一项是：旗帜 源泉标识根源图腾渊源",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "生动",
+    true
+   ],
+   [
+    "B",
+    "深刻",
+    false
+   ],
+   [
+    "C",
+    "有趣标志来源",
+    false
+   ],
+   [
+    "D",
+    "丰富",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 82
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）近年来，国家有关部门加大了对非法盗版活动的打击力度，通过建立群众举报、定期检查等制度，有效了非法盗版活动的势头。随着市场法律行测必做5000题18环境的日趋，这种广大人民群众深恶痛绝的社会丑恶现象，终究会被根除。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "制止完美",
+    false
+   ],
+   [
+    "B",
+    "遏止完备",
+    false
+   ],
+   [
+    "C",
+    "扼制完整",
+    false
+   ],
+   [
+    "D",
+    "遏制完善",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 83
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·陕西）办公人员的座椅高度是非常有讲究的。专家，许多人办公座椅的高度都存在一定问题，久坐就会疲劳感，并出现腰酸背痛的毛病。正确的做法是，首先根据工作性质把办公桌调整到一个的高度，然后再依据自身情况来调整座椅的高度。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "提示产生适合",
+    false
+   ],
+   [
+    "B",
+    "提示引发合适",
+    false
+   ],
+   [
+    "C",
+    "提醒产生合适",
+    true
+   ],
+   [
+    "D",
+    "提醒引发适合",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 84
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）中国文化的跨语境交流与传播有广阔的发展空间，我们要自身文化传播的局限性，拓宽文化传播的视野，推行和而不同的对外传播，加大文化在他者语境下的传播，提升中国文化以及其核心价值在世界文化中的影响力。填人画横线部分最恰当的一项是：吁求幅度",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "打破需求速度",
+    false
+   ],
+   [
+    "B",
+    "突破诉求力度",
+    true
+   ],
+   [
+    "C",
+    "超出 要求 广度",
+    false
+   ],
+   [
+    "D",
+    "超越",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 85
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·国家）物品的预设用途为用户提供了该如何操作的线索，比如平板是用来推的，旋钮是用来转的。如果物品的预设用途在设计中得到体现，用户一看便知如何操作，无须借助任何的图解、标志和说明。如果简单物品也需要用图解、标志和说明书来操作方法，这个设计就是的。填人画横线部分最恰当的一项是：演示笨拙",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "全面呈现粗糙",
+    false
+   ],
+   [
+    "B",
+    "有效指导落伍",
+    false
+   ],
+   [
+    "C",
+    "充分 解释 失败",
+    true
+   ],
+   [
+    "D",
+    "合理",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 86
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）保护好历史建筑，实质就是留住城市发展的，让人真切到城市的“昨天”“今天”与“明天”。我们并不有历史的城市，但很多城市确实缺少“历史感”与“厚重感”。就此看，“不拆真遗存，不建假古董”，其实不是针对具体历史建筑的保护，而是强调对历史的敬畏，对人文本位的回归。填人画横线部分最恰当的一项是：了解 获得19题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "痕迹感受存在",
+    false
+   ],
+   [
+    "B",
+    "文脉体认缺乏",
+    true
+   ],
+   [
+    "C",
+    "线索",
+    false
+   ],
+   [
+    "D",
+    "遗迹领悟缺少",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 87
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）哥白尼所发动的这场天文学革命，了中世纪以来的神学权威，起科学的理性精神，了一整套观察、实验与思考的方法，由此为西方近代科学的产生奠定了基础。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "质疑成立发现",
+    false
+   ],
+   [
+    "B",
+    "铲除确立建成",
+    false
+   ],
+   [
+    "C",
+    "挑战树立形成",
+    true
+   ],
+   [
+    "D",
+    "打破建立发展",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 88
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江西）中国共产党第十九次全国代表大会，是在全面小康社会阶段、中国特色社会主义进人新时代的关键召开的一次十分重要的大会。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "建设决胜时期",
+    false
+   ],
+   [
+    "B",
+    "建设决战时刻",
+    false
+   ],
+   [
+    "C",
+    "建成决胜时期",
+    true
+   ],
+   [
+    "D",
+    "建成决战时刻",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 89
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广西）游览花山岩画，船行江流之上，两岸风光旖旅，茂林修竹，清秀。不远处的江岸边是一排拔地而起的断岩山，山势陡峭，但郁郁葱葱。临江一留白的石壁，被苍翠的山脊面有国画般着，格外显眼。填人画横线部分最恰当的一项是：浸染环绕煊染嵌人点染镶嵌点缀装饰",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·广西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "俊逸",
+    false
+   ],
+   [
+    "B",
+    "隐约",
+    false
+   ],
+   [
+    "C",
+    "隐逸",
+    true
+   ],
+   [
+    "D",
+    "飘逸",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 90
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）无论是现代游戏，还是传统游戏，都出了一定的知识、社会和时代特征，同时也了团结、多样性和包容的价值。但随着社会变迁和时代发展，很多有价值的传统游戏正在一代又一代的中逐渐消逝。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "反射传播更新",
+    false
+   ],
+   [
+    "B",
+    "折射传递更送",
+    true
+   ],
+   [
+    "C",
+    "影射传承更替",
+    false
+   ],
+   [
+    "D",
+    "投射传达更动",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 91
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·陕西）油菜花遍地的金黄色，虽然没有红色的浓艳，没有绿色的,但却开出了一种的风格，花香之中让我膜出了亲切的乡土气息，倍加增添了一种的思念之情。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "隆重朴素强烈",
+    false
+   ],
+   [
+    "B",
+    "庄重淳朴热烈",
+    false
+   ],
+   [
+    "C",
+    "沉重娇艳深沉",
+    false
+   ],
+   [
+    "D",
+    "厚重朴实浓郁",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 92
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）总的来讲，“社会”在处理与国家的关系过程中强调其自主性的成长与释放,并了各种形式的自我保护运动。而且，“社会”也在改变其生存与发行测必做5000题20",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "C",
+    "困境改进渠道",
+    false
+   ],
+   [
+    "D",
+    "障碍推广优惠",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 93
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）在国际国内多个场合，习近平总书记的精彩阐述，让“一带一路”的理念传遍世界，深人人心。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "共建共商共享",
+    false
+   ],
+   [
+    "B",
+    "共建共享共商",
+    false
+   ],
+   [
+    "C",
+    "共商共享共建",
+    false
+   ],
+   [
+    "D",
+    "共商共建共享",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 98
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）直觉是人类思维的一种特殊存在形态。它在人类意识深层，超越人类普遍的理性思维和价值判断，在人类自觉的意志和意识控制之外。受到、诱发，它会突然出现在意识层，某种特殊的心理诱因或视听感觉人类思维，直接对事物、环境状况做出判断。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "沉积推动引导",
+    false
+   ],
+   [
+    "B",
+    "潜藏激活掌控",
+    false
+   ],
+   [
+    "C",
+    "垫伏刺激掌管",
+    false
+   ],
+   [
+    "D",
+    "潜伏触动主导",
+    true
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 99
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）研究表明，大脑具有自我修复的潜能，继续这方面的研，而以究，有望最终确认哪些信号可用来促进神经源性反应的神经发生（即神经元的生成和更新）现象为目标，或可成为一种促进神经元再生的有效治疗方法。填人画横线部分最恰当的一项是：加强强化高分进阶",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "增强强化加强",
+    false
+   ],
+   [
+    "B",
+    "强化加强增强",
+    false
+   ],
+   [
+    "C",
+    "加强增强强化",
+    true
+   ],
+   [
+    "D",
+    "增强",
+    false
+   ]
+  ],
+  "_section": 0,
+  "_qnum": 100
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·吉林）在充满变量的世界，我们是眼花缭乱的观望者，也是置身其间的推动者。曾经走街串巷的叫卖声不见了，只需手指轻轻一点即可享受送货上门的电商火了起来；全家人乃至几家人守着一台电视机等待每天一集电视剧的场景不见了，取而代之的是乱花渐欲迷人眼的多屏时代；人们获取信息的渠道不仅早已多样化，而且信息芜杂难辩。“”，是我们生活中的常态，容不得视而不见，也容不得退避。填入画横线部分最恰当的一项是：行测必做5000题22",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "难",
+    false
+   ],
+   [
+    "B",
+    "变",
+    true
+   ],
+   [
+    "C",
+    "乱",
+    false
+   ],
+   [
+    "D",
+    "散",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 1
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）诗歌，这一文学皇冠上最古老而璀璨的明珠，在当代社会正面临着前所未有的境况。一面是大众偏见的，譬如“诗歌就是分行”“写诗是无病呻吟”等论调甚器尘上；一面是诗歌内部的，学术话语与商业话语分庭抗礼，业内与大众水火不容。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "流行分歧",
+    false
+   ],
+   [
+    "B",
+    "蔓延抵触",
+    false
+   ],
+   [
+    "C",
+    "横行分裂",
+    true
+   ],
+   [
+    "D",
+    "干扰争议",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 18
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·陕西）三月的花，是迷人的。在花海里，抬头间，鼻尖就会触碰着花朵的温柔。颌首处，扑鼻而来的香氛，在身边。忍不住地想去，与花共眠。写不尽的花意，流水也在等待着花的填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "浮动岭爱",
+    false
+   ],
+   [
+    "B",
+    "流动垂爱",
+    true
+   ],
+   [
+    "C",
+    "流尚关爱",
+    false
+   ],
+   [
+    "D",
+    "漂流垂青",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 19
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）土豆放置在潮湿环境中容易发芽，土豆发芽后会产生一种毒素叫作龙葵碱，龙葵碱对胃肠道黏膜有较强的刺激性，会产生效果,对中枢神经有麻痹作用，中毒的主要症状为胃痛加剧，恶心、呕吐，呼吸困难、急促，伴随全身虚弱,严重者可导致死亡。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "消蚀无力",
+    false
+   ],
+   [
+    "B",
+    "销蚀衰微",
+    false
+   ],
+   [
+    "C",
+    "侵蚀乏力",
+    false
+   ],
+   [
+    "D",
+    "腐蚀衰竭",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 20
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）当人类社会进人到信息时代，曾有人，计算机是方块汉字的掘墓人。然而，事实了对汉字的这些偏见和悲观论调。据统计，现在已有1000多种汉字输人法，无论从速度还是准确率上看，方块汉字的计算机输入丝毫不逊色于拼音文字。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "宣称打破",
+    false
+   ],
+   [
+    "B",
+    "断言粉碎",
+    true
+   ],
+   [
+    "C",
+    "妄言驳斥",
+    false
+   ],
+   [
+    "D",
+    "预言批判",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 21
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）国家主席习近平在G20汉堡峰会上对全球经济治理的建议极具针对性。加强宏观政策，有助于促进各方，避免沟通不畅或是以邻为壑，进而打造开放共赢的合作模式。行测必做5000题26填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "协调互动",
+    false
+   ],
+   [
+    "B",
+    "调控互通",
+    false
+   ],
+   [
+    "C",
+    "沟通联动",
+    true
+   ],
+   [
+    "D",
+    "交流联通",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 22
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）生态好转，意味着我们能制库木塔格大沙漠的脚步，让沙漠明珠——月牙泉依然在戈壁中，让弥足珍贵的莫高窟不会再次受到伤害。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "侵蚀摇电",
+    false
+   ],
+   [
+    "B",
+    "侵吞流消",
+    false
+   ],
+   [
+    "C",
+    "吞并闪烁",
+    false
+   ],
+   [
+    "D",
+    "吞噬镶嵌",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 23
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·吉林）选择是痛苦的，企业变革首先要革自已的命，企业转型升级的过程就是重生的过程。在这一过程中，企业家眼光既要向外，准确看到新时代环境的改变及趋势，又要向内，重新企业自身的优势与核心竞争力。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "蜕变审视",
+    true
+   ],
+   [
+    "B",
+    "涅檗考量",
+    false
+   ],
+   [
+    "C",
+    "改造打量",
+    false
+   ],
+   [
+    "D",
+    "转化检视",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 24
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）在早已对漂亮假花、假树司空见惯的现代人眼里，干枯苍白的植物标本或许难有多少魅力可言。但在标本馆中，每一份看似不起眼的植物标本都代表着它在地球上的。它们虽然远离了阳光雨露，告别了生长的土地，却在科学殿堂了自己的生命。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "物种证明",
+    false
+   ],
+   [
+    "B",
+    "经历重现",
+    false
+   ],
+   [
+    "C",
+    "存在超越",
+    false
+   ],
+   [
+    "D",
+    "同类延续",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 25
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·国家）在数字化多媒体时代，媒介参与的深度和广度日渐拓展，数字技术应用于文化遗产的保护已从原始的简单记录发展到对文化遗产的精准，运用数字输人、摄像等各种数字化技术对文化遗产进行多形式的，建立数字化的文化遗产档案和“非遗”博物馆等，都是当前很好的“非遗”保护方法。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2017·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "修复展现",
+    false
+   ],
+   [
+    "B",
+    "描述挖掘",
+    false
+   ],
+   [
+    "C",
+    "定位探索",
+    false
+   ],
+   [
+    "D",
+    "复原采集",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 26
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·辽宁）①甲醛的有毒成分可通过呼吸道侵人人体，吸入过多易引发白血病。专家向消费者发出警告，尽量购买甲醛含量达到国家标准的装饰材料，要注意自我保护。27题本·言语理解与表达②最近，S政府针对某地区的房屋征收问题，专门在政府网站公布调查问卷，就是否应该征收、征收补偿以及后续安置等问题，向广大市民意见。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·辽宁",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "严重咨询",
+    false
+   ],
+   [
+    "B",
+    "郑重征询",
+    true
+   ],
+   [
+    "C",
+    "慎重征求",
+    false
+   ],
+   [
+    "D",
+    "审重寻求",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 27
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江西）十年久住的这海东的岛国，把我那同玫瑰露似的青春的这异乡的天地，到了将离的时候，倒反而生出了一种不忍与她的心来。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "消遣辞行",
+    false
+   ],
+   [
+    "B",
+    "消磨决别",
+    true
+   ],
+   [
+    "C",
+    "消磨辞行",
+    false
+   ],
+   [
+    "D",
+    "消遣别",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 28
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）19世纪中叶以后，中国国内战争频仍，很多古籍海外。时至今日，究竟有多少古籍在海外存藏，还是一个未知数。而将分散在海外至少上百家图书馆的中文古籍全部统计清楚，在一个总目录之中,难度可想而知。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "流散囊括",
+    true
+   ],
+   [
+    "B",
+    "流落涵盖",
+    false
+   ],
+   [
+    "C",
+    "流失收录",
+    false
+   ],
+   [
+    "D",
+    "散罗列",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 29
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）用人情做出来的朋友只是暂时的，用人格吸引来的朋友才是的。所以，丰富自已比取悦他人更有力量。大多时候，我们的忙碌其实是的。我们把自己累得气喘吁吁，最终却无功而返。与其追逐远方，不如做好脚下的事。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "长久盲目",
+    true
+   ],
+   [
+    "B",
+    "永恒必须",
+    false
+   ],
+   [
+    "C",
+    "确定无奈",
+    false
+   ],
+   [
+    "D",
+    "可靠无谓",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 30
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）每一项工业遗产都着城市社会发展的演变规律。实施对工业遗产的发掘保护、开发利用，对维护城市风貌，生机特色，克服千城一面现象，具有重要意义。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "凝结保持",
+    true
+   ],
+   [
+    "B",
+    "凝集保留",
+    false
+   ],
+   [
+    "C",
+    "凝聚突出",
+    false
+   ],
+   [
+    "D",
+    "凝滞凸显",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 31
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）家风是具有鲜明特征的家庭文化，良好家风是一个家庭最宝贵的精神财富，也是每个家庭成员形成正确世界观、人生观、价值观的。家庭是人生的第一所学校，良好家风是人生幸福生活的“第一组密码”。“积善之家，必有余庆；积不行测必做5000题28善之家，必有余殃”。只有守住和好温暖的家庭，才能有人生的成功。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "基点底护",
+    false
+   ],
+   [
+    "B",
+    "基准保护",
+    false
+   ],
+   [
+    "C",
+    "基础爱护",
+    false
+   ],
+   [
+    "D",
+    "基石呵护",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 32
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广东）一个人的成长成才，并不完全由其起点决定，而是看在这个过程之中个人所付出的努力。如果一味“出生在农村，注定样样落后”，不仅是对-些客观事实选择性地无视，而且了个人奋斗的价值。填人画横线部分最恰当的一项是：肯定",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "鼓吹漠视",
+    false
+   ],
+   [
+    "B",
+    "宣扬",
+    false
+   ],
+   [
+    "C",
+    "渣染抹杀",
+    true
+   ],
+   [
+    "D",
+    "鼓励否定",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 33
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）自然是神奇美妙的。自然文学的作者在读者面前的，是含有风景、声音及心绪的多维画面。这三者相互交织，相辅相成,形成了自然文学的独特之处,也出独特的审美情趣和美学价值。填人画横线部分最恰当的一项是：引申",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "展现",
+    false
+   ],
+   [
+    "B",
+    "呈现衍生",
+    true
+   ],
+   [
+    "C",
+    "描擎演化",
+    false
+   ],
+   [
+    "D",
+    "描绘发展",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 34
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）现在，创新的重要性已无须。这些年，无论是国家宏观层面，还是企业等微观层面，我国创新都取得了历史性成就。但也不用，创新孤岛化问题还未根本解决。少数企业特别是一些传统企业，依然固守旧的观念。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "强调遮掩",
+    false
+   ],
+   [
+    "B",
+    "苛求藏匿",
+    false
+   ],
+   [
+    "C",
+    "赘述讳言",
+    true
+   ],
+   [
+    "D",
+    "点明声",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 35
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2019·四川）诗意在心头排，明月在天空升腾。“举头望明月，低头思故乡。”在举头和低头之间，我们看到了千古诗仙李太白在他乡遥望故土的那份渴望和期盼，这的流光，却能让诗人的缠绵思绪在千万里的时空中而不觉遥远。填人画横线部分最恰当的一项是：蔓延凝结",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2019·四川",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "距穿梭",
+    false
+   ],
+   [
+    "B",
+    "斑驳",
+    false
+   ],
+   [
+    "C",
+    "短暂延伸",
+    true
+   ],
+   [
+    "D",
+    "瞬间",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 36
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）民法基本原则是贯穿于整个民事法律制度和民事规范始终的根本原则，对民事立法、民事司法和当事人民事活动具有的指导意义。不同的法律部门由于所的对象不同，所应采取的基本原则也不同。29题本·言语理解与表达填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "普遍调整",
+    true
+   ],
+   [
+    "B",
+    "普适针对",
+    false
+   ],
+   [
+    "C",
+    "全面适用",
+    false
+   ],
+   [
+    "D",
+    "具体覆盖",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 37
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）七夕着传统女性乞巧习俗、忠贞不渝爱情观，被贴上现代时尚情人节的标签，已经愈加成为传统文化的窗口，成为青年人眼中表达浪漫爱情的舞台。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "承继宣扬",
+    true
+   ],
+   [
+    "B",
+    "发展弘扬",
+    false
+   ],
+   [
+    "C",
+    "沿袭推广",
+    false
+   ],
+   [
+    "D",
+    "跟随宣扬",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 38
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）我们知道，制度是深深一个国家的历史、文化和现实之中的。一种制度只有与自身的历史、文化高度融合，才能最好地发挥其填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "融人效果",
+    false
+   ],
+   [
+    "B",
+    "渗入效用",
+    false
+   ],
+   [
+    "C",
+    "嵌入效能",
+    true
+   ],
+   [
+    "D",
+    "切人作用",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 39
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）放弃语音套餐收入，才是流量经营全面成熟的开始。可喜的是，随着4G网络的普及，技术上VoLTE已经没有问题，商业上随着用户的，移动互联网产品的，流量经营正在迎来井喷的时代。语音通话方式也将成为流量经营的一部分，到那时，运营商将会有更充足的底气，敢于放手语音业务，彻底投人流量经营的怀抱。填入画横线部分最恰当的一项是：变更",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "转向进步",
+    false
+   ],
+   [
+    "B",
+    "迁移发展",
+    true
+   ],
+   [
+    "C",
+    "移动",
+    false
+   ],
+   [
+    "D",
+    "转动更新",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 40
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）21世纪以来，大量书札文献以各种形式出版与，也促进了学术界深入挖掘其中所包含的史料价值，阑发其中所的历史意义。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "披露蕴涵",
+    true
+   ],
+   [
+    "B",
+    "问世突显",
+    false
+   ],
+   [
+    "C",
+    "流传显露",
+    false
+   ],
+   [
+    "D",
+    "展示隐藏",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 41
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）如何去隐藏在已千变万化了的各种学说背后尚未完全遗失的经典原貌，获得真实的体温和人格图谱，从而剥离后世僵化、变异、乏味、随心所欲的解读,尤其是那些自以为智慧的肢解和，当是目前国学热当中应解决的重要问题。填入画横线部分最恰当的一项是：行测必做5000题30",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "探求伪造",
+    false
+   ],
+   [
+    "B",
+    "搜寻修改",
+    false
+   ],
+   [
+    "C",
+    "发掘篡改",
+    true
+   ],
+   [
+    "D",
+    "挖掘窜改",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 42
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·浙江）科学家采用了一个笨办法，准备好一大片森林等兔子来撞。他们在巨大的探测器里装上大量反应物质，等待过路的暗物质粒子撞上其中某个原子核。当然，为了尽可能排除其他粒子撞上原子核而产生的干扰，科学家往往把这样的暗物质探测器深埋在地下，让厚厚的岩层把不会隐身的其他粒子尽可能外面。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·浙江",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "碰巧屏蔽",
+    true
+   ],
+   [
+    "B",
+    "突然隔绝",
+    false
+   ],
+   [
+    "C",
+    "随机阻挡",
+    false
+   ],
+   [
+    "D",
+    "偶然封闭",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 43
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·陕西）中国文化讲究因果，具体到陶瓷之上，明显能看出地域文化的影响。例如同为宋代青瓷，北方耀州青瓷与南方龙泉青瓷各自凸显性格，耀州青瓷呈橄榄绿,强调；龙泉青瓷呈梅子青，表现，演绎各自地方性格特点，色泽即可见一斑。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "豪放婉约",
+    false
+   ],
+   [
+    "B",
+    "深沉柔婉",
+    true
+   ],
+   [
+    "C",
+    "沉着俏皮",
+    false
+   ],
+   [
+    "D",
+    "稳重●活泼",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 44
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）研究人员表示，忆阻器被植人人体内后，可以执行体征疾病、伤口愈合跟踪的任务，并能够将信息无线传送给医生或患者，以便于采取后续措施。实验证实，可降解忆阻器可读写数百次，在干燥情况下，信息可储存3个月。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "监测预警",
+    true
+   ],
+   [
+    "B",
+    "监控预防",
+    false
+   ],
+   [
+    "C",
+    "监视预报",
+    false
+   ],
+   [
+    "D",
+    "监管预测",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 45
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）当前及今后相当长的一段时期内，教育公平这一价值理念将是社会大众对教育的基本而强烈的诉求，是教育政策的核心价值追求，也是政府推动教育改革的基本。在教育公平价值理念的映射下，教育成为促进、实现教育公平的策略选择。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "目的平等",
+    false
+   ],
+   [
+    "B",
+    "目标均衡",
+    true
+   ],
+   [
+    "C",
+    "要求均等",
+    false
+   ],
+   [
+    "D",
+    "需求平衡",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 46
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）缺乏必要的试错机制，很多政府部门和领导干部对改革创新都心情绪，“不求有功，但求无过”，导致改革创新动力普遍不足。以此来看，“改革失败”的责任，创造一个宽容的创新环境，才能让更多的政府部门和官员31题本·言语理解与表达“甩开膀子”谋改革、搞创新。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "畏难豁免",
+    true
+   ],
+   [
+    "B",
+    "紧张宽恕",
+    false
+   ],
+   [
+    "C",
+    "侥幸淡化",
+    false
+   ],
+   [
+    "D",
+    "抵触忽略",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 47
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·河南）面对逆境，尼采从来都是一个内心无比强大的人。在他的著作中，最广为人知的莫过于《查拉图斯特拉如是说》了。这本代表作在1885年出版时销量，但这并不能阻止他继续深入思考自已的理论。在此之后，他还是不断自费印书。直到去世之后，他的思想才被重新和重视起来。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2017·河南",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "下降审视",
+    false
+   ],
+   [
+    "B",
+    "惨淡发掘",
+    true
+   ],
+   [
+    "C",
+    "领先评价",
+    false
+   ],
+   [
+    "D",
+    "尚可借鉴",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 48
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·国家）开花的塔黄零星分布在空旷的流石滩上，蕈蚊是如何及时发现它们的呢？原来蕈蚊头上的触角就像人类的鼻子，能感受并不同的气味。开花的塔黄会挥发20多种化合物，其中一种不常见的化合物（二甲基丁酸甲酯）占所有化合物的30%左右。野外诱导试验证实，这种化合物可以传粉的蕈蚊，为其“导航”。填人画横线部分最恰当的一项是：吸引",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "记忆引诱",
+    false
+   ],
+   [
+    "B",
+    "区分",
+    true
+   ],
+   [
+    "C",
+    "识别刺激",
+    false
+   ],
+   [
+    "D",
+    "追踪迷惑",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 49
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）如今音乐产业环境受到一定冲击，这使从业者十分茫然，但也须过分环境。相较于过去获取音乐渠道不多、选择相对较少的情况而言，现在文化消费的选择更为多元化。就此做出“现在不会有大师”这样的判断还太大师不可能只停留在过去。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "抱怨 武断",
+    true
+   ],
+   [
+    "B",
+    "依赖随意",
+    false
+   ],
+   [
+    "C",
+    "重视 轻率",
+    false
+   ],
+   [
+    "D",
+    "苛求主观",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 50
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）区域是建构出来的。根据人为的目的划出的区域，已经不是原来在大地中生机勃勃、复杂多样的原本的那个地方了。划定的区域是简单的对世界的某一方面的一个概括而已，切不可我们建构的区域，认为这就是真实的世界，是天经地义的客观真理，不容他人或者变化一下。填入画横线部分最恰当的一项是：行测必做5000题32",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "固执申辩",
+    false
+   ],
+   [
+    "B",
+    "迷信置喙",
+    true
+   ],
+   [
+    "C",
+    "痴迷讨论",
+    false
+   ],
+   [
+    "D",
+    "拘泥质疑",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 51
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）虽然大学校园环境的文化需染作用是在潜移默化中逐步实现的，但为了保证校园环境有效地发挥作用，有必要对某些非言语信息有意识地进行，让其主动争取学生的关注。不过，尽量不要让环境带有过于强制的色彩，以免使人产生心理。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "引导厌倦",
+    false
+   ],
+   [
+    "B",
+    "整合抵触",
+    false
+   ],
+   [
+    "C",
+    "强化排斥",
+    true
+   ],
+   [
+    "D",
+    "改造逆反",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 52
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）用饮用水国家标准衡量矿物质水，这对企业本身或许是好事，因为这着它不需要执行一个非常严格的标准。而在矿泉水“标准门”事件之前，消费者对饮用水安全性的没有上升到一个很高的层面，所以对企业产品而言，只要符合国家标准，就可以在市面上销售。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "意味认知",
+    true
+   ],
+   [
+    "B",
+    "标志认识",
+    false
+   ],
+   [
+    "C",
+    "预示了解",
+    false
+   ],
+   [
+    "D",
+    "暗示理解",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 53
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·四川）我们应该“动物的大脑越大越聪明”这一观念。从19世纪的颅相学到21世纪的大脑扫描科学都认为，大脑的体积决定了认知能力。但有许多事实与此不符。有人出生时只有2/3的脑组织，但成年后并无认知。随着年龄增长，人的认知水平在提高，大脑体积却会缩小。对认知表现来说，重要的不是大脑的硬件，而是“软件”。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2018·四川",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "质疑差异",
+    false
+   ],
+   [
+    "B",
+    "抛弃缺陷",
+    true
+   ],
+   [
+    "C",
+    "修正障碍",
+    false
+   ],
+   [
+    "D",
+    "排除问题",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 54
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）虽然太阳黑子变弱和地球变冷表面看有着70年的重合，但没有证据表明“小冰期”是由太阳黑子无记录造成的。而实际上，与太阳活动周强弱有关的全球气温变化其实是很小的，根据经验，最近几次太阳活动周影响全球平均气温的变化只有0.1摄氏度左右。因此，千万别随便就断言太阳周期变化能直接影响地球气温的，以为地球马上就要进入新一轮“冰河期”了。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "范畴突变",
+    false
+   ],
+   [
+    "B",
+    "幅度骤变",
+    true
+   ],
+   [
+    "C",
+    "范围剧变",
+    false
+   ],
+   [
+    "D",
+    "跨度巨变",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 55
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广东）在新时代，我们要大力提升发展质量和效益，坚持质量第一、质量变革、质量优势、建设质量强国、高质量发展。33题本·言语理解与表达填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "发动增强追求",
+    false
+   ],
+   [
+    "B",
+    "提倡增加达到",
+    false
+   ],
+   [
+    "C",
+    "推动增强实现",
+    true
+   ],
+   [
+    "D",
+    "倡导增加完成",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 56
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·上海）这深居太华山中的云湖，千百年来仰望着苍翠古木，竹林风语，翁敛着涓涓溪流，融天地日月于怀中。见证着山河沧桑，着这方古老的土地。于万物生长的节奏中，感知着大地的冷暖，虚怀若谷地默默着历史岁月。填人画横线部分最恰当的一项是：守望沉潜守护沉潜守护沉淀",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·上海",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "聆听",
+    false
+   ],
+   [
+    "B",
+    "倾听",
+    false
+   ],
+   [
+    "C",
+    "聆听守望沉淀",
+    true
+   ],
+   [
+    "D",
+    "倾听",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 57
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）地域可以，职务可以,职级可以，但党员的身份始终不动。不管身处何地、身居何位，都理应“牢记自已的第一身份是共产党员，第一职责是为党工作，做到忠诚于组织，任何时候都与党同心同德”。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "变动调动流动",
+    false
+   ],
+   [
+    "B",
+    "转动变动流动",
+    false
+   ],
+   [
+    "C",
+    "调动流动变动",
+    false
+   ],
+   [
+    "D",
+    "流动变动调动",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 58
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·山东）儒家在对“君子”进行阐述的时候，采取了一种极为的理论技巧。那就是，不直接定义“君子”，只是反复它的对立面。“君子”的对立面，就是“小人”。用一系列的否定，来完成一种肯定。这种方法，在逻辑学上，是通过外延，来包围内涵。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2018·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "罕见列举缩小",
+    false
+   ],
+   [
+    "B",
+    "精当强调剔除",
+    false
+   ],
+   [
+    "C",
+    "巧妙叙述限制",
+    false
+   ],
+   [
+    "D",
+    "高明描绘确认",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 59
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014：国家）叶片卷恋地，栖息在行人的身上，或是顺着头发身体，无所依托地静卧在褐色的砖道上。深褐、暗红、浅黄及那些许丝丝绿色，在叶脉中若隐若现地填入画横线部分最恰当的一项是：飘落交织",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "ZG5000言语",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "回旋滑落流消",
+    true
+   ],
+   [
+    "B",
+    "回旋",
+    false
+   ],
+   [
+    "C",
+    "舞动滑落交织",
+    false
+   ],
+   [
+    "D",
+    "舞动飘落流尚",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 60
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广东）①对于民众反映比较集中紧迫的事情，不当容易引发群体性事件。②大雾天气致使飞机无法按时起飞，了我一天的行程。行测必做5000题34③央行发布的史上最严新规是为了日益猬狂的金融犯罪和网络诈骗。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2017·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "应对耽误遏制",
+    true
+   ],
+   [
+    "B",
+    "治理耽搁遇止",
+    false
+   ],
+   [
+    "C",
+    "操作误遏止",
+    false
+   ],
+   [
+    "D",
+    "处置耽搁遏制",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 61
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·陕西）随着资本主义的迅猛发展，对资本主义的批判也越来越多。保守主义者们担心，与市场相适应的价值观和趋向到人类的其他组织形式中，会破坏国家、社区、家庭等组织。人们将自身与政府的关系简单地看作是一种市场关系，实质上是一种市场价值观的过度。同样，人们将市场的经济理性带到婚姻关系、家庭关系之中。不论是伯克、黑格尔、阿诺德，还是默瑟尔、哈贝马斯，事实上都在担优市场经济的思想渗透到所有的人类关系之中，进而人类社会的“温情”填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "C",
+  "explanation": null,
+  "source": "2018·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "扩散滥用稀释",
+    false
+   ],
+   [
+    "B",
+    "散逸蔓延稀释",
+    false
+   ],
+   [
+    "C",
+    "外溢蔓延瓦解",
+    true
+   ],
+   [
+    "D",
+    "扩展滥用瓦解",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 62
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·重庆）新媒体的发展，尤其是自媒体的兴起，挑战着传统的新闻生产机制，在信息超载的同时，使新闻生产“去中心化”，新闻流动的把关功能，不实消网络。弥尔顿设想的“意见的自由市场”的自净功能并未实现，很多情况下谣言往往“”真相。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "D",
+  "explanation": null,
+  "source": "2016·重庆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "消减充满淡化",
+    false
+   ],
+   [
+    "B",
+    "降低充盈消融",
+    false
+   ],
+   [
+    "C",
+    "削弱充溢消淡",
+    false
+   ],
+   [
+    "D",
+    "减弱充斥稀释",
+    true
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 63
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）地理位置不在沿线直接范围内的国家，也可以用新的形式加入“一带一路”合作，政策沟通、设施、贸易、资金、民心相通这五大合作理念与内容适用于世界上所有的国家和地区。随着形势的发展，“一带一路”也必将成为联结世界、融人全球的更为广阔的国际合作平台。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "A",
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "联通畅通融通",
+    true
+   ],
+   [
+    "B",
+    "畅通联通融通",
+    false
+   ],
+   [
+    "C",
+    "畅通融通联通",
+    false
+   ],
+   [
+    "D",
+    "融通畅通联通",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 64
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·国家）建筑设计，是一个科学问题，也是一个民主决策问题，规划设计要专业人士的意见，艺术创新。但是，城市公共建筑的设计规划，又是重要的公共事务，需要遵循民主决策、公开决策的原则，通过制度化的渠道，公众尤其是当地民众的意见。35题本·言语理解与表达搭时代脉搏。唯有如此，才有可能让这种“新民俗”填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": "B",
+  "explanation": null,
+  "source": "2016·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "相沿成俗",
+    false
+   ],
+   [
+    "B",
+    "蔚然成风",
+    true
+   ],
+   [
+    "C",
+    "久盛不衰",
+    false
+   ],
+   [
+    "D",
+    "约定俗成",
+    false
+   ]
+  ],
+  "_section": 1,
+  "_qnum": 65
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2015·国家）从统计学角度看，用平均数指标反映趋势虽精确敏感，但也有其致命弱点，尤其是平均数的“”，很容易掩盖个体之间的差异。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2015·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "以管窥天",
+    false
+   ],
+   [
+    "B",
+    "削峰填谷",
+    false
+   ],
+   [
+    "C",
+    "大而化之",
+    false
+   ],
+   [
+    "D",
+    "等量齐观",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 7
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）如果仅仅将农村示范点建设成供人参观、应对检查的门面工程来扩造，则与示范点建设初衷填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "大相径庭",
+    false
+   ],
+   [
+    "B",
+    "不谋而合",
+    false
+   ],
+   [
+    "C",
+    "南辕北辙",
+    false
+   ],
+   [
+    "D",
+    "不约而同",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 8
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）国际电信世界大会上，审议具有24年历史的《国际电信规则》是一个巨大的挑战，因为要确保它能，适应新一代信息通信技术用户的需求和全球化、激烈竞争和创新不断加深的技术环境。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "推陈出新",
+    false
+   ],
+   [
+    "B",
+    "与时俱进",
+    false
+   ],
+   [
+    "C",
+    "精益求精",
+    false
+   ],
+   [
+    "D",
+    "破旧立新",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 9
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·天津）意志力特训是训练孩子以坚强的意志，带领自已的团队，并百折不挠、二、勇敢地克服困难。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·天津",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "坚若磐石",
+    false
+   ],
+   [
+    "B",
+    "固若金汤",
+    false
+   ],
+   [
+    "C",
+    "坚不可摧",
+    false
+   ],
+   [
+    "D",
+    "稳如泰山",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 10
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）圆明园废墟是北京城最有历史感的文化遗迹之一，如果把它完全铲平，造一座崭新的圆明园，该是多么。大清王朝不见了，熊熊火光不见了，民族的郁愤不见了，历史的感悟不见了，抹去了昨夜的故事，收拾来的只是今日的游戏。填人画横线部分最恰当的一项是：41题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "天马行空",
+    false
+   ],
+   [
+    "B",
+    "得不偿失",
+    false
+   ],
+   [
+    "C",
+    "耸人听闻",
+    false
+   ],
+   [
+    "D",
+    "不可思议",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 11
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·浙江）在候鸟的眼中，中国的东北是湖沼成群、草水茫茫的绝佳驿站。每年春季，鹤、鹳、天鹅等候鸟纷纷飞向安静凉爽的地球北端求偶育雏。漫漫长路之中，它们会地从富饶的东北湿地经过，有的吃饱睡足后继续北上，有的则干脆在这里筑巢成家，等待秋天的到来。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·浙江",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "千里超超",
+    false
+   ],
+   [
+    "B",
+    "拖家带口",
+    false
+   ],
+   [
+    "C",
+    "不约而同",
+    false
+   ],
+   [
+    "D",
+    "隔三岔五",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 12
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广州）雾霾的形成，因素很多，是个长期积累的过程。治理雾霾也不是的，而是要打持久战，久久为功。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "信手括来",
+    false
+   ],
+   [
+    "B",
+    "一而就",
+    false
+   ],
+   [
+    "C",
+    "立竿见影",
+    false
+   ],
+   [
+    "D",
+    "轻而易举",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 13
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·国家）在这个万物互通互联的时代，单个企业是无法“”的，只有人人安全、合作伙伴都安全、整个环境都安全，才能最大限度地保障自已的网络安全，这也是网络安全的更高等级一一生态安全。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "明哲保身",
+    false
+   ],
+   [
+    "B",
+    "独善其身",
+    false
+   ],
+   [
+    "C",
+    "自给自足",
+    false
+   ],
+   [
+    "D",
+    "自力更生",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 14
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）中国是文明古国，礼仪教化之邦。如果有人在大庭广众之下喧哗不止，则不免让人填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "侧目而视",
+    false
+   ],
+   [
+    "B",
+    "恨之入骨",
+    false
+   ],
+   [
+    "C",
+    "置若罔闻",
+    false
+   ],
+   [
+    "D",
+    "不以为然",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 15
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）科普影评的作者应寻找科学与电影的交汇点，将科普和艺术，启迪思想。他们将前沿领域研究成果，结合电影转化为更轻松易懂的文字，面向更多读者。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "融会贯通",
+    false
+   ],
+   [
+    "B",
+    "合二为一",
+    false
+   ],
+   [
+    "C",
+    "珠联璧合",
+    false
+   ],
+   [
+    "D",
+    "相提并论",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 16
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·吉林）“愤怒”是对德国作家格拉斯个人风格的准确概括。然而，在他的盖棺之作《万物归一》里，这种“愤怒”似乎已经不那么了。行测必做5000题42填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "引人注目",
+    false
+   ],
+   [
+    "B",
+    "显而易见",
+    false
+   ],
+   [
+    "C",
+    "司空见惯",
+    false
+   ],
+   [
+    "D",
+    "锋芒毕露",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 17
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·浙江）19世纪末，中国维新派代表人物严复将经济学家亚当·斯密的著作译为《原富》，献给光绪皇帝，但并没有引起足够重视。可以说，与市场经济是近代中国经济落后的重要原因。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·浙江",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "若即若离",
+    false
+   ],
+   [
+    "B",
+    "分道扬",
+    false
+   ],
+   [
+    "C",
+    "南辕北辙",
+    false
+   ],
+   [
+    "D",
+    "失之交臂",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 18
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）几年前，曾有人写文章发问：雄辩胜于事实的年代，谁关心真相？这话可谓。听清事实，是一切判断的基础。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "奇谈怪论",
+    false
+   ],
+   [
+    "B",
+    "掷地有声",
+    false
+   ],
+   [
+    "C",
+    "振聋发",
+    false
+   ],
+   [
+    "D",
+    "不可理喻",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 19
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·国家）实际上雾霾形成的原因是多方面的，识别污染源是有效治理大气污染至关重要的环节。对京津冀区域而言，认清区域内污染源的共性及差别，有助于区域内地区地对污染源进行综合治理。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "有的放矢",
+    false
+   ],
+   [
+    "B",
+    "因地制宜",
+    false
+   ],
+   [
+    "C",
+    "齐心协力",
+    false
+   ],
+   [
+    "D",
+    "正本清源",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 20
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·天津）买书，是藏书家郑振铎几乎每天要做的一件事，流连于书肆地摊上“淘旧书”，几十载不曾间断。按说该有一定经验不至于上当受骗了吧？无奈率真坦诚、的郑先生不善委蛇之术，每次买书遇到中意的本子，便是一连串“不得了”“好极了”的激动赞叹声，接着还大侃书的种种优点和妙处，待侃完交钱时，精明的书贩当然饶不过他了。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·天津",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "光明正大",
+    false
+   ],
+   [
+    "B",
+    "光明磊落",
+    false
+   ],
+   [
+    "C",
+    "胸无城府",
+    false
+   ],
+   [
+    "D",
+    "高深莫测",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 21
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·广州）讲故事当然需要技巧，让一个无趣的人来讲，即使故事的内涵深厚，又曲折回环、跌容起伏，也可能被讲得填人画横线部分最恰当的一项是：43题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "丢三落四",
+    false
+   ],
+   [
+    "B",
+    "索然无味",
+    false
+   ],
+   [
+    "C",
+    "不堪人耳",
+    false
+   ],
+   [
+    "D",
+    "天花乱坠",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 22
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·联考）除了那些家喻户晓的“国宝”，中华大地上还有不少动物正处于或正在走向“濒危”行列。由于种种原因，它们所面临的危险还未被重视，甚至它们的名字和样子都填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "默默无闻",
+    false
+   ],
+   [
+    "B",
+    "鲜为人知",
+    false
+   ],
+   [
+    "C",
+    "无人问津",
+    false
+   ],
+   [
+    "D",
+    "一无所知",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 23
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广州）从十九大到二十大，是“两个一百年”奋斗目标的历史交汇期。我们既要全面建成小康社会、实现第一个百年奋斗目标，又要开启全面建设社会主义现代化国家新征程，向第二个百年奋斗目标进军。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "迎难而上",
+    false
+   ],
+   [
+    "B",
+    "乘势而上",
+    false
+   ],
+   [
+    "C",
+    "一鼓作气",
+    false
+   ],
+   [
+    "D",
+    "中流击水",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 24
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·联考）从亚里士多德开始，让文学艺术能够真正地还原现实，从而使人们能够在各种艺术样式中复现自己、观照自已，一直是理论家、艺术家的一个永恒的梦想。没想到，这个梦想居然被电影地实现了。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "分毫不差",
+    false
+   ],
+   [
+    "B",
+    "出人意料",
+    false
+   ],
+   [
+    "C",
+    "轻而易举",
+    false
+   ],
+   [
+    "D",
+    "马当先",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 25
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·国家）世界上没有完美无缺的医疗体系，无论是免费医疗还是市场化的医疗体系，都各有弊端。但从生存权和人的尊严的角度看，对个人免费或少量收费的医疗实乃填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "未雨绸缪",
+    false
+   ],
+   [
+    "B",
+    "万全之策",
+    false
+   ],
+   [
+    "C",
+    "大势所趋",
+    false
+   ],
+   [
+    "D",
+    "当务之急",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 26
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·联考）传媒产业的发展史，就是一部技术发展史。所以，当互联网技术之时，传统媒体的处境就开始变得尴尬。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "无孔不人",
+    false
+   ],
+   [
+    "B",
+    "突飞猛进",
+    false
+   ],
+   [
+    "C",
+    "如日中天",
+    false
+   ],
+   [
+    "D",
+    "一统天下",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 27
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）政府部门应该在社区治理中鼓励社区自治。假如政府部门在这过程中，没有处理好社区自治和政府管理的关系，那么，最终所做出的决策就很行测必做5000题44可能会引发社会矛盾。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "李代桃僵",
+    false
+   ],
+   [
+    "B",
+    "萧规曹随",
+    false
+   ],
+   [
+    "C",
+    "越粗代厄",
+    false
+   ],
+   [
+    "D",
+    "广纳良言",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 28
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·河南）文化传统的延续，从来不是地照搬照抄。取其精华，去其糟粕，根据时代发展做出合乎社会需求的调整，才是对文化的最好传承。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·河南",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "不假思索",
+    false
+   ],
+   [
+    "B",
+    "图吞枣",
+    false
+   ],
+   [
+    "C",
+    "按部就班",
+    false
+   ],
+   [
+    "D",
+    "一成不变",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 29
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·山东）解决当今人类遭遇的各种难题和危机，单靠一种文明价值的智慧和能量，常常显得。只有充分挖掘和利用各种不同性的文明价值资源，才能帮助人类破解难题、走出危机。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "捉襟见肘",
+    false
+   ],
+   [
+    "B",
+    "格格不入",
+    false
+   ],
+   [
+    "C",
+    "于事无补",
+    false
+   ],
+   [
+    "D",
+    "顾此失彼",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 30
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·吉林）近两年，有一种产自东北的非主流水果一—菇（这个“”在东北读作三声，并缀以儿化音）颇有之势。每逢春夏之交，大大小小的水果铺子，都少不了菇小巧的身影，而它特有的香气与口感据说确实俘获了不少姑娘的舌尖呢。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "一步登天",
+    false
+   ],
+   [
+    "B",
+    "后来居上",
+    false
+   ],
+   [
+    "C",
+    "反客为主",
+    false
+   ],
+   [
+    "D",
+    "登堂人室",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 31
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）重视新生代农民工的社会诉求，地解决他们面临的问题，对社会的有着十分重要的意义。填人画横线部分最恰当的一项是：高速发展长治久安",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "因地制宜全面提升",
+    false
+   ],
+   [
+    "B",
+    "因人而异",
+    false
+   ],
+   [
+    "C",
+    "因时制宜持续前行",
+    false
+   ],
+   [
+    "D",
+    "因势利导",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 32
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·山东）我们这一辈人所享受到的现代生活，就像一座越来越豪华、先进、舒适的大厦。生活在这样一座大厦中，不能只是。每个人不管这一辈子有多长，也不管是能力大还是能力小，总要多多少少为这座大厦的发展和完善,多多少少为这个世界留下点什么。填人画横线部分最恰当的一项是：出谋划策45题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "坐享其成添砖加瓦",
+    false
+   ],
+   [
+    "B",
+    "好逸恶劳",
+    false
+   ],
+   [
+    "C",
+    "得过且过竭尽全力",
+    false
+   ],
+   [
+    "D",
+    "括轻怕重精益求精",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 33
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·山东）晚明江南的富裕，提供了附庸风雅的环境与条件，使得饮茶风尚引发了名牌效应。先是苏州虎丘茶风行，然后有大方和尚以虎丘制茶法在徽州松萝山制的松萝茶。一旦成了名牌，人们追求时尚，茶，造就了明末，商家就有了商机，争相仿制，价格也直线上升。填入画横线部分最恰当的一项是：如影随形",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "如雷贯耳一掷千金",
+    false
+   ],
+   [
+    "B",
+    "闻名遐迩",
+    false
+   ],
+   [
+    "C",
+    "声名鹊起趋之若鹭",
+    false
+   ],
+   [
+    "D",
+    "风靡一时蜂拥而至",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 34
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·河南）“慢”以从容恬淡之姿重出江湖。尽管讲慢生活的书巡回宣传签售，尽管人们点击浏览着说慢的文字，汽车照样抢道，行人照样闯红灯，还是一个紧张拥挤恨不得什么都要赶上趟的节奏。在大干快上、只争朝夕的社会文化氛围的中，人们已渐次固化却甚少自知。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·河南",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "马不停蹄潜移默化",
+    false
+   ],
+   [
+    "B",
+    "争先恐后耳目染",
+    false
+   ],
+   [
+    "C",
+    "层出不穷日积月累",
+    false
+   ],
+   [
+    "D",
+    "络绎不绝推波助澜",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 35
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·吉林）美国耶鲁大学一项持续12年的研究表明：由父母同时带大的孩子智商高，他们在学校里的成绩往往更好，将来走向社会也更容易成功。尽管很多男性已经领悟到父教的，但现实生活中父教的缺位并不鲜见。中国家庭分工普遍注重“男主外，女主内”，投人到孩子身上的时间自然就会减少；有些男性存在浓厚的“大男子主义”情结，认为父教是“”，就算有时间，也不愿陪伴孩子；还有的父亲尚未认识到父教的必要性和重要性。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·吉林",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "大有裨益家长里短",
+    false
+   ],
+   [
+    "B",
+    "至关重要大材小用",
+    false
+   ],
+   [
+    "C",
+    "大有可为小题大做",
+    false
+   ],
+   [
+    "D",
+    "不可或缺雕虫小技",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 36
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）城市人口过度聚集，对土地、水、空气等资源的需求与消耗，而且由于使用不当，浪费严重，使得城市资源，越来越短缺，结果是房地价不断上涨，水资源和食物供应不足，清洁空气稀缺。填人画横线部分最恰当的一项是：山穷水尽危在旦夕",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "与日俱增供不应求",
+    false
+   ],
+   [
+    "B",
+    "有增无减",
+    false
+   ],
+   [
+    "C",
+    "旷日持久左支右继",
+    false
+   ],
+   [
+    "D",
+    "日甚一日",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 37
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·山东）在娱乐方式多元化的今天，“”是不少人（特别是中青年群体）对待戏曲的态度。这里面固然存在的偏见、难以静下心来欣赏戏曲之美行测必做5000题46等因素，却也有另一个无法回避的原因：一些戏曲虽然与观众之间没有屏幕之隔，却用艺术化的表演，讲述着与观众距离较远的生活。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·山东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "望洋兴叹我行我素",
+    false
+   ],
+   [
+    "B",
+    "望而生畏一叶障目",
+    false
+   ],
+   [
+    "C",
+    "敬而远之先人为主",
+    false
+   ],
+   [
+    "D",
+    "知难而退故步自封",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 38
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·河南）在利益驱动下、赶稿压力下，网络写作往往,恣情快意，顾不得考虑艺术品质和价值导向，让的所谓“文学”甚至文字垃圾充斥网络空间。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·河南",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "运笔如飞粗制滥造",
+    false
+   ],
+   [
+    "B",
+    "妙笔生花泥沙俱下",
+    false
+   ],
+   [
+    "C",
+    "笔走龙蛇良莠不齐",
+    false
+   ],
+   [
+    "D",
+    "笔下生风鱼龙混杂",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 39
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广州）“多”与“少”，两者之间绝不仅仅是数量上的对立存在，而恰恰是“量变”与“质变”之间的一个一味追求多，或一味追求少，都有可能把事物引的另一面。因而，在看待“多”与“少”上，也要有辩证的观点。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "独立状态意料之外",
+    false
+   ],
+   [
+    "B",
+    "中间过程无法控制",
+    false
+   ],
+   [
+    "C",
+    "相对状态难以接受",
+    false
+   ],
+   [
+    "D",
+    "演变过程截然相反",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 40
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广州）新媒体时代有新媒体时代的传播特点，从这些特点出发，对一些文章标题进行，以适应网络舆论场的传播，这样的做法不可。但有些“标题党”为吸引眼球，故意制作带有误导性、煽动性的标题，扭曲了原意，误导了读者，滋生了不必要的价值冲突。填人画横线部分最恰当的一项是：一语道破",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "精雕细琢",
+    false
+   ],
+   [
+    "B",
+    "全盘否定一成不变",
+    false
+   ],
+   [
+    "C",
+    "适度改造一概否定",
+    false
+   ],
+   [
+    "D",
+    "改头换面一笑了之",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 41
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·江苏）统计学家告诉我们，买一张彩票正好中大奖的概率比如说，英国国家彩票的中奖概率大概就只有1400万分之一，相当于你连续投24次硬币全是正面朝上，远远低于被的陨石砸中的可能性。填人画横线部分最恰当的一项是：文从天而降",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "微不足道祸从天降",
+    false
+   ],
+   [
+    "B",
+    "绝无仅有不期而至",
+    false
+   ],
+   [
+    "C",
+    "不可多得不期而遇",
+    false
+   ],
+   [
+    "D",
+    "微乎其微",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 42
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2016·广东）社会保障研究可能，各国的制度特征可能,各个学科对社会保障的解读可能，但是社会保障力量的永恒话题说到底是要对不47题本·言语理解与表达同国家、不同发展水平、不同文化传统背景下的平衡点位置做出解释。填入画横线部分最恰当的一项是：千差万别千头万绪千头万绪千变万化千头万绪千差万别千差万别千变万化",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2016·广东",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "千变万化",
+    false
+   ],
+   [
+    "B",
+    "千差万别",
+    false
+   ],
+   [
+    "C",
+    "千变万化",
+    false
+   ],
+   [
+    "D",
+    "千头万绪",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 43
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江苏）读书有两种情形，一种是看大意，地看故事消磨时间，种是细细品味，去寻找文章的构思，寻找文外的寓意。这就是读书的两种不同的方式和目的。不过，不管是哪一种读书方式都是一种知识的积累。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·江苏",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "走马观花字句酌",
+    false
+   ],
+   [
+    "B",
+    "圆图吞枣_字里行间",
+    false
+   ],
+   [
+    "C",
+    "一目十行全神贯注",
+    false
+   ],
+   [
+    "D",
+    "漫不经心片言只语",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 44
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·陕西）6世纪时，君士坦丁堡人口已逾百万，这在当时的欧洲，无城市可，欧亚的货物在此云集交易，这座“沟通东方与西方的黄金桥梁”是个巨大的贸易市场，，中古时期，君士坦丁堡一直保持着首富地位直至13世纪。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·陕西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "相提并论琳琅满目",
+    false
+   ],
+   [
+    "B",
+    "与之比肩琳琅满目",
+    false
+   ],
+   [
+    "C",
+    "相提并论无奇不有",
+    false
+   ],
+   [
+    "D",
+    "与之比肩无奇不有",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 45
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·天津）华尔街股市。2000年3月以来，“牛”市格局长达10年之久的华尔街股市，一路下滑。10月18日，一股强劲的寒流吹袭全球股市。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·天津",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "惊弓之鸟风云变幻",
+    false
+   ],
+   [
+    "B",
+    "杯弓蛇影闻风而动",
+    false
+   ],
+   [
+    "C",
+    "草木皆兵千变万化",
+    false
+   ],
+   [
+    "D",
+    "风声鹤喉风云突变",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 46
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广州）新，还往往伴随着快。新业态的成长有时快到、机会宝贵到稍纵即逝，好像逼着经营者不得不“多干快上”。但从另外一个角度看，新业态往往又更敏感、更脆弱，不确定性更大，更加容不得、“蒙眼狂奔”。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·广州",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "一日千里急功近利",
+    false
+   ],
+   [
+    "B",
+    "突飞猛进好大喜功",
+    false
+   ],
+   [
+    "C",
+    "日新月异浮光掠影",
+    false
+   ],
+   [
+    "D",
+    "应接不暇好高远",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 47
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）迟迟没有落地的补贴细则，让有意投资光伏发电站的企业们对光伏发电站的大蛋糕。上周，据某研究人员透露，对光伏发电站的补贴已经纳入财政预算，将“缺多少补多少”，但大部分企业对此却依然。在补贴不到位的情行测必做5000题48况下，企业还将面临垫资的风险，因此就整个光伏发电站市场而言，资金实力雄厚的大企业占据主导地位是的。填入画横线部分最恰当的一项是：举棋不定显而易见犹豫不决有目共睹将信将疑不言而喻优柔寡断不证自明",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "望洋兴叹",
+    false
+   ],
+   [
+    "B",
+    "望而生畏",
+    false
+   ],
+   [
+    "C",
+    "望而却步",
+    false
+   ],
+   [
+    "D",
+    "望尘莫及",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 48
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）直到3月中旬，长白山远望还是一片白雪瞪。春天的脚步出了关外，到长白山脚下时，就有点了。其实，立春以后没几天，长白山区的积雪就开始悄悄融化了，别看山里依旧寒风刺骨，但这与严冬腊月已经大不一样，凛中还夹杂着一丝潮湿、的暖意。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "外强中干乍暖还寒",
+    false
+   ],
+   [
+    "B",
+    "人不敷出犹抱琵琶",
+    false
+   ],
+   [
+    "C",
+    "优柔寡断东躲西藏",
+    false
+   ],
+   [
+    "D",
+    "蹋不前若隐若现",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 49
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2014·国家）历史反复昭示我们，向海而兴，背海而衰，是一条的铁律。中华民族要实现伟大复兴，必须地走向海洋、经略海洋，坚定不移地走以海富国、以海强国的和平发展之路。填人画横线部分最恰当的一项是：勇往直前昂首阔步",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2014·国家",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "互古不变义无反顾",
+    false
+   ],
+   [
+    "B",
+    "一成不变",
+    false
+   ],
+   [
+    "C",
+    "原封不动理直气壮",
+    false
+   ],
+   [
+    "D",
+    "颠扑不破",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 50
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）制定一项公共政策时就算再、未雨绸缪，也不能无视广大基层民众的心声，无视“公平”二字，否则只能成为填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "管中窥豹众叛亲离",
+    false
+   ],
+   [
+    "B",
+    "居安思危无的放矢",
+    false
+   ],
+   [
+    "C",
+    "高谈宏论 千夫所指",
+    false
+   ],
+   [
+    "D",
+    "高瞻远瞩众矢之的",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 51
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·辽宁）诗所具有的诸般品格中，十分重要的一条，便是对生活的的打量。诗人的目光仿佛具有的本领，生活中许多琐碎、平淡甚至枯燥的事物，经过它的抚摸，便产生了丰富的意味。填入画横线部分最恰当的一项是：力透纸背目光如炬49题本·言语理解与表达",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·辽宁",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "别具一格明察秋毫",
+    false
+   ],
+   [
+    "B",
+    "独树一帜",
+    false
+   ],
+   [
+    "C",
+    "别具匠心点石成金",
+    false
+   ],
+   [
+    "D",
+    "别开生面",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 52
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江西）回顾过去五年，诸多矛盾叠加，各种风险挑战，国内外很多情况是改革开放以来没有碰到过的，我国改革发展成就实属填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "扑面而来翻天覆地",
+    false
+   ],
+   [
+    "B",
+    "层出不穷有目共睹",
+    false
+   ],
+   [
+    "C",
+    "接而至来之不易",
+    false
+   ],
+   [
+    "D",
+    "纷至脊来前所未有",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 53
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·江西）一个大党诞生于一条小船。从此，中国共产党引领革命的航船，，开天辟地，使中国革命的面貌填入画横线部分最恰当的一项是：改头换面",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·江西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "披荆斩棘改天换地",
+    false
+   ],
+   [
+    "B",
+    "乘风破浪",
+    false
+   ],
+   [
+    "C",
+    "踏浪而来日新月异",
+    false
+   ],
+   [
+    "D",
+    "劈波浪焕然一新",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 54
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广西）我们常说“科学是开放的”，不是“封闭的”，科学的开放性意味着它不是永恒真理，可能出错。可是现实生活中，有些人在科学研究中对科学错误一旦自已的科研成果遇到质疑就立刻将其。这看似暂时化解了危机，其实禁了自身的发展。填入画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·广西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "讳莫如深束之高阁",
+    false
+   ],
+   [
+    "B",
+    "若寒蝉置之脑后",
+    false
+   ],
+   [
+    "C",
+    "避而不谈改头换面",
+    false
+   ],
+   [
+    "D",
+    "谈虎色变弃如蔽履",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 55
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2017·新疆）近年来，随着金融改革开放步伐加快，多层次资本市场建设稳步推进，金融市场创新日趋活跃，与金融密切相关的金融信息服务出现的发展，但金融信息质量，市场秩序有待健全规范。填入画横线部分最恰当的一项是：良不齐",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2017·新疆",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "突飞猛进参差不齐",
+    false
+   ],
+   [
+    "B",
+    "日新月异E",
+    false
+   ],
+   [
+    "C",
+    "江河日下泥沙俱下",
+    false
+   ],
+   [
+    "D",
+    "与日俱增鱼目混珠",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 56
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·广西）当下，建立网络安全防御体系尤为重要。“每一台计算机都在贯彻人类的意志，互联网是人类社会在数字空间的投影。”因此，毫无疑问，网络世界也需要技术伦理。但是面对的黑客，伦理层面只能是。因此，唯有主动出击，排查风险，防患于未然，才是真正的解决之道。填人画横线部分最恰当的一项是：",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·广西",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [
+   [
+    "A",
+    "不怀好意缘木求鱼",
+    false
+   ],
+   [
+    "B",
+    "别有用心对牛弹琴",
+    false
+   ],
+   [
+    "C",
+    "心术不正鸡同鸭讲",
+    false
+   ],
+   [
+    "D",
+    "居心测与虎谋皮",
+    false
+   ]
+  ],
+  "_section": 2,
+  "_qnum": 57
+ },
+ {
+  "subject": "行测",
+  "category": "言语理解与表达",
+  "qtype": "single",
+  "stem": "（2018·联考）2012年“蛟龙”在这里进行7000米海试第一潜时，受热带风暴“古超”影响曾一再推迟；2016年，超强台风“尼伯特”不期而至，“蛟龙”号只得取消下潜、行测必做5000题50",
+  "difficulty": 3,
+  "knowledge_point": "言语理解与表达",
+  "answer": null,
+  "explanation": null,
+  "source": "2018·联考",
+  "copyright_owner": "导入-待核实",
+  "is_verified": false,
+  "options": [],
+  "_section": 2,
+  "_qnum": 58
+ }
+]

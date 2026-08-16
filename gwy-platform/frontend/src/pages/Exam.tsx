@@ -83,6 +83,8 @@ export default function Exam() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
+  const [activeQid, setActiveQid] = useState<number | null>(null); // 当前聚焦题（键盘/导航定位）
+  const qRefs = useRef<Record<number, HTMLDivElement | null>>({}); // 题卡 DOM 引用，用于滚动定位
 
   // 限时倒计时状态
   const [deadline, setDeadline] = useState(0); // 截止时间戳(ms)
@@ -164,6 +166,46 @@ export default function Exam() {
     return () => window.removeEventListener("beforeunload", handler);
   }, [phase]);
 
+  // 做题阶段键盘快捷键：A–D / 1–4 选择当前题；Enter 跳到下一题（优先未作答）
+  useEffect(() => {
+    if (phase !== "doing" || tab !== "exam") return;
+    function onKey(e: KeyboardEvent) {
+      const el = document.activeElement as HTMLElement | null;
+      const tag = (el?.tagName || "").toUpperCase();
+      const map: Record<string, string> = {
+        a: "A", b: "B", c: "C", d: "D", e: "E",
+        "1": "A", "2": "B", "3": "C", "4": "D", "5": "E",
+      };
+      const k = e.key.toLowerCase();
+      if (map[k]) {
+        const qid = activeQid ?? paper[0]?.id;
+        if (qid != null) {
+          e.preventDefault();
+          setAnswers((s) => ({ ...s, [qid]: map[k] }));
+        }
+        return;
+      }
+      if (k === "enter") {
+        if (tag === "BUTTON") return; // 让「交卷」按钮原生回车生效，避免冲突
+        e.preventDefault();
+        const ids = paper.map((q) => q.id);
+        if (!ids.length) return;
+        const cur = activeQid ?? ids[0];
+        const curIdx = ids.indexOf(cur);
+        let nextId: number | undefined;
+        for (let i = 1; i <= ids.length; i++) {
+          const cand = ids[(curIdx + i) % ids.length];
+          if (!answers[cand]) { nextId = cand; break; } // 优先跳到第一道未答题
+        }
+        nextId = nextId ?? ids[(curIdx + 1) % ids.length];
+        setActiveQid(nextId);
+        qRefs.current[nextId]?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase, tab, activeQid, paper, answers]);
+
   async function start() {
     setBusy(true);
     setErr("");
@@ -175,6 +217,7 @@ export default function Exam() {
       }
       setPaper(r.paper);
       setAnswers({});
+      setActiveQid(r.paper[0]?.id ?? null);
       setDeadline(Date.now() + r.duration_seconds * 1000);
       setRemaining(r.duration_seconds);
       setPhase("doing");
@@ -349,12 +392,12 @@ export default function Exam() {
           <div className="card" key={d.question_id} style={{ marginTop: 12 }}>
             <div className="row row--between">
               <span className="text-3">第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}</span>
-              <span className={d.is_correct ? "text-success" : "text-danger"}>
-                {d.is_correct ? "✔ 答对" : "✘ 答错"}
+              <span className={d.is_correct ? "text-success" : d.skipped ? "text-3" : "text-danger"}>
+                {d.is_correct ? "✔ 答对" : d.skipped ? "⚠ 暂无答案" : "✘ 答错"}
               </span>
             </div>
             {getStem(d) && <div className="q-item__stem" style={{ marginTop: 4 }}>{getStem(d)}</div>}
-            {!d.is_correct && (
+            {!d.is_correct && !d.skipped && (
               <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
                 正确答案：<b className="text-brand">{d.correct_answer}</b>
                 {d.selected ? `（你的作答：${d.selected}）` : ""}
@@ -366,6 +409,11 @@ export default function Exam() {
                     🔁 重练这道题
                   </button>
                 </div>
+              </div>
+            )}
+            {d.skipped && (
+              <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
+                ⚠ 本题暂无标准答案，已跳过，不计入正确率。
               </div>
             )}
           </div>
@@ -414,20 +462,74 @@ export default function Exam() {
       {tab === "exam" && phase === "doing" && (
         <>
           {info && <div className="info-text" style={{ marginBottom: 10 }}>{info}</div>}
-          <div className="exam-bar">
-            <span className="tag tag--brand">{subject || "全部"}</span>
-            <span className="text-3">已答 {answered}/{paper.length}</span>
-            {remaining > 0 && (
-              <span className={"exam-clock" + (remaining <= 60 ? " exam-clock--warn" : "")}>
-                ⏱ {fmtClock(remaining)}
+          <div className="exam-nav">
+            <div className="exam-bar">
+              <span className="tag tag--brand">{subject || "全部"}</span>
+              <span className="text-3">已答 {answered}/{paper.length}</span>
+              {remaining > 0 && (
+                <span className={"exam-clock" + (remaining <= 60 ? " exam-clock--warn" : "")}>
+                  ⏱ {fmtClock(remaining)}
+                </span>
+              )}
+              <button className="btn btn--primary btn--sm" disabled={busy} onClick={submit}>
+                {busy ? "阅卷中…" : "交卷"}
+              </button>
+            </div>
+            <div className="exam-nav__bar">
+              <span className="text-3" style={{ fontSize: 12 }}>答题进度</span>
+              <div className="exam-nav__progress progress">
+                <div
+                  className={"progress__bar" + (answered === paper.length && paper.length > 0 ? " progress--success" : "")}
+                  style={{ width: `${paper.length ? Math.round((answered / paper.length) * 100) : 0}%` }}
+                />
+              </div>
+              <span className="text-3" style={{ fontSize: 12, fontVariantNumeric: "tabular-nums" }}>
+                {paper.length ? Math.round((answered / paper.length) * 100) : 0}%
               </span>
-            )}
-            <button className="btn btn--primary btn--sm" disabled={busy} onClick={submit}>
-              {busy ? "阅卷中…" : "交卷"}
-            </button>
+            </div>
+            <div className="exam-palette">
+              {paper.map((q, i) => {
+                const done = !!answers[q.id];
+                const isActive = activeQid === q.id;
+                return (
+                  <button
+                    key={q.id}
+                    className={
+                      "exam-palette__chip" +
+                      (done ? " exam-palette__chip--done" : "") +
+                      (isActive ? " exam-palette__chip--active" : "")
+                    }
+                    onClick={() => {
+                      setActiveQid(q.id);
+                      qRefs.current[q.id]?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    title={`第 ${i + 1} 题${done ? "（已答）" : "（未答）"}`}
+                  >
+                    {i + 1}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="exam-palette__legend">
+              <span><i className="exam-palette__dot" style={{ background: "var(--brand)", border: "1.5px solid var(--brand)" }} /> 已答</span>
+              <span><i className="exam-palette__dot" style={{ background: "var(--surface)", border: "1.5px solid var(--surface-2)" }} /> 未答</span>
+              <span><i className="exam-palette__dot" style={{ background: "var(--surface)", border: "2px solid var(--text-1)" }} /> 当前</span>
+              <span className="muted">⌨ A–D 选题 · Enter 下一题</span>
+            </div>
           </div>
           {paper.map((q, i) => (
-            <div className="card" key={q.id} style={{ marginTop: 12 }}>
+            <div
+              className="card"
+              key={q.id}
+              ref={(el) => { qRefs.current[q.id] = el; }}
+              onClick={() => setActiveQid(q.id)}
+              style={{
+                marginTop: 12,
+                ...(activeQid === q.id
+                  ? { borderColor: "var(--brand)", boxShadow: "0 0 0 1.5px var(--brand)" }
+                  : {}),
+              }}
+            >
               <div className="q-item__meta" style={{ marginBottom: 4 }}>
                 <span className="text-3">第 {i + 1} 题</span>
                 <span className="tag tag--brand">{q.knowledge_point}</span>
@@ -440,7 +542,10 @@ export default function Exam() {
                     type="radio"
                     name={`q-${q.id}`}
                     checked={answers[q.id] === o.label}
-                    onChange={() => setAnswers((s) => ({ ...s, [q.id]: o.label }))}
+                    onChange={() => {
+                      setAnswers((s) => ({ ...s, [q.id]: o.label }));
+                      setActiveQid(q.id);
+                    }}
                   />
                   <b>{o.label}.</b> <span>{o.content}</span>
                 </label>

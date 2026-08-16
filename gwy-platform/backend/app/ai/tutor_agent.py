@@ -75,13 +75,20 @@ class TutorAgent:
 
         tech = _tech_hint(question)
 
+        # 无标准答案（选项无正确标记）：明确标注，避免 AI 编造"正确答案"
+        correct_note = (
+            "（暂无标准答案，请基于题目本身与选项逻辑讲解，勿臆造答案）"
+            if not correct
+            else f"{''.join(correct)}（{correct_full}）"
+        )
+
         prompt = (
             f"{context}\n\n"
             f"【题目】（{question.subject}/{question.category or '—'}，难度{question.difficulty}，"
             f"知识点：{question.knowledge_point}）\n"
             f"题干：{question.stem}\n"
             f"选项：\n" + "\n".join(f"{o.label}. {o.content}" for o in question.options) + "\n"
-            f"正确答案：{''.join(correct)}（{correct_full}）\n"
+            f"正确答案：{correct_note}\n"
             f"用户作答：{user_sel or '未作答'}（{user_full}）\n\n"
             f"本题实战解题方法论提示：{tech}\n\n"
             "请输出结构化讲解，语言要像资深公考讲师：直击考点、给可复用解题套路、去掉寒暄与空话。\n"

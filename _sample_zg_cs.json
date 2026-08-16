@@ -1,0 +1,182 @@
+[
+  {
+    "subject": "行测",
+    "category": "常识判断",
+    "qtype": "single",
+    "stem": "（2018·吉林）国务院机构改革优化了创新引擎。一方面，重组科学技术部，加 强、优化、转变政府科技管理和服务职能；另一方面，重组国家知识产权局，强化知识产权创造、保护和运用，让“第一动力”更有劲头。这段话蕴含的哲理是：",
+    "difficulty": 3,
+    "knowledge_point": "常识判断",
+    "answer": null,
+    "explanation": null,
+    "options": [
+      [
+        "A",
+        "生产关系与生产力相适应",
+        false
+      ],
+      [
+        "B",
+        "社会意识一定要适应社会存在",
+        false
+      ],
+      [
+        "C",
+        "社会存在状况决定社会意识",
+        false
+      ],
+      [
+        "D",
+        "上层建筑应与经济基础相适应",
+        false
+      ]
+    ],
+    "source": "行测5000题必做 常识判断题本 .pdf",
+    "copyright_owner": "导入-待核实",
+    "is_verified": false,
+    "_qnum": 5
+  },
+  {
+    "subject": "行测",
+    "category": "常识判断",
+    "qtype": "single",
+    "stem": "（2018·吉林）新西兰一家园艺研究所研究发现，水果成熟时会释放挥发性的化 合物，而且随着成熟程度的增加,其浓度也会有所变化。研究人员正是根据水果这一特性，制成了一种能“感知”水果是否成熟的标签。当水果成熟时，标签通过感知其释放的挥发性化合物的浓度而变换颜色。这段话体现的哲理是：",
+    "difficulty": 3,
+    "knowledge_point": "常识判断",
+    "answer": null,
+    "explanation": null,
+    "options": [
+      [
+        "A",
+        "意识是人脑的机能和属性",
+        false
+      ],
+      [
+        "B",
+        "意识对人们改造世界具有指导作用",
+        false
+      ],
+      [
+        "C",
+        "意识活动具有科学预见性",
+        false
+      ],
+      [
+        "D",
+        "意识活动具有直接现实性",
+        false
+      ]
+    ],
+    "source": "行测5000题必做 常识判断题本 .pdf",
+    "copyright_owner": "导入-待核实",
+    "is_verified": false,
+    "_qnum": 6
+  },
+  {
+    "subject": "行测",
+    "category": "常识判断",
+    "qtype": "single",
+    "stem": "（2018·广州）“逝者如斯夫，不舍昼夜”“时乎时乎不再来”是古代哲人在启示我 们时间非常宝贵，要珍惜每一分每一秒。这反映出时间具有（)的特点。",
+    "difficulty": 3,
+    "knowledge_point": "常识判断",
+    "answer": null,
+    "explanation": null,
+    "options": [
+      [
+        "A",
+        "连续性",
+        false
+      ],
+      [
+        "B",
+        "间隔性",
+        false
+      ],
+      [
+        "C",
+        "一维性",
+        false
+      ],
+      [
+        "D",
+        "反复性",
+        false
+      ]
+    ],
+    "source": "行测5000题必做 常识判断题本 .pdf",
+    "copyright_owner": "导入-待核实",
+    "is_verified": false,
+    "_qnum": 7
+  },
+  {
+    "subject": "行测",
+    "category": "常识判断",
+    "qtype": "single",
+    "stem": "（2017·国家）柏拉图认为处于变化之中的事物不是真正的存在，持这种理念的 人会认为以下哪项最真实？",
+    "difficulty": 3,
+    "knowledge_point": "常识判断",
+    "answer": null,
+    "explanation": null,
+    "options": [
+      [
+        "A",
+        "一棵树",
+        false
+      ],
+      [
+        "B",
+        "勾股定理",
+        false
+      ],
+      [
+        "C",
+        "人的照片",
+        false
+      ],
+      [
+        "D",
+        "关于马的概念",
+        false
+      ]
+    ],
+    "source": "行测5000题必做 常识判断题本 .pdf",
+    "copyright_owner": "导入-待核实",
+    "is_verified": false,
+    "_qnum": 8
+  },
+  {
+    "subject": "行测",
+    "category": "常识判断",
+    "qtype": "single",
+    "stem": "（2017·北京）发展为了人民、发展依靠人民、发展成果由人民共享，这是中国推 进改革开放和社会主义现代化建设的根本目的。这段话体现的哲学原理是：",
+    "difficulty": 3,
+    "knowledge_point": "常识判断",
+    "answer": null,
+    "explanation": null,
+    "options": [
+      [
+        "A",
+        "共享是社会主义核心价值观",
+        false
+      ],
+      [
+        "B",
+        "发展是现代化建设的目的",
+        false
+      ],
+      [
+        "C",
+        "改革是社会发展的动力",
+        false
+      ],
+      [
+        "D",
+        "群众是社会历史发展的主体",
+        false
+      ]
+    ],
+    "source": "行测5000题必做 常识判断题本 .pdf",
+    "copyright_owner": "导入-待核实",
+    "is_verified": false,
+    "_qnum": 9
+  }
+]

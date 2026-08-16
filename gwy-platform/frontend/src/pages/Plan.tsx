@@ -105,11 +105,32 @@ export default function Plan() {
   }, [days]);
 
   function onTask(t: PlanTask) {
-    if (t.kind === "mock") {
-      nav("/exam");
+    // 优先用单题深链；否则按任务类型跳转到对应学习场景，闭合「计划→执行」环
+    if (t.ref_id) {
+      nav(`/practice?q=${t.ref_id}`);
       return;
     }
-    if (t.ref_id) nav(`/practice?q=${t.ref_id}`);
+    switch (t.kind) {
+      case "mock":
+        nav("/exam");
+        return;
+      case "review_wrong":
+        nav("/wrong");
+        return;
+      case "favorite":
+        nav("/favorites");
+        return;
+      case "explain":
+        nav(t.target ? `/practice?kp=${encodeURIComponent(t.target)}` : "/chat");
+        return;
+      case "read":
+        nav("/learn");
+        return;
+      case "practice":
+      default:
+        nav(t.target ? `/practice?kp=${encodeURIComponent(t.target)}` : "/practice");
+        return;
+    }
   }
 
   async function onToggle(t: PlanTask) {
@@ -400,7 +421,7 @@ export default function Plan() {
                 </div>
                 <div className="plan-day__tasks">
                   {day.tasks.map((t) => {
-                    const clickable = t.kind === "mock" || !!t.ref_id;
+                    const clickable = ["practice", "review_wrong", "favorite", "explain", "mock", "read"].includes(t.kind);
                     return (
                       <div
                         key={t.id}

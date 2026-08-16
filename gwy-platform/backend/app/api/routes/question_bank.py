@@ -29,6 +29,7 @@ from app.schemas.question import (
     PracticeSubmit,
     QuestionOut,
 )
+from app.services.scoring import has_correct_option_filter, score_selection
 
 router = APIRouter()
 
@@ -157,11 +158,17 @@ def list_questions(
 
     # 指定题集出题（错题重练 / 收藏重练）：用户已明确题集，按传入 id 顺序返回，
     # 分页安全；不做掌握度加权。可与 subject/category 过滤叠加（本场景通常不传）。
+    # 注意：此分支**不**加"可判分"过滤——用户明确点名重练的题应原样返回，
+    # 其无标准答案的情况由 practice() 提交时的 score_selection 兜底跳过。
     if ids:
         q = q.filter(Question.id.in_(ids))
         found = {x.id: x for x in q.all()}
         items = [found[i] for i in ids if i in found]
         return items[offset : offset + limit]
+
+    # 常规刷题/浏览：移出"无标准答案"的题（选项无正确标记），保证学生只刷可判分题。
+    # 对齐 assessment 既有写法；与上面 ids 分支互斥（明确重练的题不在此过滤）。
+    q = q.filter(has_correct_option_filter())
 
     # 掌握度自适应加权：仅当明确针对某知识点（专项/混合练习包）且已登录时生效，
     # 让练习包优先练最弱、未练熟的内容；无用户（匿名/公开浏览）或纯科目浏览保持原有稳定序。
@@ -195,12 +202,30 @@ def practice(
     if q is None:
         raise HTTPException(status_code=404, detail="题目不存在")
 
-    # 客观题判分：用户选择集合 vs 正确选项标签集合
-    correct_labels = [o.label for o in q.options if o.is_correct]
-    if q.qtype == "essay":
-        is_correct = False  # essay 由 WBS 4.1 申论批改引擎判分
-    else:
-        is_correct = set(payload.selected.split()) == set(correct_labels)
+    correct_labels, is_correct, scorable = score_selection(
+        payload.selected, q.options, q.qtype
+    )
+
+    # 无标准答案（选项无正确标记）：跳过，不写作答记录、不污染能力图谱与正确率。
+    if not scorable:
+        ab = (
+            db.query(AbilityProfile)
+            .filter(
+                AbilityProfile.user_id == current.id,
+                AbilityProfile.knowledge_point == q.knowledge_point,
+            )
+            .first()
+        )
+        mastery = ab.mastery if ab else 0.0
+        return PracticeResult(
+            question_id=q.id,
+            is_correct=False,
+            correct_answer=None,
+            explanation="本题暂无标准答案，已跳过，不影响正确率。",
+            mastery=mastery,
+            mastery_before=mastery,
+            skipped=True,
+        )
 
     db.add(
         UserAnswer(
@@ -244,6 +269,7 @@ def practice(
         explanation=q.explanation,
         mastery=ab.mastery,
         mastery_before=mastery_before,
+        skipped=False,
     )
 
 

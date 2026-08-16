@@ -9,7 +9,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from sqlalchemy import func
@@ -21,9 +21,18 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _bj_date(dt: datetime) -> datetime.date:
+    """北京时间日期（中国无夏令时，恒定 UTC+8）。
+
+    连续打卡天数、计划「今日序号」等日界线判定一律以北京时间（用户本地）为准，
+    避免此前按 UTC 午夜切日导致的中国用户在北京时间 08:00 被误判断签。
+    """
+    return (dt + timedelta(hours=8)).date()
+
+
 def _date_key(dt: datetime) -> str:
-    """统一以 UTC 日期作为连续打卡判定基准（MVP；后续可接入用户时区）。"""
-    return dt.astimezone(timezone.utc).date().isoformat()
+    """以北京时间日期作为连续打卡判定基准。"""
+    return _bj_date(dt).isoformat()
 
 
 def _json_loads(s: str | None) -> list[str]:
@@ -101,9 +110,9 @@ def toggle_task(db, user: User, task_id: int) -> PlanTask | None:
 
 
 def _today_index(plan: StudyPlan) -> int:
-    """计划视角下「今天」对应第几天（未开始/已结束返回 0，用于不高亮）。"""
-    today = _now().date()
-    start = plan.created_at.astimezone(timezone.utc).date()
+    """计划视角下「今天」对应第几天（未开始/已结束返回 0，用于不高亮）。按北京时间切日。"""
+    today = _bj_date(_now())
+    start = _bj_date(plan.created_at)
     idx = (today - start).days + 1
     if idx < 1 or idx > plan.days:
         return 0
@@ -129,7 +138,7 @@ def compute_progress(db, plan: StudyPlan) -> dict[str, Any]:
     streak = 0
     if checkin_dates:
         date_set = set(checkin_dates)
-        cursor = _now().date()
+        cursor = _bj_date(_now())
         if cursor.isoformat() not in date_set:
             cursor = cursor.fromordinal(cursor.toordinal() - 1)
         while cursor.isoformat() in date_set:

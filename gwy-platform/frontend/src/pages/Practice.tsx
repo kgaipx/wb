@@ -37,6 +37,8 @@ export default function Practice() {
   const didInit = useRef(false);
   const [mode, setMode] = useState<"practice" | "retry">("practice"); // retry=错题/收藏智能重练
   const [retryCount, setRetryCount] = useState(0);
+  const [sessAnswered, setSessAnswered] = useState(0); // 本轮已判分题数（不含跳过）
+  const [sessCorrect, setSessCorrect] = useState(0); // 本轮答对题数
 
   // 初始加载（含 ?q= 直达 / ?kp= 专项练习 / ?ids= 错题本智能重练）
   useEffect(() => {
@@ -130,6 +132,55 @@ export default function Practice() {
     }
   }, [kpFilter, list, active]);
 
+  // 键盘快捷键：刷题场景高频操作（A/B/C/D 或 1-4 选择，Enter 提交/下一题，Esc 取消选择）
+  // 仅在打开单题时生效；文本输入（含文本框）不拦截，避免与输入冲突。
+  useEffect(() => {
+    if (!active) return;
+    function onKey(e: KeyboardEvent) {
+      const el = document.activeElement as HTMLElement | null;
+      const tag = (el?.tagName || "").toUpperCase();
+      const isText =
+        tag === "TEXTAREA" ||
+        (tag === "INPUT" && (el as HTMLInputElement).type === "text");
+      if (isText) return; // 文本输入中不拦截按键
+
+      const k = e.key.toLowerCase();
+      if (!result) {
+        // 作答阶段
+        const map: Record<string, string> = {
+          a: "A", b: "B", c: "C", d: "D", e: "E",
+          "1": "A", "2": "B", "3": "C", "4": "D", "5": "E",
+        };
+        if (map[k]) {
+          e.preventDefault();
+          setSelected(map[k]);
+          return;
+        }
+        if (k === "enter") {
+          if (tag === "BUTTON") return; // 让提交按钮自身的回车（原生点击）生效，避免重复提交
+          e.preventDefault();
+          if (selected && !busy) submit();
+          return;
+        }
+        if (k === "escape") {
+          e.preventDefault();
+          setSelected("");
+          return;
+        }
+      } else {
+        // 已作答阶段：Enter / 空格 进入下一题
+        if (k === "enter" || k === " ") {
+          if (tag === "BUTTON") return; // 避免与「下一题」按钮原生回车重复触发
+          e.preventDefault();
+          if (!busy) nextQuestion();
+          return;
+        }
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active, result, selected, busy, submit, nextQuestion]);
+
   async function loadMore() {
     if (loadingMore || !hasMore) return;
     setLoadingMore(true);
@@ -215,6 +266,12 @@ export default function Practice() {
     try {
       const r = await api.practice(active.id, selected);
       setResult(r);
+      // 作答后把焦点从（已禁用的）提交按钮移开，确保「Enter 进入下一题」键盘流不被吞掉
+      try {
+        (document.activeElement as HTMLElement | null)?.blur?.();
+      } catch {
+        /* ignore */
+      }
       // 拉取练习后最新能力概览（弱项升序最多 8），用于结果页雷达；匿名或接口失败静默跳过
       try {
         const s = await api.studentStats();
@@ -222,15 +279,21 @@ export default function Practice() {
       } catch {
         setAbility([]);
       }
-      if (r.is_correct) {
-        const ns = streak + 1;
-        setStreak(ns);
-        if (ns >= 3) {
-          flashEncourage(ns % 10 === 0 ? `🔥 连续答对 ${ns} 题，手感火热，继续！` : `连续答对 ${ns} 题，保持节奏`);
-        }
+      if (r.skipped) {
+        // 暂无标准答案：不计入连续答对，也不打断连对，也不计入本轮统计
       } else {
-        if (streak >= 3) flashEncourage("连续答对中断，别急，复盘后再战！");
-        setStreak(0);
+        setSessAnswered((n) => n + 1);
+        if (r.is_correct) setSessCorrect((n) => n + 1);
+        if (r.is_correct) {
+          const ns = streak + 1;
+          setStreak(ns);
+          if (ns >= 3) {
+            flashEncourage(ns % 10 === 0 ? `🔥 连续答对 ${ns} 题，手感火热，继续！` : `连续答对 ${ns} 题，保持节奏`);
+          }
+        } else {
+          if (streak >= 3) flashEncourage("连续答对中断，别急，复盘后再战！");
+          setStreak(0);
+        }
       }
     } catch (e: any) {
       setErr(e.message);
@@ -302,6 +365,8 @@ export default function Practice() {
     if (hasMore) return "加载更多并继续 →";
     return "已到末尾 · 返回题库";
   })();
+
+  const idxInList = active ? list.findIndex((q) => q.id === active.id) : -1;
 
   return (
     <section>
@@ -406,6 +471,18 @@ export default function Practice() {
           <button className="back-link" onClick={() => setActive(null)}>
             ← 返回题库
           </button>
+          <div className="practice-pos">
+            <span className="muted" style={{ fontSize: 12 }}>
+              {mode === "retry"
+                ? `🎯 智能重练 · 第 ${idxInList >= 0 ? idxInList + 1 : "?"} / ${retryCount} 题`
+                : `第 ${idxInList + 1} / ${list.length} 题${hasMore ? "（题库还有更多）" : ""}`}
+              {sessAnswered > 0 && (
+                <span style={{ marginLeft: 8 }}>
+                  · 本轮已答 {sessAnswered} · 正确率 {Math.round((sessCorrect / sessAnswered) * 100)}%
+                </span>
+              )}
+            </span>
+          </div>
           {encourage && (
             <div className="streak-toast" onClick={() => setEncourage("")}>{encourage}</div>
           )}
@@ -476,6 +553,16 @@ export default function Practice() {
               AI 私教讲解
             </button>
           </div>
+          {!result && (
+            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+              ⌨️ 快捷键：<b>A–D</b> 选择 · <b>Enter</b> 提交 · <b>Esc</b> 取消选择
+            </div>
+          )}
+          {result && (
+            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+              ⌨️ 快捷键：<b>Enter</b> 进入下一题
+            </div>
+          )}
 
           {!result && (
             <div style={{ marginTop: 8, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
@@ -500,12 +587,22 @@ export default function Practice() {
           )}
 
           {result && (
-            <div className={"result " + (result.is_correct ? "result--ok" : "result--bad")}>
+            <div className={"result " + (result.is_correct ? "result--ok" : result.skipped ? "result--skip" : "result--bad")}>
               <div className="result__head">
                 <div>
-                  <b>{result.is_correct ? "✔ 答对" : `✘ 答错，正确答案：${result.correct_answer}`}</b>
+                  {result.skipped ? (
+                    <b>⚠ 本题暂无标准答案，已跳过</b>
+                  ) : result.is_correct ? (
+                    <b>✔ 答对</b>
+                  ) : (
+                    <b>{`✘ 答错，正确答案：${result.correct_answer ?? ""}`}</b>
+                  )}
                   <div className="text-3" style={{ marginTop: 4, fontSize: 12 }}>
-                    {result.is_correct ? "这一知识点又稳了一分" : "别担心，下方可看 AI 讲解复盘"}
+                    {result.skipped
+                      ? "该题为题库暂缺标准答案，不影响你的正确率统计"
+                      : result.is_correct
+                      ? "这一知识点又稳了一分"
+                      : "别担心，下方可看 AI 讲解复盘"}
                   </div>
                 </div>
                 <div style={{ textAlign: "right" }}>

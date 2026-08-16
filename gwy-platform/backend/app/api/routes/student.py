@@ -16,18 +16,42 @@ from app.models import AbilityProfile, Question, User, UserAnswer
 from app.schemas.progress import AbilityOut, DayTrend, StudentDashboard, StudentStats
 from app.schemas.question import QuestionOut, WrongItem
 from app.schemas.user import UserOut
+from app.services.scoring import has_correct_option_filter
 from app.services.study_plan_service import compute_progress, get_current_plan
 
 router = APIRouter()
 
 
+def _bj_date(dt):
+    """北京时间日期（UTC+8，无夏令时），返回 date 对象，用于学情趋势按用户本地日切分。"""
+    from datetime import timedelta
+
+    return (dt + timedelta(hours=8)).date()
+
+
 @router.get("/me", response_model=StudentDashboard)
 def dashboard(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    total = db.query(UserAnswer).filter(UserAnswer.user_id == current.id).count()
+    # 仅统计客观且可判分题（排除申论与「选项无正确标记」的题库坏题），
+    # 避免坏题/申论被静默判错、拉低画像正确率。
+    total = (
+        db.query(func.count(UserAnswer.id))
+        .join(Question, Question.id == UserAnswer.question_id)
+        .filter(UserAnswer.user_id == current.id, Question.qtype != "essay")
+        .filter(has_correct_option_filter())
+        .scalar()
+        or 0
+    )
     correct = (
-        db.query(UserAnswer)
-        .filter(UserAnswer.user_id == current.id, UserAnswer.is_correct == True)
-        .count()
+        db.query(func.count(UserAnswer.id))
+        .join(Question, Question.id == UserAnswer.question_id)
+        .filter(
+            UserAnswer.user_id == current.id,
+            Question.qtype != "essay",
+            UserAnswer.is_correct == True,  # noqa: E712
+        )
+        .filter(has_correct_option_filter())
+        .scalar()
+        or 0
     )
     rate = round(correct / total, 3) if total else 0.0
     abilities = (
@@ -142,24 +166,26 @@ def review_wrong(qid: int, current: User = Depends(get_current_user), db: Sessio
 def stats(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """学情数据看板：复错率（P0）、客观正确率、弱项、近 7 日趋势、连续打卡。
 
-    仅统计客观题（qtype != 'essay'），申论由独立模块追踪。
+    仅统计客观且可判分题（排除申论与「选项无正确标记」的题库坏题），
+    避免坏题被静默判错污染复错率/正确率——即便历史库中存在修复前答过的坏题也能稳健排除。
     """
     rows = (
         db.query(UserAnswer, Question.qtype)
         .join(Question, Question.id == UserAnswer.question_id)
         .filter(UserAnswer.user_id == current.id, Question.qtype != "essay")
+        .filter(has_correct_option_filter())
         .order_by(UserAnswer.question_id, UserAnswer.id)
         .all()
     )
 
-    # 按题聚合作答序列（时间序），并统计每日量
+    # 按题聚合作答序列（时间序），并统计每日量（按北京时间切日）
     by_q: dict[int, list[bool]] = defaultdict(list)
     day_ans: Counter = Counter()
     day_correct: Counter = Counter()
-    today = datetime.now(timezone.utc).date()
+    today = _bj_date(datetime.now(timezone.utc))
     for ans, _qtype in rows:
         by_q[ans.question_id].append(bool(ans.is_correct))
-        d = ans.submitted_at.date().isoformat()
+        d = _bj_date(ans.submitted_at).isoformat()
         day_ans[d] += 1
         if ans.is_correct:
             day_correct[d] += 1

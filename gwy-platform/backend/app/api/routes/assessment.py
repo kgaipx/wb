@@ -28,6 +28,7 @@ from app.schemas.assessment import (
     AssessmentReport,
 )
 from app.schemas.question import OptionOut
+from app.services.scoring import has_correct_option_filter, score_selection
 
 router = APIRouter()
 
@@ -49,7 +50,7 @@ def _build_paper(db: Session) -> list[Question]:
     """均衡采样：优先已核实题，按知识点各取 PER_KP 题，打乱后截断 MAX_TOTAL。"""
     candidates = (
         db.query(Question)
-        .filter(Question.qtype != "essay", Question.answer.isnot(None))
+        .filter(Question.qtype != "essay", has_correct_option_filter())
         .all()
     )
     if not candidates:
@@ -95,6 +96,7 @@ def assessment_submit(
 ):
     total = len(payload.answers)
     correct = 0
+    skipped_count = 0
     details: list[dict] = []
     dim_total: dict[str, int] = defaultdict(int)
     dim_correct: dict[str, int] = defaultdict(int)
@@ -103,10 +105,29 @@ def assessment_submit(
         q = db.get(Question, item.question_id)
         if q is None:
             continue
-        correct_labels = [o.label for o in q.options if o.is_correct]
-        is_correct = (
-            set(item.selected.split()) == set(correct_labels) if q.qtype != "essay" else False
+        correct_labels, is_correct, scorable = score_selection(
+            item.selected, q.options, q.qtype
         )
+        # 无标准答案：跳过，不计入正确率、不污染维度统计与能力图谱
+        if not scorable:
+            skipped_count += 1
+            details.append(
+                {
+                    "question_id": q.id,
+                    "is_correct": False,
+                    "correct_answer": None,
+                    "selected": item.selected,
+                    "stem": q.stem,
+                    "knowledge_point": q.knowledge_point,
+                    "skipped": True,
+                    "options": [
+                        {"label": o.label, "content": o.content, "is_correct": o.is_correct}
+                        for o in q.options
+                    ],
+                }
+            )
+            continue
+
         db.add(
             UserAnswer(
                 user_id=current.id,
@@ -155,6 +176,7 @@ def assessment_submit(
                 "selected": item.selected,
                 "stem": q.stem,
                 "knowledge_point": q.knowledge_point,
+                "skipped": False,
                 "options": [
                     {"label": o.label, "content": o.content, "is_correct": o.is_correct}
                     for o in q.options
@@ -162,7 +184,9 @@ def assessment_submit(
             }
         )
 
-    overall = round(correct / total, 3) if total else 0.0
+    # 正确率只按"可判分题"计算，跳过的题不计入分母，避免虚低
+    scored_total = total - skipped_count
+    overall = round(correct / scored_total, 3) if scored_total else 0.0
     dimensions = [
         AssessmentDim(
             knowledge_point=kp,

@@ -116,7 +116,9 @@ def parse_tiben_page(items: list[dict], fname: str,
         return []
     # Filter obvious watermark/footer lines
     noise_kw = ("微信公众号", "登科及第", "全网考试资源免费分享",
-                "QQ202", "来源于微", "RQQ", "国考小宝", "言语钩")
+                "QQ202", "来源于微", "RQQ", "国考小宝", "言语钩",
+                "名师一点", "胜庸师百万", "名师教育", "花生十三",
+                "齐麟数资", "站长申论", "李梦娇常识", "欣说言语")
     cleaned = [it for it in items
                if not any(k in it["text"] for k in noise_kw)
                and len(it["text"]) >= 1]

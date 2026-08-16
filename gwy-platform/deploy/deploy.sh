@@ -63,18 +63,19 @@ try:
 except Exception:
     print("fresh"); raise SystemExit
 names = [r[0] for r in c.execute("select name from sqlite_master where type=?", ("table",)).fetchall()]
-if not names:
+# 业务核心表一旦存在，说明 schema 已由 legacy create_all 建好（含 alembic_version 空表的情形），
+# 直接 stamp head 标记当前版本即可，绝不再跑 upgrade head（否则会因表已存在而崩）。
+APP_TABLES = {"users", "questions", "content_reviews", "study_plans"}
+app_present = any(n in APP_TABLES for n in names)
+if not names or not app_present:
     print("fresh")
-elif "alembic_version" in names:
-    print("versioned")
 else:
     print("legacy")
 PY
 )
   case "$DBSTATUS" in
-    fresh)    /opt/gwy/venv/bin/python -m alembic upgrade head ;;
-    legacy)   /opt/gwy/venv/bin/python -m alembic stamp head ;;   # 旧库无版本行：标记当前版本，保留数据
-    versioned) /opt/gwy/venv/bin/python -m alembic upgrade head ;; # 增量迁移
+    fresh)    /opt/gwy/venv/bin/python -m alembic upgrade head ;;   # 真·空库：从基线建表
+    legacy)   /opt/gwy/venv/bin/python -m alembic stamp head ;;     # 业务表已存在：标记当前版本，保留数据，不重复建表
   esac
 
   systemctl restart gwy-backend

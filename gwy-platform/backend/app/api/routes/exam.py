@@ -14,6 +14,7 @@ from app.db.session import get_db
 from app.models import AbilityProfile, ExamRecord, Question, User, UserAnswer
 from app.schemas.exam import ExamRecordDetail, ExamRecordOut
 from app.schemas.question import OptionOut
+from app.services.scoring import has_correct_option_filter, score_selection
 
 router = APIRouter()
 
@@ -40,6 +41,7 @@ def start_exam(
 ):
     count = max(1, min(100, payload.count))
     q = db.query(Question).filter(Question.is_verified == True)  # noqa: E712
+    q = q.filter(has_correct_option_filter())  # 移出无标准答案的题，避免组到不可判分的卷
     if payload.subject:
         q = q.filter(Question.subject == payload.subject)
     available = q.count()
@@ -79,6 +81,7 @@ def submit_exam(
 ):
     total = len(payload.answers)
     correct = 0
+    skipped_count = 0
     weak: dict[str, int] = {}
     # 记录各知识点「本次模考前 → 模考后」掌握度，用于报告展示能力变化
     kp_before: dict[str, float] = {}
@@ -89,10 +92,25 @@ def submit_exam(
         q = db.get(Question, item.question_id)
         if q is None:
             continue
-        correct_labels = [o.label for o in q.options if o.is_correct]
-        is_correct = (
-            set(item.selected.split()) == set(correct_labels) if q.qtype != "essay" else False
+        correct_labels, is_correct, scorable = score_selection(
+            item.selected, q.options, q.qtype
         )
+        # 无标准答案：跳过，不计入正确率、不污染薄弱点与能力图谱
+        if not scorable:
+            skipped_count += 1
+            details.append(
+                {
+                    "question_id": q.id,
+                    "is_correct": False,
+                    "correct_answer": None,
+                    "selected": item.selected,
+                    "stem": q.stem,
+                    "knowledge_point": q.knowledge_point,
+                    "skipped": True,
+                }
+            )
+            continue
+
         db.add(
             UserAnswer(
                 user_id=current.id,
@@ -143,10 +161,13 @@ def submit_exam(
                 "selected": item.selected,
                 "stem": q.stem,
                 "knowledge_point": q.knowledge_point,
+                "skipped": False,
             }
         )
 
-    rate = round(correct / total, 3) if total else 0.0
+    # 正确率只按"可判分题"计算，跳过的题不计入分母，避免虚低
+    scored_total = total - skipped_count
+    rate = round(correct / scored_total, 3) if scored_total else 0.0
     top_weak = sorted(weak.items(), key=lambda x: x[1], reverse=True)[:5]
     # 模考科目：取首题科目，混合则记为「全部」
     _subjects = {q.subject for q in (db.get(Question, it.question_id) for it in payload.answers) if q}
@@ -178,6 +199,7 @@ def submit_exam(
         "total": total,
         "correct": correct,
         "correct_rate": rate,
+        "skipped": skipped_count,
         "weak_points": [k for k, _ in top_weak],
         "details": details,
         "kp_mastery": kp_mastery,

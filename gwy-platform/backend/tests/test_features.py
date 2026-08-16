@@ -89,7 +89,12 @@ def test_feat_chat_session_lifecycle(client, monkeypatch):
     tok = _register(client, "feat_chat@e.com", "secret1")
     monkeypatch.setattr(
         "app.ai.tutor_agent.TutorAgent.chat",
-        lambda self, history, kp_hint=None: {"answer": "好的同学", "citations": ["资料A"], "model": "mock", "offline": False},
+        lambda self, history, kp_hint=None, weak_points=None: {
+            "answer": "好的同学",
+            "citations": [{"title": "资料A", "source": "mock"}],
+            "model": "mock",
+            "offline": False,
+        },
     )
     s = client.post("/api/ai/chat/sessions", headers=_hdr(tok)).json()
     assert s["id"] and s["message_count"] == 0
@@ -116,11 +121,11 @@ def test_feat_favorites_crud(client):
     add = client.post("/api/bank/favorites", json={"question_id": qid}, headers=_hdr(tok))
     assert add.status_code == 200
     lst = client.get("/api/bank/favorites", headers=_hdr(tok)).json()
-    assert any(q["id"] == qid for q in lst)
+    assert any(q["question"]["id"] == qid for q in lst)
     rem = client.delete("/api/bank/favorites/" + str(qid), headers=_hdr(tok))
     assert rem.status_code == 200
     lst2 = client.get("/api/bank/favorites", headers=_hdr(tok)).json()
-    assert all(q["id"] != qid for q in lst2)
+    assert all(q["question"]["id"] != qid for q in lst2)
 
 
 def test_feat_wrong_list_and_review(client):

@@ -1,0 +1,17 @@
+START
+[load] tiben=1887
+[load] daan pages=1266
+[init] tb=1887 daan_blocks=3582
+[index] distinct bigrams=115555
+[progress] 0/1887 cands=0
+[progress] 300/1887 cands=89
+[progress] 600/1887 cands=163
+[progress] 900/1887 cands=331
+[progress] 1200/1887 cands=571
+[progress] 1500/1887 cands=695
+[progress] 1800/1887 cands=729
+candidates=756 after collision resolution=750
+
+MATCHED (safe): 750 (39.7%)
+matched_opts/n_opt: {(2, 2): 10, (3, 3): 8, (3, 4): 230, (4, 4): 502}
+wrote _merged_判断_v2.json (750 items)

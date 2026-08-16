@@ -1,0 +1,650 @@
+[
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\刷题册2000题 常识判断.pdf",
+  "pages": 80,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\刷题册2000题 数量资料.pdf",
+  "pages": 188,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【03】常识通关300问\\常识通关300问—政治经济篇.pdf",
+  "pages": 106,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【03】常识通关300问\\常识通关300问—文史篇.pdf",
+  "pages": 219,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【03】常识通关300问\\常识通关300问—法律篇.pdf",
+  "pages": 152,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【03】常识通关300问\\常识通关300问—科技篇.pdf",
+  "pages": 111,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【16】粉笔公基5000题（教招、事业单位可用）\\决战公共基础知识5000题1第一册(题本).pdf",
+  "pages": 278,
+  "sample": 6,
+  "avg_chars": 19.7,
+  "nonempty": 1,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【16】粉笔公基5000题（教招、事业单位可用）\\决战公共基础知识5000题2第二册（答案）586.pdf.pdf",
+  "pages": 585,
+  "sample": 6,
+  "avg_chars": 46.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【16】粉笔公基5000题（教招、事业单位可用）\\决战公共基础知识5000题3第三册（题本）.pdf",
+  "pages": 304,
+  "sample": 6,
+  "avg_chars": 22.7,
+  "nonempty": 1,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【16】粉笔公基5000题（教招、事业单位可用）\\决战公共基础知识5000题4第四册（答案）670.pdf",
+  "pages": 669,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（判断推理）上册.pdf",
+  "pages": 326,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（判断推理）下册.pdf",
+  "pages": 472,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（常识）上册.pdf",
+  "pages": 192,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（常识）下册.pdf",
+  "pages": 448,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（数量关系）上册.pdf",
+  "pages": 216,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（数量关系）下册.pdf",
+  "pages": 328,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（言语理解与表达）上册.pdf",
+  "pages": 320,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（言语理解与表达）下册.pdf",
+  "pages": 406,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（资料分析）上册.pdf",
+  "pages": 294,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【19】2022FB行测5000题\\5000题\\决战行测5000题（资料分析）下册.pdf",
+  "pages": 392,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\民法典学习手册 .pdf",
+  "pages": 136,
+  "sample": 6,
+  "avg_chars": 46.7,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测5000题必做 常识判断答案 .pdf",
+  "pages": 312,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测5000题必做 常识判断题本 .pdf",
+  "pages": 216,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测5000题必做 数量关系答案 .pdf",
+  "pages": 176,
+  "sample": 6,
+  "avg_chars": 3.3,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测5000题必做 数量关系题本 .pdf",
+  "pages": 160,
+  "sample": 6,
+  "avg_chars": 102.0,
+  "nonempty": 6,
+  "textlike": true
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测必做5000题 判断推理答案 .pdf",
+  "pages": 352,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测必做5000题 判断推理题本 .pdf",
+  "pages": 328,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测必做5000题 言语理解与表达答案 .pdf",
+  "pages": 344,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测必做5000题 言语理解与表达题本 .pdf",
+  "pages": 376,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测必做5000题 资料分析答案 .pdf",
+  "pages": 216,
+  "sample": 6,
+  "avg_chars": 3.3,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【59】ZG行测必做5000题PDF电子版共10册\\行测必做5000题 资料分析题本 .pdf",
+  "pages": 239,
+  "sample": 6,
+  "avg_chars": 9.7,
+  "nonempty": 1,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\1 .pdf",
+  "pages": 180,
+  "sample": 6,
+  "avg_chars": 48.3,
+  "nonempty": 5,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\10 .pdf",
+  "pages": 304,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\11 .pdf",
+  "pages": 272,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\12 .pdf",
+  "pages": 256,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\13 .pdf",
+  "pages": 158,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\14 .pdf",
+  "pages": 170,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\15 .pdf",
+  "pages": 204,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\16 .pdf",
+  "pages": 200,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\17 .pdf",
+  "pages": 234,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\18 .pdf",
+  "pages": 234,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\19 .pdf",
+  "pages": 256,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\2 .pdf",
+  "pages": 144,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\20 .pdf",
+  "pages": 214,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\21 .pdf",
+  "pages": 178,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\22 .pdf",
+  "pages": 144,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\23 .pdf",
+  "pages": 220,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\3 .pdf",
+  "pages": 300,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\4 .pdf",
+  "pages": 210,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\5 .pdf",
+  "pages": 158,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\6 .pdf",
+  "pages": 236,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\7 .pdf",
+  "pages": 268,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\8 .pdf",
+  "pages": 224,
+  "sample": 6,
+  "avg_chars": 43.0,
+  "nonempty": 6,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【60】HT行测10000题PDF电子版共10册\\9 .pdf",
+  "pages": 320,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\判断\\判断一 .pdf",
+  "pages": 552,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\判断\\判断二 .pdf",
+  "pages": 364,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\判断\\判断解析1 .pdf",
+  "pages": 340,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\判断\\判断解析2 .pdf",
+  "pages": 316,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\判断\\判断解析3 .pdf",
+  "pages": 292,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\判断\\判断解析4 .pdf",
+  "pages": 318,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\常识\\常识 .pdf",
+  "pages": 324,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\常识\\常识解析1 .pdf",
+  "pages": 167,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\常识\\常识解析1.1 .pdf",
+  "pages": 332,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\常识\\常识解析2 .pdf",
+  "pages": 294,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\数量\\数量 .pdf",
+  "pages": 208,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\数量\\数量解析 .pdf",
+  "pages": 286,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\言语\\言语一 .pdf",
+  "pages": 384,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\言语\\言语三 .pdf",
+  "pages": 340,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\言语\\言语二  .pdf",
+  "pages": 256,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\言语\\言语解析1 .pdf",
+  "pages": 374,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\言语\\言语解析2 .pdf",
+  "pages": 340,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\言语\\言语解析3 .pdf",
+  "pages": 352,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料一 .pdf",
+  "pages": 304,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料三 .pdf",
+  "pages": 380,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料二 .pdf",
+  "pages": 320,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料四 .pdf",
+  "pages": 316,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料解析1 (1).pdf",
+  "pages": 156,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料解析1 .pdf",
+  "pages": 156,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【02】最新版上岸村刷题万题册\\资料\\资料解析2 .pdf",
+  "pages": 268,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【77】2023职测1000题\\1000题上【2022.11版次】.pdf",
+  "pages": 286,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ },
+ {
+  "path": "C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/backend/data/incoming\\【77】2023职测1000题\\1000题下【2022.11版次】.pdf",
+  "pages": 360,
+  "sample": 6,
+  "avg_chars": 0.0,
+  "nonempty": 0,
+  "textlike": false
+ }
+]

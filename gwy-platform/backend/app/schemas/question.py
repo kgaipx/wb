@@ -49,6 +49,7 @@ class PracticeResult(BaseModel):
     explanation: str | None
     mastery: float
     mastery_before: float = 0.0  # 练习前掌握度，用于结果页展示本题带来的变化
+    skipped: bool = False  # 本题无标准答案，已跳过（不判错、不污染统计）
 
 
 class WrongItem(BaseModel):

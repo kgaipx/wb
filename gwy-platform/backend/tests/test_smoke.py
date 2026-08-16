@@ -108,7 +108,7 @@ def test_explain_mocked(client, monkeypatch):
         return {
             "knowledge_point": q.knowledge_point,
             "explanation": "MOCK",
-            "citations": ["src"],
+            "citations": [{"title": "src", "source": "mock"}],
             "model": "mock",
         }
 
@@ -220,12 +220,12 @@ def test_favorites_crud(client):
     assert client.post("/api/bank/favorites", json={"question_id": qid}, headers=_hdr(tok)).status_code == 200
 
     favs = client.get("/api/bank/favorites", headers=_hdr(tok)).json()
-    assert any(q["id"] == qid for q in favs)
+    assert any(q["question"]["id"] == qid for q in favs)
 
     # 重复添加应幂等（不重复收藏）
     client.post("/api/bank/favorites", json={"question_id": qid}, headers=_hdr(tok))
     favs2 = client.get("/api/bank/favorites", headers=_hdr(tok)).json()
-    assert sum(1 for q in favs2 if q["id"] == qid) == 1
+    assert sum(1 for q in favs2 if q["question"]["id"] == qid) == 1
 
     assert client.delete(f"/api/bank/favorites/{qid}", headers=_hdr(tok)).status_code == 200
     assert client.get("/api/bank/favorites", headers=_hdr(tok)).json() == []

@@ -394,7 +394,7 @@ export const api = {
   },
   bankGet: (id: number) => request<Question>(`/bank/questions/${id}`),
   practice: (question_id: number, selected: string) =>
-    request<{ question_id: number; is_correct: boolean; correct_answer: string; explanation: string | null; mastery: number }>(
+    request<{ question_id: number; is_correct: boolean; correct_answer: string | null; explanation: string | null; mastery: number; skipped?: boolean }>(
       "/bank/practice",
       { method: "POST", body: JSON.stringify({ question_id, selected }) }
     ),
