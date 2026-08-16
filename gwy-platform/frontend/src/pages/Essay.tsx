@@ -4,6 +4,27 @@ import { DimensionBars } from "../components/DimensionBars";
 import { LineChart } from "../components/LineChart";
 import Markdown from "../components/Markdown";
 
+/** 从作答要求中解析字数区间，如「1000-1200字」「800~1000 字」。 */
+function parseWordTarget(req: string): [number, number] | null {
+  const m = req.match(/(\d{3,4})\s*[-~到至]\s*(\d{3,4})\s*字/);
+  if (m) {
+    const lo = parseInt(m[1], 10);
+    const hi = parseInt(m[2], 10);
+    if (hi > lo) return [lo, hi];
+  }
+  return null;
+}
+
+/** 字数状态：返回提示文案与配色类（复用 global text-success/warning/danger）。 */
+function wordStatus(n: number, t: [number, number] | null): { cls: string; text: string } {
+  if (!t) return { cls: "muted", text: "申论大作文一般建议 1000–1200 字" };
+  const [lo, hi] = t;
+  if (n >= lo && n <= hi) return { cls: "text-success", text: "✓ 字数达标" };
+  if (n < lo) return n < lo * 0.85 ? { cls: "text-danger", text: "字数偏少，建议充实" } : { cls: "text-warning", text: "接近下限，还差一点" };
+  if (n > hi * 1.15) return { cls: "text-warning", text: "已超出建议上限" };
+  return { cls: "text-warning", text: "略超上限，可精简" };
+}
+
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
   const [prompts, setPrompts] = useState<EssayPrompt[]>([]);
@@ -53,6 +74,12 @@ export default function Essay() {
     }
   }
 
+  function resetEssay() {
+    setEssay("");
+    setGrade(null);
+    setErr("");
+  }
+
   return (
     <section>
       <div className="row row--between" style={{ marginBottom: 8 }}>
@@ -95,6 +122,19 @@ export default function Essay() {
               onChange={(e) => setEssay(e.target.value)}
               placeholder="在此粘贴或输入你的申论作答…"
             />
+            {(() => {
+              const n = essay.replace(/\s/g, "").length;
+              const t = parseWordTarget(requirement);
+              const st = wordStatus(n, t);
+              return (
+                <div className="row row--between" style={{ marginTop: 4, fontSize: 12 }}>
+                  <span className="muted">
+                    已写 <b className={st.cls}>{n}</b> 字{t ? ` · 要求 ${t[0]}–${t[1]} 字` : ""}
+                  </span>
+                  <span className={st.cls}>{st.text}</span>
+                </div>
+              );
+            })()}
             <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={busy || !essay.trim()} onClick={doGrade}>
               {busy ? "批改中…" : "AI 批改（满分 100）"}
             </button>
@@ -118,8 +158,9 @@ export default function Essay() {
                   <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
                 </div>
               )}
-              <div className="muted" style={{ marginTop: 10, fontSize: 12 }}>
-                双阶段评分（初评 + 一致性校准），异常自动转人工，保障人 AI 评分一致性门槛。
+              <div className="row row--between" style={{ marginTop: 10 }}>
+                <button className="btn btn--ghost btn--sm" onClick={resetEssay}>✍ 再写一篇</button>
+                <span className="muted" style={{ fontSize: 12 }}>双阶段评分（初评 + 一致性校准），异常自动转人工</span>
               </div>
             </div>
           )}

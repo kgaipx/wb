@@ -101,6 +101,9 @@ export default function Assessment() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [toast, setToast] = useState("");
 
+  const cur = paper[idx];
+  const answeredCount = paper.filter((q) => answers[q.id]).length;
+
   async function start() {
     setBusy(true);
     setErr("");
@@ -189,6 +192,37 @@ export default function Assessment() {
     if (phase === "history") loadHistory();
   }, [phase]);
 
+  // 做题阶段键盘快捷键（与刷题/模考一致）：A–D/1–4 选当前题、Enter 下一题/交卷、Esc 取消
+  useEffect(() => {
+    if (phase !== "doing" || !cur) return;
+    function onKey(e: KeyboardEvent) {
+      const el = document.activeElement as HTMLElement | null;
+      const tag = (el?.tagName || "").toUpperCase();
+      const isText = tag === "TEXTAREA" || (tag === "INPUT" && (el as HTMLInputElement).type === "text");
+      if (isText) return;
+      const k = e.key.toLowerCase();
+      const map: Record<string, string> = { a: "A", b: "B", c: "C", d: "D", e: "E", "1": "A", "2": "B", "3": "C", "4": "D", "5": "E" };
+      if (map[k]) {
+        e.preventDefault();
+        setSelected(map[k]);
+        return;
+      }
+      if (k === "enter") {
+        if (tag === "BUTTON") return; // 让按钮原生回车生效，避免重复触发
+        e.preventDefault();
+        if (selected && !busy) next();
+        return;
+      }
+      if (k === "escape") {
+        e.preventDefault();
+        setSelected("");
+        return;
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase, cur, selected, busy, next]);
+
   async function openDetail(id: number) {
     setBusy(true);
     setErr("");
@@ -206,9 +240,6 @@ export default function Assessment() {
       setBusy(false);
     }
   }
-
-  const cur = paper[idx];
-  const answeredCount = paper.filter((q) => answers[q.id]).length;
 
   function renderReport(rep: AssessmentReport | AssessmentRecordOut, prevOverall?: number | null) {
     const r = rep as any;
@@ -527,6 +558,9 @@ export default function Assessment() {
             <span className="text-3">第 {idx + 1}/{paper.length} 题</span>
             <span className="text-3">已答 {answeredCount}/{paper.length}</span>
           </div>
+          <div className="progress" style={{ marginTop: 8, height: 6 }}>
+            <div className="progress__bar" style={{ width: `${Math.round((answeredCount / paper.length) * 100)}%` }} />
+          </div>
           <div className="card" style={{ marginTop: 12 }}>
             <div className="q-item__meta" style={{ marginBottom: 4 }}>
               <span className="tag tag--brand">{cur.subject}</span>
@@ -553,6 +587,9 @@ export default function Assessment() {
             >
               {busy ? "提交中…" : idx + 1 < paper.length ? "下一题 →" : "交卷并生成报告"}
             </button>
+            <div className="muted" style={{ fontSize: 12, marginTop: 8, textAlign: "center" }}>
+              ⌨ A–D / 1–4 选择 · Enter 下一题 · Esc 取消选择
+            </div>
           </div>
         </>
       )}
