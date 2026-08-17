@@ -91,6 +91,37 @@ class EssayModelOut(BaseModel):
     offline: bool = False  # True 表示 LLM 不可用时走了降级提示
 
 
+class EssayGap(BaseModel):
+    """单维度差距点评：维度名 + 该维度考生与范文的具体差距说明。"""
+    dimension: str
+    comment: str
+
+
+class EssayCompareIn(BaseModel):
+    student_essay: str
+    material: str = ""  # 给定材料（对比上下文）
+    requirement: str = ""  # 作答要求（对比上下文）
+    max_score: int = 100
+    prompt_id: int | None = None  # 可选：关联申论题库题目
+    model_essay: str | None = None  # 可选：前端已生成范文则直接传入，省一次生成
+    student_dimensions: dict | None = None  # 可选：前端已有批改维度则传入，避免重复评分漂移
+    student_total: float | None = None
+
+
+class EssayCompareOut(BaseModel):
+    student_total: float
+    model_total: float
+    student_dimensions: dict[str, float]
+    model_dimensions: dict[str, float]
+    gaps: list[EssayGap]
+    suggestions: list[str]
+    narrative: str
+    model_essay: str = ""  # 回传范文，前端无需二次持有
+    offline: bool = False  # True 表示 LLM 不可用，走了启发式降级对比
+
+    model_config = {"protected_namespaces": ()}  # 避免 model_essay 触发 pydantic "model_" 保护命名警告
+
+
 class PlanTaskOut(BaseModel):
     """已落库的计划任务（含打卡状态）。"""
     id: int

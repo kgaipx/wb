@@ -24,6 +24,9 @@ from app.schemas.ai import (
     EssayGradeOut,
     EssayModelIn,
     EssayModelOut,
+    EssayCompareIn,
+    EssayCompareOut,
+    EssayGap,
     ExplainIn,
     ExplainOut,
     KnowledgeChunkOut,
@@ -175,6 +178,24 @@ def essay_model(
     from app.ai.essay_model import generate_model_essay
 
     return EssayModelOut(**generate_model_essay(material, requirement))
+
+
+@router.post("/essay/compare", response_model=EssayCompareOut, tags=["ai"])
+def essay_compare(payload: EssayCompareIn, current: User = Depends(get_current_user)):
+    """将考生作答与高分范文做维度级对比点评（差距分析 + 改进建议）。"""
+    from app.ai.essay_compare import compare_essay
+
+    return EssayCompareOut(
+        **compare_essay(
+            student_essay=payload.student_essay,
+            material=payload.material,
+            requirement=payload.requirement,
+            max_score=payload.max_score,
+            model_essay=payload.model_essay,
+            student_dimensions=payload.student_dimensions,
+            student_total=payload.student_total,
+        )
+    )
 
 
 @router.get("/essay/consistency", tags=["ai"])

@@ -627,7 +627,25 @@ export default function Practice() {
                     <strong>练习后能力图谱</strong>
                     <span className="muted" style={{ fontSize: 12 }}>弱项雷达 · 凹陷处优先补</span>
                   </div>
-                  <RadarChart data={ability.slice(0, 8).map((a) => ({ label: a.knowledge_point, value: a.mastery }))} />
+                  <RadarChart
+                    series={[
+                      {
+                        name: "练习后掌握度",
+                        color: "var(--brand)",
+                        data: [...ability]
+                          .sort((a, b) => a.mastery - b.mastery)
+                          .slice(0, 8)
+                          .map((a) => ({
+                            label: a.knowledge_point,
+                            value: a.mastery,
+                            meta: `${a.attempts} 次作答`,
+                          })),
+                      },
+                    ]}
+                    target={0.85}
+                    targetLabel="目标 85%"
+                    onAxisClick={(kp) => nav(`/practice?kp=${encodeURIComponent(kp)}`)}
+                  />
                 </div>
               )}
               {result.explanation && (

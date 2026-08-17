@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { api, EssayPrompt, EssayHistoryItem, EssayModel } from "../api/client";
+import { api, EssayPrompt, EssayHistoryItem, EssayModel, EssayCompare } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
 import { LineChart } from "../components/LineChart";
+import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 
@@ -19,6 +20,8 @@ export default function Essay() {
   const [hLoading, setHLoading] = useState(false);
   const [model, setModel] = useState<EssayModel | null>(null);
   const [modelBusy, setModelBusy] = useState(false);
+  const [compare, setCompare] = useState<EssayCompare | null>(null);
+  const [compareBusy, setCompareBusy] = useState(false);
 
   useEffect(() => {
     api.essayPrompts().then(setPrompts).catch((e) => setErr(e.message));
@@ -35,6 +38,7 @@ export default function Essay() {
     setBusy(true);
     setErr("");
     setGrade(null);
+    setCompare(null);
     try {
       const r = await api.essayGrade(essay, material, 100, promptId, requirement);
       setGrade(r);
@@ -42,6 +46,35 @@ export default function Essay() {
       setErr(e.message);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function loadCompare() {
+    if (!grade) return;
+    setCompareBusy(true);
+    setErr("");
+    try {
+      // 复用已生成的范文（避免重复生成）；缺失则现场生成
+      let me = model?.model_essay ?? null;
+      if (!me) {
+        const m = await api.essayModel(material, requirement, promptId);
+        setModel(m);
+        me = m.model_essay;
+      }
+      const c = await api.essayCompare(
+        essay,
+        material,
+        requirement,
+        promptId,
+        me,
+        grade.dimensions,
+        grade.total,
+      );
+      setCompare(c);
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setCompareBusy(false);
     }
   }
 
@@ -59,6 +92,7 @@ export default function Essay() {
   function resetEssay() {
     setEssay("");
     setGrade(null);
+    setCompare(null);
     setErr("");
   }
 
@@ -135,6 +169,9 @@ export default function Essay() {
             <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadModel}>
               {modelBusy ? "生成范文中…" : "📝 查看范文参考"}
             </button>
+            <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={!grade || compareBusy} onClick={loadCompare}>
+              {compareBusy ? "对比点评中…" : "📊 对比范文点评"}
+            </button>
           </div>
 
           {grade && (
@@ -193,6 +230,8 @@ export default function Essay() {
               </div>
             </div>
           )}
+
+          {compare && <EssayCompareCard data={compare} />}
         </>
       )}
 

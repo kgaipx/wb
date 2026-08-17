@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Dashboard, EssayPrompt, EssayModel } from "../api/client";
+import { api, Dashboard, EssayPrompt, EssayModel, EssayCompare } from "../api/client";
 import { useAuth } from "../auth";
 import { DimensionBars } from "../components/DimensionBars";
+import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 
@@ -26,6 +27,8 @@ export default function Profile() {
   const [essayPrompt, setEssayPrompt] = useState<EssayPrompt | null>(null);
   const [essayModel, setEssayModel] = useState<EssayModel | null>(null);
   const [modelBusy, setModelBusy] = useState(false);
+  const [compare, setCompare] = useState<EssayCompare | null>(null);
+  const [compareBusy, setCompareBusy] = useState(false);
 
   const [nickname, setNickname] = useState("");
   const [province, setProvince] = useState("");
@@ -84,6 +87,7 @@ export default function Profile() {
   function resetProfileEssay() {
     setEssay("");
     setGrade(null);
+    setCompare(null);
   }
 
   async function loadProfileModel() {
@@ -94,6 +98,29 @@ export default function Profile() {
       setErr(e.message);
     } finally {
       setModelBusy(false);
+    }
+  }
+
+  async function loadProfileCompare() {
+    if (!grade) return;
+    setCompareBusy(true);
+    setErr("");
+    try {
+      const mat = essayPrompt?.material ?? "";
+      const req = essayPrompt?.requirement ?? "";
+      let me = essayModel?.model_essay ?? null;
+      if (!me) {
+        const m = await api.essayModel(mat, req, essayPrompt?.id ?? null);
+        setEssayModel(m);
+        me = m.model_essay;
+      }
+      setCompare(
+        await api.essayCompare(essay, mat, req, essayPrompt?.id ?? null, me, grade.dimensions, grade.total),
+      );
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setCompareBusy(false);
     }
   }
 
@@ -256,6 +283,9 @@ export default function Profile() {
         <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadProfileModel}>
           {modelBusy ? "生成范文中…" : "📝 查看范文参考"}
         </button>
+        <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={!grade || compareBusy} onClick={loadProfileCompare}>
+          {compareBusy ? "对比点评中…" : "📊 对比范文点评"}
+        </button>
         {grade && (
           <div className="tutor-box" style={{ marginTop: 8 }}>
             <div className="row row--between">
@@ -299,6 +329,7 @@ export default function Profile() {
             <div className="tutor-box__body"><Markdown>{essayModel.model_essay}</Markdown></div>
           </div>
         )}
+        {compare && <EssayCompareCard data={compare} />}
       </div>
 
       {/* 账号安全（WBS 2.1） */}

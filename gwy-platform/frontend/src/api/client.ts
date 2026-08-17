@@ -292,6 +292,23 @@ export interface EssayModel {
   offline?: boolean; // True 表示 LLM 不可用走了降级提示
 }
 
+// 申论对比点评（WBS 4.1 增强）：考生作答 vs 高分范文的维度级差距分析
+export interface EssayGap {
+  dimension: string; // 维度名（立意/结构/论证/语言/素材）
+  comment: string; // 该维度考生与范文的具体差距（可能为空，表示差距不显著）
+}
+export interface EssayCompare {
+  student_total: number; // 考生总分
+  model_total: number; // 范文总分
+  student_dimensions: Record<string, number>; // 考生五维分
+  model_dimensions: Record<string, number>; // 范文五维分
+  gaps: EssayGap[]; // 维度级差距（五维齐全）
+  suggestions: string[]; // 可操作改进建议
+  narrative: string; // 总体对比点评（markdown-ish 纯文本）
+  model_essay: string; // 回传范文正文
+  offline?: boolean; // True 表示 LLM 不可用走了启发式降级
+}
+
 // 能力测评（WBS 3.2 自适应诊断）
 export interface AssessmentDim {
   knowledge_point: string;
@@ -494,6 +511,28 @@ export const api = {
     request<EssayModel>("/ai/essay/model", {
       method: "POST",
       body: JSON.stringify({ material, requirement, prompt_id }),
+    }),
+  // 申论对比点评（WBS 4.1 增强）：将考生作答与范文做维度级对比
+  essayCompare: (
+    student_essay: string,
+    material = "",
+    requirement = "",
+    prompt_id: number | null = null,
+    model_essay: string | null = null,
+    student_dimensions: Record<string, number> | null = null,
+    student_total: number | null = null,
+  ) =>
+    request<EssayCompare>("/ai/essay/compare", {
+      method: "POST",
+      body: JSON.stringify({
+        student_essay,
+        material,
+        requirement,
+        prompt_id,
+        model_essay,
+        student_dimensions,
+        student_total,
+      }),
     }),
 
   // 在线模考（WBS 4.2）

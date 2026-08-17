@@ -101,15 +101,27 @@ export default function Learn() {
         {dash.ability.length > 0 ? (
           <div className="radar-wrap">
             <RadarChart
-              data={dash.ability
-                .slice(0, 8)
-                .map((a) => ({ label: a.knowledge_point, value: a.mastery }))}
+              series={[
+                {
+                  name: "当前掌握度",
+                  color: "var(--brand)",
+                  data: [...dash.ability]
+                    .sort((a, b) => a.mastery - b.mastery)
+                    .slice(0, 8)
+                    .map((a) => ({
+                      label: a.knowledge_point,
+                      value: a.mastery,
+                      meta: `${a.attempts} 次作答`,
+                    })),
+                },
+              ]}
+              target={0.85}
+              targetLabel="目标 85%"
+              onAxisClick={(kp) => nav(`/practice?kp=${encodeURIComponent(kp)}`)}
             />
-            {dash.ability.length > 8 && (
-              <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
-                仅展示掌握度最低的 8 个知识点
-              </div>
-            )}
+            <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
+              雷达越“瘪”越薄弱；虚线为你应达到的目标掌握度 85%
+            </div>
           </div>
         ) : (
           <div className="muted" style={{ marginTop: 10 }}>
@@ -131,6 +143,41 @@ export default function Learn() {
             </div>
           );
         })}
+        {/* 强项 / 最弱 速览（点击直达针对性练习） */}
+        <div style={{ marginTop: 12 }}>
+          <div className="muted" style={{ fontSize: 12 }}>强项</div>
+          <div className="chip-row" style={{ marginTop: 4 }}>
+            {[...dash.ability]
+              .sort((a, b) => b.mastery - a.mastery)
+              .slice(0, 3)
+              .map((a) => (
+                <button
+                  key={a.knowledge_point}
+                  className="chip"
+                  onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
+                >
+                  {a.knowledge_point} {Math.round(a.mastery * 100)}%
+                </button>
+              ))}
+          </div>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <div className="muted" style={{ fontSize: 12 }}>最弱（优先补）</div>
+          <div className="chip-row" style={{ marginTop: 4 }}>
+            {[...dash.ability]
+              .sort((a, b) => a.mastery - b.mastery)
+              .slice(0, 3)
+              .map((a) => (
+                <button
+                  key={a.knowledge_point}
+                  className="chip chip--on"
+                  onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
+                >
+                  {a.knowledge_point} {Math.round(a.mastery * 100)}%
+                </button>
+              ))}
+          </div>
+        </div>
       </div>
 
       <div className="card card--warning" style={{ marginTop: 12 }}>

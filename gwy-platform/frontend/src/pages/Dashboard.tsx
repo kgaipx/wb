@@ -203,7 +203,23 @@ export default function Dashboard() {
           <div style={{ marginTop: 10 }}>
             <div className="radar-wrap">
               <RadarChart
-                data={stats.ability.map((a) => ({ label: a.knowledge_point, value: a.mastery }))}
+                series={[
+                  {
+                    name: "当前掌握度",
+                    color: "var(--brand)",
+                    data: [...stats.ability]
+                      .sort((a, b) => a.mastery - b.mastery)
+                      .slice(0, 8)
+                      .map((a) => ({
+                        label: a.knowledge_point,
+                        value: a.mastery,
+                        meta: `${a.attempts} 次作答`,
+                      })),
+                  },
+                ]}
+                target={0.85}
+                targetLabel="目标 85%"
+                onAxisClick={(kp) => nav(`/practice?kp=${encodeURIComponent(kp)}`)}
               />
               <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
                 雷达越“瘪”说明该模块越薄弱，优先补最凹处
