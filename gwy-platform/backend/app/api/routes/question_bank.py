@@ -185,14 +185,6 @@ def list_questions(
     return q.offset(offset).limit(limit).all()
 
 
-@router.get("/questions/{qid}", response_model=QuestionOut)
-def get_question(qid: int, db: Session = Depends(get_db)):
-    q = db.get(Question, qid)
-    if q is None:
-        raise HTTPException(status_code=404, detail="题目不存在")
-    return q
-
-
 @router.get("/questions/search", response_model=list[QuestionSearchHit])
 def search_questions(
     q: str = Query("", description="关键词：匹配题干或知识点（模糊）"),
@@ -204,6 +196,8 @@ def search_questions(
 ):
     """全局题库检索：按关键词 + 科目/知识点筛选，结果可跳练习/收藏/看解析。
 
+    注意：必须注册在 /questions/{qid} 之前——FastAPI 不会在路径参数类型转换失败时
+    回退到后续路由，否则 /questions/search 会被 /questions/{qid} 拦截并报 int 解析错误。
     - 匿名也可检索（get_optional_user）；仅对题干与知识点做 LIKE，不泄漏选项/答案。
     - 仅检索可判分题（有正确选项标记），保证点击「去练习」能正常判分。
     - 排序：先按相关性粗排（题干命中优先于仅知识点命中），再按 id 稳定序。
@@ -238,6 +232,14 @@ def search_questions(
         rows.sort(key=lambda qq: (-_score(qq), qq.id))
     rows = rows[:limit]
     return rows
+
+
+@router.get("/questions/{qid}", response_model=QuestionOut)
+def get_question(qid: int, db: Session = Depends(get_db)):
+    q = db.get(Question, qid)
+    if q is None:
+        raise HTTPException(status_code=404, detail="题目不存在")
+    return q
 
 
 @router.post("/practice", response_model=PracticeResult)
