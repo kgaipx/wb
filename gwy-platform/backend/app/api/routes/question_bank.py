@@ -204,7 +204,16 @@ def search_questions(
     - 排序：先按相关性粗排（题干命中优先于仅知识点命中），再按 id 稳定序。
     """
     if not q and not knowledge_point and not subject and not category:
-        return []
+        # 空查询（无筛选）视为「浏览题库」：返回前 N 道可判分题作为样例，
+        # 受 limit 约束，不会拉全库。
+        rows = (
+            db.query(Question)
+            .filter(has_correct_option_filter())
+            .order_by(Question.id)
+            .limit(limit)
+            .all()
+        )
+        return rows
 
     query = db.query(Question).filter(has_correct_option_filter())
     if subject:
