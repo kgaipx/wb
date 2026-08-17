@@ -85,7 +85,8 @@ def explain(payload: ExplainIn, current: User = Depends(get_current_user), db: S
     remaining = None
     if current.plan == "free":
         remaining = max(0, _FREE_QUOTA - current.ai_quota_used)
-    return ExplainOut(**out, quota_remaining=remaining)
+    correct = "".join(o.label for o in q.options if getattr(o, "is_correct", False)) or None
+    return ExplainOut(**out, correct_answer=correct, quota_remaining=remaining)
 
 
 @router.get("/recommend", response_model=RecommendOut)

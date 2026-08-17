@@ -29,6 +29,7 @@ class ExplainOut(BaseModel):
     knowledge_point: str
     explanation: str
     citations: list[CitationOut] = []
+    correct_answer: str | None = None  # 正确答案标签拼接（如 "A" / "AB"），讲解场景展示用
     model: str | None = None
     quota_remaining: int | None = None  # 免费版剩余配额（pro 为 None）
     offline: bool = False  # True 表示 LLM 不可用时走了离线降级讲解

@@ -3792,3 +3792,127 @@
   line-height: 1;
   cursor: pointer;
 }
+
+/* ===== 题解浮层 ExplainModal ===== */
+.explain-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.46);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 6vh 14px;
+  z-index: 60;
+  overflow-y: auto;
+  animation: explain-fade .16s ease;
+}
+@keyframes explain-fade { from { opacity: 0; } to { opacity: 1; } }
+.explain-modal {
+  width: 100%;
+  max-width: 640px;
+  background: var(--surface);
+  border: 1px solid var(--border, #e6e8ee);
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.28);
+  display: flex;
+  flex-direction: column;
+  max-height: 88vh;
+  animation: explain-pop .18s ease;
+}
+@keyframes explain-pop { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
+.explain-modal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border, #eef0f4);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+  z-index: 1;
+}
+.explain-close {
+  border: none;
+  background: var(--surface-2);
+  color: var(--text-3);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  flex: none;
+}
+.explain-close:hover { background: var(--danger-soft, #fde8e6); color: var(--danger, #d92b1c); }
+.explain-modal__body { padding: 14px 16px; overflow-y: auto; }
+.explain-stem {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.65;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+.explain-opts { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+.explain-opt {
+  display: flex;
+  gap: 10px;
+  padding: 9px 12px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.explain-opt__label { font-weight: 800; color: var(--brand); flex: none; }
+.explain-opt__content { color: var(--text); }
+.explain-answer {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: var(--ok-soft, #e7f6ec);
+  color: var(--ok, #1a7f37);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+}
+.explain-ai { margin-top: 16px; }
+.explain-ai__head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.explain-ai__badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  background: var(--brand-soft, #eef2ff);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.explain-ai__kp {
+  font-size: 12px;
+  color: var(--text-3);
+  background: var(--surface-2);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.explain-ai__offline {
+  font-size: 12px;
+  color: #9a6b00;
+  background: #fff4d6;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.explain-ai__body {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--text);
+}
+.explain-ai__body p { margin: 0 0 8px; }
+.explain-ai__body ul, .explain-ai__body ol { margin: 0 0 8px; padding-left: 20px; }
+.explain-modal__foot {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border, #eef0f4);
+  position: sticky;
+  bottom: 0;
+  background: var(--surface);
+  border-radius: 0 0 16px 16px;
+}
+

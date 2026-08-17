@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, SearchHit } from "../api/client";
+import ExplainModal from "../components/ExplainModal";
 
 // 常见模块快速筛选（题库 category 字段为模块名；关键词检索不依赖此列表）
 const CATEGORIES = [
@@ -19,6 +20,7 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [faved, setFaved] = useState<Set<number>>(new Set());
+  const [explainId, setExplainId] = useState<number | null>(null);
   const timer = useRef<number | null>(null);
 
   function doSearch(keyword: string, cat: string | null) {
@@ -147,6 +149,12 @@ export default function Search() {
               </button>
               <button
                 className="btn btn--ghost btn--sm"
+                onClick={() => setExplainId(h.id)}
+              >
+                看解析
+              </button>
+              <button
+                className="btn btn--ghost btn--sm"
                 disabled={faved.has(h.id)}
                 onClick={() => fav(h.id)}
               >
@@ -156,6 +164,8 @@ export default function Search() {
           </div>
         ))}
       </div>
+
+      <ExplainModal questionId={explainId} onClose={() => setExplainId(null)} />
     </section>
   );
 }
