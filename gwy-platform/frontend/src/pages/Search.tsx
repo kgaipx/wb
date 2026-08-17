@@ -2,29 +2,29 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, SearchHit } from "../api/client";
 
-// 常见科目快速筛选（题库以这五类为主；关键词检索不依赖此列表）
-const SUBJECTS = [
+// 常见模块快速筛选（题库 category 字段为模块名；关键词检索不依赖此列表）
+const CATEGORIES = [
   "言语理解与表达",
+  "判断推理",
   "数量关系",
   "资料分析",
   "常识判断",
-  "判断推理",
 ];
 
 export default function Search() {
   const nav = useNavigate();
   const [q, setQ] = useState("");
-  const [subject, setSubject] = useState<string | null>(null);
+  const [category, setCategory] = useState<string | null>(null);
   const [hits, setHits] = useState<SearchHit[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [faved, setFaved] = useState<Set<number>>(new Set());
   const timer = useRef<number | null>(null);
 
-  function doSearch(keyword: string, subj: string | null) {
+  function doSearch(keyword: string, cat: string | null) {
     setLoading(true);
     api
-      .questionSearch({ q: keyword, subject: subj || undefined, limit: 30 })
+      .questionSearch({ q: keyword, category: cat || undefined, limit: 30 })
       .then((r) => {
         setHits(r);
         setSearched(true);
@@ -33,20 +33,20 @@ export default function Search() {
       .finally(() => setLoading(false));
   }
 
-  // 关键词输入即时检索（防抖）；科目筛选切换也即时检索
+  // 关键词输入即时检索（防抖）；模块筛选切换也即时检索
   function onChange(keyword: string) {
     setQ(keyword);
     if (timer.current) window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => doSearch(keyword, subject), 300);
+    timer.current = window.setTimeout(() => doSearch(keyword, category), 300);
   }
 
-  function onSubject(subj: string | null) {
-    setSubject(subj);
-    doSearch(q, subj);
+  function onCategory(cat: string | null) {
+    setCategory(cat);
+    doSearch(q, cat);
   }
 
   useEffect(() => {
-    // 进入即给一次空关键词 + 全部科目的检索，列出题库样例
+    // 进入即给一次空关键词 + 全部模块的检索，列出题库样例
     doSearch("", null);
     return () => {
       if (timer.current) window.clearTimeout(timer.current);
@@ -78,7 +78,7 @@ export default function Search() {
           value={q}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") doSearch(q, subject);
+            if (e.key === "Enter") doSearch(q, category);
           }}
           autoFocus
         />
@@ -91,16 +91,16 @@ export default function Search() {
 
       <div className="chip-row" style={{ marginTop: 10 }}>
         <button
-          className={"chip" + (subject === null ? " chip--on" : "")}
-          onClick={() => onSubject(null)}
+          className={"chip" + (category === null ? " chip--on" : "")}
+          onClick={() => onCategory(null)}
         >
           全部
         </button>
-        {SUBJECTS.map((s) => (
+        {CATEGORIES.map((s) => (
           <button
             key={s}
-            className={"chip" + (subject === s ? " chip--on" : "")}
-            onClick={() => onSubject(subject === s ? null : s)}
+            className={"chip" + (category === s ? " chip--on" : "")}
+            onClick={() => onCategory(category === s ? null : s)}
           >
             {s}
           </button>

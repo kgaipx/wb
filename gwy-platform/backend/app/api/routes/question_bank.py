@@ -188,13 +188,14 @@ def list_questions(
 @router.get("/questions/search", response_model=list[QuestionSearchHit])
 def search_questions(
     q: str = Query("", description="关键词：匹配题干或知识点（模糊）"),
-    subject: str | None = Query(None, description="限定科目"),
+    subject: str | None = Query(None, description="限定科目（行测 / 申论）"),
+    category: str | None = Query(None, description="限定模块（言语理解与表达 / 判断推理 / 数量关系 / 资料分析 / 常识判断 等）"),
     knowledge_point: str | None = Query(None, description="限定知识点（精确）"),
     limit: int = Query(20, le=50, ge=1),
     current: User | None = Depends(get_optional_user),
     db: Session = Depends(get_db),
 ):
-    """全局题库检索：按关键词 + 科目/知识点筛选，结果可跳练习/收藏/看解析。
+    """全局题库检索：按关键词 + 科目/模块/知识点筛选，结果可跳练习/收藏/看解析。
 
     注意：必须注册在 /questions/{qid} 之前——FastAPI 不会在路径参数类型转换失败时
     回退到后续路由，否则 /questions/search 会被 /questions/{qid} 拦截并报 int 解析错误。
@@ -202,12 +203,14 @@ def search_questions(
     - 仅检索可判分题（有正确选项标记），保证点击「去练习」能正常判分。
     - 排序：先按相关性粗排（题干命中优先于仅知识点命中），再按 id 稳定序。
     """
-    if not q and not knowledge_point and not subject:
+    if not q and not knowledge_point and not subject and not category:
         return []
 
     query = db.query(Question).filter(has_correct_option_filter())
     if subject:
         query = query.filter(Question.subject == subject)
+    if category:
+        query = query.filter(Question.category == category)
     if knowledge_point:
         query = query.filter(Question.knowledge_point == knowledge_point)
 

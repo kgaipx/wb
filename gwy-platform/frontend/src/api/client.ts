@@ -442,11 +442,12 @@ export const api = {
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
   bankGet: (id: number) => request<Question>(`/bank/questions/${id}`),
-  // 全局题库检索：关键词 + 科目/知识点筛选，结果可跳练习/收藏/看解析（支持匿名）
-  questionSearch: (params: { q?: string; subject?: string; knowledge_point?: string; limit?: number } = {}) => {
+  // 全局题库检索：关键词 + 科目/模块/知识点筛选，结果可跳练习/收藏/看解析（支持匿名）
+  questionSearch: (params: { q?: string; subject?: string; category?: string; knowledge_point?: string; limit?: number } = {}) => {
     const q = new URLSearchParams();
     if (params.q) q.set("q", params.q);
     if (params.subject) q.set("subject", params.subject);
+    if (params.category) q.set("category", params.category);
     if (params.knowledge_point) q.set("knowledge_point", params.knowledge_point);
     if (params.limit) q.set("limit", String(params.limit));
     return request<SearchHit[]>(`/bank/questions/search?${q.toString()}`);
