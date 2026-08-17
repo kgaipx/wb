@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Dashboard, EssayPrompt, EssayModel, EssayCompare } from "../api/client";
+import { api, Dashboard, StudentStats, EssayPrompt, EssayModel, EssayCompare } from "../api/client";
 import { useAuth } from "../auth";
+import { LineChart } from "../components/LineChart";
 import { DimensionBars } from "../components/DimensionBars";
 import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
@@ -17,6 +18,7 @@ export default function Profile() {
   const nav = useNavigate();
   const { logout, user } = useAuth();
   const [dash, setDash] = useState<Dashboard | null>(null);
+  const [stats, setStats] = useState<StudentStats | null>(null);
   const [plan, setPlan] = useState("free");
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [wrongCount, setWrongCount] = useState(0);
@@ -54,6 +56,8 @@ export default function Profile() {
     }).catch((e) => setErr(e.message));
     api.wrongList().then((w) => setWrongCount(w.length)).catch(() => {});
     api.favoriteList().then((f) => setFavCount(f.length)).catch(() => {});
+    // 成长总览：连续打卡 / 7日趋势 / 弱项（与 Dashboard 同源，但本页只做概览，详情跳 Dashboard）
+    api.studentStats().then(setStats).catch(() => {});
     // 取首个申论题作为快速批改的真实材料/要求（避免占位文本误导评分）
     api.essayPrompts().then((ps) => setEssayPrompt(ps[0] || null)).catch(() => {});
   }, []);
@@ -194,6 +198,59 @@ export default function Profile() {
         </button>
         {profileOk && <div className="ok-text" style={{ marginTop: 6 }}>{profileOk}</div>}
       </div>
+
+      {/* 成长总览（个人中心的成长档案收口，详情见 Dashboard） */}
+      {stats && (
+        <div className="card" style={{ marginTop: 12 }}>
+          <div className="row row--between">
+            <strong>成长总览</strong>
+            <span className="muted" style={{ fontSize: 12 }}>近 7 日</span>
+          </div>
+          <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
+            <div className="metric">
+              <div className="metric__num" style={{ color: "var(--brand)" }}>🔥 {stats.streak_days}</div>
+              <div className="metric__label">连续打卡 (天)</div>
+            </div>
+            <div className="metric">
+              <div className="metric__num">{stats.last_7_days.reduce((s, d) => s + d.answers, 0)}</div>
+              <div className="metric__label">本周练习 (题)</div>
+            </div>
+          </div>
+          {stats.last_7_days.length >= 2 && (
+            <div style={{ marginTop: 10 }}>
+              <LineChart
+                points={stats.last_7_days.map((d) => ({
+                  label: d.date.slice(5),
+                  value: d.answers ? Math.round((d.correct / d.answers) * 100) : 0,
+                }))}
+                max={100}
+                min={0}
+                unit="%"
+                color="var(--brand)"
+              />
+            </div>
+          )}
+          {stats.ability.length > 0 && (
+            <div style={{ marginTop: 10 }}>
+              <div className="muted" style={{ fontSize: 12, marginBottom: 4 }}>最弱知识点（点击去专项练习）</div>
+              <div className="chip-row">
+                {stats.ability.slice(0, 3).map((a) => (
+                  <button
+                    key={a.knowledge_point}
+                    className="chip chip--warn"
+                    onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
+                  >
+                    {a.knowledge_point}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          <button className="btn btn--ghost btn--block btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/dashboard")}>
+            查看完整学习分析 →
+          </button>
+        </div>
+      )}
 
       {/* 学习管理 */}
       <div className="card" style={{ marginTop: 12 }}>
