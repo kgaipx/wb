@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, KpHeatmap, StudentStats } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { RadarChart } from "../components/RadarChart";
 import KpHeatmapView from "../components/KpHeatmap";
+import { ReportExport } from "../components/ReportExport";
 
 function pct(v: number) {
   return Math.round(v * 100);
@@ -44,6 +45,7 @@ export default function Dashboard() {
   const nav = useNavigate();
   const [stats, setStats] = useState<StudentStats | null>(null);
   const [heat, setHeat] = useState<KpHeatmap | null>(null);
+  const dashRef = useRef<HTMLDivElement>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -147,6 +149,11 @@ export default function Dashboard() {
         </div>
       </div>
 
+      <div className="row row--between" style={{ marginBottom: 4 }}>
+        <strong className="section-title" style={{ marginTop: 0 }}>学习数据分析</strong>
+        <ReportExport targetRef={dashRef} fileName={`学习分析_${new Date().toISOString().slice(0, 10)}`} />
+      </div>
+      <div ref={dashRef}>
       {/* 近 7 日趋势 */}
       <div className="card" style={{ marginTop: 12 }}>
         <strong>近 7 日练习趋势</strong>
@@ -271,6 +278,8 @@ export default function Dashboard() {
             </div>
           </div>
         )}
+      </div>
+
       </div>
 
       {/* 行动入口 */}

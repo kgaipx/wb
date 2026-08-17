@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { api, EssayPrompt, EssayHistoryItem, EssayModel, EssayCompare } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
 import { LineChart } from "../components/LineChart";
 import { EssayCompareCard } from "../components/EssayCompareCard";
+import { ReportExport } from "../components/ReportExport";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 
@@ -21,6 +22,7 @@ export default function Essay() {
   const [model, setModel] = useState<EssayModel | null>(null);
   const [modelBusy, setModelBusy] = useState(false);
   const [compare, setCompare] = useState<EssayCompare | null>(null);
+  const compareRef = useRef<HTMLDivElement>(null);
   const [compareBusy, setCompareBusy] = useState(false);
 
   useEffect(() => {
@@ -231,7 +233,17 @@ export default function Essay() {
             </div>
           )}
 
-          {compare && <EssayCompareCard data={compare} />}
+          {compare && (
+            <>
+              <div className="row row--between" style={{ marginBottom: 8 }}>
+                <strong>申论与范文对比点评</strong>
+                <ReportExport targetRef={compareRef} fileName={`申论对比点评_${new Date().toISOString().slice(0, 10)}`} />
+              </div>
+              <div ref={compareRef}>
+                <EssayCompareCard data={compare} />
+              </div>
+            </>
+          )}
         </>
       )}
 

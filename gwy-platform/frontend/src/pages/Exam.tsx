@@ -4,6 +4,7 @@ import { api, Citation } from "../api/client";
 import { RadarChart } from "../components/RadarChart";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
+import { ReportExport } from "../components/ReportExport";
 
 interface PaperQ {
   id: number;
@@ -82,6 +83,7 @@ export default function Exam() {
   const [paper, setPaper] = useState<PaperQ[]>([]);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [report, setReport] = useState<any>(null);
+  const reportRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
@@ -674,10 +676,16 @@ export default function Exam() {
 
       {tab === "exam" && phase === "report" && (
         <>
-          {renderReport(report, (d) => {
-            const q = byId.get(d.question_id);
-            return { stem: q?.stem, options: q?.options };
-          })}
+          <div className="row row--between" style={{ marginBottom: 8 }}>
+            <strong>模考提分报告</strong>
+            <ReportExport targetRef={reportRef} fileName={`模考提分报告_${new Date().toISOString().slice(0, 10)}`} />
+          </div>
+          <div ref={reportRef}>
+            {renderReport(report, (d) => {
+              const q = byId.get(d.question_id);
+              return { stem: q?.stem, options: q?.options };
+            })}
+          </div>
           <button className="btn btn--ghost btn--block" style={{ marginTop: 16 }} onClick={() => { setPhase("setup"); setTab("history"); }}>
             查看模考历史 →
           </button>
@@ -804,8 +812,13 @@ export default function Exam() {
 
       {tab === "history" && phase === "historyDetail" && detail && (
         <>
-          <button className="back-link" onClick={() => setPhase("history")}>← 返回历史列表</button>
-          {renderReport(detail, (d) => ({ stem: d.stem, options: d.options }))}
+          <div className="row row--between" style={{ marginBottom: 8 }}>
+            <button className="back-link" onClick={() => setPhase("history")}>← 返回历史列表</button>
+            <ReportExport targetRef={reportRef} fileName={`模考报告_${(detail.created_at || "").slice(0, 10) || "历史"}`} />
+          </div>
+          <div ref={reportRef}>
+            {renderReport(detail, (d) => ({ stem: d.stem, options: d.options }))}
+          </div>
           <button className="btn btn--ghost btn--block" style={{ marginTop: 16 }} onClick={() => setPhase("history")}>
             返回历史列表
           </button>
