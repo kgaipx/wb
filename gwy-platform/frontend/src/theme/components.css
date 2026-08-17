@@ -1525,6 +1525,13 @@
   color: var(--text);
   line-height: 1.5;
 }
+.q-item__foot {
+  margin-top: 8px;
+  text-align: right;
+}
+.q-item__foot .link-btn {
+  font-size: 13px;
+}
 
 /* ===================== 选项 ===================== */
 .opt {

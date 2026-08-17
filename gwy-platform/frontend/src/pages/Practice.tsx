@@ -5,6 +5,7 @@ import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
 import { RadarChart } from "../components/RadarChart";
+import ExplainModal from "../components/ExplainModal";
 
 const PAGE = 60;
 
@@ -29,6 +30,7 @@ export default function Practice() {
   const [streak, setStreak] = useState(0); // 连续答对计数（激励）
   const [encourage, setEncourage] = useState(""); // 答对/中断浮动鼓励文案
   const encourageTimer = useRef<number | null>(null);
+  const [explainId, setExplainId] = useState<number | null>(null); // 题库浏览态「看解析」浮层
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -440,6 +442,17 @@ export default function Practice() {
                 {q.is_verified && <span className="tag tag--verified">✓ 已审核</span>}
               </div>
               <div className="q-item__stem">{q.stem}</div>
+              <div className="q-item__foot">
+                <button
+                  className="link-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExplainId(q.id);
+                  }}
+                >
+                  看解析 🔍
+                </button>
+              </div>
             </div>
           ))}
           {list.length === 0 && (loading ? (
@@ -671,6 +684,8 @@ export default function Practice() {
           )}
         </div>
       )}
+
+      <ExplainModal questionId={explainId} onClose={() => setExplainId(null)} />
     </section>
   );
 }
