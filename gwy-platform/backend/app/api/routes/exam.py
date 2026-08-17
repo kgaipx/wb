@@ -106,6 +106,7 @@ def submit_exam(
                     "selected": item.selected,
                     "stem": q.stem,
                     "knowledge_point": q.knowledge_point,
+                    "options": [{"label": o.label, "content": o.content} for o in q.options],
                     "skipped": True,
                 }
             )
@@ -161,6 +162,7 @@ def submit_exam(
                 "selected": item.selected,
                 "stem": q.stem,
                 "knowledge_point": q.knowledge_point,
+                "options": [{"label": o.label, "content": o.content} for o in q.options],
                 "skipped": False,
             }
         )

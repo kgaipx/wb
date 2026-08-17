@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../api/client";
+import { api, Citation } from "../api/client";
 import { RadarChart } from "../components/RadarChart";
+import Markdown from "../components/Markdown";
+import CiteCards from "../components/CiteCards";
 
 interface PaperQ {
   id: number;
@@ -104,6 +106,13 @@ export default function Exam() {
   const [hisHasMore, setHisHasMore] = useState(false);
 
   const nav = useNavigate();
+
+  // 逐题复盘交互态：就地 AI 讲解展开 / 结果缓存 / 收藏态 / 各题 busy 锁
+  const [expQ, setExpQ] = useState<Record<number, boolean>>({});
+  const [explainMap, setExplainMap] = useState<Record<number, { explanation: string; citations: Citation[] }>>({});
+  const [favMap, setFavMap] = useState<Record<number, boolean>>({});
+  const [explainBusy, setExplainBusy] = useState<Record<number, boolean>>({});
+  const [favBusy, setFavBusy] = useState<Record<number, boolean>>({});
 
   async function loadHistory(reset = true) {
     const off = reset ? 0 : hisOffset;
@@ -272,7 +281,39 @@ export default function Exam() {
   const answered = paper.filter((q) => answers[q.id]).length;
   const byId = new Map(paper.map((q) => [q.id, q]));
 
-  function renderReport(rep: any, getStem: (d: any) => string | undefined) {
+  // 逐题复盘：就地展开/收起 AI 讲解（复用 /ai/explain，含 RAG 溯源引用）
+  async function toggleExplain(qid: number, selected?: string) {
+    if (expQ[qid]) {
+      setExpQ((s) => ({ ...s, [qid]: false }));
+      return;
+    }
+    setExplainBusy((s) => ({ ...s, [qid]: true }));
+    try {
+      const r = await api.explain(qid, selected || undefined);
+      setExplainMap((s) => ({ ...s, [qid]: { explanation: r.explanation, citations: r.citations } }));
+      setExpQ((s) => ({ ...s, [qid]: true }));
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setExplainBusy((s) => ({ ...s, [qid]: false }));
+    }
+  }
+
+  // 逐题复盘：一键收藏（错题本是自动收集，这里给考生沉淀好题的入口）
+  async function doFav(qid: number) {
+    if (favMap[qid]) return;
+    setFavBusy((s) => ({ ...s, [qid]: true }));
+    try {
+      await api.favoriteAdd(qid);
+      setFavMap((s) => ({ ...s, [qid]: true }));
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setFavBusy((s) => ({ ...s, [qid]: false }));
+    }
+  }
+
+  function renderReport(rep: any, getMeta: (d: any) => { stem?: string | null; options?: any[] | null }) {
     const rate = Math.round((rep.correct_rate || 0) * 100);
     const tone = rate >= 70 ? "rate--good" : rate >= 50 ? "rate--mid" : "rate--bad";
     // 按知识点聚合正确率（弱→强排序），让考生看清究竟哪个模块拖后腿
@@ -388,36 +429,109 @@ export default function Exam() {
           </button>
         </div>
         <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
-        {rep.details.map((d: any, i: number) => (
-          <div className="card" key={d.question_id} style={{ marginTop: 12 }}>
-            <div className="row row--between">
-              <span className="text-3">第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}</span>
-              <span className={d.is_correct ? "text-success" : d.skipped ? "text-3" : "text-danger"}>
-                {d.is_correct ? "✔ 答对" : d.skipped ? "⚠ 暂无答案" : "✘ 答错"}
-              </span>
-            </div>
-            {getStem(d) && <div className="q-item__stem" style={{ marginTop: 4 }}>{getStem(d)}</div>}
-            {!d.is_correct && !d.skipped && (
-              <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
-                正确答案：<b className="text-brand">{d.correct_answer}</b>
-                {d.selected ? `（你的作答：${d.selected}）` : ""}
-                <div style={{ marginTop: 6 }}>
-                  <button
-                    className="btn btn--ghost btn--sm"
-                    onClick={() => nav(`/practice?q=${d.question_id}`)}
-                  >
-                    🔁 重练这道题
-                  </button>
+        {rep.details.map((d: any, i: number) => {
+          const meta = getMeta(d) || {};
+          const opts = meta.options || [];
+          const correctLabels = (d.correct_answer || "").split("").filter(Boolean);
+          const userLabels = (d.selected || "").split("").filter(Boolean);
+          const isWrong = !d.is_correct && !d.skipped;
+          const open = expQ[d.question_id];
+          const ex = explainMap[d.question_id];
+          const fav = favMap[d.question_id];
+          return (
+            <div className="card" key={d.question_id} style={{ marginTop: 12 }}>
+              <div className="row row--between">
+                <span className="text-3">第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}</span>
+                <span className={d.is_correct ? "text-success" : d.skipped ? "text-3" : "text-danger"}>
+                  {d.is_correct ? "✔ 答对" : d.skipped ? "⚠ 暂无答案" : "✘ 答错"}
+                </span>
+              </div>
+              {meta.stem && <div className="q-item__stem" style={{ marginTop: 4 }}>{meta.stem}</div>}
+
+              {opts.length > 0 && (
+                <div style={{ marginTop: 8 }}>
+                  {opts.map((o: any) => {
+                    const isCorrect = correctLabels.includes(o.label);
+                    const isUserWrong = !isCorrect && userLabels.includes(o.label);
+                    const bg = isCorrect
+                      ? "rgba(29,122,70,0.10)"
+                      : isUserWrong
+                      ? "rgba(192,57,43,0.10)"
+                      : "var(--surface)";
+                    const bd = isCorrect ? "var(--success)" : isUserWrong ? "var(--danger)" : "var(--surface-2)";
+                    const mark = isCorrect ? "✓ 正确答案" : isUserWrong ? "✗ 你的选择" : null;
+                    return (
+                      <div
+                        key={o.label}
+                        style={{
+                          display: "flex",
+                          gap: 8,
+                          alignItems: "flex-start",
+                          padding: "8px 10px",
+                          borderRadius: 8,
+                          border: `1.5px solid ${bd}`,
+                          background: bg,
+                          marginTop: 6,
+                        }}
+                      >
+                        <b style={{ minWidth: 16 }}>{o.label}.</b>
+                        <span style={{ flex: 1 }}>{o.content}</span>
+                        {mark && (
+                          <span style={{ fontSize: 12, fontWeight: 600, color: isCorrect ? "var(--success)" : "var(--danger)" }}>
+                            {mark}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
+              )}
+
+              <div className="muted" style={{ marginTop: 8, fontSize: 13 }}>
+                你的作答：
+                <b className={isWrong ? "text-danger" : d.is_correct ? "text-success" : ""}>{d.selected || "未作答"}</b>
+                {!d.skipped && (
+                  <>
+                    {" · "}正确答案：<b className="text-brand">{d.correct_answer}</b>
+                  </>
+                )}
               </div>
-            )}
-            {d.skipped && (
-              <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
-                ⚠ 本题暂无标准答案，已跳过，不计入正确率。
+              {d.skipped && (
+                <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>
+                  ⚠ 本题暂无标准答案，已跳过，不计入正确率。
+                </div>
+              )}
+
+              <div className="row" style={{ gap: 8, marginTop: 8 }}>
+                <button
+                  className="btn btn--ghost btn--sm"
+                  disabled={explainBusy[d.question_id]}
+                  onClick={() => toggleExplain(d.question_id, d.selected)}
+                >
+                  {explainBusy[d.question_id] ? "讲解中…" : open ? "收起讲解" : "🤖 AI 讲解"}
+                </button>
+                <button
+                  className="btn btn--ghost btn--sm"
+                  disabled={favBusy[d.question_id] || fav}
+                  onClick={() => doFav(d.question_id)}
+                >
+                  {fav ? "⭐ 已收藏" : favBusy[d.question_id] ? "收藏中…" : "☆ 收藏"}
+                </button>
+                <button className="btn btn--ghost btn--sm" onClick={() => nav(`/practice?q=${d.question_id}`)}>
+                  🔁 重练
+                </button>
               </div>
-            )}
-          </div>
-        ))}
+
+              {open && ex && (
+                <div className="tutor-box" style={{ marginTop: 8 }}>
+                  <div className="tutor-box__title">AI 私教讲解</div>
+                  <div className="tutor-box__body"><Markdown>{ex.explanation}</Markdown></div>
+                  {ex.citations.length > 0 && <CiteCards cites={ex.citations} />}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </>
     );
   }
@@ -560,7 +674,10 @@ export default function Exam() {
 
       {tab === "exam" && phase === "report" && (
         <>
-          {renderReport(report, (d) => byId.get(d.question_id)?.stem)}
+          {renderReport(report, (d) => {
+            const q = byId.get(d.question_id);
+            return { stem: q?.stem, options: q?.options };
+          })}
           <button className="btn btn--ghost btn--block" style={{ marginTop: 16 }} onClick={() => { setPhase("setup"); setTab("history"); }}>
             查看模考历史 →
           </button>
@@ -688,7 +805,7 @@ export default function Exam() {
       {tab === "history" && phase === "historyDetail" && detail && (
         <>
           <button className="back-link" onClick={() => setPhase("history")}>← 返回历史列表</button>
-          {renderReport(detail, (d) => d.stem)}
+          {renderReport(detail, (d) => ({ stem: d.stem, options: d.options }))}
           <button className="btn btn--ghost btn--block" style={{ marginTop: 16 }} onClick={() => setPhase("history")}>
             返回历史列表
           </button>
