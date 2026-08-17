@@ -22,6 +22,7 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Notifications from "./pages/Notifications";
 import Assessment from "./pages/Assessment";
+import Search from "./pages/Search";
 
 type Icon = () => JSX.Element;
 
@@ -118,6 +119,13 @@ const EssayIcon: Icon = () => (
     <path d="M8.5 12.5h7M8.5 16h5" />
   </svg>
 );
+const SearchIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="7" />
+    <path d="M21 21l-4-4" />
+  </svg>
+);
+
 const MoreIcon: Icon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <circle cx="5" cy="12" r="1.9" />
@@ -145,6 +153,7 @@ const PRIMARY = [
 type MoreEntry = { to: string; label: string; icon: Icon; end?: boolean; role?: "reviewer" | "admin" };
 const MORE: MoreEntry[] = [
   { to: "/learn", label: "学习", icon: BookIcon },
+  { to: "/search", label: "搜题", icon: SearchIcon },
   { to: "/exam", label: "模考", icon: ExamIcon },
   { to: "/data", label: "数据", icon: ChartIcon },
   { to: "/favorites", label: "收藏", icon: StarIcon },
@@ -460,6 +469,7 @@ function AppShell() {
             <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
             <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
             <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
+            <Route path="/search" element={<RequireAuth><Search /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
             <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
             <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />

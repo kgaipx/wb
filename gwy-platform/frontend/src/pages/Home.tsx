@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, PlanOut, PlanTask, StudentStats } from "../api/client";
+import { api, PlanOut, PlanTask, StudentStats, WrongItem } from "../api/client";
 import { useAuth } from "../auth";
 
 const KIND_LABEL: Record<string, string> = {
@@ -23,6 +23,7 @@ export default function Home() {
   const [examStat, setExamStat] = useState<any[]>([]);
   const [examLoading, setExamLoading] = useState(false);
   const [stats, setStats] = useState<StudentStats | null>(null);
+  const [wrongs, setWrongs] = useState<WrongItem[]>([]);
 
   // PWA 已安装态检测：standalone 显示模式（Android Chrome / 桌面）或 iOS Safari navigator.standalone
   useEffect(() => {
@@ -74,7 +75,33 @@ export default function Home() {
     api.studentStats().then(setStats).catch(() => setStats(null));
   }, [user]);
 
+  // 已登录：拉待复盘错题，用于首页「智能日报」的间隔到期 / 新错题统计
+  useEffect(() => {
+    if (!user) return;
+    api.wrongList().then(setWrongs).catch(() => setWrongs([]));
+  }, [user]);
+
   const daily = dailyList[dailyIdx] || null;
+
+  // —— 智能日报：间隔到期复习 + 新错题提醒 + 最弱一键练 ——
+  // 待复盘错题（wrongList 默认即未复盘）按「最后作答时间」切本地日：
+  // 今天内的 = 新错题（待首次复习）；更早的 = 间隔到期、今天该复盘。
+  const now0 = new Date();
+  const todayStart = new Date(now0.getFullYear(), now0.getMonth(), now0.getDate());
+  let dueCount = 0;
+  let newToday = 0;
+  for (const w of wrongs) {
+    if (!w.last_attempted_at) {
+      dueCount += 1;
+      continue;
+    }
+    const last = new Date(w.last_attempted_at);
+    if (last >= todayStart) newToday += 1;
+    else dueCount += 1;
+  }
+  const weak3 = stats
+    ? [...stats.ability].sort((a, b) => a.mastery - b.mastery).slice(0, 3)
+    : [];
 
   // 冷启动引导：零作答的纯新手用户，首登即给「三步开启」引导；做第一题后自动消失
   const isNew = stats ? stats.total_answers === 0 : false;
@@ -225,6 +252,25 @@ export default function Home() {
           </span>
         )}
       </div>
+
+      {/* 搜题入口：直达全局题库检索 */}
+      <button
+        className="card home-search"
+        style={{ marginTop: 14, width: "100%", textAlign: "left", cursor: "pointer" }}
+        onClick={() => nav("/search")}
+      >
+        <span className="home-search__ico">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4-4" />
+          </svg>
+        </span>
+        <span className="home-search__txt">
+          <b>搜题</b>
+          <span className="muted">按关键词 / 科目 / 知识点检索题库，直达练习与收藏</span>
+        </span>
+        <span className="home-search__go">→</span>
+      </button>
 
       {/* 今日学习计划概览 */}
       {plan ? (
@@ -426,6 +472,63 @@ export default function Home() {
         <div className="muted" style={{ fontSize: 12, marginTop: 8 }}>
           复错率、弱项知识点与近 7 日趋势，去数据中心看完整进步曲线。
         </div>
+      </div>
+
+      {/* 智能日报：间隔到期复习 + 新错题提醒 + 最弱一键练 */}
+      <div className="card home-daily" style={{ marginTop: 14 }}>
+        <div className="row row--between">
+          <strong>📅 智能日报</strong>
+          <span className="muted" style={{ fontSize: 12 }}>
+            {now0.getMonth() + 1} 月 {now0.getDate()} 日
+          </span>
+        </div>
+        <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--warning)" }}>{dueCount}</div>
+            <div className="metric__label">间隔到期待复习</div>
+          </div>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--accent)" }}>{newToday}</div>
+            <div className="metric__label">今日新错题</div>
+          </div>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--brand)" }}>{stats ? stats.streak_days : "—"}</div>
+            <div className="metric__label">🔥连续打卡</div>
+          </div>
+        </div>
+        {(dueCount + newToday) > 0 && (
+          <button
+            className="btn btn--primary btn--sm"
+            style={{ marginTop: 10, width: "100%" }}
+            onClick={() => nav("/wrong")}
+          >
+            去复习错题（{dueCount + newToday}）
+          </button>
+        )}
+
+        {weak3.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            <div className="muted" style={{ fontSize: 12 }}>最弱知识点 · 一键练</div>
+            <div className="chip-row" style={{ marginTop: 4 }}>
+              {weak3.map((a) => (
+                <button
+                  key={a.knowledge_point}
+                  className="chip chip--on"
+                  onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
+                >
+                  {a.knowledge_point} {Math.round(a.mastery * 100)}%
+                </button>
+              ))}
+            </div>
+            <button
+              className="btn btn--ghost btn--sm"
+              style={{ marginTop: 8, width: "100%" }}
+              onClick={() => nav("/practice?kp=" + weak3.map((a) => a.knowledge_point).join(","))}
+            >
+              🎯 一键混合薄弱点练习（{weak3.length}）
+            </button>
+          </div>
+        )}
       </div>
 
       <div className="card card--soft" style={{ marginTop: 14 }}>

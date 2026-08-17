@@ -73,6 +73,30 @@ export interface StudentStats {
   last_7_days: DayTrend[];
   streak_days: number; // 连续打卡天数
 }
+// 知识点掌握度热力图（按科目分面；仅含练过的知识点）
+export interface KpHeatItem {
+  knowledge_point: string;
+  mastery: number;
+  attempts: number;
+}
+export interface KpHeatSubject {
+  subject: string;
+  avg_mastery: number;
+  kps: KpHeatItem[];
+}
+export interface KpHeatmap {
+  subjects: KpHeatSubject[];
+}
+// 题库检索命中（不泄漏选项/答案）
+export interface SearchHit {
+  id: number;
+  subject: string;
+  category: string;
+  difficulty: number;
+  knowledge_point: string;
+  is_verified: boolean;
+  stem: string;
+}
 export interface Question {
   id: number;
   subject: string;
@@ -398,6 +422,8 @@ export const api = {
   dashboard: () => request<Dashboard>("/student/me"),
   // 学情数据看板（P0 信号：复错率 / 正确率 / 弱项 / 趋势 / 连续打卡）
   studentStats: () => request<StudentStats>("/student/stats"),
+  // 知识点掌握度热力图（按科目分面，科目按平均掌握度升序）
+  kpHeatmap: () => request<KpHeatmap>("/student/kp-heatmap"),
 
   // 错题本（WBS 2.2 衍生 / 复错率闭环）
   wrongList: () => request<WrongItem[]>("/student/wrong"),
@@ -416,6 +442,15 @@ export const api = {
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
   bankGet: (id: number) => request<Question>(`/bank/questions/${id}`),
+  // 全局题库检索：关键词 + 科目/知识点筛选，结果可跳练习/收藏/看解析（支持匿名）
+  questionSearch: (params: { q?: string; subject?: string; knowledge_point?: string; limit?: number } = {}) => {
+    const q = new URLSearchParams();
+    if (params.q) q.set("q", params.q);
+    if (params.subject) q.set("subject", params.subject);
+    if (params.knowledge_point) q.set("knowledge_point", params.knowledge_point);
+    if (params.limit) q.set("limit", String(params.limit));
+    return request<SearchHit[]>(`/bank/questions/search?${q.toString()}`);
+  },
   practice: (question_id: number, selected: string) =>
     request<{ question_id: number; is_correct: boolean; correct_answer: string | null; explanation: string | null; mastery: number; skipped?: boolean }>(
       "/bank/practice",

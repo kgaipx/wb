@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Dashboard } from "../api/client";
+import { api, Dashboard, KpHeatmap } from "../api/client";
 import Markdown from "../components/Markdown";
 import { RadarChart } from "../components/RadarChart";
+import KpHeatmapView from "../components/KpHeatmap";
 
 export default function Learn() {
   const nav = useNavigate();
   const REC_PAGE = 10;
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
+  const [heat, setHeat] = useState<KpHeatmap | null>(null);
   const [explain, setExplain] = useState<Record<number, string>>({});
   const [upgradeFor, setUpgradeFor] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -20,9 +22,14 @@ export default function Learn() {
 
   async function load() {
     try {
-      const [d, r] = await Promise.all([api.dashboard(), api.recommend(REC_PAGE)]);
+      const [d, r, h] = await Promise.all([
+        api.dashboard(),
+        api.recommend(REC_PAGE),
+        api.kpHeatmap(),
+      ]);
       setDash(d);
       setRec(r);
+      setHeat(h);
       setRecTopN(REC_PAGE);
       setRecHasMore(r.questions.length === REC_PAGE);
     } catch (e: any) {
@@ -178,6 +185,17 @@ export default function Learn() {
               ))}
           </div>
         </div>
+        {/* 分科掌握度热力图（紧凑版，无图例/薄弱数） */}
+        {heat && heat.subjects.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 2 }}>分科掌握度速览</div>
+            <KpHeatmapView
+              subjects={heat.subjects}
+              onSelect={(kp) => nav("/practice?kp=" + encodeURIComponent(kp))}
+              compact
+            />
+          </div>
+        )}
       </div>
 
       <div className="card card--warning" style={{ marginTop: 12 }}>

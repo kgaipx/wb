@@ -28,6 +28,7 @@ from app.schemas.question import (
     PracticeResult,
     PracticeSubmit,
     QuestionOut,
+    QuestionSearchHit,
 )
 from app.services.scoring import has_correct_option_filter, score_selection
 
@@ -190,6 +191,53 @@ def get_question(qid: int, db: Session = Depends(get_db)):
     if q is None:
         raise HTTPException(status_code=404, detail="题目不存在")
     return q
+
+
+@router.get("/questions/search", response_model=list[QuestionSearchHit])
+def search_questions(
+    q: str = Query("", description="关键词：匹配题干或知识点（模糊）"),
+    subject: str | None = Query(None, description="限定科目"),
+    knowledge_point: str | None = Query(None, description="限定知识点（精确）"),
+    limit: int = Query(20, le=50, ge=1),
+    current: User | None = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    """全局题库检索：按关键词 + 科目/知识点筛选，结果可跳练习/收藏/看解析。
+
+    - 匿名也可检索（get_optional_user）；仅对题干与知识点做 LIKE，不泄漏选项/答案。
+    - 仅检索可判分题（有正确选项标记），保证点击「去练习」能正常判分。
+    - 排序：先按相关性粗排（题干命中优先于仅知识点命中），再按 id 稳定序。
+    """
+    if not q and not knowledge_point and not subject:
+        return []
+
+    query = db.query(Question).filter(has_correct_option_filter())
+    if subject:
+        query = query.filter(Question.subject == subject)
+    if knowledge_point:
+        query = query.filter(Question.knowledge_point == knowledge_point)
+
+    like = f"%{q}%"
+    if q:
+        query = query.filter(
+            Question.stem.like(like) | Question.knowledge_point.like(like)
+        )
+
+    rows = query.order_by(Question.id).limit(limit * 3).all()
+
+    # 相关性粗排：题干命中（强）> 仅知识点命中（弱）
+    def _score(qq: Question) -> int:
+        s = 0
+        if q and q in (qq.knowledge_point or ""):
+            s += 1
+        if q and q in (qq.stem or ""):
+            s += 2
+        return s
+
+    if q:
+        rows.sort(key=lambda qq: (-_score(qq), qq.id))
+    rows = rows[:limit]
+    return rows
 
 
 @router.post("/practice", response_model=PracticeResult)

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, StudentStats } from "../api/client";
+import { api, KpHeatmap, StudentStats } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { RadarChart } from "../components/RadarChart";
+import KpHeatmapView from "../components/KpHeatmap";
 
 function pct(v: number) {
   return Math.round(v * 100);
@@ -42,6 +43,7 @@ function MasteryRow({ name, mastery, onPractice }: { name: string; mastery: numb
 export default function Dashboard() {
   const nav = useNavigate();
   const [stats, setStats] = useState<StudentStats | null>(null);
+  const [heat, setHeat] = useState<KpHeatmap | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,6 +51,7 @@ export default function Dashboard() {
       .studentStats()
       .then(setStats)
       .catch((e) => setErr(e?.message || "加载失败"));
+    api.kpHeatmap().then(setHeat).catch(() => setHeat(null));
   }, []);
 
   if (err) {
@@ -186,6 +189,29 @@ export default function Dashboard() {
           折线为每日客观题正确率；正确率稳步上升 + 复错率下降 = 复习有效。
         </div>
       </div>
+
+      {/* 知识点掌握度热力图（按科目分面，最弱科目/知识点排最前） */}
+      {heat && (
+        <div className="card" style={{ marginTop: 12 }}>
+          <div className="row row--between">
+            <strong>知识点掌握度热力图</strong>
+            <span className="tag tag--brand">分科视图</span>
+          </div>
+          {heat.subjects.length === 0 ? (
+            <div className="muted" style={{ fontSize: 13, marginTop: 8 }}>
+              还没有练过的知识点，去「刷题」后这里会生成分科热力图。
+            </div>
+          ) : (
+            <KpHeatmapView
+              subjects={heat.subjects}
+              onSelect={(kp) => nav("/practice?kp=" + encodeURIComponent(kp))}
+            />
+          )}
+          <div className="muted" style={{ fontSize: 12, marginTop: 10 }}>
+            颜色越红越薄弱、越绿越扎实；点色块直达该知识点专项练习。
+          </div>
+        </div>
+      )}
 
       {/* 弱项知识点 */}
       <div className="card" style={{ marginTop: 12 }}>
