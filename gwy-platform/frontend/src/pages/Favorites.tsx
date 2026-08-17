@@ -70,6 +70,21 @@ export default function Favorites() {
     return c;
   }, [list]);
 
+  const batchIds = useMemo(() => {
+    const all = list.map((it) => it.question.id);
+    const err = list.filter((it) => it.tags.includes("易错")).map((it) => it.question.id);
+    const key = list.filter((it) => it.tags.includes("重点")).map((it) => it.question.id);
+    return { all, err, key };
+  }, [list]);
+
+  function practiceIds(ids: number[]) {
+    if (!ids.length) {
+      flash("该筛选下暂无可练习的收藏");
+      return;
+    }
+    nav(`/practice?ids=${ids.join(",")}`);
+  }
+
   async function remove(qid: number) {
     setBusy(true);
     try {
@@ -118,6 +133,27 @@ export default function Favorites() {
       {/* 分类方式 + 科目筛选 + 标签筛选 + 导出 */}
       {!loading && list.length > 0 && (
         <div className="fav-bar">
+          <div className="fav-batch">
+            <button className="btn btn--primary btn--sm" disabled={busy} onClick={() => practiceIds(batchIds.all)}>
+              🎯 练习全部（{list.length}）
+            </button>
+            <button
+              className="btn btn--ghost btn--sm"
+              disabled={busy || tagCounts["易错"] === 0}
+              onClick={() => practiceIds(batchIds.err)}
+              title="仅练习标记「易错」的收藏"
+            >
+              🔴 只练易错（{tagCounts["易错"] || 0}）
+            </button>
+            <button
+              className="btn btn--ghost btn--sm"
+              disabled={busy || tagCounts["重点"] === 0}
+              onClick={() => practiceIds(batchIds.key)}
+              title="仅练习标记「重点」的收藏"
+            >
+              🟡 只练重点（{tagCounts["重点"] || 0}）
+            </button>
+          </div>
           <div className="row row--between" style={{ gap: 8, marginBottom: 8 }}>
             <div className="chip-row fav-filters">
               <button className={"chip" + (groupBy === "list" ? " chip--on" : "")} onClick={() => setGroupBy("list")}>
@@ -194,7 +230,16 @@ export default function Favorites() {
             <div key={kp}>
               <div className="fav-group-title">
                 <span>{kp}</span>
-                <span className="muted">{items.length} 题</span>
+                <span className="fav-group-right">
+                  <span className="muted">{items.length} 题</span>
+                  <button
+                    className="btn btn--ghost btn--sm"
+                    disabled={busy}
+                    onClick={() => practiceIds(items.map((i) => i.question.id))}
+                  >
+                    练习这组
+                  </button>
+                </span>
               </div>
               {items.map((it) => (
                 <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} />

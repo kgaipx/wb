@@ -983,6 +983,8 @@
 .wrong-item__top .q-item__meta { flex: 1; }
 
 /* 收藏夹：按知识点分组 + 私人笔记 */
+.fav-batch { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.fav-group-right { display: flex; align-items: center; gap: 8px; }
 .fav-group-title { display: flex; align-items: center; justify-content: space-between; margin-top: 18px; margin-bottom: 2px; font-weight: 600; font-size: 14px; }
 .fav-note-preview { margin-top: 8px; font-size: 13px; color: var(--text-3); background: var(--surface-2); border-radius: 8px; padding: 8px 10px; white-space: pre-wrap; word-break: break-word; }
 .fav-note-input { width: 100%; box-sizing: border-box; border: 1px solid var(--surface-2); border-radius: 8px; padding: 8px 10px; font: inherit; font-size: 14px; resize: vertical; background: var(--surface); color: var(--text); }
