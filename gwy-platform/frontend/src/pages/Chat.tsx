@@ -33,6 +33,7 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
   const [weak, setWeak] = useState<Ability[]>([]);
+  const [profileReady, setProfileReady] = useState(false);
 
   // 挂载即恢复会话列表与上次会话（DB 为真相源，刷新不丢）
   useEffect(() => {
@@ -63,8 +64,10 @@ export default function Chat() {
     .studentStats()
     .then((st) => {
       if (st?.ability?.length) setWeak(st.ability.slice(0, 5));
+      setProfileReady(true);
     })
     .catch(() => {
+      setProfileReady(true);
       /* 画像缺失不影响对话主流程 */
     });
   }, []);
@@ -97,13 +100,13 @@ export default function Chat() {
     localStorage.removeItem(LS_KEY);
   }
 
-  async function doSend(sid: number, q: string) {
+  async function doSend(sid: number, q: string, kpHint?: string) {
     const uid = -Date.now();
     setMessages((prev) => [...prev, { id: uid, role: "user", content: q }]);
     setInput("");
     setBusy(true);
     try {
-      const r = await api.chatSend(sid, q);
+      const r = await api.chatSend(sid, q, kpHint);
       setMessages((prev) => [
         ...prev.filter((m) => m.id !== uid),
         { id: uid, role: "user", content: q },
@@ -140,7 +143,7 @@ export default function Chat() {
     }
   }
 
-  async function send(text: string) {
+  async function send(text: string, kpHint?: string) {
     const q = text.trim();
     if (!q || busy) return;
     setErr("");
@@ -150,12 +153,12 @@ export default function Chat() {
         setSessions((prev) => [s, ...prev]);
         setActiveId(s.id);
         localStorage.setItem(LS_KEY, String(s.id));
-        await doSend(s.id, q);
+        await doSend(s.id, q, kpHint);
       } catch (e: any) {
         setErr(e.message || "创建会话失败");
       }
     } else {
-      await doSend(activeId, q);
+      await doSend(activeId, q, kpHint);
     }
   }
 
@@ -197,6 +200,13 @@ export default function Chat() {
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
   const offline = lastAssistant?.offline ?? false;
+  // 最弱知识点：用于首条建议聚焦 + 头部个性化提示
+  const TOP_WEAK = weak[0] ?? null;
+  const statusText = offline
+    ? "离线检索模式"
+    : weak.length
+    ? `🎯 个性化私教 · 已结合 ${weak.length} 个薄弱点`
+    : "RAG 溯源 · 接通大模型";
 
   return (
     <section className="chat">
@@ -206,7 +216,12 @@ export default function Chat() {
         </button>
         <div className="chat__headinfo">
           <div className="chat__title">AI 公考私教</div>
-          <div className="chat__status">{offline ? "离线检索模式" : "RAG 溯源 · 接通大模型"}</div>
+          <div
+            className="chat__status"
+            title={weak.length ? "私教已读取你的能力画像，会优先针对最薄弱知识点给建议" : undefined}
+          >
+            {statusText}
+          </div>
         </div>
         <button
           className="iconbtn"
@@ -381,13 +396,22 @@ export default function Chat() {
                 <button
                   key={w.knowledge_point}
                   className="chip chip--click chip--btn"
-                  onClick={() => send(`帮我重点突破「${w.knowledge_point}」这个知识点`)}
+                  onClick={() => send(`帮我重点突破「${w.knowledge_point}」这个知识点`, w.knowledge_point)}
                   disabled={busy}
                 >
                   {w.knowledge_point}
                   <span className="profile-card__pct">{Math.round(w.mastery * 100)}%</span>
                 </button>
               ))}
+            </div>
+          </div>
+        )}
+
+        {!loading && messages.length === 0 && activeId == null && profileReady && weak.length === 0 && (
+          <div className="bubble bubble--assistant profile-card">
+            <div className="profile-card__title">🧭 让私教更懂你</div>
+            <div className="profile-card__desc">
+              完成几道题或一次能力测评后，私教会结合你的薄弱点给出针对性突破建议。
             </div>
           </div>
         )}
@@ -407,8 +431,19 @@ export default function Chat() {
 
       {!loading && messages.length === 0 && activeId == null && (
         <div className="chat__suggest">
-          {SUGGESTIONS.map((s) => (
-            <button key={s} className="chip" onClick={() => send(s)} disabled={busy}>
+          {(TOP_WEAK
+            ? [`帮我重点突破「${TOP_WEAK.knowledge_point}」这个知识点`, ...SUGGESTIONS.slice(1, 4)]
+            : SUGGESTIONS
+          ).map((s, i) => (
+            <button
+              key={s}
+              className="chip"
+              onClick={() => {
+                const isFocus = TOP_WEAK != null && i === 0;
+                send(s, isFocus ? TOP_WEAK!.knowledge_point : undefined);
+              }}
+              disabled={busy}
+            >
               {s}
             </button>
           ))}

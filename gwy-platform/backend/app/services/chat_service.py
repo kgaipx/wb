@@ -11,6 +11,35 @@ from app.ai.tutor_agent import TutorAgent
 from app.models import AbilityProfile, ChatMessage, ChatSession, User
 
 
+# 私教个性化：仅把「实际练过且掌握度偏低」的考点注入画像，避免把从未作答的考点
+# 误报为薄弱项；上限取最弱的若干，避免 prompt 膨胀（活跃学员能力画像可能很大）。
+_WEAK_MASTERY_CAP = 0.85
+_WEAK_LIMIT = 8
+
+
+def build_weak_points(db: Session, user: User, limit: int = _WEAK_LIMIT) -> list[dict] | None:
+    """取学员最薄弱且实际练过的知识点（掌握度升序，最多 limit 个），用于私教个性化。
+
+    仅纳入 attempts>0 的考点，避免把「从未作答」的考点误报为薄弱项；无有效画像时
+    返回 None（私教走通用讲解，不注入画像）。两个私教入口（会话路由 / 旧 /chat 路由）
+    共用，保证个性化行为一致。
+    """
+    rows = (
+        db.query(AbilityProfile)
+        .filter(
+            AbilityProfile.user_id == user.id,
+            AbilityProfile.attempts > 0,
+            AbilityProfile.mastery < _WEAK_MASTERY_CAP,
+        )
+        .order_by(AbilityProfile.mastery.asc())
+        .limit(limit)
+        .all()
+    )
+    if not rows:
+        return None
+    return [{"knowledge_point": a.knowledge_point, "mastery": a.mastery} for a in rows]
+
+
 def _msg_to_out(m: ChatMessage) -> dict:
     try:
         raw = json.loads(m.citations) if m.citations else []
@@ -117,22 +146,8 @@ def send_message(
     # 全量历史（含刚落库的用户消息）交给私教，保证多轮上下文连续
     history = [{"role": m.role, "content": m.content} for m in get_messages(db, session)]
 
-    # 注入学员能力画像：取掌握度最低的若干知识点，让私教给出个性化、针对最薄弱处的建议
-    abilities = (
-        db.query(AbilityProfile)
-        .filter(AbilityProfile.user_id == user.id)
-        .order_by(AbilityProfile.mastery.asc())
-        .all()
-    )
-    weak_points = (
-        [
-            {"knowledge_point": a.knowledge_point, "mastery": a.mastery}
-            for a in abilities
-            if a.mastery < 0.85
-        ]
-        if abilities
-        else None
-    )
+    # 注入学员能力画像：取最薄弱且实际练过的知识点，让私教给出个性化、针对最薄弱处的建议
+    weak_points = build_weak_points(db, user)
 
     tutor = TutorAgent()
     resp = tutor.chat(history, kp_hint, weak_points=weak_points)

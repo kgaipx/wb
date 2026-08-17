@@ -34,6 +34,7 @@ from app.schemas.ai import (
     RecommendOut,
 )
 from app.schemas.essay import EssayHistoryItem, EssayPromptOut
+from app.services import chat_service as chat_svc
 from app.services import study_plan_service as sp_svc
 
 router = APIRouter()
@@ -110,9 +111,11 @@ def recommend(top_n: int = 10, seed: int | None = None, current: User = Depends(
 
 
 @router.post("/chat", response_model=ChatOut)
-def chat(payload: ChatIn, current: User = Depends(get_current_user)):
+def chat(payload: ChatIn, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     tutor = TutorAgent()
-    return ChatOut(**tutor.chat(payload.messages, payload.kp_hint))
+    # 与会话路由一致：注入学员能力画像（最弱且练过的考点），让私教个性化
+    weak = chat_svc.build_weak_points(db, current)
+    return ChatOut(**tutor.chat(payload.messages, payload.kp_hint, weak_points=weak))
 
 
 @router.get("/essay-prompts", response_model=list[EssayPromptOut], tags=["ai"])
