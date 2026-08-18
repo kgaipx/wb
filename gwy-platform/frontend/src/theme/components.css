@@ -4681,6 +4681,27 @@
   gap: var(--sp-2);
 }
 
+/* ===== 成绩趋势 ===== */
+.pred-trend__list {
+  margin-top: var(--sp-3);
+  display: grid;
+  gap: 6px;
+}
+.pred-trend__row {
+  display: grid;
+  grid-template-columns: 52px auto 1fr auto;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 8px;
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+}
+.pred-trend__row .tag {
+  font-size: 11px;
+  padding: 1px 7px;
+}
+
 /* ===== 逐题复盘 ===== */
 .pred-rev-filters {
   margin-bottom: var(--sp-3);

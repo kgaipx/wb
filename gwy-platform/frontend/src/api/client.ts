@@ -589,6 +589,18 @@ export const api = {
     request<any[]>("/exam/history?limit=" + limit + "&offset=" + offset),
   examHistoryDetail: (id: number) =>
     request<any>("/exam/history/" + id),
+  examSavePredict: (rec: {
+    subject: string;
+    total: number;
+    correct: number;
+    correct_rate: number;
+    weak_points: string[];
+    details: any[];
+  }) =>
+    request<{ id: number }>("/exam/predict-record", {
+      method: "POST",
+      body: JSON.stringify(rec),
+    }),
 
   // 能力测评（WBS 3.2 自适应诊断）
   assessmentPaper: () =>

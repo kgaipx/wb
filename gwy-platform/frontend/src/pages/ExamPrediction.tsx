@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
+import { LineChart } from "../components/LineChart";
 
 /* ============================================================
  * 历年真题套卷模考 + 分数预测
@@ -122,6 +123,8 @@ export default function ExamPrediction() {
   const [revFilter, setRevFilter] = useState<"all" | "wrong" | "unans">("all");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  const [hist, setHist] = useState<any[]>([]); // 模考历史（用于趋势）
+  const [histLoading, setHistLoading] = useState(false);
   const timerRef = useRef<number | null>(null);
   const submitRef = useRef(submit);
   submitRef.current = submit;
@@ -183,6 +186,27 @@ export default function ExamPrediction() {
       if (timerRef.current) window.clearInterval(timerRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [phase]);
+
+  // 进入结果页时拉取模考历史（含本次刚保存的记录），用于「成绩趋势」曲线。
+  useEffect(() => {
+    if (phase !== "result") return;
+    let alive = true;
+    setHistLoading(true);
+    api
+      .examHistory(20, 0)
+      .then((rows) => {
+        if (alive) setHist(Array.isArray(rows) ? rows : []);
+      })
+      .catch(() => {
+        if (alive) setHist([]);
+      })
+      .finally(() => {
+        if (alive) setHistLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
   }, [phase]);
 
   function setAnswer(qid: number, sel: string) {
@@ -279,6 +303,27 @@ export default function ExamPrediction() {
       });
       setResult({ total, correct, xingce, essay, totalScore, line, gap, prob, perModule, weakest, reviews });
       setPhase("result");
+      // 写入模考历史（不阻塞结果页；仅落汇总 + 逐题快照，不重复写作答/能力图谱）。
+      api
+        .examSavePredict({
+          subject: bp.name,
+          total,
+          correct,
+          correct_rate: total ? correct / total : 0,
+          weak_points: perModule
+            .filter((m) => m.total > 0 && m.correct / m.total < 0.85)
+            .map((m) => m.label),
+          details: reviews.map((r) => ({
+            question_id: r.qid,
+            is_correct: r.isCorrect,
+            correct_answer: r.correctAnswer,
+            selected: r.userAnswer,
+            stem: r.stem,
+            knowledge_point: r.kp,
+            options: r.options,
+          })),
+        })
+        .catch(() => {});
     } catch (e: any) {
       setErr(e.message || "提交失败");
     } finally {
@@ -288,6 +333,10 @@ export default function ExamPrediction() {
 
   const answeredCount = Object.keys(answers).filter((k) => answers[+k]).length;
   const fmtTime = (s: number) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+  const fmtMD = (d: string | number | Date) => {
+    const dt = new Date(d);
+    return `${dt.getMonth() + 1}/${dt.getDate()}`;
+  };
 
   /* ============ 组卷阶段 ============ */
   if (phase === "setup") {
@@ -627,6 +676,75 @@ export default function ExamPrediction() {
             </>
           );
         })()}
+
+        {/* 成绩趋势 */}
+        <div className="section-title" style={{ marginTop: "var(--sp-5)" }}>成绩趋势</div>
+        <div className="card pred-trend">
+          <div className="row row--between">
+            <strong>模考正确率走势</strong>
+            <span className="muted" style={{ fontSize: 12 }}>越往上越稳</span>
+          </div>
+          {histLoading ? (
+            <div className="muted" style={{ textAlign: "center", padding: 18 }}>加载中…</div>
+          ) : (() => {
+            const chrono = [...hist].reverse(); // 旧 → 新
+            const latest = hist[0];
+            const sameAsCur =
+              latest &&
+              latest.total === result.total &&
+              latest.correct === result.correct &&
+              new Date(latest.created_at).toDateString() === new Date().toDateString();
+            const pts = chrono.map((r: any) => ({
+              label: fmtMD(r.created_at),
+              value: Math.round((r.correct_rate || 0) * 100),
+            }));
+            if (!sameAsCur) {
+              pts.push({
+                label: "本次",
+                value: Math.round((result.total ? result.correct / result.total : 0) * 100),
+              });
+            }
+            return (
+              <>
+                <div style={{ marginTop: 8 }}>
+                  <LineChart
+                    points={pts}
+                    unit="%"
+                    formatValue={(v) => String(v)}
+                    emptyText="完成首次模考，下次再来即可看到进步曲线"
+                  />
+                </div>
+                {chrono.length > 0 && (
+                  <div className="pred-trend__list">
+                    {[...chrono]
+                      .reverse()
+                      .slice(0, 6)
+                      .map((r: any, i: number) => (
+                        <div key={r.id ?? i} className="pred-trend__row">
+                          <span className="muted">{fmtMD(r.created_at)}</span>
+                          <span className="tag tag--brand">{r.subject || "全部"}</span>
+                          <span className="muted">
+                            {r.correct}/{r.total}
+                          </span>
+                          <span
+                            className={
+                              (r.correct_rate || 0) >= 0.7
+                                ? "text-success"
+                                : (r.correct_rate || 0) >= 0.5
+                                ? "text-brand"
+                                : "text-danger"
+                            }
+                          >
+                            {Math.round((r.correct_rate || 0) * 100)}%
+                          </span>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </>
+            );
+          })()}
+        </div>
 
         <div className="pred-result-actions">
           <button className="btn btn--primary btn--block" onClick={() => { setPhase("setup"); setResult(null); }}>

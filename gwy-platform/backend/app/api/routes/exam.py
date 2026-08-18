@@ -233,3 +233,42 @@ def exam_history_detail(
         raise HTTPException(status_code=404, detail="模考记录不存在")
     return rec
 
+
+class PredictRecordIn(BaseModel):
+    """真题套卷模考（/predict）交卷后写入历史所需的汇总载荷。
+
+    注意：不写 UserAnswer、不更新 AbilityProfile——逐题判分已由前端
+    api.practice 完成，这里只落一条汇总 + 逐题快照，使其进入统一
+    的「模考历史与趋势」。details 复用 ExamRecordDetail 契约（缺省字段容忍）。
+    """
+
+    subject: str = "全部"
+    total: int
+    correct: int
+    correct_rate: float
+    weak_points: list[str] = []
+    details: list = []
+
+
+@router.post("/predict-record", tags=["exam"])
+def save_predict_record(
+    payload: PredictRecordIn,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """真题套卷模考（/predict）交卷后写入模考历史（仅记录汇总与逐题快照，
+    不重复写 UserAnswer / 不更新能力图谱），汇入统一的「模考历史与趋势」。"""
+    rec = ExamRecord(
+        user_id=current.id,
+        subject=payload.subject,
+        total=payload.total,
+        correct=payload.correct,
+        correct_rate=payload.correct_rate,
+        weak_points=payload.weak_points,
+        details=payload.details,
+    )
+    db.add(rec)
+    db.commit()
+    db.refresh(rec)
+    return {"id": rec.id}
+
