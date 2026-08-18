@@ -504,8 +504,8 @@ export default function Practice() {
               🔥 连续答对 {streak} 题
             </div>
           )}
-          <div className="row row--between" style={{ marginBottom: 6 }}>
-            <div className="q-item__meta">
+          <div className="row row--between" style={{ marginBottom: 6, flexWrap: "wrap" }}>
+            <div className="q-item__meta" style={{ minWidth: 0, flex: 1 }}>
               <span className="tag tag--brand">{active.subject}</span>
               <span>{active.knowledge_point}</span>
             </div>

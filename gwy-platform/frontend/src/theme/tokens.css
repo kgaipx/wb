@@ -72,4 +72,8 @@
 
   /* ===== 布局 ===== */
   --app-max: 480px;
+  /* 应用头部高度（含顶部安全区），供 sticky 子栏/离线条定位复用。
+     公式 = max(顶内边距, 安全区) + 底内边距(12) + 内容高(logo 32 + 底边 1)。
+     实测：无安全区 ≈57px，刘海屏(safe-area≈44) ≈89px。 */
+  --app-header-h: calc(max(var(--sp-3), env(safe-area-inset-top)) + var(--sp-3) + 33px);
 }

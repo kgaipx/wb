@@ -321,6 +321,11 @@
 .btn--sm {
   padding: 7px 12px;
   font-size: var(--fs-sm);
+  /* 触控高度提到 ~34px，移动端更易点中（原仅 ~27px） */
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 /* 渐变底色上的反白按钮（hero 主操作） */
 .btn--inverse {
@@ -799,8 +804,10 @@
 .chat {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 112px);
-  height: calc(100dvh - 112px);
+  /* 自适应可用区：认证页 app-main 已 padding:0，100% 即 视口高−头部高，
+     输入框精确落在固定 Tab 栏之上，不再被遮挡（原写死 112px 在刘海屏错配）。 */
+  height: 100%;
+  min-height: 0;
 }
 .chat__head {
   display: flex;
@@ -809,8 +816,8 @@
   padding: var(--sp-2) var(--sp-3);
   border-bottom: 1px solid var(--border);
   margin: 0 calc(-1 * var(--sp-4));
-  position: sticky;
-  top: calc(56px + env(safe-area-inset-top));
+  /* 头部是 .chat flex 固定项，本就不随消息滚动；多余的 sticky 在
+     多出的滚动场景反而把它顶到头部区，已移除。 */
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: saturate(180%) blur(8px);
 }
@@ -2164,7 +2171,8 @@
 /* 模考做题：题目导航面板（题号网格 + 进度） */
 .exam-nav {
   position: sticky;
-  top: 0;
+  /* 贴在全局头部之下，避免升到视口顶被半透明 app-header 盖住计时/交卷 */
+  top: var(--app-header-h, 57px);
   z-index: 20;
   background: var(--surface);
   padding: 10px 0 12px;
@@ -3360,7 +3368,8 @@
   font-size: 13px;
   font-weight: 500;
   position: sticky;
-  top: 0;
+  /* 贴在全局头部之下，离线时不再盖住 logo/铃铛 */
+  top: var(--app-header-h, 57px);
   z-index: 30;
 }
 .offline-banner__dot {
