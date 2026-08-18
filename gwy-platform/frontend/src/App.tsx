@@ -342,12 +342,19 @@ function AppShell() {
     }
   }, [user, isAuth, loadNotifs, loc.pathname]);
 
+  // 通知中心页内标记已读后回写顶部铃铛角标（跨组件共享刷新）
+  useEffect(() => {
+    const onChanged = () => loadNotifs();
+    window.addEventListener("notif-changed", onChanged);
+    return () => window.removeEventListener("notif-changed", onChanged);
+  }, [loadNotifs]);
+
   const openNotif = async (n: NotificationOut) => {
     setPanelOpen(false);
     if (!n.is_read) {
       try {
         await api.markNotificationRead(n.id);
-        setUnread((u) => Math.max(0, u - 1));
+        await loadNotifs();
       } catch {
         /* ignore */
       }
@@ -358,8 +365,7 @@ function AppShell() {
   const readAll = async () => {
     try {
       await api.markAllNotificationsRead();
-      setUnread(0);
-      setNotifs((list) => list.map((x) => ({ ...x, is_read: true })));
+      await loadNotifs();
     } catch {
       /* ignore */
     }

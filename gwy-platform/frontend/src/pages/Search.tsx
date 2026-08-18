@@ -21,17 +21,22 @@ export default function Search() {
   const [searched, setSearched] = useState(false);
   const [faved, setFaved] = useState<Set<number>>(new Set());
   const [explainId, setExplainId] = useState<number | null>(null);
+  const [err, setErr] = useState<string | null>(null);
   const timer = useRef<number | null>(null);
 
   function doSearch(keyword: string, cat: string | null) {
     setLoading(true);
+    setErr(null);
     api
       .questionSearch({ q: keyword, category: cat || undefined, limit: 30 })
       .then((r) => {
         setHits(r);
         setSearched(true);
       })
-      .catch(() => setHits([]))
+      .catch(() => {
+        setHits([]);
+        setErr("搜索请求失败，请稍后重试");
+      })
       .finally(() => setLoading(false));
   }
 
@@ -127,7 +132,21 @@ export default function Search() {
         {loading && (
           <div className="skeleton-line" style={{ height: 64, marginBottom: 10 }} />
         )}
-        {!loading && searched && hits.length === 0 && (
+        {err && (
+          <div
+            style={{
+              color: "var(--danger)",
+              background: "var(--danger-050)",
+              border: "1px solid color-mix(in srgb, var(--danger) 35%, #fff)",
+              borderRadius: 10,
+              padding: "10px 12px",
+              fontSize: 13,
+            }}
+          >
+            ⚠ {err}
+          </div>
+        )}
+        {!loading && !err && searched && hits.length === 0 && (
           <div className="empty empty--tight">
             <div className="empty__icon">🔍</div>
             <div className="empty__title">没找到相关题目</div>

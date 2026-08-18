@@ -246,7 +246,7 @@ export default function Profile() {
               </div>
             </div>
           )}
-          <button className="btn btn--ghost btn--block btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/dashboard")}>
+          <button className="btn btn--ghost btn--block btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/data")}>
             查看完整学习分析 →
           </button>
         </div>

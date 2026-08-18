@@ -55,6 +55,8 @@ export default function Notifications() {
         setItems((list) =>
           list.map((x) => (x.id === n.id ? { ...x, is_read: true } : x))
         );
+        // 回写顶部铃铛角标（App 监听此事件重新拉取未读真值）
+        window.dispatchEvent(new Event("notif-changed"));
       } catch {
         /* ignore */
       }
@@ -67,6 +69,8 @@ export default function Notifications() {
       await api.markAllNotificationsRead();
       setUnread(0);
       setItems((list) => list.map((x) => ({ ...x, is_read: true })));
+      // 回写顶部铃铛角标（App 监听此事件重新拉取未读真值）
+      window.dispatchEvent(new Event("notif-changed"));
     } catch {
       /* ignore */
     }
