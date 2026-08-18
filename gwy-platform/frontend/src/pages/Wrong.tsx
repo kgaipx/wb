@@ -5,6 +5,7 @@ import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
+import EmptyState from "../components/EmptyState";
 
 interface ItemState {
   open: boolean;
@@ -294,11 +295,7 @@ export default function Wrong() {
       )}
 
       {!loading && items.length === 0 && (
-        <div className="empty">
-          <div className="empty__icon">📕</div>
-          <div className="empty__title">暂无待复盘错题</div>
-          <div className="empty__desc">多做「刷题」和「模考」，这里会自动收集你的错答。</div>
-        </div>
+        <EmptyState icon="book" title="暂无待复盘错题" desc="多做「刷题」和「模考」，这里会自动收集你的错答。" />
       )}
 
       {items.length > 0 && overview && (
@@ -360,10 +357,7 @@ export default function Wrong() {
         </div>
       )}
       {items.length > 0 && visible.length === 0 && (
-        <div className="empty empty--tight">
-          <div className="empty__icon">📭</div>
-          <div className="empty__title">该科目暂无错题</div>
-        </div>
+        <EmptyState tight icon="inbox" title="该科目暂无错题" />
       )}
 
       {sorted.map((it) => {

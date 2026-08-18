@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { api, Ability, ChatMessage, ChatSession } from "../api/client";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
+import EmptyState from "../components/EmptyState";
 
 const SUGGESTIONS = [
   "类比推理总做错，怎么破？",
@@ -253,11 +254,7 @@ export default function Chat() {
                 </div>
               )}
               {!loading && sessions.length === 0 && (
-                <div className="empty empty--tight" style={{ paddingTop: 28, paddingBottom: 28 }}>
-                  <div className="empty__icon">💬</div>
-                  <div className="empty__title">还没有历史对话</div>
-                  <div className="empty__desc">开启一段新对话，AI 私教会记住你的薄弱点。</div>
-                </div>
+                <EmptyState tight icon="chat" title="还没有历史对话" desc="开启一段新对话，AI 私教会记住你的薄弱点。" style={{ paddingTop: 28, paddingBottom: 28 }} />
               )}
               {sessions.map((s) => (
                 <div

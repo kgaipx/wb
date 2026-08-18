@@ -9,6 +9,7 @@ import {
 } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { triggerDownload, shareOrCopy, stamp } from "../utils/exportUtils";
+import EmptyState from "../components/EmptyState";
 
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
 
@@ -655,16 +656,12 @@ export default function Assessment() {
           </div>
           {history.length === 0 && !hisLoading && (
             <div className="card">
-              <div className="empty empty--tight">
-                <div className="empty__icon">📊</div>
-                <div className="empty__title">还没有测评记录</div>
-                <div className="empty__desc">去完成一次能力测评，生成你的能力雷达图。</div>
+              <EmptyState tight icon="assess" title="还没有测评记录" desc="去完成一次能力测评，生成你的能力雷达图。" />
                 <div className="empty__action">
                   <button className="btn btn--primary btn--sm" onClick={start}>
                     开始测评 →
                   </button>
                 </div>
-              </div>
             </div>
           )}
 

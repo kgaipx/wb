@@ -6,6 +6,7 @@ import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
 import { RadarChart } from "../components/RadarChart";
 import ExplainModal from "../components/ExplainModal";
+import EmptyState from "../components/EmptyState";
 
 const PAGE = 60;
 
@@ -473,10 +474,7 @@ export default function Practice() {
               <div className="sk sk-line" style={{ width: "70%" }} />
             </div>
           ) : (
-            <div className="empty empty--tight">
-              <div className="empty__icon">📚</div>
-              <div className="empty__title">该科目暂无题目</div>
-            </div>
+            <EmptyState tight icon="book" title="该科目暂无题目" />
           ))}
           {hasMore && (
             <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={loadingMore} onClick={loadMore}>

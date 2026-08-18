@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, AiQuota } from "../api/client";
+import EmptyState from "../components/EmptyState";
 
 interface Plan {
   id: string;
@@ -275,10 +276,7 @@ export default function Membership() {
       <h3 className="section-title" style={{ marginTop: 16 }}>账单记录</h3>
       <div className="card">
         {!me?.orders?.length && !me?.refunds?.length && (
-          <div className="empty empty--tight">
-            <div className="empty__icon">💳</div>
-            <div className="empty__title">暂无订单记录</div>
-          </div>
+          <EmptyState tight icon="card" title="暂无订单记录" />
         )}
         {me?.orders?.map((o) => (
           <div key={o.id} className="bill-row">

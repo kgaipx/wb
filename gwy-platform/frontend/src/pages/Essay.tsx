@@ -6,6 +6,7 @@ import { EssayCompareCard } from "../components/EssayCompareCard";
 import { ReportExport } from "../components/ReportExport";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
+import EmptyState from "../components/EmptyState";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -272,11 +273,7 @@ export default function Essay() {
             </div>
           )}
           {!hLoading && history.length === 0 && (
-            <div className="empty empty--tight">
-              <div className="empty__icon">📝</div>
-              <div className="empty__title">暂无批改记录</div>
-              <div className="empty__desc">去「写 & 批改」完成首次申论批改吧。</div>
-            </div>
+            <EmptyState tight icon="essay" title="暂无批改记录" desc="去「写 & 批改」完成首次申论批改吧。" />
           )}
           {!hLoading && history.length > 0 && (() => {
             const sorted = [...history].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());

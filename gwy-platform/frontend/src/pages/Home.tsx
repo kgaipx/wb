@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, PlanOut, PlanTask, StudentStats, WrongItem } from "../api/client";
 import { useAuth } from "../auth";
+import EmptyState from "../components/EmptyState";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -331,14 +332,10 @@ export default function Home() {
           <div className="row row--between">
             <strong>今日学习计划</strong>
           </div>
-          <div className="empty empty--tight">
-            <div className="empty__icon">🗓️</div>
-            <div className="empty__title">还没有学习计划</div>
-            <div className="empty__desc">生成一份为你定制的 AI 学习计划，这里会出现今日待办。</div>
+          <EmptyState tight icon="calendar" title="还没有学习计划" desc="生成一份为你定制的 AI 学习计划，这里会出现今日待办。" />
             <button className="btn btn--primary empty__action" onClick={() => nav("/plan")}>
               制定我的计划
             </button>
-          </div>
         </div>
       )}
 
@@ -373,11 +370,7 @@ export default function Home() {
               </div>
             </>
           ) : (
-            <div className="empty empty--tight" style={{ marginTop: 6 }}>
-              <div className="empty__icon">💡</div>
-              <div className="empty__title">暂无推荐题</div>
-              <div className="empty__desc">去题库练练手，AI 会按你的薄弱点推荐题目。</div>
-            </div>
+            <EmptyState tight icon="bulb" title="暂无推荐题" desc="去题库练练手，AI 会按你的薄弱点推荐题目。" style={{ marginTop: 6 }} />
           )}
         </div>
         {daily && (
@@ -397,14 +390,10 @@ export default function Home() {
           <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>加载中…</div>
         ) : examStat.length === 0 ? (
           <>
-            <div className="empty empty--tight">
-              <div className="empty__icon">📊</div>
-              <div className="empty__title">还没有模考记录</div>
-              <div className="empty__desc">去「在线模考」测一次真实水平，这里会显示你的提分曲线。</div>
+            <EmptyState tight icon="exam" title="还没有模考记录" desc="去「在线模考」测一次真实水平，这里会显示你的提分曲线。" />
               <button className="btn btn--primary btn--sm empty__action" onClick={() => nav("/exam")}>
                 去模考
               </button>
-            </div>
           </>
         ) : (
           (() => {

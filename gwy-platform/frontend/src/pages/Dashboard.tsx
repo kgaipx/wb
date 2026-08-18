@@ -5,6 +5,7 @@ import { LineChart } from "../components/LineChart";
 import { RadarChart } from "../components/RadarChart";
 import KpHeatmapView from "../components/KpHeatmap";
 import { ReportExport } from "../components/ReportExport";
+import EmptyState from "../components/EmptyState";
 
 function pct(v: number) {
   return Math.round(v * 100);
@@ -227,11 +228,7 @@ export default function Dashboard() {
           <span className="muted" style={{ fontSize: 12 }}>掌握度升序</span>
         </div>
         {stats.ability.length === 0 ? (
-          <div className="empty empty--tight">
-            <div className="empty__icon">📈</div>
-            <div className="empty__title">暂无作答记录</div>
-            <div className="empty__desc">去刷几道题，这里会显示你的能力图谱。</div>
-          </div>
+          <EmptyState tight icon="chart" title="暂无作答记录" desc="去刷几道题，这里会显示你的能力图谱。" />
         ) : (
           <div style={{ marginTop: 10 }}>
             <div className="radar-wrap">

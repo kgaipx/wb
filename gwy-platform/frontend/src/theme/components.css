@@ -3721,6 +3721,16 @@
 .empty--tight .empty__desc {
   font-size: 12px;
 }
+/* 空态插画（品牌线描 SVG）尺寸，与渐变圆协调 */
+.empty__icon svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+.empty--tight .empty__icon svg {
+  width: 26px;
+  height: 26px;
+}
 
 /* ===== 知识点掌握度热力图（按科目分面）===== */
 .kpheat {

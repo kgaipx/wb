@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { copyText } from "../utils/exportUtils";
+import EmptyState from "../components/EmptyState";
 
 /* ============================================================
  * 申论素材库 —— 名言金句 / 政策热词 / 热点话题 / 写作模板
@@ -284,11 +285,7 @@ export default function MaterialLibrary() {
       {/* 列表 */}
       {filtered.length === 0 ? (
         <div className="card fav-empty">
-          <div className="empty empty--tight">
-            <div className="empty__icon">🔍</div>
-            <div className="empty__title">没有匹配的素材</div>
-            <div className="empty__desc">换个关键词，或清空筛选条件试试。</div>
-          </div>
+          <EmptyState tight icon="search" title="没有匹配的素材" desc="换个关键词，或清空筛选条件试试。" />
         </div>
       ) : (
         <div className="mat-list">

@@ -5,6 +5,7 @@ import { RadarChart } from "../components/RadarChart";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
 import { ReportExport } from "../components/ReportExport";
+import EmptyState from "../components/EmptyState";
 
 interface PaperQ {
   id: number;
@@ -748,14 +749,10 @@ export default function Exam() {
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>已加载 {history.length} 次模考记录</div>
           {history.length === 0 && (
             <div className="card">
-              <div className="empty empty--tight">
-                <div className="empty__icon">🏛️</div>
-                <div className="empty__title">还没有模考记录</div>
-                <div className="empty__desc">去「模考」完成一次，检验真实水平。</div>
+              <EmptyState tight icon="exam" title="还没有模考记录" desc="去「模考」完成一次，检验真实水平。" />
                 <div className="empty__action">
                   <button className="btn btn--primary btn--sm" onClick={() => setTab("exam")}>去模考 →</button>
                 </div>
-              </div>
             </div>
           )}
           {history.map((h) => {

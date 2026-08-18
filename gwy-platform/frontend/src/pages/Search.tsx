@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, SearchHit } from "../api/client";
 import ExplainModal from "../components/ExplainModal";
+import EmptyState from "../components/EmptyState";
 
 // 常见模块快速筛选（题库 category 字段为模块名；关键词检索不依赖此列表）
 const CATEGORIES = [
@@ -147,11 +148,7 @@ export default function Search() {
           </div>
         )}
         {!loading && !err && searched && hits.length === 0 && (
-          <div className="empty empty--tight">
-            <div className="empty__icon">🔍</div>
-            <div className="empty__title">没找到相关题目</div>
-            <div className="empty__desc">换个关键词，或清除科目筛选试试。</div>
-          </div>
+          <EmptyState tight icon="search" title="没找到相关题目" desc="换个关键词，或清除科目筛选试试。" />
         )}
         {hits.map((h) => (
           <div className="q-item" key={h.id}>

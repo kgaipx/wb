@@ -4,6 +4,7 @@ import { api, Dashboard, KpHeatmap } from "../api/client";
 import Markdown from "../components/Markdown";
 import { RadarChart } from "../components/RadarChart";
 import KpHeatmapView from "../components/KpHeatmap";
+import EmptyState from "../components/EmptyState";
 
 export default function Learn() {
   const nav = useNavigate();
@@ -245,11 +246,7 @@ export default function Learn() {
         </button>
       </div>
       {rec && rec.questions.length === 0 && (
-        <div className="empty empty--tight">
-          <div className="empty__icon">🧭</div>
-          <div className="empty__title">暂无可推荐题目</div>
-          <div className="empty__desc">去「刷题」或「模考」积累数据后再回来。</div>
-        </div>
+        <EmptyState tight icon="compass" title="暂无可推荐题目" desc="去「刷题」或「模考」积累数据后再回来。" />
       )}
       {rec &&
         rec.questions.map((q: any) => (

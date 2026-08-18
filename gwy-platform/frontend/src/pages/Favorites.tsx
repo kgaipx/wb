@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, FavoriteItem } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
 import ExplainModal from "../components/ExplainModal";
+import EmptyState from "../components/EmptyState";
 
 // 自定义标签白名单（与后端 patch_favorite 校验一致）
 const TAG_DEFS: { key: string; icon: string; label: string }[] = [
@@ -213,16 +214,12 @@ export default function Favorites() {
 
       {!loading && list.length === 0 && (
         <div className="card fav-empty">
-          <div className="empty empty--tight">
-            <div className="empty__icon">⭐</div>
-            <div className="empty__title">还没有收藏</div>
-            <div className="empty__desc">在「刷题」「模考」或「错题本」中可把题目加入收藏。</div>
+          <EmptyState tight icon="star" title="还没有收藏" desc="在「刷题」「模考」或「错题本」中可把题目加入收藏。" />
             <div className="empty__action">
               <button className="btn btn--primary btn--sm" onClick={() => nav("/practice")}>
                 去题库练习 →
               </button>
             </div>
-          </div>
         </div>
       )}
 

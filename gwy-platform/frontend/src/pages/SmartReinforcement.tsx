@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Ability, WrongItem } from "../api/client";
+import EmptyState from "../components/EmptyState";
 
 /* ============================================================
  * 智能错题强化包
@@ -151,11 +152,7 @@ export default function SmartReinforcement() {
       <div className="section-title" style={{ marginTop: "var(--sp-5)" }}>按薄弱点强化</div>
       {weak.length === 0 ? (
         <div className="card fav-empty">
-          <div className="empty empty--tight">
-            <div className="empty__icon">✅</div>
-            <div className="empty__title">暂无薄弱知识点</div>
-            <div className="empty__desc">多做几道题，系统会据此定位你的薄弱环节。</div>
-          </div>
+          <EmptyState tight icon="check" title="暂无薄弱知识点" desc="多做几道题，系统会据此定位你的薄弱环节。" />
         </div>
       ) : (
         <div className="re-kp-list">
@@ -192,11 +189,7 @@ export default function SmartReinforcement() {
       <div className="section-title" style={{ marginTop: "var(--sp-5)" }}>从错题本强化</div>
       {wrongs.length === 0 ? (
         <div className="card fav-empty">
-          <div className="empty empty--tight">
-            <div className="empty__icon">🎉</div>
-            <div className="empty__title">没有错题</div>
-            <div className="empty__desc">保持住，做错的题会自动进入这里。</div>
-          </div>
+          <EmptyState tight icon="check" title="没有错题" desc="保持住，做错的题会自动进入这里。" />
         </div>
       ) : (
         <div className="re-wrong-list">
