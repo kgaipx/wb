@@ -4796,3 +4796,153 @@
   line-height: 1.55;
 }
 
+/* 答题卡面板（题号网格 + 三态） */
+.pred-top__palette {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--brand);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  border-radius: var(--r-pill);
+  padding: 3px 10px;
+  cursor: pointer;
+}
+.pred-palette,
+.pred-confirm {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 50;
+  animation: pred-fade 0.18s var(--ease-out);
+}
+@keyframes pred-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.pred-palette__sheet,
+.pred-confirm__sheet {
+  width: 100%;
+  max-width: var(--app-max);
+  background: var(--surface);
+  border-radius: var(--r-xl) var(--r-xl) 0 0;
+  padding: var(--sp-4);
+  box-shadow: var(--sh-3);
+  animation: pred-slide 0.22s var(--ease-out);
+}
+@keyframes pred-slide {
+  from { transform: translateY(16px); }
+  to { transform: translateY(0); }
+}
+.pred-palette__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 800;
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-3);
+}
+.pred-palette__close {
+  border: none;
+  background: var(--surface-2);
+  color: var(--text-2);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 15px;
+  cursor: pointer;
+}
+.pred-palette__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  margin-bottom: var(--sp-3);
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.pred-pcell {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--r-md);
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+  transition: transform 0.12s var(--ease-out);
+}
+.pred-pcell:active {
+  transform: scale(0.94);
+}
+.pred-pcell.is-todo {
+  background: var(--surface-2);
+  color: var(--text-3);
+}
+.pred-pcell.is-done {
+  background: color-mix(in srgb, var(--brand) 14%, var(--surface));
+  border-color: var(--brand);
+  color: var(--brand);
+}
+.pred-pcell.is-cur {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.pred-palette__legend {
+  display: flex;
+  gap: var(--sp-4);
+  font-size: var(--fs-sm);
+  margin-bottom: var(--sp-3);
+  flex-wrap: wrap;
+}
+.pred-palette__legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.pred-pdot {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  display: inline-block;
+  border: 1.5px solid var(--border);
+}
+.pred-pdot.is-done {
+  background: color-mix(in srgb, var(--brand) 14%, var(--surface));
+  border-color: var(--brand);
+}
+.pred-pdot.is-todo {
+  background: var(--surface-2);
+}
+.pred-pdot.is-cur {
+  border-color: var(--accent);
+  background: var(--accent);
+}
+
+/* 交卷二次确认 */
+.pred-confirm__sheet {
+  border-radius: var(--r-xl);
+  margin-bottom: 12vh;
+}
+.pred-confirm__title {
+  font-weight: 800;
+  font-size: var(--fs-lg);
+  margin-bottom: var(--sp-2);
+}
+.pred-confirm__body {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  margin-bottom: var(--sp-4);
+}
+.pred-confirm__body b {
+  color: var(--accent);
+  font-size: var(--fs-md);
+}
+.pred-confirm__acts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-2);
+}
+

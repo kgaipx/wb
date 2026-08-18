@@ -120,6 +120,8 @@ export default function ExamPrediction() {
   const [err, setErr] = useState("");
   const [result, setResult] = useState<ResultData | null>(null);
   const [revFilter, setRevFilter] = useState<"all" | "wrong" | "unans">("all");
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [confirmSubmit, setConfirmSubmit] = useState(false);
   const timerRef = useRef<number | null>(null);
   const submitRef = useRef(submit);
   submitRef.current = submit;
@@ -154,6 +156,8 @@ export default function ExamPrediction() {
       setAnswers({});
       setIdx(0);
       setTimeLeft(bp.minutes * 60);
+      setPaletteOpen(false);
+      setConfirmSubmit(false);
       setPhase("exam");
     } catch (e: any) {
       setErr(e.message || "组卷失败");
@@ -183,6 +187,17 @@ export default function ExamPrediction() {
 
   function setAnswer(qid: number, sel: string) {
     setAnswers((a) => ({ ...a, [qid]: sel }));
+  }
+
+  // 交卷：有未答题先弹二次确认，避免误触丢分（未答按答错计）。
+  function requestSubmit() {
+    const unans = paper.length - answeredCount;
+    if (unans > 0 && !confirmSubmit) {
+      setConfirmSubmit(true);
+      return;
+    }
+    setConfirmSubmit(false);
+    void submit();
   }
 
   const cur = paper[idx];
@@ -359,6 +374,9 @@ export default function ExamPrediction() {
         <div className={"pred-top" + (timeWarn ? " pred-top--warn" : "")}>
           <div className="pred-top__row">
             <span className="pred-top__idx">第 {idx + 1} / {paper.length} 题</span>
+            <button className="pred-top__palette" onClick={() => setPaletteOpen(true)}>
+              🔢 答题卡
+            </button>
             <span className="pred-top__time">⏱ {fmtTime(timeLeft)}</span>
           </div>
           <div className="progress">
@@ -402,15 +420,64 @@ export default function ExamPrediction() {
               下一题
             </button>
           ) : (
-            <button className="btn btn--primary" disabled={submitting} onClick={submit}>
+            <button className="btn btn--primary" disabled={submitting} onClick={requestSubmit}>
               {submitting ? "交卷中…" : "🏁 交卷"}
             </button>
           )}
         </div>
         {idx === paper.length - 1 && (
-          <button className="btn btn--ghost btn--block pred-submit-all" disabled={submitting} onClick={submit}>
+          <button className="btn btn--ghost btn--block pred-submit-all" disabled={submitting} onClick={requestSubmit}>
             直接交卷（未答计错）
           </button>
+        )}
+
+        {/* 答题卡：题号网格，三态跳转 */}
+        {paletteOpen && (
+          <div className="pred-palette" onClick={() => setPaletteOpen(false)}>
+            <div className="pred-palette__sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="pred-palette__head">
+                <span>答题卡</span>
+                <button className="pred-palette__close" onClick={() => setPaletteOpen(false)} aria-label="关闭">✕</button>
+              </div>
+              <div className="pred-palette__grid">
+                {paper.map((q, i) => {
+                  const done = !!(answers[q.id] && String(answers[q.id]).length > 0);
+                  const cls = "pred-pcell" + (i === idx ? " is-cur" : done ? " is-done" : " is-todo");
+                  return (
+                    <button key={q.id} className={cls} onClick={() => { setIdx(i); setPaletteOpen(false); }}>
+                      {i + 1}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="pred-palette__legend muted">
+                <span><i className="pred-pdot is-done" />已答 {answeredCount}</span>
+                <span><i className="pred-pdot is-todo" />未答 {paper.length - answeredCount}</span>
+                <span><i className="pred-pdot is-cur" />当前</span>
+              </div>
+              <button className="btn btn--primary btn--block" disabled={submitting} onClick={() => { setPaletteOpen(false); requestSubmit(); }}>
+                🏁 交卷
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* 交卷二次确认 */}
+        {confirmSubmit && (
+          <div className="pred-confirm" onClick={() => setConfirmSubmit(false)}>
+            <div className="pred-confirm__sheet" onClick={(e) => e.stopPropagation()}>
+              <div className="pred-confirm__title">确认交卷？</div>
+              <div className="pred-confirm__body muted">
+                还有 <b>{paper.length - answeredCount}</b> 题未作答，交卷后未答题将不计分（按答错计）。
+              </div>
+              <div className="pred-confirm__acts">
+                <button className="btn btn--ghost" onClick={() => setConfirmSubmit(false)}>继续答题</button>
+                <button className="btn btn--primary" disabled={submitting} onClick={() => { setConfirmSubmit(false); void submit(); }}>
+                  {submitting ? "交卷中…" : "确认交卷"}
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </section>
     );
