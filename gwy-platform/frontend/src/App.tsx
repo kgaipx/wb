@@ -27,6 +27,7 @@ import MaterialLibrary from "./pages/MaterialLibrary";
 import SmartReinforcement from "./pages/SmartReinforcement";
 import ExamPrediction from "./pages/ExamPrediction";
 import Flashcards from "./pages/Flashcards";
+import { getStoredMode, resolveTheme, applyTheme, setMode, watchSystem, type ThemeMode } from "./theme/theme";
 
 type Icon = () => JSX.Element;
 
@@ -246,6 +247,21 @@ function AppShell() {
     typeof navigator !== "undefined" ? navigator.onLine : true
   );
 
+  // —— 暗色模式：读取持久化模式，应用并（system 时）跟随系统偏好变化 ——
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => getStoredMode());
+  const themeResolved = resolveTheme(themeMode);
+  useEffect(() => {
+    const apply = () => applyTheme(themeMode);
+    apply();
+    if (themeMode === "system") return watchSystem(apply);
+    return undefined;
+  }, [themeMode]);
+  const toggleTheme = useCallback(() => {
+    const next: ThemeMode = themeResolved === "dark" ? "light" : "dark";
+    setThemeMode(next);
+    setMode(next);
+  }, [themeResolved]);
+
   // —— PWA 安装引导 ——
   useEffect(() => {
     const onPrompt = (e: any) => {
@@ -388,19 +404,38 @@ function AppShell() {
             <div className="app-header__name">AI 公考私教</div>
             <div className="app-header__tag">懂你短板 · 内容可信</div>
           </div>
-          <button
-            className="bell-btn"
-            aria-label="通知"
-            onClick={() => setPanelOpen((o) => !o)}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-            </svg>
-            {unread > 0 && (
-              <span className="unread-dot">{unread > 99 ? "99+" : unread}</span>
-            )}
-          </button>
+          <div className="app-header__actions">
+            <button
+              className="bell-btn"
+              aria-label={themeResolved === "dark" ? "切换到浅色模式" : "切换到深色模式"}
+              title={themeResolved === "dark" ? "浅色模式" : "深色模式"}
+              onClick={toggleTheme}
+            >
+              {themeResolved === "dark" ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="4.2" />
+                  <path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 14.5A8 8 0 1 1 9.5 4a6.3 6.3 0 0 0 10.5 10.5z" />
+                </svg>
+              )}
+            </button>
+            <button
+              className="bell-btn"
+              aria-label="通知"
+              onClick={() => setPanelOpen((o) => !o)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+              </svg>
+              {unread > 0 && (
+                <span className="unread-dot">{unread > 99 ? "99+" : unread}</span>
+              )}
+            </button>
+          </div>
 
           {panelOpen && (
             <div className="notif-panel">

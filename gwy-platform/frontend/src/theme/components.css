@@ -476,6 +476,14 @@
 }
 .bell-btn:hover { background: rgba(27, 79, 181, 0.08); }
 .bell-btn svg { width: 22px; height: 22px; }
+/* 头部右侧操作组：主题切换 + 通知铃铛 紧贴并整体靠右 */
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+.app-header__actions .bell-btn { margin-left: 0; }
 .unread-dot {
   position: absolute;
   top: 2px;
@@ -555,7 +563,7 @@
   cursor: pointer;
 }
 .notif-filter__btn.on {
-  background: #fff;
+  background: var(--surface);
   color: var(--brand);
   box-shadow: 0 1px 3px rgba(20, 40, 80, 0.1);
 }
@@ -858,7 +866,7 @@
   width: 32px; height: 32px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--surface);
   font-size: 20px; line-height: 1;
   color: var(--text-2);
   cursor: pointer;
@@ -888,7 +896,7 @@
 }
 .bubble--assistant {
   align-self: flex-start;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--border);
   border-bottom-left-radius: 4px;
 }
@@ -1269,7 +1277,7 @@
   height: 26px;
   border-radius: 50%;
   border: 2px solid var(--border);
-  background: #fff;
+  background: var(--surface);
   color: #fff;
   font-size: 14px;
   font-weight: 800;
@@ -2544,7 +2552,7 @@
   height: 32px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   font-size: 15px;
 }
@@ -2559,7 +2567,7 @@
   padding: 0 10px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
@@ -2581,7 +2589,7 @@
   height: 32px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: #fff;
+  background: var(--surface);
   cursor: pointer;
   font-size: 14px;
 }
@@ -2598,7 +2606,7 @@
   border: 1px solid var(--brand);
   border-radius: 6px;
   outline: none;
-  background: #fff;
+  background: var(--surface);
 }
 .session-item__edit:focus {
   box-shadow: 0 0 0 2px var(--brand-050);
@@ -5104,4 +5112,56 @@
 .fx-stagger > *:nth-child(12) { animation-delay: 605ms; }
 .fx-stagger > *:nth-child(13) { animation-delay: 660ms; }
 .fx-stagger > *:nth-child(14) { animation-delay: 715ms; }
+
+/* ============================================================
+   暗色模式专属覆盖
+   以下组件在亮色下使用「近透明白玻璃条 / 白渐变」，暗色下若直接套用
+   语义变量会仍是白底而刺眼，故在此显式改为暗色半透明 / 暗渐变。
+   （其余 90% 组件已靠 tokens.css 的 [data-theme="dark"] 自动翻转。）
+   ============================================================ */
+
+/* —— 以下仅暗色模式生效（必须作用域到 [data-theme="dark"]）—— */
+[data-theme="dark"] {
+  /* 三个近透明白玻璃条：顶部应用头 / 底部导航栏 / 私教会话头 */
+  .app-header {
+    background: rgba(16, 18, 23, 0.86);
+  }
+  .nav-bar {
+    background: rgba(16, 18, 23, 0.92);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.45);
+  }
+  .chat__head {
+    background: rgba(16, 18, 23, 0.86);
+  }
+
+  /* 亮色下的「白渐变」装饰面：暗色下改为暗表面渐变 */
+  .install-banner {
+    background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
+    border-color: var(--brand-100);
+  }
+  .empty__icon {
+    background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
+  }
+  .flash-card__back {
+    background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
+    border-color: var(--brand-100);
+  }
+  /* 成功状态 chip：暗底上改用品牌绿染表面，而非白染 */
+  .chip--ok {
+    background: color-mix(in srgb, var(--success) 16%, var(--surface));
+  }
+
+  /* 状态标签 / 小徽章：亮色下的浅彩色底，暗色下改为暗底半透明彩染 */
+  .kind--mock { background: rgba(var(--brand-rgb), 0.16); color: #93b4ff; }
+  .kind--review_wrong { background: rgba(var(--accent-rgb), 0.16); color: #ff9a8f; }
+  .kind--favorite { background: rgba(255, 179, 71, 0.16); color: #ffcf8f; }
+  .kind--explain { background: rgba(var(--success-rgb), 0.16); color: #6fe0a0; }
+  .kind--read { background: rgba(255, 255, 255, 0.08); color: var(--text-2); }
+  .badge--warn {
+    background: rgba(255, 179, 71, 0.16);
+    color: #ffcf8f;
+    border-color: rgba(255, 179, 71, 0.30);
+  }
+  .explain-ai__offline { background: rgba(255, 179, 71, 0.16); color: #ffcf8f; }
+}
 

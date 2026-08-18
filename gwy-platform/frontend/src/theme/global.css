@@ -93,6 +93,17 @@ textarea {
   background-clip: padding-box;
 }
 
+/* ===== 暗色滚动条（细窄、浅色半透明，暗底上保持可见）===== */
+[data-theme="dark"] * {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.30);
+}
+
 /* ===== 尊重「减少动态效果」系统偏好（无障碍 + 大厂规范）===== */
 @media (prefers-reduced-motion: reduce) {
   *,
