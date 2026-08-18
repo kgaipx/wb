@@ -24,6 +24,7 @@ export default function Essay() {
   const [compare, setCompare] = useState<EssayCompare | null>(null);
   const compareRef = useRef<HTMLDivElement>(null);
   const gradeRef = useRef<HTMLDivElement>(null);
+  const historyRef = useRef<HTMLDivElement>(null);
   const [compareBusy, setCompareBusy] = useState(false);
 
   useEffect(() => {
@@ -288,11 +289,15 @@ export default function Essay() {
             const delta = prev !== null ? last - prev : 0;
             const deltaCls = delta > 0 ? "rate-trend--up" : delta < 0 ? "rate-trend--down" : "rate-trend--flat";
             return (
-              <div className="card" style={{ marginTop: 12 }}>
-                <div className="row row--between">
-                  <strong>申论得分趋势</strong>
+              <>
+              <div className="row row--between" style={{ marginBottom: 8 }}>
+                <strong>申论得分趋势</strong>
+                <div className="row" style={{ gap: 6 }}>
                   <span className="tag tag--brand">已批改 {history.length} 篇</span>
+                  <ReportExport targetRef={historyRef} fileName={`申论得分趋势_${new Date().toISOString().slice(0, 10)}`} />
                 </div>
+              </div>
+              <div ref={historyRef} className="card" style={{ marginTop: 0 }}>
                 {sorted.length > 1 ? (
                   <LineChart
                     points={sorted.map((h) => ({ label: h.created_at.slice(5, 10), value: h.total }))}
@@ -330,6 +335,7 @@ export default function Essay() {
                   </div>
                 )}
               </div>
+              </>
             );
           })()}
           {history.map((h) => (
