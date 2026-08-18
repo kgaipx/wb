@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, Question, Citation } from "../api/client";
 import CiteCards from "./CiteCards";
 import Markdown from "./Markdown";
+import { RobotIcon } from "../icons";
 
 interface ExplainData {
   knowledge_point: string;
@@ -128,7 +129,7 @@ export default function ExplainModal({
           {!loading && !exErr && ex && (
             <div className="explain-ai">
               <div className="explain-ai__head">
-                <span className="explain-ai__badge">🤖 AI 讲解</span>
+                <span className="explain-ai__badge"><RobotIcon /> AI 讲解</span>
                 {ex.knowledge_point && <span className="explain-ai__kp">{ex.knowledge_point}</span>}
                 {ex.offline && <span className="explain-ai__offline">离线降级</span>}
               </div>

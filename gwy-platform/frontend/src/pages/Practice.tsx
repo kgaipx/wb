@@ -7,6 +7,7 @@ import CiteCards from "../components/CiteCards";
 import { RadarChart } from "../components/RadarChart";
 import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
+import { TargetIcon, SearchIcon } from "../icons";
 
 const PAGE = 60;
 
@@ -383,7 +384,7 @@ export default function Practice() {
       <h2 className="page-title">刷题练习</h2>
       {mode === "retry" && (
         <div className="filter-banner">
-          <span>🎯 智能重练 · 共 <b>{retryCount}</b> 题（来自错题本）</span>
+          <span><TargetIcon /> 智能重练 · 共 <b>{retryCount}</b> 题（来自错题本）</span>
           <button className="link-btn" onClick={() => nav("/wrong")}>← 返回错题本</button>
           <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
             按错误优先级出题，练完可在错题本将答对的题标记为「已掌握」移出。
@@ -458,7 +459,7 @@ export default function Practice() {
                     setExplainId(q.id);
                   }}
                 >
-                  看解析 🔍
+                  看解析 <SearchIcon />
                 </button>
               </div>
             </div>
@@ -492,7 +493,7 @@ export default function Practice() {
           <div className="practice-pos">
             <span className="muted" style={{ fontSize: 12 }}>
               {mode === "retry"
-                ? `🎯 智能重练 · 第 ${idxInList >= 0 ? idxInList + 1 : "?"} / ${retryCount} 题`
+                ? <><TargetIcon /> 智能重练 · 第 ${idxInList >= 0 ? idxInList + 1 : "?"} / ${retryCount} 题</>
                 : `第 ${idxInList + 1} / ${list.length} 题${hasMore ? "（题库还有更多）" : ""}`}
               {sessAnswered > 0 && (
                 <span style={{ marginLeft: 8 }}>

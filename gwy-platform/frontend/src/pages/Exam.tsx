@@ -6,6 +6,7 @@ import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
 import { ReportExport } from "../components/ReportExport";
 import EmptyState from "../components/EmptyState";
+import { RobotIcon, RepeatIcon } from "../icons";
 
 interface PaperQ {
   id: number;
@@ -511,7 +512,7 @@ export default function Exam() {
                   disabled={explainBusy[d.question_id]}
                   onClick={() => toggleExplain(d.question_id, d.selected)}
                 >
-                  {explainBusy[d.question_id] ? "讲解中…" : open ? "收起讲解" : "🤖 AI 讲解"}
+                  {explainBusy[d.question_id] ? "讲解中…" : open ? "收起讲解" : <><RobotIcon /> AI 讲解</>}
                 </button>
                 <button
                   className="btn btn--ghost btn--sm"
@@ -521,7 +522,7 @@ export default function Exam() {
                   {fav ? "⭐ 已收藏" : favBusy[d.question_id] ? "收藏中…" : "☆ 收藏"}
                 </button>
                 <button className="btn btn--ghost btn--sm" onClick={() => nav(`/practice?q=${d.question_id}`)}>
-                  🔁 重练
+                  <><RepeatIcon /> 重练</>
                 </button>
               </div>
 

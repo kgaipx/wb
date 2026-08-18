@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Ability, WrongItem } from "../api/client";
 import EmptyState from "../components/EmptyState";
+import { TargetIcon } from "../icons";
 
 /* ============================================================
  * 智能错题强化包
@@ -143,7 +144,7 @@ export default function SmartReinforcement() {
             </div>
           </div>
           <button className="btn btn--primary re-cta__btn" disabled={busy !== null} onClick={reinforceAll}>
-            {busy === "all" ? "生成中…" : "🎯 开始强化"}
+            {busy === "all" ? "生成中…" : <><TargetIcon /> 开始强化</>}
           </button>
         </div>
       )}
@@ -178,7 +179,7 @@ export default function SmartReinforcement() {
                 disabled={busy !== null}
                 onClick={() => reinforceKp(a.knowledge_point)}
               >
-                {busy === a.knowledge_point ? "生成中…" : "🎯 生成强化包"}
+                {busy === a.knowledge_point ? "生成中…" : <><TargetIcon /> 生成强化包</>}
               </button>
             </div>
           ))}
@@ -207,7 +208,7 @@ export default function SmartReinforcement() {
                 disabled={busy !== null}
                 onClick={() => reinforceFromWrong(w)}
               >
-                {busy === "w" + w.question.id ? "生成中…" : "🎯 强化这题"}
+                {busy === "w" + w.question.id ? "生成中…" : <><TargetIcon /> 强化这题</>}
               </button>
             </div>
           ))}

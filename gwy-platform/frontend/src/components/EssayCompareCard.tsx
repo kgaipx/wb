@@ -1,4 +1,5 @@
 import { EssayCompare } from "../api/client";
+import { ChartIcon } from "../icons";
 
 const ESSAY_DIMENSIONS = ["立意", "结构", "论证", "语言", "素材"];
 
@@ -17,7 +18,7 @@ export function EssayCompareCard({ data }: { data: EssayCompare }) {
   return (
     <div className="card report-hero" style={{ marginTop: 12 }}>
       <div className="row row--between">
-        <strong>📊 对比范文点评</strong>
+        <strong><ChartIcon /> 对比范文点评</strong>
         {data.offline && <span className="text-warning" style={{ fontSize: 12 }}>点评已降级（题型对照）</span>}
       </div>
 

@@ -7,6 +7,7 @@ import { DimensionBars } from "../components/DimensionBars";
 import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
+import { PenIcon, ChartIcon } from "../icons";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -338,10 +339,10 @@ export default function Profile() {
           批改（满分 100）
         </button>
         <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadProfileModel}>
-          {modelBusy ? "生成范文中…" : "📝 查看范文参考"}
+          {modelBusy ? "生成范文中…" : <><PenIcon /> 查看范文参考</>}
         </button>
         <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={!grade || compareBusy} onClick={loadProfileCompare}>
-          {compareBusy ? "对比点评中…" : "📊 对比范文点评"}
+          {compareBusy ? "对比点评中…" : <><ChartIcon /> 对比范文点评</>}
         </button>
         {grade && (
           <div className="tutor-box" style={{ marginTop: 8 }}>
@@ -350,7 +351,7 @@ export default function Profile() {
                 <b>总分：{grade.total}</b>{" "}
                 {grade.needs_human_review && <span className="text-warning">（已转人工复核）</span>}
               </div>
-              <button className="btn btn--ghost btn--sm" onClick={resetProfileEssay}>✍ 再写一篇</button>
+              <button className="btn btn--ghost btn--sm" onClick={resetProfileEssay}><><PenIcon /> 再写一篇</></button>
             </div>
             <DimensionBars dims={grade.dimensions} />
             {grade.rationale && (
@@ -363,7 +364,7 @@ export default function Profile() {
         {essayModel && (
           <div className="tutor-box" style={{ marginTop: 10 }}>
             <div className="row row--between">
-              <div className="tutor-box__title">📝 高分范文参考</div>
+              <div className="tutor-box__title"><PenIcon /> 高分范文参考</div>
               {essayModel.offline && <span className="text-warning" style={{ fontSize: 12 }}>范文生成暂不可用</span>}
             </div>
             {essayModel.outline.length > 0 && (

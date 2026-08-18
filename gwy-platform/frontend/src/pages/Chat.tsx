@@ -4,6 +4,7 @@ import { api, Ability, ChatMessage, ChatSession } from "../api/client";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
 import EmptyState from "../components/EmptyState";
+import { ChartIcon } from "../icons";
 
 const SUGGESTIONS = [
   "类比推理总做错，怎么破？",
@@ -392,7 +393,7 @@ export default function Chat() {
 
         {!loading && messages.length === 0 && activeId == null && weak.length > 0 && (
           <div className="bubble bubble--assistant profile-card">
-            <div className="profile-card__title">📊 私教已了解你的薄弱点</div>
+            <div className="profile-card__title"><ChartIcon /> 私教已了解你的薄弱点</div>
             <div className="profile-card__desc">
               依据你的练习数据，以下知识点掌握度偏低。点选其一，私教会给出针对性突破建议：
             </div>

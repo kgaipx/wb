@@ -6,6 +6,7 @@ import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
 import EmptyState from "../components/EmptyState";
+import { TargetIcon } from "../icons";
 
 interface ItemState {
   open: boolean;
@@ -255,7 +256,7 @@ export default function Wrong() {
       {items.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 12 }}>
           <button className="btn btn--primary" disabled={busy} onClick={retryAll}>
-            🎯 智能重练全部（{items.length}）
+            <><TargetIcon /> 智能重练全部（{items.length}）</>
           </button>
           <button
             className="btn btn--ghost"

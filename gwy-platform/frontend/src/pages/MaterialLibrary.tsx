@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { copyText } from "../utils/exportUtils";
 import EmptyState from "../components/EmptyState";
+import { PenIcon, CalendarIcon, StarIcon, LightbulbIcon } from "../icons";
 
 /* ============================================================
  * 申论素材库 —— 名言金句 / 政策热词 / 热点话题 / 写作模板
@@ -214,7 +215,7 @@ export default function MaterialLibrary() {
             🎲 随机一条
           </button>
           <Link to="/essay" className="btn btn--ghost-on btn--sm">
-            ✍️ 去练申论 →
+            <><PenIcon /> 去练申论 →</>
           </Link>
         </div>
       </div>
@@ -239,7 +240,7 @@ export default function MaterialLibrary() {
       {cat === "all" && !query && (
         <div className="mat-daily">
           <div className="mat-daily__head">
-            <span className="mat-daily__badge">📅 每日一素材</span>
+            <span className="mat-daily__badge"><CalendarIcon /> 每日一素材</span>
             <span className="muted" style={{ fontSize: 12 }}>{CATS[daily.cat].label}</span>
           </div>
           <MaterialCard
@@ -277,7 +278,7 @@ export default function MaterialLibrary() {
             </button>
           ))}
           <button className={"chip" + (onlyFav ? " chip--on" : "")} onClick={() => setOnlyFav((v) => !v)}>
-            ⭐ 已收藏
+            <><StarIcon /> 已收藏</>
           </button>
         </div>
       </div>
@@ -381,7 +382,7 @@ function MaterialCard({
             <span key={t} className="tag">{t}</span>
           ))}
         </div>
-        {m.usage && <div className="mat-card__usage">💡 {m.usage}</div>}
+        {m.usage && <div className="mat-card__usage"><LightbulbIcon /> {m.usage}</div>}
       </div>
     </div>
   );

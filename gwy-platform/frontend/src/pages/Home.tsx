@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, PlanOut, PlanTask, StudentStats, WrongItem } from "../api/client";
 import { useAuth } from "../auth";
 import EmptyState from "../components/EmptyState";
+import { TargetIcon, CalendarIcon } from "../icons";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -477,7 +478,7 @@ export default function Home() {
       {/* 智能日报：间隔到期复习 + 新错题提醒 + 最弱一键练 */}
       <div className="card home-daily" style={{ marginTop: 14 }}>
         <div className="row row--between">
-          <strong>📅 智能日报</strong>
+          <strong><CalendarIcon /> 智能日报</strong>
           <span className="muted" style={{ fontSize: 12 }}>
             {now0.getMonth() + 1} 月 {now0.getDate()} 日
           </span>
@@ -525,7 +526,7 @@ export default function Home() {
               style={{ marginTop: 8, width: "100%" }}
               onClick={() => nav("/practice?kp=" + weak3.map((a) => a.knowledge_point).join(","))}
             >
-              🎯 一键混合薄弱点练习（{weak3.length}）
+              <><TargetIcon /> 一键混合薄弱点练习（{weak3.length}）</>
             </button>
           </div>
         )}

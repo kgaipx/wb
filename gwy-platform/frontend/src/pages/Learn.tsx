@@ -5,6 +5,7 @@ import Markdown from "../components/Markdown";
 import { RadarChart } from "../components/RadarChart";
 import KpHeatmapView from "../components/KpHeatmap";
 import EmptyState from "../components/EmptyState";
+import { TargetIcon, RepeatIcon } from "../icons";
 
 export default function Learn() {
   const nav = useNavigate();
@@ -221,7 +222,7 @@ export default function Learn() {
             onClick={() => nav(`/practice?kp=${encodeURIComponent(rec.knowledge_points[0])}`)}
             title="按最弱知识点专项刷题"
           >
-            🎯 针对薄弱点练习 →
+            <><TargetIcon /> 针对薄弱点练习 →</>
           </button>
         )}
       </div>
@@ -242,7 +243,7 @@ export default function Learn() {
       <div className="row row--between" style={{ marginTop: 16 }}>
         <h3 className="section-title" style={{ marginTop: 0 }}>为你推荐练习</h3>
         <button className="btn btn--ghost btn--sm" disabled={recRefreshing} onClick={refreshRec}>
-          {recRefreshing ? "换题中…" : "🔄 换一批"}
+          {recRefreshing ? "换题中…" : <><RepeatIcon /> 换一批</>}
         </button>
       </div>
       {rec && rec.questions.length === 0 && (

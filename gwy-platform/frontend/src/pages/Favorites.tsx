@@ -4,6 +4,7 @@ import { api, FavoriteItem } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
 import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
+import { TargetIcon } from "../icons";
 
 // 自定义标签白名单（与后端 patch_favorite 校验一致）
 const TAG_DEFS: { key: string; icon: string; label: string }[] = [
@@ -138,7 +139,7 @@ export default function Favorites() {
         <div className="fav-bar">
           <div className="fav-batch">
             <button className="btn btn--primary btn--sm" disabled={busy} onClick={() => practiceIds(batchIds.all)}>
-              🎯 练习全部（{list.length}）
+              <><TargetIcon /> 练习全部（{list.length}）</>
             </button>
             <button
               className="btn btn--ghost btn--sm"

@@ -7,6 +7,7 @@ import { ReportExport } from "../components/ReportExport";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 import EmptyState from "../components/EmptyState";
+import { PenIcon, ChartIcon } from "../icons";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -172,10 +173,10 @@ export default function Essay() {
               {busy ? "批改中…" : "AI 批改（满分 100）"}
             </button>
             <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadModel}>
-              {modelBusy ? "生成范文中…" : "📝 查看范文参考"}
+              {modelBusy ? "生成范文中…" : <><PenIcon /> 查看范文参考</>}
             </button>
             <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={!grade || compareBusy} onClick={loadCompare}>
-              {compareBusy ? "对比点评中…" : "📊 对比范文点评"}
+              {compareBusy ? "对比点评中…" : <><ChartIcon /> 对比范文点评</>}
             </button>
           </div>
 
@@ -204,7 +205,7 @@ export default function Essay() {
                 )}
               </div>
               <div className="row row--between" style={{ marginTop: 10 }}>
-                <button className="btn btn--ghost btn--sm" onClick={resetEssay}>✍ 再写一篇</button>
+                <button className="btn btn--ghost btn--sm" onClick={resetEssay}><><PenIcon /> 再写一篇</></button>
                 <span className="muted" style={{ fontSize: 12 }}>双阶段评分（初评 + 一致性校准），异常自动转人工</span>
               </div>
             </>

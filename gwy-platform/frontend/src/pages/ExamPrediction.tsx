@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
 import { LineChart } from "../components/LineChart";
+import { PenIcon, PinIcon, LightbulbIcon, TargetIcon } from "../icons";
 
 /* ============================================================
  * 历年真题套卷模考 + 分数预测
@@ -390,7 +391,7 @@ export default function ExamPrediction() {
         </div>
 
         <button className="btn btn--primary btn--block pred-start" disabled={building} onClick={startExam}>
-          {building ? "正在智能组卷…" : "📝 生成套卷并开始模考"}
+          {building ? "正在智能组卷…" : <><PenIcon /> 生成套卷并开始模考</>}
         </button>
         <div className="mat-foot muted">
           模考结束后，系统据你的正确率估算行测分，并结合申论基准与目标进面线，给出总分与上岸概率参考。
@@ -606,7 +607,7 @@ export default function ExamPrediction() {
 
         {/* 建议 */}
         <div className="card card--accent pred-advice">
-          <div className="pred-advice__title">📌 备考建议</div>
+          <div className="pred-advice__title"><PinIcon /> 备考建议</div>
           <div className="pred-advice__body">{advice}</div>
           {result.weakest && (
             <div className="pred-advice__weak">
@@ -668,7 +669,7 @@ export default function ExamPrediction() {
                         <span>你的答案：<b className={rv.isCorrect ? "is-ok" : rv.skipped ? "" : "is-bad"}>{rv.userAnswer || "（未作答）"}</b></span>
                         <span>正确答案：<b className="is-ok">{rv.skipped ? "—" : rv.correctAnswer}</b></span>
                       </div>
-                      {rv.explanation && !rv.skipped && <div className="pred-review__exp">💡 {rv.explanation}</div>}
+                      {rv.explanation && !rv.skipped && <div className="pred-review__exp"><LightbulbIcon /> {rv.explanation}</div>}
                     </div>
                   );
                 })}
@@ -752,7 +753,7 @@ export default function ExamPrediction() {
           </button>
           {result.weakest && (
             <button className="btn btn--ghost btn--block" onClick={() => nav("/reinforce")}>
-              🎯 去强化最弱模块
+              <><TargetIcon /> 去强化最弱模块</>
             </button>
           )}
         </div>

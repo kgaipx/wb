@@ -4022,6 +4022,9 @@
 .explain-ai { margin-top: 16px; }
 .explain-ai__head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .explain-ai__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
   font-weight: 700;
   color: var(--brand);
@@ -4029,6 +4032,7 @@
   padding: 3px 10px;
   border-radius: 999px;
 }
+.explain-ai__badge svg { width: 15px; height: 15px; }
 .explain-ai__kp {
   font-size: 12px;
   color: var(--text-3);
