@@ -30,13 +30,13 @@ const Bell = () => (
 export function notifMeta(type: string): NotifMeta {
   switch (type) {
     case "membership_activated":
-      return { color: "#16a34a", label: "会员", icon: <Crown /> };
+      return { color: "var(--success)", label: "会员", icon: <Crown /> };
     case "membership_expired":
-      return { color: "#dc2626", label: "会员", icon: <Crown /> };
+      return { color: "var(--danger)", label: "会员", icon: <Crown /> };
     case "assessment_done":
-      return { color: "#2563eb", label: "测评", icon: <Gauge /> };
+      return { color: "var(--info)", label: "测评", icon: <Gauge /> };
     default:
-      return { color: "#64748b", label: "系统", icon: <Bell /> };
+      return { color: "var(--text-2)", label: "系统", icon: <Bell /> };
   }
 }
 

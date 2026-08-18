@@ -268,6 +268,8 @@
 .muted {
   color: var(--text-2);
 }
+.text-sm { font-size: var(--fs-sm); line-height: 1.5; }
+.text-xs { font-size: var(--fs-xs); line-height: 1.45; }
 .text-3 {
   color: var(--text-3);
 }
@@ -761,9 +763,9 @@
   font-variant-numeric: tabular-nums;
   font-weight: 600;
 }
-.rate-trend--up { color: #1a7f37; background: rgba(26,127,55,0.12); }
-.rate-trend--down { color: #d92b1c; background: rgba(217,43,28,0.12); }
-.rate-trend--flat { color: #6b7280; background: rgba(107,114,128,0.12); }
+.rate-trend--up { color: var(--success); background: color-mix(in srgb, var(--success) 14%, transparent); }
+.rate-trend--down { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.rate-trend--flat { color: var(--text-2); background: color-mix(in srgb, var(--text-2) 14%, transparent); }
 
 /* 测评 · 逐题回顾选项 */
 .adetail-opts { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
@@ -1066,7 +1068,7 @@
 .trend-summary .rate-trend { margin: 0 6px; }
 
 /* 学习计划：连续打卡高亮 */
-.plan-streak-badge { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: #B45309; background: #FEF3C7; border-radius: 999px; padding: 2px 10px; }
+.plan-streak-badge { display: inline-flex; align-items: center; gap: 2px; font-size: 12px; font-weight: 700; color: var(--warning); background: var(--warning-050); border-radius: 999px; padding: 2px 10px; }
 .plan-cal__cell--streak { box-shadow: 0 0 0 2px var(--warning) inset; position: relative; }
 .plan-cal__fire { position: absolute; top: 1px; right: 3px; font-size: 9px; line-height: 1; }
 .result__head {
@@ -1448,6 +1450,11 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--sp-2);
 }
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--sp-2);
+}
 
 /* ===================== 首页 Hero ===================== */
 .hero {
@@ -1679,7 +1686,7 @@
 .master-suggest__title {
   font-size: 13px;
   font-weight: 700;
-  color: #047857;
+  color: var(--success);
 }
 .master-suggest__actions {
   display: flex;
@@ -2781,7 +2788,10 @@
 .auth-value__ico {
   font-size: 17px;
   line-height: 1;
+  color: var(--brand);
+  display: inline-flex;
 }
+.auth-value__ico svg { width: 1em; height: 1em; }
 .auth-card {
   width: 100%;
   max-width: 380px;
@@ -3354,7 +3364,9 @@
 .mem-prop__ic {
   font-size: 20px;
   display: block;
+  color: var(--brand);
 }
+.mem-prop__ic svg { width: 1em; height: 1em; }
 .mem-prop b {
   font-size: 13px;
   display: block;
@@ -3404,6 +3416,9 @@
   align-items: flex-start;
   line-height: 1.4;
 }
+.mem-compare__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 9px; }
+.mem-compare__list li { display: flex; gap: 8px; align-items: flex-start; font-size: var(--fs-base); color: var(--text-2); }
+.mem-compare__list li .mem-cmp-ic { margin-top: 1px; flex: 0 0 auto; }
 .mem-cmp-ic {
   color: var(--text-3);
   flex: 0 0 auto;

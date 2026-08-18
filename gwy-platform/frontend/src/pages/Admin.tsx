@@ -14,12 +14,12 @@ function planLabel(p: string) {
   return { free: "免费版", pro: "会员月", pro_year: "会员年" }[p] || p;
 }
 
-const C_BRAND = "#1B4FB5";
-const C_ACCENT = "#E8A33D";
-const C_SUCCESS = "#2E9E5B";
-const C_DANGER = "#E5484D";
-const C_INFO = "#3E7BFA";
-const C_GRAY = "#8A93A6";
+const C_BRAND = "var(--brand)";
+const C_ACCENT = "var(--warning)";
+const C_SUCCESS = "var(--success)";
+const C_DANGER = "var(--danger)";
+const C_INFO = "var(--info)";
+const C_GRAY = "var(--text-3)";
 
 // 零依赖 SVG 折线图（近 7 日趋势），preserveAspectRatio 默认保持圆形不畸变
 function LineChart({
@@ -51,18 +51,18 @@ function LineChart({
   const last = data[data.length - 1];
   return (
     <div className="adm-chart">
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label="趋势图">
-        <polygon points={area} fill={color} opacity={0.1} />
+      <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label="趋势图" style={{ color }}>
+        <polygon points={area} fill="currentColor" opacity={0.1} />
         <polyline
           points={line}
           fill="none"
-          stroke={color}
+          stroke="currentColor"
           strokeWidth={2}
           strokeLinejoin="round"
           strokeLinecap="round"
         />
         {pts.map((p, i) => (
-          <circle key={i} cx={p[0]} cy={p[1]} r={2.4} fill={color} />
+          <circle key={i} cx={p[0]} cy={p[1]} r={2.4} fill="currentColor" />
         ))}
       </svg>
       <div className="adm-chart__foot">
@@ -100,7 +100,7 @@ function Donut({
   return (
     <div className="adm-donut" style={style}>
       <svg viewBox="0 0 120 120" width={size} height={size} role="img" aria-label="分布环图">
-        <circle cx={cx} cy={cy} r={r} fill="none" stroke="var(--surface-3)" strokeWidth={14} />
+        <circle cx={cx} cy={cy} r={r} fill="none" style={{ stroke: "var(--surface-2)" }} strokeWidth={14} />
         {segments.map((s, i) => {
           const len = (s.value / total) * C;
           const el = (
@@ -110,7 +110,7 @@ function Donut({
               cy={cy}
               r={r}
               fill="none"
-              stroke={s.color}
+              style={{ stroke: s.color }}
               strokeWidth={14}
               strokeDasharray={`${len} ${C - len}`}
               strokeDashoffset={-offset}

@@ -15,12 +15,12 @@ const KIND_LABEL: Record<string, string> = {
 
 const TYPE_ORDER = ["practice", "review_wrong", "favorite", "explain", "mock", "read"];
 const TYPE_COLOR: Record<string, string> = {
-  practice: "#2563EB",
-  review_wrong: "#C0392B",
-  favorite: "#B26A00",
-  explain: "#1D7A46",
-  mock: "#3457B0",
-  read: "#475569",
+  practice: "var(--brand)",
+  review_wrong: "var(--danger)",
+  favorite: "var(--warning)",
+  explain: "var(--success)",
+  mock: "var(--info)",
+  read: "var(--text-2)",
 };
 
 /** 完成度环形进度 */
