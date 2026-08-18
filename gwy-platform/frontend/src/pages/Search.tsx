@@ -55,6 +55,14 @@ export default function Search() {
     };
   }, []);
 
+  // 进入时从云端同步收藏态，避免已收藏题在列表误显示为未收藏
+  useEffect(() => {
+    api
+      .favoriteList()
+      .then((favs) => setFaved(new Set(favs.map((f) => f.question.id))))
+      .catch(() => {});
+  }, []);
+
   async function fav(id: number) {
     try {
       await api.favoriteAdd(id);
@@ -165,7 +173,18 @@ export default function Search() {
         ))}
       </div>
 
-      <ExplainModal questionId={explainId} onClose={() => setExplainId(null)} />
+      <ExplainModal
+        questionId={explainId}
+        onClose={() => setExplainId(null)}
+        onFavToggle={(id, willFav) =>
+          setFaved((s) => {
+            const n = new Set(s);
+            if (willFav) n.add(id);
+            else n.delete(id);
+            return n;
+          })
+        }
+      />
     </section>
   );
 }

@@ -257,7 +257,13 @@ export default function Favorites() {
         ))
       )}
 
-      <ExplainModal questionId={explainId} onClose={() => setExplainId(null)} />
+      <ExplainModal
+        questionId={explainId}
+        onClose={() => setExplainId(null)}
+        onFavToggle={(id, willFav) => {
+          if (!willFav) remove(id);
+        }}
+      />
     </section>
   );
 }

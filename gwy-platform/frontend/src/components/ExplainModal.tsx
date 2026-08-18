@@ -17,9 +17,11 @@ interface ExplainData {
 export default function ExplainModal({
   questionId,
   onClose,
+  onFavToggle,
 }: {
   questionId: number | null;
   onClose: () => void;
+  onFavToggle?: (id: number, willFav: boolean) => void;
 }) {
   const nav = useNavigate();
   const [q, setQ] = useState<Question | null>(null);
@@ -28,6 +30,7 @@ export default function ExplainModal({
   const [qErr, setQErr] = useState("");
   const [exErr, setExErr] = useState("");
   const [favBusy, setFavBusy] = useState(false);
+  const [favedState, setFavedState] = useState(false);
 
   useEffect(() => {
     if (questionId == null) return;
@@ -51,6 +54,21 @@ export default function ExplainModal({
         else setExErr("AI 讲解暂时不可用");
       });
     Promise.all([loadQ, loadEx]).finally(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [questionId]);
+
+  // 打开即查询本题收藏态，避免重复收藏 / 正确显示「已收藏」
+  useEffect(() => {
+    if (questionId == null) return;
+    let cancelled = false;
+    api
+      .favoriteList()
+      .then((favs) => {
+        if (!cancelled) setFavedState(favs.some((f) => f.question.id === questionId));
+      })
+      .catch(() => !cancelled && setFavedState(false));
     return () => {
       cancelled = true;
     };
@@ -149,9 +167,13 @@ export default function ExplainModal({
             className="btn btn--ghost btn--sm"
             disabled={favBusy}
             onClick={async () => {
+              const willFav = !favedState;
               setFavBusy(true);
               try {
-                await api.favoriteAdd(questionId);
+                if (willFav) await api.favoriteAdd(questionId);
+                else await api.favoriteRemove(questionId);
+                setFavedState(willFav);
+                onFavToggle?.(questionId, willFav);
               } catch {
                 /* ignore */
               } finally {
@@ -159,7 +181,7 @@ export default function ExplainModal({
               }
             }}
           >
-            ☆ 收藏
+            {favedState ? "★ 已收藏" : "☆ 收藏"}
           </button>
         </div>
       </div>

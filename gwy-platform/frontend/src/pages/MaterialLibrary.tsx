@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { copyText } from "../utils/exportUtils";
 
 /* ============================================================
  * 申论素材库 —— 名言金句 / 政策热词 / 热点话题 / 写作模板
@@ -134,31 +135,7 @@ function saveJSON(key: string, val: unknown) {
   }
 }
 
-// 复制文本到剪贴板：优先 Clipboard API（生产 https 环境），失败回退 execCommand（本地 http 预览）。
-async function copyText(text: string): Promise<boolean> {
-  try {
-    if (navigator.clipboard && window.isSecureContext) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    /* 回退到下方方案 */
-  }
-  try {
-    const ta = document.createElement("textarea");
-    ta.value = text;
-    ta.style.position = "fixed";
-    ta.style.top = "-9999px";
-    ta.style.opacity = "0";
-    document.body.appendChild(ta);
-    ta.select();
-    const ok = document.execCommand("copy");
-    document.body.removeChild(ta);
-    return ok;
-  } catch {
-    return false;
-  }
-}
+// 复制逻辑统一复用 utils/exportUtils 的 copyText（见顶部 import）。
 
 // 当日「已背」集合：以日期为键，跨天自动重置统计。
 function todayKey(): string {

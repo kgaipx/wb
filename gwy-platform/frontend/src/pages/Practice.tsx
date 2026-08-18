@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { api, Question, Citation, Ability } from "../api/client";
+import { api, Question, Citation, Ability, PracticeResult } from "../api/client";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
@@ -15,7 +15,7 @@ export default function Practice() {
   const [list, setList] = useState<Question[]>([]);
   const [active, setActive] = useState<Question | null>(null);
   const [selected, setSelected] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<PracticeResult | null>(null);
   const [explain, setExplain] = useState<string>("");
   const [cites, setCites] = useState<Citation[]>([]);
   const [explainOffline, setExplainOffline] = useState<boolean>(false);
@@ -694,7 +694,13 @@ export default function Practice() {
         </div>
       )}
 
-      <ExplainModal questionId={explainId} onClose={() => setExplainId(null)} />
+      <ExplainModal
+        questionId={explainId}
+        onClose={() => setExplainId(null)}
+        onFavToggle={(id, willFav) => {
+          if (active && id === active.id) setFaved(willFav);
+        }}
+      />
     </section>
   );
 }

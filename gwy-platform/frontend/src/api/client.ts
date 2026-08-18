@@ -115,6 +115,17 @@ export interface FavoriteItem {
   tags: string[]; // 自定义标签，如 ["易错","重点"]
   created_at: string;
 }
+
+// 单次练习判分结果；mastery_before 为练习前掌握度，用于结果页展示本题带来的掌握度变化
+export interface PracticeResult {
+  question_id: number;
+  is_correct: boolean;
+  correct_answer: string | null;
+  explanation: string | null;
+  mastery: number;
+  mastery_before: number;
+  skipped?: boolean;
+}
 export interface WrongItem {
   question: Question;
   wrong_count: number;
@@ -456,7 +467,7 @@ export const api = {
     return request<SearchHit[]>(`/bank/questions/search?${q.toString()}`);
   },
   practice: (question_id: number, selected: string) =>
-    request<{ question_id: number; is_correct: boolean; correct_answer: string | null; explanation: string | null; mastery: number; skipped?: boolean }>(
+    request<PracticeResult>(
       "/bank/practice",
       { method: "POST", body: JSON.stringify({ question_id, selected }) }
     ),
