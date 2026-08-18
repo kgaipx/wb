@@ -237,8 +237,8 @@ export default function Practice() {
     await nextQuestion();
   }
 
-  // 收藏标签快捷切换（易错/重点）：确保已收藏后再 PATCH tags，本地即时反映
-  async function toggleFavTag(tag: "易错" | "重点") {
+  // 收藏标签快捷切换（易错/重点/已掌握）：确保已收藏后再 PATCH tags，本地即时反映
+  async function toggleFavTag(tag: "易错" | "重点" | "已掌握") {
     if (!active) return;
     try {
       if (!faved) {
@@ -529,6 +529,15 @@ export default function Practice() {
                   title="标记为重点题"
                 >
                   🟡 重点
+                </button>
+              )}
+              {faved && (
+                <button
+                  className={"chip chip--ok " + (favTags.includes("已掌握") ? "chip--on" : "")}
+                  onClick={() => toggleFavTag("已掌握")}
+                  title="标记为已掌握"
+                >
+                  🟢 已掌握
                 </button>
               )}
             </div>

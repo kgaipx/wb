@@ -2081,6 +2081,16 @@
   border-color: var(--warning);
   color: #fff;
 }
+.chip--ok {
+  background: color-mix(in srgb, var(--success) 10%, #fff);
+  border-color: transparent;
+  color: var(--success);
+}
+.chip--ok.chip--on {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
 .chip--btn {
   font-family: inherit;
 }

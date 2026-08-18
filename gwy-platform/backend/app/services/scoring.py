@@ -38,5 +38,9 @@ def score_selection(selected: str, options, qtype: str):
     if not correct_labels:
         # 无正确选项标记 → 无标准答案，不可判分
         return correct_labels, False, False
-    is_correct = set(selected.split()) == set(correct_labels)
+    # 多选 selected 形如 "AB"（前端 join 无空格）。`split()` 按空白切会把 "AB"
+    # 误判为单一标签 ['AB']，导致多选永远判错。统一按字符拆（忽略空格），
+    # 单选 "A" 与多选 "AB"/"A B" 都能正确比对。
+    sel_set = set(list(selected.replace(" ", "")))
+    is_correct = sel_set == set(correct_labels)
     return correct_labels, is_correct, True

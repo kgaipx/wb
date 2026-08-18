@@ -410,17 +410,28 @@ export default function Wrong() {
               </div>
             ) : (
               <div style={{ marginTop: 8 }}>
-                {q.options.map((o) => (
-                  <label key={o.id} className={"opt" + (st.selected === o.label ? " opt--selected" : "")}>
-                    <input
-                      type="radio"
-                      name={`w${q.id}`}
-                      checked={st.selected === o.label}
-                      onChange={() => { setActiveQid(q.id); patch(q.id, { selected: o.label }); }}
-                    />
-                    <b>{o.label}.</b> <span>{o.content}</span>
-                  </label>
-                ))}
+                {q.options.map((o) => {
+                  let cls = "opt";
+                  if (st.result) {
+                    const ca = st.result.correct_answer || "";
+                    if (ca.includes(o.label)) cls += " opt--correct";
+                    else if (st.selected === o.label) cls += " opt--wrong";
+                  } else if (st.selected === o.label) {
+                    cls += " opt--selected";
+                  }
+                  return (
+                    <label key={o.id} className={cls}>
+                      <input
+                        type="radio"
+                        name={`w${q.id}`}
+                        checked={st.selected === o.label}
+                        disabled={!!st.result}
+                        onChange={() => { setActiveQid(q.id); patch(q.id, { selected: o.label }); }}
+                      />
+                      <b>{o.label}.</b> <span>{o.content}</span>
+                    </label>
+                  );
+                })}
                 <div className="row" style={{ marginTop: 8, gap: 8 }}>
                   <button className="btn btn--primary" style={{ flex: 1 }} disabled={busy || !st.selected} onClick={() => submit(q.id)}>
                     提交重练
