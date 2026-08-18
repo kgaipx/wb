@@ -2,7 +2,7 @@
 
 所有端点均受 get_current_user 保护；LLM 调用失败时由能力层降级（见 essay_grader 回退）。
 """
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import case, or_
@@ -47,7 +47,8 @@ _FREE_QUOTA = settings.FREE_AI_EXPLAIN_QUOTA
 
 def _quota_state(user: User) -> dict:
     """返回当前用户当日 AI 讲解配额状态（is_pro 不限）。"""
-    today = date.today().isoformat()
+    # 平台规则：所有"按日"统计一律用北京时间（dt+8h），不能依赖服务器墙钟。
+    today = (datetime.now(timezone.utc) + timedelta(hours=8)).date().isoformat()
     if user.plan != "free":
         return {"is_pro": True, "limit": -1, "used": user.ai_quota_used, "remaining": -1, "date": today}
     # 跨日则重置计数

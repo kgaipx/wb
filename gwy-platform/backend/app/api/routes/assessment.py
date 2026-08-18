@@ -105,6 +105,25 @@ def assessment_submit(
         q = db.get(Question, item.question_id)
         if q is None:
             continue
+        # 未作答（留空）：不写 UserAnswer、不污染能力图谱，仅作"未答"跳过，与 practice 对齐
+        if not item.selected:
+            skipped_count += 1
+            details.append(
+                {
+                    "question_id": q.id,
+                    "is_correct": False,
+                    "correct_answer": None,
+                    "selected": "",
+                    "stem": q.stem,
+                    "knowledge_point": q.knowledge_point,
+                    "skipped": True,
+                    "options": [
+                        {"label": o.label, "content": o.content, "is_correct": o.is_correct}
+                        for o in q.options
+                    ],
+                }
+            )
+            continue
         correct_labels, is_correct, scorable = score_selection(
             item.selected, q.options, q.qtype
         )
