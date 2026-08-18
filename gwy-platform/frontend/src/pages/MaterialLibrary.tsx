@@ -187,9 +187,11 @@ export default function MaterialLibrary() {
   // 随机一条（排除当前每日素材，提升新鲜感）
   function pickRandom() {
     const pool = MATERIALS.filter((m) => m.id !== daily.id);
-    setRandomId(pool[Math.floor(Math.random() * pool.length)].id);
+    const newId = pool[Math.floor(Math.random() * pool.length)].id;
+    setRandomId(newId);
+    // 用局部 newId 滚动，避免读取尚未更新的 randomId 状态（陈旧闭包）
     setTimeout(() => {
-      const el = document.getElementById("mat-" + randomId);
+      const el = document.getElementById("mat-" + newId);
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
     }, 60);
   }
@@ -293,6 +295,7 @@ export default function MaterialLibrary() {
                 m={m}
                 fav={favs.includes(m.id)}
                 memorized={memToday.includes(m.id)}
+                highlight={randomId === m.id}
                 onFav={() => toggleFav(m.id)}
                 onMem={() => toggleMem(m.id)}
               />

@@ -83,10 +83,22 @@ const CARDS: Flashcard[] = [
 
 const STATE_KEY = "gwy_flash_state";
 
+function normDue(s: string | undefined): string {
+  if (!s) return "2000-01-01";
+  const m = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(s);
+  if (!m) return s;
+  const p = (x: string) => x.padStart(2, "0");
+  return `${m[1]}-${p(m[2])}-${p(m[3])}`;
+}
 function loadState(): Record<string, CardState> {
   try {
     const raw = localStorage.getItem(STATE_KEY);
-    return raw ? (JSON.parse(raw) as Record<string, CardState>) : {};
+    const obj = raw ? (JSON.parse(raw) as Record<string, CardState>) : {};
+    // 兼容旧版未补零的 due（如 2026-8-5），统一为 YYYY-MM-DD 以便字典序比较
+    for (const k of Object.keys(obj)) {
+      if (obj[k]?.due) obj[k].due = normDue(obj[k].due);
+    }
+    return obj;
   } catch {
     return {};
   }
@@ -99,7 +111,8 @@ function saveState(s: Record<string, CardState>) {
   }
 }
 function dayStr(d: Date): string {
-  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  const p = (x: number) => String(x).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 function addDays(n: number): string {
   const d = new Date();
@@ -123,7 +136,7 @@ export default function Flashcards() {
   useEffect(() => saveState(states), [states]);
 
   const allDue = useMemo(
-    () => CARDS.filter((c) => (states[c.id]?.due || "2000-1-1") <= dayStr(new Date())),
+    () => CARDS.filter((c) => (states[c.id]?.due || "2000-01-01") <= dayStr(new Date())),
     [states]
   );
   const mastered = useMemo(
@@ -135,7 +148,7 @@ export default function Flashcards() {
   const candidates = useMemo(() => {
     let list = CARDS;
     if (deck !== "all") list = list.filter((c) => c.deck === deck);
-    if (onlyDue && !reviewAll) list = list.filter((c) => (states[c.id]?.due || "2000-1-1") <= dayStr(new Date()));
+    if (onlyDue && !reviewAll) list = list.filter((c) => (states[c.id]?.due || "2000-01-01") <= dayStr(new Date()));
     return list;
   }, [deck, onlyDue, reviewAll, states]);
 
@@ -145,7 +158,7 @@ export default function Flashcards() {
   // 开始/重置本轮学习：取候选中的待复习卡；若无则取候选全部。
   function startSession() {
     const pool = candidates.filter(
-      (c) => reviewAll || (states[c.id]?.due || "2000-1-1") <= dayStr(new Date())
+      (c) => reviewAll || (states[c.id]?.due || "2000-01-01") <= dayStr(new Date())
     );
     const ids = (pool.length ? pool : candidates).map((c) => c.id);
     setQueue(ids);
@@ -232,7 +245,7 @@ export default function Flashcards() {
           <div className="card flash-start">
             <div className="flash-start__icon">🧠</div>
             <div className="flash-start__title">
-              {onlyDue && !reviewAll && candidates.filter((c) => (states[c.id]?.due || "2000-1-1") <= dayStr(new Date())).length === 0
+              {onlyDue && !reviewAll && candidates.filter((c) => (states[c.id]?.due || "2000-01-01") <= dayStr(new Date())).length === 0
                 ? "该分类今天没有待复习卡片"
                 : "开始本轮记忆"}
             </div>
@@ -244,14 +257,14 @@ export default function Flashcards() {
             <button
               className="btn btn--primary btn--block"
               onClick={() => {
-                if (onlyDue && !reviewAll && candidates.filter((c) => (states[c.id]?.due || "2000-1-1") <= dayStr(new Date())).length === 0) {
+                if (onlyDue && !reviewAll && candidates.filter((c) => (states[c.id]?.due || "2000-01-01") <= dayStr(new Date())).length === 0) {
                   setReviewAll(true);
                 }
                 startSession();
               }}
             >
               {onlyDue && !reviewAll &&
-              candidates.filter((c) => (states[c.id]?.due || "2000-1-1") <= dayStr(new Date())).length === 0
+              candidates.filter((c) => (states[c.id]?.due || "2000-01-01") <= dayStr(new Date())).length === 0
                 ? "复习全部卡片"
                 : "▶ 开始学习"}
             </button>
@@ -327,7 +340,7 @@ export default function Flashcards() {
           {candidates.map((c) => {
             const st = states[c.id];
             const lvl = st?.level ?? 0;
-            const isDue = (st?.due || "2000-1-1") <= dayStr(new Date());
+            const isDue = (st?.due || "2000-01-01") <= dayStr(new Date());
             const cls = lvl >= 6 ? "done" : isDue ? "due" : "new";
             return (
               <button key={c.id} className={"flash-mini flash-mini--" + cls} onClick={() => studyOne(c.id)}>

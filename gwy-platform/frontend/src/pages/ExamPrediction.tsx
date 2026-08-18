@@ -76,6 +76,20 @@ function isMulti(q: Question): boolean {
   return !!q.qtype && (q.qtype.includes("多") || q.qtype.toLowerCase().includes("multi"));
 }
 
+interface ReviewItem {
+  qid: number;
+  stem: string;
+  cat: string;
+  kp: string;
+  multi: boolean;
+  options: { label: string; content: string }[];
+  userAnswer: string; // 用户所选标签拼接（""=未作答）
+  correctAnswer: string; // 正确标签拼接（""=无标准答案）
+  isCorrect: boolean;
+  skipped: boolean; // 无标准答案，已跳过
+  explanation: string;
+}
+
 interface ResultData {
   total: number;
   correct: number;
@@ -87,6 +101,7 @@ interface ResultData {
   prob: number; // 上岸概率 0-100
   perModule: { label: string; cat: string; total: number; correct: number }[];
   weakest: string | null;
+  reviews: ReviewItem[];
 }
 
 export default function ExamPrediction() {
@@ -104,7 +119,10 @@ export default function ExamPrediction() {
   const [submitting, setSubmitting] = useState(false);
   const [err, setErr] = useState("");
   const [result, setResult] = useState<ResultData | null>(null);
+  const [revFilter, setRevFilter] = useState<"all" | "wrong" | "unans">("all");
   const timerRef = useRef<number | null>(null);
+  const submitRef = useRef(submit);
+  submitRef.current = submit;
 
   const bp = BLUEPRINTS.find((b) => b.key === bpKey)!;
   const totalQ = useMemo(() => bp.modules.reduce((s, m) => s + m.n, 0), [bp]);
@@ -151,7 +169,7 @@ export default function ExamPrediction() {
       setTimeLeft((t) => {
         if (t <= 1) {
           if (timerRef.current) window.clearInterval(timerRef.current);
-          void submit();
+          submitRef.current();
           return 0;
         }
         return t - 1;
@@ -175,12 +193,27 @@ export default function ExamPrediction() {
     try {
       const results = await Promise.all(
         paper.map((q) => {
-          const sel = answers[q.id];
-          if (!sel) return Promise.resolve({ cat: q.category, correct: false });
+          const sel = answers[q.id] || "";
+          // 始终调用 practice：已作答则判分；未作答（sel=""）走后端「仅揭示答案」分支，
+          // 不写入作答记录、不更新能力图谱，避免把「没做」污染成「做错」。
           return api
             .practice(q.id, sel)
-            .then((r) => ({ cat: q.category, correct: !!r.is_correct }))
-            .catch(() => ({ cat: q.category, correct: false }));
+            .then((r) => ({
+              cat: q.category,
+              correct: !!r.is_correct,
+              selected: sel,
+              correctAnswer: r.correct_answer ?? "",
+              explanation: r.explanation ?? "",
+              skipped: !!r.skipped,
+            }))
+            .catch(() => ({
+              cat: q.category,
+              correct: false,
+              selected: sel,
+              correctAnswer: "",
+              explanation: "",
+              skipped: false,
+            }));
         })
       );
       const total = results.length;
@@ -213,7 +246,23 @@ export default function ExamPrediction() {
           }
         }
       });
-      setResult({ total, correct, xingce, essay, totalScore, line, gap, prob, perModule, weakest });
+      const reviews: ReviewItem[] = paper.map((q, i) => {
+        const r = results[i];
+        return {
+          qid: q.id,
+          stem: q.stem,
+          cat: q.category,
+          kp: q.knowledge_point,
+          multi: isMulti(q),
+          options: q.options.map((o) => ({ label: o.label, content: o.content })),
+          userAnswer: r.selected,
+          correctAnswer: r.correctAnswer,
+          isCorrect: r.correct,
+          skipped: r.skipped,
+          explanation: r.explanation,
+        };
+      });
+      setResult({ total, correct, xingce, essay, totalScore, line, gap, prob, perModule, weakest, reviews });
       setPhase("result");
     } catch (e: any) {
       setErr(e.message || "提交失败");
@@ -449,6 +498,68 @@ export default function ExamPrediction() {
             </div>
           )}
         </div>
+
+        {/* 逐题复盘 */}
+        {(() => {
+          const wrongCount = result.reviews.filter((r) => r.userAnswer && !r.isCorrect && !r.skipped).length;
+          const unansCount = result.reviews.filter((r) => !r.userAnswer && !r.skipped).length;
+          const shown = result.reviews.filter((r) => {
+            if (revFilter === "wrong") return r.userAnswer && !r.isCorrect && !r.skipped;
+            if (revFilter === "unans") return !r.userAnswer && !r.skipped;
+            return true;
+          });
+          return (
+            <>
+              <div className="section-title" style={{ marginTop: "var(--sp-5)" }}>逐题复盘</div>
+              <div className="chip-row pred-rev-filters">
+                <button className={"chip" + (revFilter === "all" ? " chip--on" : "")} onClick={() => setRevFilter("all")}>全部 {result.reviews.length}</button>
+                <button className={"chip" + (revFilter === "wrong" ? " chip--on" : "")} onClick={() => setRevFilter("wrong")}>答错 {wrongCount}</button>
+                <button className={"chip" + (revFilter === "unans" ? " chip--on" : "")} onClick={() => setRevFilter("unans")}>未答 {unansCount}</button>
+              </div>
+              <div className="pred-reviews">
+                {shown.map((rv, i) => {
+                  const corrSet = new Set(rv.correctAnswer.split(""));
+                  const userSet = new Set(rv.userAnswer.split(""));
+                  const badge = rv.skipped ? "无答案" : rv.isCorrect ? "答对" : rv.userAnswer ? "答错" : "未答";
+                  const badgeCls = rv.skipped ? " is-skip" : rv.isCorrect ? " is-ok" : " is-bad";
+                  return (
+                    <div key={rv.qid} className={"pred-review" + (rv.isCorrect ? " pred-review--ok" : rv.skipped ? "" : " pred-review--bad")}>
+                      <div className="pred-review__head">
+                        <span className="pred-review__idx">{i + 1}</span>
+                        <span className={"pred-review__badge" + badgeCls}>{badge}</span>
+                        <span className="tag tag--brand">{CAT_LABEL[rv.cat] || rv.cat}</span>
+                        {rv.multi && <span className="tag tag--warning">多选</span>}
+                      </div>
+                      <div className="pred-review__stem">{rv.stem}</div>
+                      <div className="pred-review__opts">
+                        {rv.options.map((o) => {
+                          const isCorr = corrSet.has(o.label);
+                          const isUser = userSet.has(o.label);
+                          let cls = "pred-review__opt";
+                          if (isCorr) cls += " is-correct";
+                          else if (isUser) cls += " is-wrong";
+                          const mark = isCorr ? "✓" : isUser ? "✗" : "";
+                          return (
+                            <div key={o.label} className={cls}>
+                              <span className="pred-review__opt-label">{o.label}</span>
+                              <span className="pred-review__opt-content">{o.content}</span>
+                              {mark && <span className="pred-review__opt-mark">{mark}</span>}
+                            </div>
+                          );
+                        })}
+                      </div>
+                      <div className="pred-review__ans">
+                        <span>你的答案：<b className={rv.isCorrect ? "is-ok" : rv.skipped ? "" : "is-bad"}>{rv.userAnswer || "（未作答）"}</b></span>
+                        <span>正确答案：<b className="is-ok">{rv.skipped ? "—" : rv.correctAnswer}</b></span>
+                      </div>
+                      {rv.explanation && !rv.skipped && <div className="pred-review__exp">💡 {rv.explanation}</div>}
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          );
+        })()}
 
         <div className="pred-result-actions">
           <button className="btn btn--primary btn--block" onClick={() => { setPhase("setup"); setResult(null); }}>

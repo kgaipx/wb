@@ -301,6 +301,29 @@ def practice(
     if q is None:
         raise HTTPException(status_code=404, detail="题目不存在")
 
+    # 仅揭示答案（模考复盘中的「未作答」题目）：不写入 UserAnswer、不更新能力图谱，
+    # 避免把「没做」污染成「做错」。对应前端交卷时对未答题调用 practice(sel="")。
+    if not payload.selected:
+        correct_labels, _, scorable = score_selection("", q.options, q.qtype)
+        ab = (
+            db.query(AbilityProfile)
+            .filter(
+                AbilityProfile.user_id == current.id,
+                AbilityProfile.knowledge_point == q.knowledge_point,
+            )
+            .first()
+        )
+        mastery = ab.mastery if ab else 0.0
+        return PracticeResult(
+            question_id=q.id,
+            is_correct=False,
+            correct_answer="".join(correct_labels) if scorable else None,
+            explanation=q.explanation if scorable else "本题暂无标准答案，已跳过。",
+            mastery=mastery,
+            mastery_before=mastery,
+            skipped=not scorable,
+        )
+
     correct_labels, is_correct, scorable = score_selection(
         payload.selected, q.options, q.qtype
     )
