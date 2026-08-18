@@ -214,7 +214,7 @@ export default function Essay() {
           {model && (
             <div className="card report-hero" style={{ marginTop: 12 }}>
               <div className="row row--between">
-                <strong>📝 高分范文参考</strong>
+                <strong className="report-hero__title"><PenIcon /> 高分范文参考</strong>
                 {model.offline && <span className="text-warning" style={{ fontSize: 12 }}>范文生成暂不可用</span>}
               </div>
               {model.outline.length > 0 && (

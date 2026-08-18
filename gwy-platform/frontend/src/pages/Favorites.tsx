@@ -4,7 +4,7 @@ import { api, FavoriteItem } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
 import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
-import { TargetIcon } from "../icons";
+import { TargetIcon, PenIcon } from "../icons";
 
 // 自定义标签白名单（与后端 patch_favorite 校验一致）
 const TAG_DEFS: { key: string; icon: string; label: string }[] = [
@@ -337,7 +337,7 @@ function FavCard({
       </div>
 
       {!noteOpen && item.note.trim() && (
-        <div className="fav-note-preview">📝 {item.note.trim()}</div>
+        <div className="fav-note-preview"><PenIcon /> {item.note.trim()}</div>
       )}
 
       {noteOpen && (

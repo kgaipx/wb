@@ -7,7 +7,7 @@ import CiteCards from "../components/CiteCards";
 import { RadarChart } from "../components/RadarChart";
 import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
-import { TargetIcon, SearchIcon } from "../icons";
+import { TargetIcon, SearchIcon, BrainIcon } from "../icons";
 
 const PAGE = 60;
 
@@ -416,8 +416,8 @@ export default function Practice() {
               >
                 清除筛选
               </button>
-              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-                🧠 间隔重复式智能排序：优先练习「最薄弱 × 久未练 × 易错」的知识点，并把高频错题排在前面复盘。
+              <div className="muted smart-sort-note" style={{ fontSize: 12, marginTop: 6 }}>
+                <BrainIcon /> 间隔重复式智能排序：优先练习「最薄弱 × 久未练 × 易错」的知识点，并把高频错题排在前面复盘。
               </div>
             </div>
           )}

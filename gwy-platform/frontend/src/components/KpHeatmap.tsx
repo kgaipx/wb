@@ -1,4 +1,5 @@
 import type { KpHeatSubject } from "../api/client";
+import { PuzzleIcon } from "../icons";
 
 /** 掌握度 → 色相（0=红弱，130=绿强），连续渐变更易读。 */
 function heatColor(m: number): string {
@@ -22,7 +23,7 @@ export default function KpHeatmap({
   if (!subjects || subjects.length === 0) {
     return (
       <div className="empty empty--tight">
-        <div className="empty__icon">🧩</div>
+        <div className="empty__icon"><PuzzleIcon /></div>
         <div className="empty__title">暂无知识点掌握度</div>
         <div className="empty__desc">去「刷题」或「模考」积累数据后，这里会生成你的分科热力图。</div>
       </div>

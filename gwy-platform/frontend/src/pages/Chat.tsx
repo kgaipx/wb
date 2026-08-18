@@ -4,7 +4,7 @@ import { api, Ability, ChatMessage, ChatSession } from "../api/client";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
 import EmptyState from "../components/EmptyState";
-import { ChartIcon } from "../icons";
+import { ChartIcon, TargetIcon, CompassIcon } from "../icons";
 
 const SUGGESTIONS = [
   "类比推理总做错，怎么破？",
@@ -14,7 +14,7 @@ const SUGGESTIONS = [
 ];
 
 const WELCOME =
-  "我是你的 AI 公考私教 🤖 可以问我知识点、解题技巧、申论写法、复习规划。回答会尽量标注资料来源，离线时也能基于本地知识库给你建议。";
+  "我是你的 AI 公考私教，可以问我知识点、解题技巧、申论写法、复习规划。回答会尽量标注资料来源，离线时也能基于本地知识库给你建议。";
 
 const LS_KEY = "activeChatSession";
 
@@ -207,7 +207,7 @@ export default function Chat() {
   const statusText = offline
     ? "离线检索模式"
     : weak.length
-    ? `🎯 个性化私教 · 已结合 ${weak.length} 个薄弱点`
+    ? `个性化私教 · 已结合 ${weak.length} 个薄弱点`
     : "RAG 溯源 · 接通大模型";
 
   return (
@@ -222,6 +222,7 @@ export default function Chat() {
             className="chat__status"
             title={weak.length ? "私教已读取你的能力画像，会优先针对最薄弱知识点给建议" : undefined}
           >
+            {weak.length > 0 && <TargetIcon />}
             {statusText}
           </div>
         </div>
@@ -415,7 +416,7 @@ export default function Chat() {
 
         {!loading && messages.length === 0 && activeId == null && profileReady && weak.length === 0 && (
           <div className="bubble bubble--assistant profile-card">
-            <div className="profile-card__title">🧭 让私教更懂你</div>
+            <div className="profile-card__title"><CompassIcon /> 让私教更懂你</div>
             <div className="profile-card__desc">
               完成几道题或一次能力测评后，私教会结合你的薄弱点给出针对性突破建议。
             </div>

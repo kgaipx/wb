@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { BrainIcon, PartyIcon, LightbulbIcon } from "../icons";
 
 /* ============================================================
  * 考点速记卡 · 间隔重复（anki 式翻卡 + 艾宾浩斯排期）
@@ -256,7 +257,7 @@ export default function Flashcards() {
       <div ref={cardRef} className="flash-study">
         {!current && !sessionDone && (
           <div className="card flash-start">
-            <div className="flash-start__icon">🧠</div>
+            <div className="flash-start__icon"><BrainIcon /></div>
             <div className="flash-start__title">
               {onlyDue && !reviewAll && candidates.filter((c) => (states[c.id]?.due || "2000-01-01") <= dayStr(new Date())).length === 0
                 ? "该分类今天没有待复习卡片"
@@ -291,7 +292,7 @@ export default function Flashcards() {
 
         {sessionDone && (
           <div className="card flash-done">
-            <div className="flash-done__icon">🎉</div>
+            <div className="flash-done__icon"><PartyIcon /></div>
             <div className="flash-done__title">本轮复习完成！</div>
             <div className="flash-done__desc muted">坚持间隔重复，记忆会更牢固。明天还有 {dueCount} 张待复习。</div>
             <button className="btn btn--primary btn--block" onClick={startSession}>再练一轮</button>
@@ -314,7 +315,11 @@ export default function Flashcards() {
                 </div>
                 <div className="flash-card__face flash-card__back">
                   <div className="flash-card__a">{current.back}</div>
-                  {current.hint && <div className="flash-card__hint">💡 {current.hint}</div>}
+                  {current.hint && (
+                    <div className="flash-card__hint">
+                      <LightbulbIcon /> {current.hint}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

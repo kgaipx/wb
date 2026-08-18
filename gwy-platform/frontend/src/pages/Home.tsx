@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, PlanOut, PlanTask, StudentStats, WrongItem } from "../api/client";
 import { useAuth } from "../auth";
 import EmptyState from "../components/EmptyState";
-import { TargetIcon, CalendarIcon } from "../icons";
+import { TargetIcon, CalendarIcon, SparkleIcon } from "../icons";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -154,7 +154,7 @@ export default function Home() {
     return (
       <section className="fx-stagger">
         <div className="hero">
-          <div className="hero__badge">✨ AI 私教 · 内容可溯源 · 随时问</div>
+          <div className="hero__badge"><SparkleIcon /> AI 私教 · 内容可溯源 · 随时问</div>
           <div className="hero__title">AI 公考私教</div>
           <div className="hero__sub">更懂你短板 · 内容可信 · 花钱无忧 · 陪你上岸</div>
           <div className="hero__actions">
