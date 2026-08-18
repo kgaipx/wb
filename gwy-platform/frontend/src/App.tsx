@@ -26,6 +26,7 @@ import Search from "./pages/Search";
 import MaterialLibrary from "./pages/MaterialLibrary";
 import SmartReinforcement from "./pages/SmartReinforcement";
 import ExamPrediction from "./pages/ExamPrediction";
+import Flashcards from "./pages/Flashcards";
 
 type Icon = () => JSX.Element;
 
@@ -143,6 +144,12 @@ const SearchIcon: Icon = () => (
   </svg>
 );
 
+const CardsIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="7" width="13" height="11" rx="2" />
+    <path d="M8 7V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
+  </svg>
+);
 const MoreIcon: Icon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <circle cx="5" cy="12" r="1.9" />
@@ -181,6 +188,7 @@ const MORE: MoreEntry[] = [
   { to: "/essay", label: "申论", icon: EssayIcon },
   { to: "/material", label: "素材", icon: BookIcon },
   { to: "/reinforce", label: "强化包", icon: TargetIcon },
+  { to: "/flashcards", label: "速记卡", icon: CardsIcon },
   { to: "/review", label: "审核", icon: ShieldIcon, role: "reviewer" },
   { to: "/admin", label: "运营", icon: GaugeIcon, role: "admin" },
 ];
@@ -493,6 +501,7 @@ function AppShell() {
             <Route path="/material" element={<RequireAuth><MaterialLibrary /></RequireAuth>} />
             <Route path="/reinforce" element={<RequireAuth><SmartReinforcement /></RequireAuth>} />
             <Route path="/predict" element={<RequireAuth><ExamPrediction /></RequireAuth>} />
+            <Route path="/flashcards" element={<RequireAuth><Flashcards /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
             <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
             <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />

@@ -122,6 +122,12 @@ function addDays(n: number): string {
 function dueFor(level: number): string {
   return addDays(SCHEDULE[Math.min(level, SCHEDULE.length - 1)]);
 }
+// 将 YYYY-MM-DD 显示为 M/D（如 2026-08-20 → 8/20），未掌握卡展示下次复习日。
+function fmtDue(due?: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(due || "");
+  if (!m) return "";
+  return `${Number(m[2])}/${Number(m[3])}`;
+}
 
 export default function Flashcards() {
   const [states, setStates] = useState<Record<string, CardState>>(loadState);
@@ -131,6 +137,7 @@ export default function Flashcards() {
   const [qi, setQi] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [reviewAll, setReviewAll] = useState(false); // 无待复习时强制复习全部
+  const [sessionActive, setSessionActive] = useState(false); // 本轮学习是否已开始（用于区分初始页与完成页）
   const cardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => saveState(states), [states]);
@@ -164,6 +171,7 @@ export default function Flashcards() {
     setQueue(ids);
     setQi(0);
     setFlipped(false);
+    setSessionActive(true);
     setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
   }
 
@@ -194,10 +202,13 @@ export default function Flashcards() {
     setQueue([id]);
     setQi(0);
     setFlipped(false);
+    setSessionActive(true);
     setTimeout(() => cardRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 50);
   }
 
-  const sessionDone = queue.length > 0 && !current;
+  // 完成态：本轮已开始，且当前卡已不存在（队列清空或指针越界）。
+  // 注意：最后一张「认识/模糊」后队列被清空，原来 `queue.length>0` 的写法会让完成页永不可达。
+  const sessionDone = sessionActive && !current;
 
   return (
     <section>
@@ -349,7 +360,7 @@ export default function Flashcards() {
                 <span className="flash-mini__deck" style={{ color: DECKS[c.deck].color }}>{DECKS[c.deck].label}</span>
                 <span className="flash-mini__front">{c.front}</span>
                 <span className="flash-mini__status">
-                  {lvl >= 6 ? "✓ 已掌握" : isDue ? "⏰ 待复习" : "○ 新卡"}
+                  {lvl >= 6 ? "✓ 已掌握" : isDue ? `⏰ 待复习 · ${fmtDue(st?.due)}` : "○ 新卡"}
                 </span>
               </button>
             );
