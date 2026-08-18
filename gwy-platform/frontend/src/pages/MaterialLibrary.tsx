@@ -134,6 +134,32 @@ function saveJSON(key: string, val: unknown) {
   }
 }
 
+// 复制文本到剪贴板：优先 Clipboard API（生产 https 环境），失败回退 execCommand（本地 http 预览）。
+async function copyText(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    /* 回退到下方方案 */
+  }
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.top = "-9999px";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 // 当日「已背」集合：以日期为键，跨天自动重置统计。
 function todayKey(): string {
   const d = new Date();
@@ -327,6 +353,17 @@ function MaterialCard({
   highlight?: boolean;
 }) {
   const c = CATS[m.cat];
+  const [copied, setCopied] = useState(false);
+  const onCopy = async () => {
+    const text = [m.title, m.sub, m.body, m.usage ? "适用：" + m.usage : ""]
+      .filter(Boolean)
+      .join("\n");
+    const ok = await copyText(text);
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1200);
+    }
+  };
   return (
     <div className={"card mat-card" + (highlight ? " mat-card--hl" : "")}>
       <div className="mat-card__top">
@@ -335,6 +372,13 @@ function MaterialCard({
           {c.label}
         </span>
         <div className="mat-card__acts">
+          <button
+            className={"mat-act" + (copied ? " mat-act--on" : "")}
+            onClick={onCopy}
+            title="复制素材到剪贴板"
+          >
+            {copied ? "✓ 已复制" : "⧉ 复制"}
+          </button>
           <button
             className={"mat-act" + (memorized ? " mat-act--on" : "")}
             onClick={onMem}

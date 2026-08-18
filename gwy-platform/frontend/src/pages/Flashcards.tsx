@@ -178,13 +178,15 @@ export default function Flashcards() {
     else level = Math.min(6, prev + 1);
     setStates((s) => ({ ...s, [current.id]: { level, due: dueFor(level) } }));
     // 进阶：again 的卡重新入队到末尾，其余跳过。
+    // 队列重组后，原本 qi+1 的那张恰好落到新队列的索引 qi，
+    // 故前进到 setQi(qi)（而非回到 0），避免每评一张被弹回队首。
     setQueue((q) => {
       const rest = q.slice(qi + 1);
       const trimmed = q.slice(0, qi);
       if (quality === "again") return [...trimmed, ...rest, current.id];
       return [...trimmed, ...rest];
     });
-    setQi(0); // 因队列已重组，始终从 0 取
+    setQi(qi);
     setFlipped(false);
   }
 
