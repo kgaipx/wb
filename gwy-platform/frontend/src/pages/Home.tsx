@@ -150,8 +150,9 @@ export default function Home() {
   // 未登录：引导注册 / 登录
   if (!user) {
     return (
-      <section>
+      <section className="fx-stagger">
         <div className="hero">
+          <div className="hero__badge">✨ AI 私教 · 内容可溯源 · 随时问</div>
           <div className="hero__title">AI 公考私教</div>
           <div className="hero__sub">更懂你短板 · 内容可信 · 花钱无忧 · 陪你上岸</div>
           <div className="hero__actions">
@@ -183,8 +184,9 @@ export default function Home() {
 
   // 已登录
   return (
-    <section>
+    <section className="fx-stagger">
       <div className="hero">
+        <div className="hero__badge"><span className="dot" />私教在线 · 随时为你答疑</div>
         <div className="hero__title">你好，{user.nickname || user.email}</div>
         <div className="hero__sub">
           {user.target_exam} · 会员：<b>{user.plan === "free" ? "免费版" : user.plan}</b>

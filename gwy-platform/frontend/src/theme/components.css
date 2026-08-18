@@ -1326,7 +1326,7 @@
 .input:focus {
   outline: none;
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-050);
+  box-shadow: var(--ring);
 }
 .input::placeholder {
   color: var(--text-3);
@@ -1347,7 +1347,7 @@
 .textarea:focus {
   outline: none;
   border-color: var(--brand);
-  box-shadow: 0 0 0 3px var(--brand-050);
+  box-shadow: var(--ring);
 }
 
 /* ===================== 标签 ===================== */
@@ -1448,8 +1448,8 @@
   background: var(--grad-brand);
   color: #fff;
   border-radius: var(--r-lg);
-  padding: var(--sp-5);
-  box-shadow: var(--sh-md);
+  padding: var(--sp-5) var(--sp-5) calc(var(--sp-5) + 4px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28), var(--sh-md);
   margin-bottom: var(--sp-4);
 }
 .hero::after {
@@ -1480,14 +1480,48 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.16);
 }
 .hero__sub {
-  margin-top: 6px;
+  display: inline-block;
+  margin-top: 8px;
   font-size: var(--fs-base);
-  opacity: 0.92;
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 5px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(3px);
 }
 .hero__actions {
   margin-top: var(--sp-4);
   display: grid;
   gap: var(--sp-2);
+}
+
+/* Hero 顶部状态 / 社会证明胶囊（呼吸点） */
+.hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  padding: 4px 11px;
+  border-radius: 999px;
+  backdrop-filter: blur(3px);
+}
+.hero__badge .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #7cffb2;
+  box-shadow: 0 0 0 0 rgba(124, 255, 178, 0.7);
+  animation: heroPulse 2s ease-out infinite;
+}
+@keyframes heroPulse {
+  0% { box-shadow: 0 0 0 0 rgba(124, 255, 178, 0.55); }
+  70% { box-shadow: 0 0 0 7px rgba(124, 255, 178, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(124, 255, 178, 0); }
 }
 
 /* ===================== 能力清单 ===================== */
@@ -2730,6 +2764,11 @@
   border-radius: 12px;
   padding: 10px 12px;
   backdrop-filter: blur(4px);
+  transition: transform 0.18s var(--ease-out), background 0.18s var(--ease-out);
+}
+.auth-value:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-2px);
 }
 .auth-value__ico {
   font-size: 17px;
@@ -2739,9 +2778,9 @@
   width: 100%;
   max-width: 380px;
   background: var(--surface);
-  border-radius: var(--r-lg);
+  border-radius: 20px;
   padding: var(--sp-5);
-  box-shadow: var(--sh-lg);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset, 0 24px 60px -20px rgba(16, 24, 40, 0.30), var(--sh-lg);
   animation: auth-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 .auth-head {
@@ -2749,15 +2788,15 @@
   margin-bottom: 8px;
 }
 .auth-logo {
-  width: 52px;
-  height: 52px;
-  margin: 0 auto 10px;
-  border-radius: 14px;
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 12px;
+  border-radius: 16px;
   display: grid;
   place-items: center;
   background: var(--grad-brand);
   color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--sh-md);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 8px 20px -4px rgba(27, 79, 181, 0.5);
 }
 .auth-logo svg { width: 28px; height: 28px; }
 .auth-title { font-size: 20px; font-weight: 800; letter-spacing: -0.01em; }
@@ -5030,4 +5069,29 @@
   grid-template-columns: 1fr 1fr;
   gap: var(--sp-2);
 }
+
+/* ===================== 全站逐级入场（fadeUp stagger） ===================== */
+/* 用法：给容器加 .fx-stagger，其直接子元素会自上而下逐级淡入上浮。
+   配合 prefers-reduced-motion 全局降级自动失效（见 global.css）。 */
+@keyframes fx-fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fx-stagger > * {
+  animation: fx-fade-up 0.52s var(--ease-out) both;
+}
+.fx-stagger > *:nth-child(1)  { animation-delay: 0ms; }
+.fx-stagger > *:nth-child(2)  { animation-delay: 55ms; }
+.fx-stagger > *:nth-child(3)  { animation-delay: 110ms; }
+.fx-stagger > *:nth-child(4)  { animation-delay: 165ms; }
+.fx-stagger > *:nth-child(5)  { animation-delay: 220ms; }
+.fx-stagger > *:nth-child(6)  { animation-delay: 275ms; }
+.fx-stagger > *:nth-child(7)  { animation-delay: 330ms; }
+.fx-stagger > *:nth-child(8)  { animation-delay: 385ms; }
+.fx-stagger > *:nth-child(9)  { animation-delay: 440ms; }
+.fx-stagger > *:nth-child(10) { animation-delay: 495ms; }
+.fx-stagger > *:nth-child(11) { animation-delay: 550ms; }
+.fx-stagger > *:nth-child(12) { animation-delay: 605ms; }
+.fx-stagger > *:nth-child(13) { animation-delay: 660ms; }
+.fx-stagger > *:nth-child(14) { animation-delay: 715ms; }
 
