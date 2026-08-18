@@ -23,6 +23,7 @@ export default function Essay() {
   const [modelBusy, setModelBusy] = useState(false);
   const [compare, setCompare] = useState<EssayCompare | null>(null);
   const compareRef = useRef<HTMLDivElement>(null);
+  const gradeRef = useRef<HTMLDivElement>(null);
   const [compareBusy, setCompareBusy] = useState(false);
 
   useEffect(() => {
@@ -177,28 +178,34 @@ export default function Essay() {
           </div>
 
           {grade && (
-            <div className="card report-hero" style={{ marginTop: 12 }}>
-              <div className="row row--between">
-                <div className={"big-rate " + (grade.total >= 70 ? "rate--good" : grade.total >= 50 ? "rate--mid" : "rate--bad")}>
-                  {grade.total}<span>分</span>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <div className="muted">总分（满分 100）</div>
-                  {grade.needs_human_review && <div className="text-warning" style={{ marginTop: 4 }}>⚠ 已转人工复核</div>}
-                </div>
+            <>
+              <div className="row row--between" style={{ marginBottom: 8 }}>
+                <strong>申论批改结果</strong>
+                <ReportExport targetRef={gradeRef} fileName={`申论批改结果_${new Date().toISOString().slice(0, 10)}`} />
               </div>
-              <DimensionBars dims={grade.dimensions} />
-              {grade.rationale && (
-                <div className="tutor-box" style={{ marginTop: 12 }}>
-                  <div className="tutor-box__title">总评</div>
-                  <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
+              <div ref={gradeRef} className="card report-hero" style={{ marginTop: 0 }}>
+                <div className="row row--between">
+                  <div className={"big-rate " + (grade.total >= 70 ? "rate--good" : grade.total >= 50 ? "rate--mid" : "rate--bad")}>
+                    {grade.total}<span>分</span>
+                  </div>
+                  <div style={{ textAlign: "right" }}>
+                    <div className="muted">总分（满分 100）</div>
+                    {grade.needs_human_review && <div className="text-warning" style={{ marginTop: 4 }}>⚠ 已转人工复核</div>}
+                  </div>
                 </div>
-              )}
+                <DimensionBars dims={grade.dimensions} />
+                {grade.rationale && (
+                  <div className="tutor-box" style={{ marginTop: 12 }}>
+                    <div className="tutor-box__title">总评</div>
+                    <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
+                  </div>
+                )}
+              </div>
               <div className="row row--between" style={{ marginTop: 10 }}>
                 <button className="btn btn--ghost btn--sm" onClick={resetEssay}>✍ 再写一篇</button>
                 <span className="muted" style={{ fontSize: 12 }}>双阶段评分（初评 + 一致性校准），异常自动转人工</span>
               </div>
-            </div>
+            </>
           )}
 
           {model && (
