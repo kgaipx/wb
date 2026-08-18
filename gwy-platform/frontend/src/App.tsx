@@ -23,6 +23,9 @@ import Admin from "./pages/Admin";
 import Notifications from "./pages/Notifications";
 import Assessment from "./pages/Assessment";
 import Search from "./pages/Search";
+import MaterialLibrary from "./pages/MaterialLibrary";
+import SmartReinforcement from "./pages/SmartReinforcement";
+import ExamPrediction from "./pages/ExamPrediction";
 
 type Icon = () => JSX.Element;
 
@@ -95,6 +98,20 @@ const GaugeIcon: Icon = () => (
     <circle cx="12" cy="14" r="1.2" fill="currentColor" />
   </svg>
 );
+const TargetIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="5" />
+    <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+  </svg>
+);
+const PaperIcon: Icon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 3h9l3 3v15a0 0 0 0 1 0 0H6a0 0 0 0 1 0 0V4a1 1 0 0 1 1-1z" />
+    <path d="M14 3v4h4" />
+    <path d="M8.5 13h7M8.5 16.5h5" />
+  </svg>
+);
 const StarIcon: Icon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z" />
@@ -155,12 +172,15 @@ const MORE: MoreEntry[] = [
   { to: "/learn", label: "学习", icon: BookIcon },
   { to: "/search", label: "搜题", icon: SearchIcon },
   { to: "/exam", label: "模考", icon: ExamIcon },
+  { to: "/predict", label: "真题", icon: PaperIcon },
   { to: "/data", label: "数据", icon: ChartIcon },
   { to: "/favorites", label: "收藏", icon: StarIcon },
   { to: "/plan", label: "计划", icon: PlanIcon },
   { to: "/membership", label: "会员", icon: CrownIcon },
   { to: "/notifications", label: "通知", icon: BellIcon },
   { to: "/essay", label: "申论", icon: EssayIcon },
+  { to: "/material", label: "素材", icon: BookIcon },
+  { to: "/reinforce", label: "强化包", icon: TargetIcon },
   { to: "/review", label: "审核", icon: ShieldIcon, role: "reviewer" },
   { to: "/admin", label: "运营", icon: GaugeIcon, role: "admin" },
 ];
@@ -470,6 +490,9 @@ function AppShell() {
             <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
             <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
             <Route path="/search" element={<RequireAuth><Search /></RequireAuth>} />
+            <Route path="/material" element={<RequireAuth><MaterialLibrary /></RequireAuth>} />
+            <Route path="/reinforce" element={<RequireAuth><SmartReinforcement /></RequireAuth>} />
+            <Route path="/predict" element={<RequireAuth><ExamPrediction /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
             <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
             <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />

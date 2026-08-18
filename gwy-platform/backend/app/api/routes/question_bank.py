@@ -254,6 +254,43 @@ def get_question(qid: int, db: Session = Depends(get_db)):
     return q
 
 
+@router.get("/questions/{qid}/similar", response_model=list[QuestionSearchHit])
+def similar_questions(
+    qid: int,
+    limit: int = Query(12, le=30, ge=1),
+    db: Session = Depends(get_db),
+):
+    """智能错题强化包：返回与指定题同知识点（优先）/ 同模块（兜底）的题，
+    排除自身，仅含可判分题。前端据此拼成强化练习包跳 /practice?ids=。"""
+    q = db.get(Question, qid)
+    if q is None:
+        raise HTTPException(status_code=404, detail="题目不存在")
+    same_kp = (
+        db.query(Question)
+        .filter(
+            Question.knowledge_point == q.knowledge_point,
+            Question.id != qid,
+            has_correct_option_filter(),
+        )
+        .limit(limit)
+        .all()
+    )
+    if len(same_kp) < limit:
+        extra = (
+            db.query(Question)
+            .filter(
+                Question.category == q.category,
+                Question.id != qid,
+                Question.knowledge_point != q.knowledge_point,
+                has_correct_option_filter(),
+            )
+            .limit(limit - len(same_kp))
+            .all()
+        )
+        same_kp = same_kp + extra
+    return same_kp
+
+
 @router.post("/practice", response_model=PracticeResult)
 def practice(
     payload: PracticeSubmit,

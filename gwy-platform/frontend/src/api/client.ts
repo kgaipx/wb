@@ -442,6 +442,9 @@ export const api = {
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
   bankGet: (id: number) => request<Question>(`/bank/questions/${id}`),
+  // 智能错题强化包：取同知识点/同模块相似题（排除自身），拼成强化题集
+  similarQuestions: (qid: number, limit = 12) =>
+    request<SearchHit[]>(`/bank/questions/${qid}/similar?limit=${limit}`),
   // 全局题库检索：关键词 + 科目/模块/知识点筛选，结果可跳练习/收藏/看解析（支持匿名）
   questionSearch: (params: { q?: string; subject?: string; category?: string; knowledge_point?: string; limit?: number } = {}) => {
     const q = new URLSearchParams();
