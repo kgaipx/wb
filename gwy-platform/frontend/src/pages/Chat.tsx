@@ -249,8 +249,16 @@ export default function Chat() {
             </div>
             <div className="chat-drawer__list">
               {loading && sessions.length === 0 && (
-                <div className="muted" style={{ padding: 12 }}>
-                  加载中…
+                <div className="sk-stack" style={{ padding: 12, gap: 10 }}>
+                  {[0, 1, 2, 3].map((i) => (
+                    <div className="sk-row" key={i}>
+                      <div className="sk sk-circle" style={{ width: 36, height: 36 }} />
+                      <div style={{ flex: 1 }}>
+                        <div className="sk sk-line" style={{ width: "70%" }} />
+                        <div className="sk sk-line" style={{ width: "45%", height: 10 }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               )}
               {!loading && sessions.length === 0 && (

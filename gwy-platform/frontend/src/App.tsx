@@ -212,7 +212,28 @@ function FloatingTutor() {
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
   const loc = useLocation();
-  if (loading) return <div className="splash">加载中…</div>;
+  if (loading) return (
+    <div className="splash">
+      <div className="sk-stack splash__skel">
+        <div className="sk-card">
+          <div className="sk-head">
+            <div className="sk sk-circle" style={{ width: 48, height: 48 }} />
+            <div style={{ flex: 1 }}>
+              <div className="sk sk-line" style={{ width: "52%" }} />
+              <div className="sk sk-line" style={{ width: "32%", height: 10 }} />
+            </div>
+          </div>
+          <div className="sk sk-line" style={{ width: "100%" }} />
+          <div className="sk sk-line" style={{ width: "86%" }} />
+        </div>
+        <div className="sk-card">
+          <div className="sk sk-line" style={{ width: "40%" }} />
+          <div className="sk sk-line" style={{ width: "94%" }} />
+          <div className="sk sk-line" style={{ width: "70%" }} />
+        </div>
+      </div>
+    </div>
+  );
   if (!user) return <Navigate to="/login" state={{ from: loc.pathname }} replace />;
   return children;
 }

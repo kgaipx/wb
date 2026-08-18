@@ -713,7 +713,7 @@
 .skeleton-line {
   height: 12px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #eef1f6 25%, #e3e7ef 37%, #eef1f6 63%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--text-2) 8%, var(--surface)) 25%, color-mix(in srgb, var(--text-2) 15%, var(--surface)) 37%, color-mix(in srgb, var(--text-2) 8%, var(--surface)) 63%);
   background-size: 400% 100%;
   animation: skeleton-shimmer 1.3s ease-in-out infinite;
 }
@@ -724,7 +724,7 @@
 
 /* ===== 统一骨架屏系统（可组合原子类） ===== */
 .sk {
-  background: linear-gradient(90deg, #eef1f6 25%, #e3e7ef 37%, #eef1f6 63%);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--text-2) 8%, var(--surface)) 25%, color-mix(in srgb, var(--text-2) 15%, var(--surface)) 37%, color-mix(in srgb, var(--text-2) 8%, var(--surface)) 63%);
   background-size: 400% 100%;
   animation: skeleton-shimmer 1.3s ease-in-out infinite;
   border-radius: 8px;
@@ -2942,12 +2942,14 @@
 
 /* 加载态占位 */
 .splash {
-  min-height: 60vh;
+  min-height: 100vh;
   display: grid;
   place-items: center;
-  color: var(--text-3);
-  font-size: var(--fs-md);
+  align-content: center;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px 16px;
+  box-sizing: border-box;
 }
+.splash__skel { width: min(440px, 92vw); margin: 0 auto; }
 
 /* ===================== 学习数据中心 ===================== */
 .metric {

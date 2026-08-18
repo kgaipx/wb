@@ -354,7 +354,12 @@ export default function Home() {
             </button>
           </div>
           {dailyLoading ? (
-            <div className="daily-skeleton">正在匹配你的薄弱知识点…</div>
+            <div className="sk-stack" style={{ marginTop: 6 }}>
+              <div className="sk sk-line" style={{ width: "30%" }} />
+              <div className="sk sk-line" style={{ width: "92%" }} />
+              <div className="sk sk-line" style={{ width: "80%", height: 28 }} />
+              <div className="sk sk-line" style={{ width: "96%" }} />
+            </div>
           ) : daily ? (
             <>
               <div className="daily-tags">
@@ -387,7 +392,11 @@ export default function Home() {
           <button className="link-btn" onClick={() => nav("/exam")}>完整复盘 →</button>
         </div>
         {examLoading ? (
-          <div className="muted" style={{ fontSize: 13, marginTop: 6 }}>加载中…</div>
+          <div className="sk-stack" style={{ marginTop: 8 }}>
+            <div className="sk sk-line" style={{ width: "48%" }} />
+            <div className="sk sk-line" style={{ width: "88%" }} />
+            <div className="sk sk-line" style={{ width: "64%" }} />
+          </div>
         ) : examStat.length === 0 ? (
           <>
             <EmptyState tight icon="exam" title="还没有模考记录" desc="去「在线模考」测一次真实水平，这里会显示你的提分曲线。" />
