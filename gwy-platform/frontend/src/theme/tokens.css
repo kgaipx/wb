@@ -22,11 +22,17 @@
   --bg: #F3F5F9;             /* 页面底色 */
   --surface: #FFFFFF;        /* 卡片 / 表面 */
   --surface-2: #F7F9FC;      /* 次级表面 / 进度槽 */
+  --bg-2: rgba(127, 127, 127, 0.05); /* 极淡底纹（cite-card / segmented 等复用） */
   --border: #E6E9F0;         /* 描边 */
   --text: #1F2733;           /* 主文本 */
   --text-2: #5C6675;         /* 次文本 */
   --text-3: #98A2B3;         /* 弱文本 / 元信息 */
   --on-brand: #FFFFFF;
+
+  /* ===== 主色 RGB 通道（半透明品牌阴影 / 光环，避免硬编码）===== */
+  --brand-rgb: 27, 79, 181;
+  --accent-rgb: 217, 43, 28;
+  --success-rgb: 26, 155, 87;
 
   /* ===== 品牌渐变（header logo / fab / hero / 主按钮统一复用）===== */
   --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
@@ -64,11 +70,18 @@
   --r-md: 12px;
   --r-lg: 16px;
   --r-pill: 999px;
+  --radius: 10px;            /* 通用圆角（cite-card 等复用） */
 
-  /* ===== 阴影 ===== */
-  --sh-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
-  --sh-md: 0 6px 18px rgba(16, 24, 40, 0.08);
-  --sh-lg: 0 10px 30px rgba(16, 24, 40, 0.12);
+  /* ===== 阴影（多层级 + 低透明度，营造细腻纵深，接近主流 App 质感）===== */
+  --sh-xs: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --sh-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 6px rgba(16, 24, 40, 0.05);
+  --sh-md: 0 4px 12px rgba(16, 24, 40, 0.06), 0 12px 28px rgba(16, 24, 40, 0.08);
+  --sh-lg: 0 10px 24px rgba(16, 24, 40, 0.10), 0 20px 48px rgba(16, 24, 40, 0.12);
+  /* 卡片悬停抬升阴影 */
+  --sh-card-hover: 0 2px 8px rgba(16, 24, 40, 0.06), 0 12px 26px rgba(16, 24, 40, 0.10);
+  /* 统一聚焦光环（键盘可达性 + 大厂手感）*/
+  --ring: 0 0 0 3px var(--brand-050);
+  --ring-strong: 0 0 0 3px rgba(27, 79, 181, 0.32);
 
   /* ===== 布局 ===== */
   --app-max: 480px;
