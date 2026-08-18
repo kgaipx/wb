@@ -14,13 +14,10 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 SERVER="root@49.233.171.233"
-PEM="${DEPLOY_PEM:-$HOME/Downloads/gkaipx2.pem}"
-# 兼容 Windows OpenSSH：将 Git-Bash 风格 /c/... 路径转为 Windows 风格 c:/...
-PEM_WIN="$PEM"
-if [[ "$PEM" == /*/* ]]; then
-  PEM_WIN="${PEM:1:1}:${PEM:2}"
-fi
-SSH_OPTS=(-i "$PEM_WIN" -o StrictHostKeyChecking=no)
+# 用 Git-Bash(msys) 风格绝对路径 /c/Users/...；msys 的 ssh 能正确解析，
+# 而本机 scp 是 Windows 原生 OpenSSH（不认 /c/...），故上传改用 ssh 管道（见 3/4）。
+PEM="${DEPLOY_PEM:-/c/Users/hp/Downloads/gkaipx.pem}"
+SSH_OPTS=(-i "$PEM" -o StrictHostKeyChecking=no)
 
 echo "==> 1/4 构建前端"
 export PATH="/c/Users/hp/.workbuddy/binaries/node/versions/22.22.2:$PATH"
@@ -36,7 +33,10 @@ tar --exclude='.env' --exclude='*.db' --exclude='*.db-wal' --exclude='*.db-shm' 
 tar -czf deploy_frontend.tar.gz -C frontend/dist .
 
 echo "==> 3/4 上传"
-scp "${SSH_OPTS[@]}" deploy_backend.tar.gz deploy_frontend.tar.gz "$SERVER:/tmp/"
+# 本机 scp 为 Windows 原生 OpenSSH，不认 msys 的 /c/... 路径（会把 key 解析成 C:\c\... 而找不到）。
+# 改用 msys ssh 管道传文件：cat <local> | ssh ... "cat > /dest"，msys ssh 对 /c/... 的 key 解析正常。
+cat deploy_backend.tar.gz | ssh "${SSH_OPTS[@]}" "$SERVER" "cat > /tmp/deploy_backend.tar.gz"
+cat deploy_frontend.tar.gz | ssh "${SSH_OPTS[@]}" "$SERVER" "cat > /tmp/deploy_frontend.tar.gz"
 
 echo "==> 4/4 服务器发布"
 ssh "${SSH_OPTS[@]}" "$SERVER" '
