@@ -592,7 +592,7 @@ export const api = {
       body: JSON.stringify({ subject, count }),
     }),
   examSubmit: (answers: { question_id: number; selected: string }[]) =>
-    request<{ id: number; total: number; correct: number; correct_rate: number; weak_points: string[]; details: any[] }>(
+    request<{ id: number; total: number; correct: number; correct_rate: number;  weak_points: string[]; details: any[]; kp_mastery?: any[] }>(
       "/exam/submit",
       { method: "POST", body: JSON.stringify({ answers }) }
     ),

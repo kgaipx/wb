@@ -416,7 +416,7 @@ export default function Exam() {
         <div className="card card--warning" style={{ marginTop: 12 }}>
           <strong>薄弱知识点（AI 诊断）</strong>
           <div className="chip-row" style={{ marginTop: 8 }}>
-            {rep.weak_points.length ? (
+            {(rep.weak_points || []).length ? (
               rep.weak_points.map((w: string) => (
                 <button key={w} className="chip chip--warn chip--btn" onClick={() => nav("/learn")}>
                   {w}
@@ -431,7 +431,7 @@ export default function Exam() {
           </button>
         </div>
         <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
-        {rep.details.map((d: any, i: number) => {
+        {(rep.details || []).map((d: any, i: number) => {
           const meta = getMeta(d) || {};
           const opts = meta.options || [];
           const correctLabels = (d.correct_answer || "").split("").filter(Boolean);
@@ -783,7 +783,7 @@ export default function Exam() {
                   <span>答对 {h.correct}/{h.total}</span>
                   <span className={"big-rate " + tone} style={{ fontSize: 22 }}>{rate}<span>%</span></span>
                 </div>
-                {h.weak_points.length > 0 && (
+                {(h.weak_points || []).length > 0 && (
                   <div className="text-3" style={{ fontSize: 12, marginTop: 4 }}>薄弱：{h.weak_points.slice(0, 3).join("、")}</div>
                 )}
                 {h.kp_mastery && h.kp_mastery.length > 0 && (() => {

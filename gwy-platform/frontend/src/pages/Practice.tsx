@@ -70,9 +70,13 @@ export default function Practice() {
             setActive(target);
           } else {
             // 目标题不在首页（题库共数千题、每页 60）：单独按 id 拉取，确保深链复盘闭环可靠打开
+            // 同时并入 list，修复「第 0/N 题」序号错误，并让「下一题」能在本题库续做
             api
               .bankGet(Number(qid))
-              .then((q) => setActive(q))
+              .then((q) => {
+                setList((prev) => (prev.some((x) => x.id === q.id) ? prev : [...prev, q]));
+                setActive(q);
+              })
               .catch(() => {});
           }
         }
@@ -240,8 +244,9 @@ export default function Practice() {
   // 收藏标签快捷切换（易错/重点/已掌握）：确保已收藏后再 PATCH tags，本地即时反映
   async function toggleFavTag(tag: "易错" | "重点" | "已掌握") {
     if (!active) return;
+    const needAdd = !faved;
     try {
-      if (!faved) {
+      if (needAdd) {
         await api.favoriteAdd(active.id);
         setFaved(true);
       }
@@ -251,6 +256,8 @@ export default function Practice() {
       await api.favoriteUpdate(active.id, { tags: next });
       setFavTags(next);
     } catch (e: any) {
+      // 仅在本次调用内新增的收藏若标签更新失败，回滚 faved，避免「已收藏」假阳性
+      if (needAdd) setFaved(false);
       setErr(e.message);
     }
   }

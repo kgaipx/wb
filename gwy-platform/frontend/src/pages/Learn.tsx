@@ -21,20 +21,27 @@ export default function Learn() {
   const [recRefreshing, setRecRefreshing] = useState(false);
 
   async function load() {
-    try {
-      const [d, r, h] = await Promise.all([
-        api.dashboard(),
-        api.recommend(REC_PAGE),
-        api.kpHeatmap(),
-      ]);
-      setDash(d);
+    // 三个接口独立兜底：推荐/热力图任一超时失败，不应拖垮整页「学习中心」
+    const [dR, rR, hR] = await Promise.allSettled([
+      api.dashboard(),
+      api.recommend(REC_PAGE),
+      api.kpHeatmap(),
+    ]);
+    if (dR.status === "fulfilled") setDash(dR.value);
+    else {
+      setDash(null);
+      setErr("学情概览加载失败，请重试");
+    }
+    if (rR.status === "fulfilled") {
+      const r = rR.value;
       setRec(r);
-      setHeat(h);
       setRecTopN(REC_PAGE);
       setRecHasMore(r.questions.length === REC_PAGE);
-    } catch (e: any) {
-      setErr(e.message);
+    } else {
+      setRec(null);
     }
+    if (hR.status === "fulfilled") setHeat(hR.value);
+    else setHeat(null);
   }
 
   async function loadMoreRec() {

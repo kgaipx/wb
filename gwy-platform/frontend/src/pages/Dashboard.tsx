@@ -91,7 +91,7 @@ export default function Dashboard() {
     );
   }
 
-  const maxAns = Math.max(1, ...stats.last_7_days.map((d) => d.answers));
+  const maxAns = Math.max(1, ...(stats.last_7_days || []).map((d) => d.answers));
   const recColor = recurColor(stats.recurrence_rate);
 
   return (
@@ -158,7 +158,7 @@ export default function Dashboard() {
       <div className="card" style={{ marginTop: 12 }}>
         <strong>近 7 日练习趋势</strong>
         <div className="trend">
-          {stats.last_7_days.map((d) => {
+          {(stats.last_7_days || []).map((d) => {
             const md = d.date.slice(5);
             const h = Math.round((d.answers / maxAns) * 100);
             return (
