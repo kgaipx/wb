@@ -9,6 +9,9 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ScrollToTop } from "./components/ScrollToTop";
 import { registerSW } from "./pwa/registerSW";
 
+// 渐进增强门控：渲染前同步标记 .js，供 .reveal 等「无 JS 时正常显示」规则使用（避免首屏闪烁）
+document.documentElement.classList.add("js");
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <ErrorBoundary>

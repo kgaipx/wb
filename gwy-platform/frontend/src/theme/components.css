@@ -5340,6 +5340,16 @@
 .fx-stagger > *:nth-child(13) { animation-delay: 660ms; }
 .fx-stagger > *:nth-child(14) { animation-delay: 715ms; }
 
+/* ===================== 滚动入场（Reveal 组件） ===================== */
+/* 复用 fx-fade-up 语言；元素进入视口时由 JS 加 .in 触发。
+   .js 门控：仅当 <html> 含 .js（main.tsx 渲染前同步添加）才隐藏初始态，
+   无 JS / 不支持 IntersectionObserver 时 .reveal 不隐藏，内容正常显示（渐进增强）。 */
+.js .reveal { opacity: 0; }
+.js .reveal.in { animation: fx-fade-up 0.52s var(--ease-out) both; }
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal, .js .reveal.in { opacity: 1 !important; animation: none !important; transform: none !important; }
+}
+
 /* ============================================================
    暗色模式专属覆盖
    以下组件在亮色下使用「近透明白玻璃条 / 白渐变」，暗色下若直接套用
