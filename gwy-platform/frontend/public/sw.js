@@ -22,8 +22,8 @@ self.addEventListener("fetch", (event) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // 题库接口：运行时缓存，离线可刷题（StaleWhileRevalidate）
-  if (url.pathname.startsWith("/api/bank")) {
+  // 题库接口 + 用户态接口：运行时缓存，离线可刷题且保持登录态（StaleWhileRevalidate）
+  if (url.pathname.startsWith("/api/bank") || url.pathname === "/api/auth/me") {
     event.respondWith(
       caches.open(CACHE).then(async (c) => {
         const cached = await c.match(req);
@@ -45,8 +45,21 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // 同源静态资源：缓存优先
-  if (url.origin === self.location.origin) {
-    event.respondWith(caches.match(req).then((r) => r || fetch(req)));
+  // 同源静态资源（排除 /api 与 sw.js 自身）：缓存优先，首次在线加载时写入缓存，
+  // 保证离线时 JS/CSS 等应用壳依赖也能完整加载，而非只靠浏览器 HTTP 缓存兜底
+  if (url.origin === self.location.origin && !url.pathname.startsWith("/api/") && !url.pathname.endsWith("/sw.js")) {
+    event.respondWith(
+      caches.open(CACHE).then(async (c) => {
+        const cached = await c.match(req);
+        const network = fetch(req)
+          .then((res) => {
+            if (res.ok) c.put(req, res.clone());
+            return res;
+          })
+          .catch(() => cached);
+        return cached || network;
+      })
+    );
+    return;
   }
 });
