@@ -21,6 +21,7 @@ from app.schemas.progress import (
     KpHeatSubject,
     StudentDashboard,
     StudentStats,
+    WeeklyReport,
 )
 from app.schemas.question import QuestionOut, WrongItem
 from app.schemas.user import UserOut
@@ -323,3 +324,74 @@ def kp_heatmap(current: User = Depends(get_current_user), db: Session = Depends(
         )
     subjects.sort(key=lambda s: s.avg_mastery)
     return KpHeatmap(subjects=subjects)
+
+
+@router.get("/weekly-report", response_model=WeeklyReport)
+def weekly_report(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """学习周报：本周 vs 上周（北京时间周一 00:00 为窗口边界，submitted_at 为 UTC naive）。
+
+    仅统计客观可判分题（qtype != 'essay' + has_correct_option_filter），对齐学情看板口径。
+    """
+    now_utc = datetime.now(timezone.utc)
+    bj = now_utc + timedelta(hours=8)
+    monday_bj = (bj - timedelta(days=bj.weekday())).replace(hour=0, minute=0, second=0, microsecond=0)
+    monday_utc = (monday_bj - timedelta(hours=8)).replace(tzinfo=None)
+    last_monday_utc = monday_utc - timedelta(days=7)
+    now_naive = now_utc.replace(tzinfo=None)
+
+    def period(start, end):
+        rows = (
+            db.query(UserAnswer, Question.knowledge_point)
+            .join(Question, Question.id == UserAnswer.question_id)
+            .filter(
+                UserAnswer.user_id == current.id,
+                Question.qtype != "essay",
+                UserAnswer.submitted_at >= start,
+                UserAnswer.submitted_at < end,
+            )
+            .filter(has_correct_option_filter())
+            .all()
+        )
+        total = len(rows)
+        correct = sum(1 for a, _ in rows if a.is_correct)
+        rate = round(correct / total, 3) if total else 0.0
+        active = len({_bj_date(a.submitted_at) for a, _ in rows})
+        by_kp: dict[str, list[int]] = {}
+        for a, kp in rows:
+            key = kp or "未分类"
+            by_kp.setdefault(key, [0, 0])
+            by_kp[key][1] += 1
+            if a.is_correct:
+                by_kp[key][0] += 1
+        weak = sorted(
+            ({"kp": k, "rate": round(c / t, 3)} for k, (c, t) in by_kp.items() if t >= 2),
+            key=lambda x: x["rate"],
+        )[:3]
+        return total, correct, rate, active, weak
+
+    wt, wc, wr, wd, wweak = period(monday_utc, now_naive)
+    lt, _lc, lr, _la, _lw = period(last_monday_utc, monday_utc)
+    delta_answers = wt - lt
+    delta_rate = round((wr - lr) * 100, 1)
+
+    if wt == 0:
+        summary = "本周还没有作答记录，去刷题开启本周节奏吧。"
+    elif wr >= 0.7:
+        summary = f"本周共练 {wt} 题、正确率 {int(wr * 100)}%，状态在线，继续保持！"
+    elif delta_answers > 0:
+        summary = f"本周练习 {wt} 题（较上周 {delta_answers:+d}），正确率 {int(wr * 100)}%，稳中有进。"
+    else:
+        summary = f"本周练习 {wt} 题、正确率 {int(wr * 100)}%，再针对薄弱点加练一轮吧。"
+
+    return WeeklyReport(
+        week_answers=wt,
+        week_correct=wc,
+        week_rate=wr,
+        last_answers=lt,
+        last_rate=lr,
+        delta_answers=delta_answers,
+        delta_rate=delta_rate,
+        active_days=wd,
+        top_weak=wweak,
+        summary=summary,
+    )

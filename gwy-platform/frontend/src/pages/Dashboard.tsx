@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, KpHeatmap, StudentStats } from "../api/client";
+import { api, KpHeatmap, StudentStats, WeeklyReport } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { RadarChart } from "../components/RadarChart";
 import KpHeatmapView from "../components/KpHeatmap";
@@ -47,6 +47,7 @@ export default function Dashboard() {
   const nav = useNavigate();
   const [stats, setStats] = useState<StudentStats | null>(null);
   const [heat, setHeat] = useState<KpHeatmap | null>(null);
+  const [week, setWeek] = useState<WeeklyReport | null>(null); // 学习周报
   const dashRef = useRef<HTMLDivElement>(null);
   const [err, setErr] = useState<string | null>(null);
 
@@ -56,6 +57,7 @@ export default function Dashboard() {
       .then(setStats)
       .catch((e) => setErr(e?.message || "加载失败"));
     api.kpHeatmap().then(setHeat).catch(() => setHeat(null));
+    api.weeklyReport().then(setWeek).catch(() => setWeek(null));
   }, []);
 
   if (err) {
@@ -102,6 +104,52 @@ export default function Dashboard() {
       <div className="muted" style={{ marginTop: -8, marginBottom: 12, fontSize: 13 }}>
         追踪你的提分信号 · 复错率越低，说明复盘越有效
       </div>
+
+      {/* 学习周报（本周 vs 上周，北京时间周一窗口） */}
+      <Reveal delay={0}><div className="card" style={{ marginBottom: 12 }}>
+        <div className="row row--between">
+          <strong>📊 本周学习周报</strong>
+          {week && <span className="muted" style={{ fontSize: 12 }}>活跃 {week.active_days} 天</span>}
+        </div>
+        {week ? (
+          <>
+            <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>{week.summary}</div>
+            <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
+              <div className="metric">
+                <div className="metric__num">{week.week_answers}</div>
+                <div className="metric__label">
+                  本周做题{week.delta_answers !== 0 ? `（${week.delta_answers > 0 ? "+" : ""}${week.delta_answers}）` : ""}
+                </div>
+              </div>
+              <div className="metric">
+                <div className="metric__num" style={{ color: "var(--brand)" }}>{pct(week.week_rate)}%</div>
+                <div className="metric__label">
+                  本周正确率{week.delta_rate !== 0 ? `（${week.delta_rate > 0 ? "+" : ""}${week.delta_rate}pp）` : ""}
+                </div>
+              </div>
+              <div className="metric">
+                <div className="metric__num" style={{ color: "var(--warning)" }}>{week.last_answers}</div>
+                <div className="metric__label">上周做题</div>
+              </div>
+            </div>
+            {week.top_weak.length > 0 && (
+              <div className="chip-row" style={{ marginTop: 8 }}>
+                {week.top_weak.map((w) => (
+                  <button
+                    key={w.kp}
+                    className="chip chip--warn"
+                    onClick={() => nav(`/practice?kp=${encodeURIComponent(w.kp)}`)}
+                  >
+                    {w.kp} · {pct(w.rate)}%
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>周报加载中…</div>
+        )}
+      </div></Reveal>
 
       {/* 核心指标 */}
       <Reveal delay={0}><div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>

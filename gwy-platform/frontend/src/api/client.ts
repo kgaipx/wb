@@ -73,6 +73,19 @@ export interface StudentStats {
   last_7_days: DayTrend[];
   streak_days: number; // 连续打卡天数
 }
+// 学习周报：本周 vs 上周（北京时间周一窗口）
+export interface WeeklyReport {
+  week_answers: number;
+  week_correct: number;
+  week_rate: number;
+  last_answers: number;
+  last_rate: number;
+  delta_answers: number; // 本周-上周做题数
+  delta_rate: number; // 本周-上周正确率（百分点）
+  active_days: number;
+  top_weak: { kp: string; rate: number }[];
+  summary: string;
+}
 // 知识点掌握度热力图（按科目分面；仅含练过的知识点）
 export interface KpHeatItem {
   knowledge_point: string;
@@ -433,6 +446,8 @@ export const api = {
   dashboard: () => request<Dashboard>("/student/me"),
   // 学情数据看板（P0 信号：复错率 / 正确率 / 弱项 / 趋势 / 连续打卡）
   studentStats: () => request<StudentStats>("/student/stats"),
+  // 学习周报（本周 vs 上周，北京时间周一窗口）
+  weeklyReport: () => request<WeeklyReport>("/student/weekly-report"),
   // 知识点掌握度热力图（按科目分面，科目按平均掌握度升序）
   kpHeatmap: () => request<KpHeatmap>("/student/kp-heatmap"),
 

@@ -77,3 +77,18 @@ class StudentStats(BaseModel):
     ability: list[AbilityOut]
     last_7_days: list[DayTrend]
     streak_days: int
+
+
+class WeeklyReport(BaseModel):
+    """学习周报：本周 vs 上周（北京时间周一窗口）。"""
+
+    week_answers: int
+    week_correct: int
+    week_rate: float
+    last_answers: int
+    last_rate: float
+    delta_answers: int  # 本周-上周做题数
+    delta_rate: float  # 本周-上周正确率（百分点）
+    active_days: int  # 本周活跃作答天数
+    top_weak: list[dict]  # 本周作答中正确率最低的知识点（>=2 次）
+    summary: str  # 一句话总结
