@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
-import { UserIcon } from "../icons";
+import { UserIcon, RobotIcon, PenIcon, ChartIcon, RepeatIcon } from "../icons";
 import { api } from "../api/client";
+import Spinner from "../components/Spinner";
 
 type Mode = "login" | "register" | "forgot";
 
@@ -186,7 +187,8 @@ export default function Login() {
             {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
             {info && <div className="ok-text" style={{ marginTop: 8 }}>{info}</div>}
 
-            <button className="btn btn--primary btn--block" style={{ marginTop: 14 }} disabled={busy} onClick={submit}>
+            <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy} onClick={submit}>
+              {busy && <Spinner size={15} />}
               {busy ? "处理中…" : mode === "login" ? "登录" : "注册并登录"}
             </button>
 
@@ -218,7 +220,8 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <button className="btn btn--ghost btn--block" style={{ marginTop: 12 }} disabled={busy} onClick={requestReset}>
+            <button className={"btn btn--ghost btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 12 }} disabled={busy} onClick={requestReset}>
+              {busy && <Spinner size={15} />}
               获取重置令牌
             </button>
 
@@ -249,7 +252,8 @@ export default function Login() {
             {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
             {info && <div className="ok-text" style={{ marginTop: 8 }}>{info}</div>}
 
-            <button className="btn btn--primary btn--block" style={{ marginTop: 14 }} disabled={busy} onClick={doReset}>
+            <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy} onClick={doReset}>
+              {busy && <Spinner size={15} />}
               {busy ? "处理中…" : "重置密码"}
             </button>
 
@@ -261,10 +265,10 @@ export default function Login() {
       </div>
 
       <div className="auth-values">
-        <div className="auth-value"><span className="auth-value__ico">🤖</span><span>AI 私教陪跑</span></div>
-        <div className="auth-value"><span className="auth-value__ico">📝</span><span>申论 AI 批改</span></div>
-        <div className="auth-value"><span className="auth-value__ico">📊</span><span>能力雷达诊断</span></div>
-        <div className="auth-value"><span className="auth-value__ico">🔁</span><span>错题复错闭环</span></div>
+        <div className="auth-value"><span className="auth-value__ico"><RobotIcon /></span><span>AI 私教陪跑</span></div>
+        <div className="auth-value"><span className="auth-value__ico"><PenIcon /></span><span>申论 AI 批改</span></div>
+        <div className="auth-value"><span className="auth-value__ico"><ChartIcon /></span><span>能力雷达诊断</span></div>
+        <div className="auth-value"><span className="auth-value__ico"><RepeatIcon /></span><span>错题复错闭环</span></div>
       </div>
       </div>
     </div>

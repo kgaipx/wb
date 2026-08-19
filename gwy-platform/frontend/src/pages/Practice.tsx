@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { api, Question, Citation, Ability } from "../api/client";
+import { api, Question, Citation, Ability, PracticeResult } from "../api/client";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
 import { RadarChart } from "../components/RadarChart";
+import ExplainModal from "../components/ExplainModal";
+import EmptyState from "../components/EmptyState";
+import Spinner from "../components/Spinner";
+import { TargetIcon, SearchIcon, BrainIcon } from "../icons";
 
 const PAGE = 60;
 
@@ -14,7 +18,7 @@ export default function Practice() {
   const [list, setList] = useState<Question[]>([]);
   const [active, setActive] = useState<Question | null>(null);
   const [selected, setSelected] = useState("");
-  const [result, setResult] = useState<any>(null);
+  const [result, setResult] = useState<PracticeResult | null>(null);
   const [explain, setExplain] = useState<string>("");
   const [cites, setCites] = useState<Citation[]>([]);
   const [explainOffline, setExplainOffline] = useState<boolean>(false);
@@ -29,6 +33,7 @@ export default function Practice() {
   const [streak, setStreak] = useState(0); // 连续答对计数（激励）
   const [encourage, setEncourage] = useState(""); // 答对/中断浮动鼓励文案
   const encourageTimer = useRef<number | null>(null);
+  const [explainId, setExplainId] = useState<number | null>(null); // 题库浏览态「看解析」浮层
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -68,9 +73,13 @@ export default function Practice() {
             setActive(target);
           } else {
             // 目标题不在首页（题库共数千题、每页 60）：单独按 id 拉取，确保深链复盘闭环可靠打开
+            // 同时并入 list，修复「第 0/N 题」序号错误，并让「下一题」能在本题库续做
             api
               .bankGet(Number(qid))
-              .then((q) => setActive(q))
+              .then((q) => {
+                setList((prev) => (prev.some((x) => x.id === q.id) ? prev : [...prev, q]));
+                setActive(q);
+              })
               .catch(() => {});
           }
         }
@@ -235,11 +244,12 @@ export default function Practice() {
     await nextQuestion();
   }
 
-  // 收藏标签快捷切换（易错/重点）：确保已收藏后再 PATCH tags，本地即时反映
-  async function toggleFavTag(tag: "易错" | "重点") {
+  // 收藏标签快捷切换（易错/重点/已掌握）：确保已收藏后再 PATCH tags，本地即时反映
+  async function toggleFavTag(tag: "易错" | "重点" | "已掌握") {
     if (!active) return;
+    const needAdd = !faved;
     try {
-      if (!faved) {
+      if (needAdd) {
         await api.favoriteAdd(active.id);
         setFaved(true);
       }
@@ -249,6 +259,8 @@ export default function Practice() {
       await api.favoriteUpdate(active.id, { tags: next });
       setFavTags(next);
     } catch (e: any) {
+      // 仅在本次调用内新增的收藏若标签更新失败，回滚 faved，避免「已收藏」假阳性
+      if (needAdd) setFaved(false);
       setErr(e.message);
     }
   }
@@ -373,7 +385,7 @@ export default function Practice() {
       <h2 className="page-title">刷题练习</h2>
       {mode === "retry" && (
         <div className="filter-banner">
-          <span>🎯 智能重练 · 共 <b>{retryCount}</b> 题（来自错题本）</span>
+          <span><TargetIcon /> 智能重练 · 共 <b>{retryCount}</b> 题（来自错题本）</span>
           <button className="link-btn" onClick={() => nav("/wrong")}>← 返回错题本</button>
           <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
             按错误优先级出题，练完可在错题本将答对的题标记为「已掌握」移出。
@@ -405,8 +417,8 @@ export default function Practice() {
               >
                 清除筛选
               </button>
-              <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-                🧠 间隔重复式智能排序：优先练习「最薄弱 × 久未练 × 易错」的知识点，并把高频错题排在前面复盘。
+              <div className="muted smart-sort-note" style={{ fontSize: 12, marginTop: 6 }}>
+                <BrainIcon /> 间隔重复式智能排序：优先练习「最薄弱 × 久未练 × 易错」的知识点，并把高频错题排在前面复盘。
               </div>
             </div>
           )}
@@ -440,6 +452,17 @@ export default function Practice() {
                 {q.is_verified && <span className="tag tag--verified">✓ 已审核</span>}
               </div>
               <div className="q-item__stem">{q.stem}</div>
+              <div className="q-item__foot">
+                <button
+                  className="link-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setExplainId(q.id);
+                  }}
+                >
+                  看解析 <SearchIcon />
+                </button>
+              </div>
             </div>
           ))}
           {list.length === 0 && (loading ? (
@@ -453,13 +476,11 @@ export default function Practice() {
               <div className="sk sk-line" style={{ width: "70%" }} />
             </div>
           ) : (
-            <div className="empty empty--tight">
-              <div className="empty__icon">📚</div>
-              <div className="empty__title">该科目暂无题目</div>
-            </div>
+            <EmptyState tight icon="book" title="该科目暂无题目" />
           ))}
           {hasMore && (
-            <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={loadingMore} onClick={loadMore}>
+            <button className={"btn btn--ghost btn--block" + (loadingMore ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={loadingMore} onClick={loadMore}>
+              {loadingMore && <Spinner size={15} />}
               {loadingMore ? "加载中…" : "加载更多"}
             </button>
           )}
@@ -474,7 +495,7 @@ export default function Practice() {
           <div className="practice-pos">
             <span className="muted" style={{ fontSize: 12 }}>
               {mode === "retry"
-                ? `🎯 智能重练 · 第 ${idxInList >= 0 ? idxInList + 1 : "?"} / ${retryCount} 题`
+                ? <><TargetIcon /> 智能重练 · 第 ${idxInList >= 0 ? idxInList + 1 : "?"} / ${retryCount} 题</>
                 : `第 ${idxInList + 1} / ${list.length} 题${hasMore ? "（题库还有更多）" : ""}`}
               {sessAnswered > 0 && (
                 <span style={{ marginLeft: 8 }}>
@@ -491,8 +512,8 @@ export default function Practice() {
               🔥 连续答对 {streak} 题
             </div>
           )}
-          <div className="row row--between" style={{ marginBottom: 6 }}>
-            <div className="q-item__meta">
+          <div className="row row--between" style={{ marginBottom: 6, flexWrap: "wrap" }}>
+            <div className="q-item__meta" style={{ minWidth: 0, flex: 1 }}>
               <span className="tag tag--brand">{active.subject}</span>
               <span>{active.knowledge_point}</span>
             </div>
@@ -516,6 +537,15 @@ export default function Practice() {
                   title="标记为重点题"
                 >
                   🟡 重点
+                </button>
+              )}
+              {faved && (
+                <button
+                  className={"chip chip--ok " + (favTags.includes("已掌握") ? "chip--on" : "")}
+                  onClick={() => toggleFavTag("已掌握")}
+                  title="标记为已掌握"
+                >
+                  🟢 已掌握
                 </button>
               )}
             </div>
@@ -627,7 +657,25 @@ export default function Practice() {
                     <strong>练习后能力图谱</strong>
                     <span className="muted" style={{ fontSize: 12 }}>弱项雷达 · 凹陷处优先补</span>
                   </div>
-                  <RadarChart data={ability.slice(0, 8).map((a) => ({ label: a.knowledge_point, value: a.mastery }))} />
+                  <RadarChart
+                    series={[
+                      {
+                        name: "练习后掌握度",
+                        color: "var(--brand)",
+                        data: [...ability]
+                          .sort((a, b) => a.mastery - b.mastery)
+                          .slice(0, 8)
+                          .map((a) => ({
+                            label: a.knowledge_point,
+                            value: a.mastery,
+                            meta: `${a.attempts} 次作答`,
+                          })),
+                      },
+                    ]}
+                    target={0.85}
+                    targetLabel="目标 85%"
+                    onAxisClick={(kp) => nav(`/practice?kp=${encodeURIComponent(kp)}`)}
+                  />
                 </div>
               )}
               {result.explanation && (
@@ -653,6 +701,14 @@ export default function Practice() {
           )}
         </div>
       )}
+
+      <ExplainModal
+        questionId={explainId}
+        onClose={() => setExplainId(null)}
+        onFavToggle={(id, willFav) => {
+          if (active && id === active.id) setFaved(willFav);
+        }}
+      />
     </section>
   );
 }

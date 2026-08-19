@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useToast } from "../components/ToastProvider";
 import { useNavigate } from "react-router-dom";
 import {
   api,
@@ -9,6 +10,8 @@ import {
 } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { triggerDownload, shareOrCopy, stamp } from "../utils/exportUtils";
+import EmptyState from "../components/EmptyState";
+import Spinner from "../components/Spinner";
 
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
 
@@ -43,20 +46,20 @@ function RadarChart({ dims }: { dims: AssessmentDim[] }) {
       style={{ maxWidth: 320, display: "block", margin: "0 auto" }}
     >
       {rings.map((ring, i) => (
-        <polygon key={i} points={ring} fill="none" stroke="#e6e9f0" strokeWidth={1} />
+        <polygon key={i} points={ring} fill="none" style={{ stroke: "var(--border)" }} strokeWidth={1} />
       ))}
       {dims.map((_, i) => {
         const [x, y] = pt(i, R);
-        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#e6e9f0" strokeWidth={1} />;
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} style={{ stroke: "var(--border)" }} strokeWidth={1} />;
       })}
-      <polygon points={dataPoly} fill="rgba(59,111,224,0.22)" stroke="#3b6fe0" strokeWidth={2} />
+      <polygon points={dataPoly} style={{ fill: "rgba(var(--brand-rgb),0.22)", stroke: "var(--brand)" }} strokeWidth={2} />
       {dataPts.map((p, i) => (
         <circle
           key={i}
           cx={p[0]}
           cy={p[1]}
           r={3.5}
-          fill={dims[i].mastery < 0.6 ? "#e0533b" : "#3b6fe0"}
+          style={{ fill: dims[i].mastery < 0.6 ? "var(--danger)" : "var(--brand)" }}
         />
       ))}
       {dims.map((d, i) => {
@@ -69,7 +72,7 @@ function RadarChart({ dims }: { dims: AssessmentDim[] }) {
             fontSize={11}
             textAnchor="middle"
             dominantBaseline="middle"
-            fill={d.mastery < 0.6 ? "#e0533b" : "#4a5160"}
+            style={{ fill: d.mastery < 0.6 ? "var(--danger)" : "var(--text-2)" }}
           >
             {d.knowledge_point}
           </text>
@@ -99,7 +102,7 @@ export default function Assessment() {
   const [detail, setDetail] = useState<AssessmentRecordOut | null>(null);
   const [prevOverall, setPrevOverall] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [toast, setToast] = useState("");
+  const toast = useToast();
 
   const cur = paper[idx];
   const answeredCount = paper.filter((q) => answers[q.id]).length;
@@ -338,7 +341,7 @@ export default function Assessment() {
           <div className="card" style={{ marginTop: 12 }}>
             <strong style={{ display: "block", marginBottom: 6 }}>提升建议</strong>
             {r.suggestions.map((s: string, i: number) => (
-              <div key={i} style={{ fontSize: 14, margin: "4px 0", color: "#374151" }}>
+              <div key={i} style={{ fontSize: 14, margin: "4px 0", color: "var(--text-2)" }}>
                 · {s}
               </div>
             ))}
@@ -443,8 +446,7 @@ export default function Assessment() {
   }
 
   function flash(msg: string) {
-    setToast(msg);
-    setTimeout(() => setToast(""), 2000);
+    toast.success(msg);
   }
 
   // 成长趋势：基于历史测评记录计算首次/最佳/平均与本次对比（导出与内联展示共用）
@@ -525,7 +527,6 @@ export default function Assessment() {
     <section>
       <h2 className="page-title">能力测评</h2>
       {err && <div className="err-text">{err}</div>}
-      {toast && <div className="ok-text ok-text--float">{toast}</div>}
 
       {phase === "setup" && (
         <div className="card">
@@ -537,7 +538,8 @@ export default function Assessment() {
             与「在线模考」区别：模考看分数排名，能力测评聚焦
             <b>知识点维度的掌握度画像</b>，是制定学习计划的依据。
           </div>
-          <button className="btn btn--primary btn--block" style={{ marginTop: 14 }} disabled={busy} onClick={start}>
+          <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy} onClick={start}>
+            {busy && <Spinner size={15} />}
             {busy ? "组卷中…" : "开始能力测评"}
           </button>
           <button
@@ -580,11 +582,12 @@ export default function Assessment() {
               </label>
             ))}
             <button
-              className="btn btn--primary btn--block"
+              className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")}
               style={{ marginTop: 12 }}
               disabled={!selected || busy}
               onClick={next}
             >
+              {busy && <Spinner size={15} />}
               {busy ? "提交中…" : idx + 1 < paper.length ? "下一题 →" : "交卷并生成报告"}
             </button>
             <div className="muted" style={{ fontSize: 12, marginTop: 8, textAlign: "center" }}>
@@ -598,15 +601,18 @@ export default function Assessment() {
         <>
           {renderReport(report)}
           <div className="export-bar" style={{ marginTop: 16 }}>
-            <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => exportReport(report)}>
+            <button className={"btn btn--sm btn--ghost" + (busy ? " btn--loading" : "")} disabled={busy} onClick={() => exportReport(report)}>
+              {busy && <Spinner size={14} />}
               导出报告
             </button>
-            <button className="btn btn--sm btn--ghost" disabled={busy} onClick={() => shareReport(report)}>
+            <button className={"btn btn--sm btn--ghost" + (busy ? " btn--loading" : "")} disabled={busy} onClick={() => shareReport(report)}>
+              {busy && <Spinner size={14} />}
               分享成绩
             </button>
           </div>
           <div className="row" style={{ marginTop: 12, gap: 8 }}>
-            <button className="btn btn--primary" style={{ flex: 1 }} disabled={busy} onClick={start}>
+            <button className={"btn btn--primary" + (busy ? " btn--loading" : "")} style={{ flex: 1 }} disabled={busy} onClick={start}>
+              {busy && <Spinner size={15} />}
               重新测评
             </button>
             <button
@@ -655,16 +661,12 @@ export default function Assessment() {
           </div>
           {history.length === 0 && !hisLoading && (
             <div className="card">
-              <div className="empty empty--tight">
-                <div className="empty__icon">📊</div>
-                <div className="empty__title">还没有测评记录</div>
-                <div className="empty__desc">去完成一次能力测评，生成你的能力雷达图。</div>
+              <EmptyState tight icon="assess" title="还没有测评记录" desc="去完成一次能力测评，生成你的能力雷达图。" />
                 <div className="empty__action">
                   <button className="btn btn--primary btn--sm" onClick={start}>
                     开始测评 →
                   </button>
                 </div>
-              </div>
             </div>
           )}
 
@@ -730,11 +732,13 @@ export default function Assessment() {
             );
           })}
           {hisHasMore && (
-            <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={hisLoadingMore} onClick={loadMoreHistory}>
+            <button className={"btn btn--ghost btn--block" + (hisLoadingMore ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={hisLoadingMore} onClick={loadMoreHistory}>
+              {hisLoadingMore && <Spinner size={15} />}
               {hisLoadingMore ? "加载中…" : "加载更多测评记录"}
             </button>
           )}
-          <button className="btn btn--primary btn--block" style={{ marginTop: 14 }} disabled={busy} onClick={start}>
+          <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy} onClick={start}>
+            {busy && <Spinner size={15} />}
             开始新测评
           </button>
         </div>
