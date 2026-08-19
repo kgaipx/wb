@@ -683,7 +683,8 @@ export default function Exam() {
                       setActiveQid(q.id);
                     }}
                   />
-                  <b>{o.label}.</b> <span>{o.content}</span>
+                  <span className="opt__badge">{o.label}</span>
+                  <span className="opt__text">{o.content}</span>
                 </label>
               ))}
             </div>

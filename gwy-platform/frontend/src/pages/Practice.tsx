@@ -572,7 +572,8 @@ export default function Practice() {
                   checked={selected === o.label}
                   onChange={() => setSelected(o.label)}
                 />
-                <b>{o.label}.</b> <span>{o.content}</span>
+                <span className="opt__badge">{o.label}</span>
+                <span className="opt__text">{o.content}</span>
               </label>
             );
           })}
