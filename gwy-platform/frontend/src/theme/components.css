@@ -5262,5 +5262,20 @@
     border-color: rgba(255, 179, 71, 0.30);
   }
   .explain-ai__offline { background: rgba(255, 179, 71, 0.16); color: #ffcf8f; }
+
+  /* 亮色下的浅灰/浅蓝表面：暗色下改为暗表面，避免发亮 */
+  .card--tutor {
+    background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
+    border-color: var(--brand-100);
+  }
+  .adopt { background: var(--surface-2); }
+  .review-body--mini { background: var(--surface-2); }
+
+  /* PWA 徽章：暗底上改用亮蓝文字保证对比度 */
+  .home-pwa__badge--info {
+    background: rgba(var(--brand-rgb), 0.16);
+    color: #93b4ff;
+    border-color: rgba(var(--brand-rgb), 0.30);
+  }
 }
 
