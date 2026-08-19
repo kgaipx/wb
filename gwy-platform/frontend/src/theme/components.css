@@ -1574,6 +1574,38 @@
   background: var(--warning);
 }
 
+/* 申论对比卡：维度标签芯片 + 维度差距徽标 */
+.dim-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--brand);
+  background: var(--info-050);
+  border: 1px solid rgba(37, 99, 235, 0.18);
+}
+.gap-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.7;
+}
+.gap-badge--pos {
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.14);
+}
+.gap-badge--neg {
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.14);
+}
+
 /* ===================== 布局工具 ===================== */
 .stack {
   display: grid;

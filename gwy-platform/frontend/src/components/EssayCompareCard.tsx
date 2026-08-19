@@ -49,10 +49,11 @@ export function EssayCompareCard({ data }: { data: EssayCompare }) {
           return (
             <div key={d} style={{ marginTop: 8 }}>
               <div className="row row--between" style={{ fontSize: 13 }}>
-                <span>{d}</span>
+                <span className="dim-chip">{d}</span>
                 <span className="text-3">
                   你 {sv} · 范文 {mv}
-                  {diff > 0.5 && <span className="text-danger"> （差 {diff}）</span>}
+                  {diff > 0.5 && <span className="gap-badge gap-badge--pos">差 {diff}</span>}
+                  {diff < -0.5 && <span className="gap-badge gap-badge--neg">超 {-diff}</span>}
                 </span>
               </div>
               {/* 范文条（浅） */}
