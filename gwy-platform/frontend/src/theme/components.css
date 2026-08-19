@@ -2258,7 +2258,7 @@
 
 /* ===================== Markdown（AI 回答） ===================== */
 .md {
-  line-height: 1.6;
+  line-height: 1.65;
   font-size: var(--fs-base);
   word-break: break-word;
 }
@@ -2275,10 +2275,14 @@
 .md h2,
 .md h3,
 .md h4 {
-  margin: 10px 0 6px;
-  font-size: 15px;
+  margin: 12px 0 6px;
   font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
 }
+.md h2 { font-size: 16px; }
+.md h3 { font-size: 15px; }
+.md h4 { font-size: 14px; }
 .md ul,
 .md ol {
   margin: 6px 0;
@@ -2286,9 +2290,19 @@
 }
 .md li {
   margin: 3px 0;
+  line-height: 1.7;
 }
 .md strong {
   font-weight: 700;
+  color: var(--text);
+  background: linear-gradient(transparent 56%, var(--brand-050) 56%);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+.md a {
+  color: var(--brand);
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 .md code {
   background: var(--gray-100);
