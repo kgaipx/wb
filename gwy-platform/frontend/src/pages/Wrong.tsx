@@ -252,6 +252,75 @@ export default function Wrong() {
     else toast.error("复制失败");
   }
 
+  // 打印友好视图：新窗口渲染 A4 排版（正确答案标注/上次错误作答/解析），一键打印
+  function printWrong() {
+    if (!items.length) {
+      toast.info("暂无可打印的错题");
+      return;
+    }
+    const esc = (s: string) =>
+      (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const cards = items
+      .map((it, i) => {
+        const q = it.question;
+        const correct = it.correct_answer;
+        const opts = (q.options || [])
+          .map((o) => {
+            // 兼容两种答案格式：A-D 标签 或 选项内容文本（历史数据）
+            const isRight = !!(correct && (o.label === correct || o.content === correct));
+            const isWrong = o.label === it.last_selected;
+            return `<li class="${isRight ? "right" : isWrong ? "wrong" : ""}">${esc(o.label)}. ${esc(o.content)}${isRight ? " <b class=tag>✓ 正确</b>" : isWrong ? " <b class=tag>✗ 你的作答</b>" : ""}</li>`;
+          })
+          .join("");
+        const expl = it.explanation
+          ? `<div class="expl"><b>【解析】</b>${esc(it.explanation)}</div>`
+          : "";
+        return `<div class="q">
+          <div class="q-head">第 ${i + 1} 题 · ${esc(q.subject || "")} · ${esc(q.knowledge_point || "")} · 错 ${it.wrong_count} 次</div>
+          <div class="stem">${esc(q.stem)}</div>
+          <ul class="opts">${opts}</ul>
+          <div class="meta">上次作答：${esc(it.last_selected || "—")}　正确答案：${esc(correct || "—")}　错答占比：${it.recurrence_rate != null ? Math.round(it.recurrence_rate * 100) + "%" : "—"}</div>
+          ${expl}
+        </div>`;
+      })
+      .join("");
+    const w = window.open("", "_blank", "width=820,height=920");
+    if (!w) {
+      toast.error("浏览器拦截了打印窗口，请允许本页弹出窗口后重试");
+      return;
+    }
+    w.document.write(
+      `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>错题本打印 · ${stamp()}</title>
+      <style>
+        * { box-sizing: border-box; }
+        body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; color: #1f2430; margin: 0; padding: 24px; }
+        h1 { font-size: 18px; margin: 0 0 4px; }
+        .sub { color: #6b7280; font-size: 12px; margin-bottom: 18px; }
+        .q { margin: 0 0 22px; padding: 14px 16px; border: 1px solid #e5e7eb; border-radius: 8px; page-break-inside: avoid; }
+        .q-head { font-size: 13px; color: #6b7280; margin-bottom: 8px; }
+        .stem { font-size: 15px; line-height: 1.7; white-space: pre-wrap; margin-bottom: 10px; }
+        .opts { list-style: none; margin: 0; padding: 0; }
+        .opts li { font-size: 14px; line-height: 1.6; padding: 3px 0; }
+        .opts li.right { color: #1a9b57; font-weight: 600; }
+        .opts li.wrong { color: #d64545; }
+        .tag { font-size: 11px; font-weight: 400; margin-left: 4px; }
+        .meta { font-size: 12px; color: #6b7280; margin-top: 8px; }
+        .expl { font-size: 13px; line-height: 1.65; color: #374151; background: #f5f7fa; padding: 8px 10px; border-radius: 6px; margin-top: 8px; }
+        @media print {
+          body { padding: 0; }
+          .q { border-color: #d1d5db; }
+        }
+      </style></head><body>
+      <h1>错题本</h1>
+      <div class="sub">打印时间：${stamp().replace(/_/, " ")} · 共 ${items.length} 道待复盘错题 · 绿色为正确答案，红色为你的错误作答</div>
+      ${cards}
+      <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 250); };</script>
+      </body></html>`
+    );
+    w.document.close();
+    toast.success(`已打开打印视图（共 ${items.length} 题）`);
+  }
+
   return (
     <section>
       <h2 className="page-title">错题本</h2>
@@ -281,7 +350,10 @@ export default function Wrong() {
         <button className="btn btn--sm btn--ghost" disabled={busy} onClick={copyWrong}>
           复制全文
         </button>
-        <span className="text-3 export-bar__hint">导出 Markdown，可分享或打印成 PDF</span>
+        <button className="btn btn--sm btn--ghost" disabled={busy} onClick={printWrong}>
+          🖨 打印视图
+        </button>
+        <span className="text-3 export-bar__hint">可导出 Markdown、复制全文，或打开打印视图（正确答案已标注）</span>
       </div>
       {err && <div className="err-text">{err}</div>}
       {loading && (

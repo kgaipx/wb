@@ -145,6 +145,8 @@ def wrong_questions(current: User = Depends(get_current_user), db: Session = Dep
                 attempts=attempts,
                 recurrence_rate=recurrence_rate,
                 last_attempted_at=last_at,
+                correct_answer=q.answer or None,
+                explanation=q.explanation or None,
             )
         )
     return items
