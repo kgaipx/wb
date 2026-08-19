@@ -2829,7 +2829,7 @@
 .auth-value__ico {
   font-size: 17px;
   line-height: 1;
-  color: var(--brand);
+  color: #fff;
   display: inline-flex;
 }
 .auth-value__ico svg { width: 1em; height: 1em; }
@@ -3379,10 +3379,35 @@
 
 /* ===== 会员页：价值引导 ===== */
 .mem-hero {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(135deg, var(--brand-700), var(--brand));
   color: #fff;
   border: none;
 }
+.mem-hero::before {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  right: -40px;
+  top: -60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+.mem-hero::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  left: -40px;
+  bottom: -50px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+.mem-hero > * { position: relative; z-index: 1; }
 .mem-hero__title {
   font-size: 16px;
   font-weight: 800;
@@ -3405,9 +3430,17 @@
   text-align: center;
 }
 .mem-prop__ic {
-  font-size: 20px;
-  display: block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #fff;
   color: var(--brand);
+  font-size: 18px;
+  margin-bottom: 6px;
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.18);
 }
 .mem-prop__ic svg { width: 1em; height: 1em; }
 .mem-prop b {
