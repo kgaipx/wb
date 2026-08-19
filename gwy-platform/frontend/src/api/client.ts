@@ -442,11 +442,14 @@ export const api = {
     request<{ ok: boolean }>(`/student/wrong/${question_id}/review`, { method: "POST" }),
 
   // 题库 / 刷题（WBS 2.2）
-  bankList: (params: { subject?: string; category?: string; knowledge_point?: string; ids?: number[]; offset?: number; limit?: number } = {}) => {
+  bankList: (params: { subject?: string; category?: string; knowledge_point?: string; source?: string; difficulty?: number; sort?: string; ids?: number[]; offset?: number; limit?: number } = {}) => {
     const q = new URLSearchParams();
     if (params.subject) q.set("subject", params.subject);
     if (params.category) q.set("category", params.category);
     if (params.knowledge_point) q.set("knowledge_point", params.knowledge_point);
+    if (params.source) q.set("source", params.source);
+    if (params.difficulty) q.set("difficulty", String(params.difficulty));
+    if (params.sort) q.set("sort", params.sort);
     if (params.ids && params.ids.length) params.ids.forEach((i) => q.append("ids", String(i)));
     if (params.offset !== undefined) q.set("offset", String(params.offset));
     if (params.limit) q.set("limit", String(params.limit));

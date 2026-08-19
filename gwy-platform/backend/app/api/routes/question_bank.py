@@ -137,6 +137,9 @@ def list_questions(
     subject: str | None = None,
     category: str | None = None,
     knowledge_point: str | None = None,
+    source: str | None = Query(None, description="来源模糊匹配（上岸村/FB/ZG/刷题组 等）"),
+    difficulty: int | None = Query(None, ge=1, le=5, description="难度过滤 1-5"),
+    sort: str = Query("default", description="排序：default / newest / difficulty / difficulty_desc"),
     ids: list[int] | None = Query(None, description="指定题集出题（错题本/收藏夹智能重练）"),
     offset: int = Query(0, ge=0),
     limit: int = Query(20, le=500, ge=1),
@@ -156,6 +159,11 @@ def list_questions(
             q = q.filter(Question.knowledge_point == kps[0])
         else:
             q = q.filter(Question.knowledge_point.in_(kps))
+
+    if source:
+        q = q.filter(Question.source.like(f"%{source}%"))
+    if difficulty:
+        q = q.filter(Question.difficulty == difficulty)
 
     # 指定题集出题（错题重练 / 收藏重练）：用户已明确题集，按传入 id 顺序返回，
     # 分页安全；不做掌握度加权。可与 subject/category 过滤叠加（本场景通常不传）。
@@ -177,9 +185,16 @@ def list_questions(
         items = _order_by_mastery(db, q.all(), current)
         return items[offset : offset + limit]
 
-    # 兼容路径：纯浏览/匿名/无知识点——保持原有确定序（混合包回退随机）
-    if knowledge_point and len(kps) > 1:
+    # 兼容路径：纯浏览/匿名/无知识点——按用户指定排序
+    # （default 保持原有确定序；多知识点混合包无用户时回退随机）
+    if knowledge_point and len(kps) > 1 and sort == "default":
         q = q.order_by(func.random())
+    elif sort == "newest":
+        q = q.order_by(Question.id.desc())
+    elif sort == "difficulty":
+        q = q.order_by(Question.difficulty, Question.id)
+    elif sort == "difficulty_desc":
+        q = q.order_by(Question.difficulty.desc(), Question.id)
     else:
         q = q.order_by(Question.id)
     return q.offset(offset).limit(limit).all()

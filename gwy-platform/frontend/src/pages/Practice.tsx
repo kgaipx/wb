@@ -31,6 +31,9 @@ export default function Practice() {
   const [err, setErr] = useState("");
   const [filter, setFilter] = useState<string>("全部");
   const [kpFilter, setKpFilter] = useState<string>(""); // 测评弱项专项练习（按 knowledge_point）
+  const [srcFilter, setSrcFilter] = useState<string>("全部"); // 来源筛选（上岸村/FB/ZG/刷题组）
+  const [diffFilter, setDiffFilter] = useState<number>(0); // 难度筛选 0=全部，1-5
+  const [sortBy, setSortBy] = useState<string>("default"); // 排序：default/newest/difficulty/difficulty_desc
   const kpAutoOpened = useRef(false);
   const [upgrade, setUpgrade] = useState(false);
   const [streak, setStreak] = useState(0); // 连续答对计数（激励）
@@ -111,6 +114,9 @@ export default function Practice() {
         offset: 0,
         subject: filter !== "全部" ? filter : undefined,
         knowledge_point: kpFilter || undefined,
+        source: srcFilter !== "全部" ? srcFilter : undefined,
+        difficulty: diffFilter > 0 ? diffFilter : undefined,
+        sort: sortBy !== "default" ? sortBy : undefined,
       })
       .then((qs) => {
         setList(qs);
@@ -119,7 +125,7 @@ export default function Practice() {
       })
       .catch((e) => setErr(e.message))
       .finally(() => setLoading(false));
-  }, [filter, kpFilter]);
+  }, [filter, kpFilter, srcFilter, diffFilter, sortBy]);
 
   useEffect(() => {
     if (!active) return;
@@ -444,6 +450,33 @@ export default function Practice() {
                 {s}
               </button>
             ))}
+          </div>
+          )}
+          {mode === "practice" && (
+          <div className="chip-row" style={{ marginBottom: 10, flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+            <span className="muted" style={{ fontSize: 12 }}>来源</span>
+            {["全部", "上岸村", "FB", "ZG", "刷题组"].map((s) => (
+              <button key={s} className={"chip " + (srcFilter === s ? "chip--on" : "")} onClick={() => setSrcFilter(s)}>
+                {s}
+              </button>
+            ))}
+            <span className="muted" style={{ fontSize: 12, marginLeft: 8 }}>难度</span>
+            {[0, 1, 2, 3, 4, 5].map((d) => (
+              <button key={d} className={"chip " + (diffFilter === d ? "chip--on" : "")} onClick={() => setDiffFilter(d)}>
+                {d === 0 ? "全部" : d}
+              </button>
+            ))}
+            <select
+              className="input"
+              style={{ width: "auto", marginLeft: 8, padding: "4px 8px", fontSize: 13 }}
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="default">默认排序</option>
+              <option value="newest">最新入库</option>
+              <option value="difficulty">难度 易→难</option>
+              <option value="difficulty_desc">难度 难→易</option>
+            </select>
           </div>
           )}
           {list.map((q) => (
