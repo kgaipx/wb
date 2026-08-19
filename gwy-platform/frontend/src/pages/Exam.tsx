@@ -671,7 +671,7 @@ export default function Exam() {
                 <span className="tag tag--brand">{q.knowledge_point}</span>
                 <span>· 难度 {q.difficulty}</span>
               </div>
-              <div style={{ fontSize: 15, lineHeight: 1.5 }}>{q.stem}</div>
+              <div className="q-stem">{q.stem}</div>
               {q.options.map((o) => (
                 <label key={o.id} className={"opt" + (answers[q.id] === o.label ? " opt--selected" : "")}>
                   <input

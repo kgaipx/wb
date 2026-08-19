@@ -1753,7 +1753,17 @@
   margin-top: 5px;
   font-size: var(--fs-md);
   color: var(--text);
-  line-height: 1.5;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+/* 做题屏题干：专注阅读场景，比列表预览更舒展 */
+.q-stem {
+  margin: 2px 0 14px;
+  font-size: var(--fs-lg);
+  line-height: 1.75;
+  color: var(--text);
+  letter-spacing: 0.01em;
+  white-space: pre-line;
 }
 .q-item__foot {
   margin-top: 8px;

@@ -569,7 +569,7 @@ export default function Assessment() {
               <span>· 难度 {cur.difficulty}</span>
               {!cur.is_verified && <span className="tag">待核实</span>}
             </div>
-            <div style={{ fontSize: 15, lineHeight: 1.5 }}>{cur.stem}</div>
+            <div className="q-stem">{cur.stem}</div>
             {cur.options.map((o) => (
               <label key={o.id} className={"opt" + (selected === o.label ? " opt--selected" : "")}>
                 <input

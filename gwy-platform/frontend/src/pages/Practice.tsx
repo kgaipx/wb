@@ -552,7 +552,7 @@ export default function Practice() {
               )}
             </div>
           </div>
-          <div style={{ fontSize: 16, margin: "6px 0 12px" }}>{active.stem}</div>
+          <div className="q-stem">{active.stem}</div>
 
           {active.options.map((o) => {
             let cls = "opt";
