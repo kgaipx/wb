@@ -38,6 +38,8 @@ export interface UserOut {
   nickname: string | null;
   province: string | null;
   target_exam: string;
+  target_exam_date?: string | null; // 备考倒计时日期 YYYY-MM-DD（跨设备同步）
+  target_exam_name?: string | null;
   plan: string;
   plan_expires_at: string | null;
   role: string;
@@ -441,7 +443,7 @@ export const api = {
   login: (body: { email: string; password: string }) =>
     request<{ access_token: string }>("/auth/login", { method: "POST", body: JSON.stringify(body) }),
   me: () => request<UserOut>("/auth/me"),
-  updateMe: (body: { nickname?: string; province?: string; target_exam?: string }) =>
+  updateMe: (body: { nickname?: string; province?: string; target_exam?: string; target_exam_date?: string | null; target_exam_name?: string | null }) =>
     request<UserOut>("/auth/me", { method: "PATCH", body: JSON.stringify(body) }),
 
   // 学员中心 / 学情（WBS 2.1 / 3.2）

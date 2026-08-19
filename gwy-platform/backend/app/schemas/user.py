@@ -21,6 +21,8 @@ class UserUpdate(BaseModel):
     nickname: str | None = None
     province: str | None = None
     target_exam: str | None = None
+    target_exam_date: str | None = None  # YYYY-MM-DD；传 null 清除倒计时
+    target_exam_name: str | None = None  # 目标考试显示名
 
 
 class ChangePasswordIn(BaseModel):
@@ -45,6 +47,8 @@ class UserOut(BaseModel):
     nickname: str | None
     province: str | None
     target_exam: str
+    target_exam_date: str | None = None
+    target_exam_name: str | None = None
     plan: str
     plan_expires_at: datetime | None = None
     role: str = "user"

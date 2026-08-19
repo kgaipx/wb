@@ -158,13 +158,18 @@ def me(current: User = Depends(get_current_user)):
 
 @router.patch("/me", response_model=UserOut)
 def update_me(payload: UserUpdate, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """更新学员画像（昵称 / 报考省份 / 目标考试），供学习计划与个性化诊断使用。"""
-    if payload.nickname is not None:
-        current.nickname = payload.nickname or current.nickname
-    if payload.province is not None:
-        current.province = payload.province
-    if payload.target_exam is not None:
-        current.target_exam = payload.target_exam
+    """更新学员画像（昵称 / 报考省份 / 目标考试 / 备考倒计时），供学习计划与个性化诊断使用。"""
+    updates = payload.model_dump(exclude_unset=True)
+    if "nickname" in updates and updates["nickname"] is not None:
+        current.nickname = updates["nickname"] or current.nickname
+    if "province" in updates:
+        current.province = updates["province"]
+    if "target_exam" in updates:
+        current.target_exam = updates["target_exam"]
+    if "target_exam_date" in updates:  # 显式 null = 清除倒计时
+        current.target_exam_date = updates["target_exam_date"] or None
+    if "target_exam_name" in updates:
+        current.target_exam_name = updates["target_exam_name"] or None
     db.commit()
     db.refresh(current)
     return current

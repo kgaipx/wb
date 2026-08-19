@@ -35,6 +35,13 @@ class User(Base):
     target_exam: Mapped[str] = mapped_column(
         String(32), default="国考", comment="目标考试：国考 / 省考 / 事业单位"
     )
+    # 备考倒计时（跨设备同步，§77 前端 localStorage 升级为后端持久化）
+    target_exam_date: Mapped[str | None] = mapped_column(
+        String(10), nullable=True, default=None, comment="目标考试日期 YYYY-MM-DD"
+    )
+    target_exam_name: Mapped[str | None] = mapped_column(
+        String(64), nullable=True, default=None, comment="目标考试显示名（如 2027 国考）"
+    )
     plan: Mapped[str] = mapped_column(
         String(32), default="free", comment="会员等级：free / pro / pro_year（WBS 7.1）"
     )

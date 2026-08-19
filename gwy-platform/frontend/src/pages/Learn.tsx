@@ -10,7 +10,7 @@ import { TargetIcon, RepeatIcon } from "../icons";
 
 export default function Learn() {
   const nav = useNavigate();
-  // —— 备考倒计时：目标考试日期（本地持久化；跨设备同步留作后端字段扩展）——
+  // —— 备考倒计时：目标考试日期（localStorage 即时渲染 + 后端 /auth/me 跨设备同步，以后端为准）——
   const [examDate, setExamDate] = useState<string>(() => localStorage.getItem("gwy_target_exam_date") || "");
   const [examName, setExamName] = useState<string>(() => localStorage.getItem("gwy_target_exam_name") || "目标考试");
   const [editTarget, setEditTarget] = useState(false);
@@ -20,9 +20,14 @@ export default function Learn() {
   }, [examDate]);
   const saveTarget = () => {
     if (!examDate) return;
+    const name = examName.trim() || "目标考试";
     localStorage.setItem("gwy_target_exam_date", examDate);
-    localStorage.setItem("gwy_target_exam_name", examName.trim() || "目标考试");
+    localStorage.setItem("gwy_target_exam_name", name);
     setEditTarget(false);
+    // 同步到后端（跨设备）；失败不阻塞本地已生效，静默保留本地
+    api
+      .updateMe({ target_exam_date: examDate, target_exam_name: name })
+      .catch(() => {});
   };
   const REC_PAGE = 10;
   const [dash, setDash] = useState<Dashboard | null>(null);
@@ -38,11 +43,12 @@ export default function Learn() {
   const [recRefreshing, setRecRefreshing] = useState(false);
 
   async function load() {
-    // 三个接口独立兜底：推荐/热力图任一超时失败，不应拖垮整页「学习中心」
-    const [dR, rR, hR] = await Promise.allSettled([
+    // 四个接口独立兜底：推荐/热力图/倒计时任一超时失败，不应拖垮整页「学习中心」
+    const [dR, rR, hR, mR] = await Promise.allSettled([
       api.dashboard(),
       api.recommend(REC_PAGE),
       api.kpHeatmap(),
+      api.me(),
     ]);
     if (dR.status === "fulfilled") setDash(dR.value);
     else {
@@ -59,6 +65,13 @@ export default function Learn() {
     }
     if (hR.status === "fulfilled") setHeat(hR.value);
     else setHeat(null);
+    // 倒计时以后端为准（跨设备）：后端有值则覆盖本地并回写缓存
+    if (mR.status === "fulfilled" && mR.value.target_exam_date) {
+      setExamDate(mR.value.target_exam_date);
+      setExamName(mR.value.target_exam_name || "目标考试");
+      localStorage.setItem("gwy_target_exam_date", mR.value.target_exam_date);
+      localStorage.setItem("gwy_target_exam_name", mR.value.target_exam_name || "目标考试");
+    }
   }
 
   async function loadMoreRec() {
