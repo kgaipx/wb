@@ -1447,6 +1447,62 @@
   box-shadow: var(--ring);
 }
 
+/* ===================== 申论写作区（§48） ===================== */
+/* 题面与作答清晰分层：左侧品牌描边的小节标题 + 文档式作答编辑器 + 字数进度条 */
+.essay-sec {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0 2px 10px;
+  border-left: 3px solid var(--brand);
+  margin-bottom: 10px;
+}
+.essay-sec__title {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.essay-sec__sub {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  text-align: right;
+}
+/* 文档式作答编辑器：更松弛的行距与内距，长文写作不拥挤 */
+.essay-editor {
+  width: 100%;
+  min-height: 220px;
+  padding: 14px 16px;
+  line-height: 1.85;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: inherit;
+  resize: vertical;
+}
+.essay-editor:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: var(--ring);
+}
+/* 字数进度条：随达标状态平滑变色，给写作即时反馈 */
+.word-meter {
+  height: 6px;
+  margin-top: 8px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.word-meter__fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.35s var(--ease-out), background 0.35s var(--ease-out);
+}
+
 /* ===================== 标签 ===================== */
 .tag {
   display: inline-flex;

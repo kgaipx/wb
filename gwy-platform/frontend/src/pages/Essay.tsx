@@ -132,7 +132,12 @@ export default function Essay() {
 
       {tab === "write" && (
         <>
+          {/* 题目材料：选择模拟题 + 给定材料 + 作答要求 */}
           <div className="card">
+            <div className="essay-sec">
+              <h3 className="essay-sec__title">题目材料</h3>
+              <span className="essay-sec__sub">选择或粘贴作答材料与要求</span>
+            </div>
             <div className="field-label">选择模拟题（或自行粘贴材料）</div>
             <div className="chip-row" style={{ marginTop: 6 }}>
               <button className={"chip " + (promptId === null ? "chip--on" : "")} onClick={() => pickPrompt(null)}>自由练习</button>
@@ -148,11 +153,17 @@ export default function Essay() {
 
             <div className="field-label" style={{ marginTop: 10 }}>作答要求</div>
             <textarea className="textarea" style={{ marginTop: 6 }} value={requirement} onChange={(e) => setRequirement(e.target.value)} placeholder="作答要求…" />
+          </div>
 
-            <div className="field-label" style={{ marginTop: 10 }}>你的作答</div>
+          {/* 写作区：你的作答（核心动作） */}
+          <div className="card" style={{ marginTop: 12 }}>
+            <div className="essay-sec">
+              <h3 className="essay-sec__title">你的作答</h3>
+              <span className="essay-sec__sub">写后一键 AI 批改，双阶段评分</span>
+            </div>
             <textarea
-              className="textarea"
-              style={{ marginTop: 6, minHeight: 160 }}
+              className="essay-editor"
+              style={{ marginTop: 0 }}
               value={essay}
               onChange={(e) => setEssay(e.target.value)}
               placeholder="在此粘贴或输入你的申论作答…"
@@ -161,16 +172,21 @@ export default function Essay() {
               const n = countEssayChars(essay);
               const t = parseWordTarget(requirement);
               const st = wordStatus(n, t);
+              const pct = t ? Math.min(100, Math.round((n / t[1]) * 100)) : Math.min(100, Math.round((n / 1200) * 100));
+              const fill = st.cls === "text-success" ? "var(--success)" : st.cls === "text-danger" ? "var(--danger)" : st.cls === "text-warning" ? "var(--warning)" : "var(--brand)";
               return (
-                <div className="row row--between" style={{ marginTop: 4, fontSize: 12 }}>
-                  <span className="muted">
-                    已写 <b className={st.cls}>{n}</b> 字{t ? ` · 要求 ${t[0]}–${t[1]} 字` : ""}
-                  </span>
-                  <span className={st.cls}>{st.text}</span>
+                <div style={{ marginTop: 8 }}>
+                  <div className="row row--between" style={{ fontSize: 12 }}>
+                    <span className="muted">
+                      已写 <b className={st.cls}>{n}</b> 字{t ? ` · 要求 ${t[0]}–${t[1]} 字` : ""}
+                    </span>
+                    <span className={st.cls}>{st.text}</span>
+                  </div>
+                  <div className="word-meter"><div className="word-meter__fill" style={{ width: pct + "%", background: fill }} /></div>
                 </div>
               );
             })()}
-            <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 10 }} disabled={busy || !essay.trim()} onClick={doGrade}>
+            <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 12 }} disabled={busy || !essay.trim()} onClick={doGrade}>
               {busy && <Spinner size={15} />}
               {busy ? "批改中…" : "AI 批改（满分 100）"}
             </button>
