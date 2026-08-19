@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, PlanOut, PlanTask, StudentStats, WrongItem } from "../api/client";
 import { useAuth } from "../auth";
 import EmptyState from "../components/EmptyState";
 import { TargetIcon, CalendarIcon, SparkleIcon } from "../icons";
+import { calcSprint, daysLeftOf } from "../sprint";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -26,6 +27,27 @@ export default function Home() {
   const [examLoading, setExamLoading] = useState(false);
   const [stats, setStats] = useState<StudentStats | null>(null);
   const [wrongs, setWrongs] = useState<WrongItem[]>([]);
+
+  // —— 冲刺横幅：目标日期（localStorage 即时 + /auth/me 跨设备同步，同 Learn）——
+  const [examDate, setExamDate] = useState<string>(() => localStorage.getItem("gwy_target_exam_date") || "");
+  const [examName, setExamName] = useState<string>(() => localStorage.getItem("gwy_target_exam_name") || "目标考试");
+  useEffect(() => {
+    if (!user) return;
+    api
+      .me()
+      .then((u) => {
+        if (u.target_exam_date) {
+          setExamDate(u.target_exam_date);
+          setExamName(u.target_exam_name || "目标考试");
+        }
+      })
+      .catch(() => {});
+  }, [user]);
+  const sprint = useMemo(
+    () => calcSprint(daysLeftOf(examDate), stats?.ability || []),
+    [examDate, stats]
+  );
+  const sprintShow = sprint && sprint.daysLeft <= 45 ? sprint : null; // 冲刺期 = 剩余 ≤45 天
 
   // PWA 已安装态检测：standalone 显示模式（Android Chrome / 桌面）或 iOS Safari navigator.standalone
   useEffect(() => {
@@ -208,6 +230,58 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* 冲刺横幅：倒计时 ≤45 天的每日冲刺提醒（数据与 Learn 冲刺面板同源） */}
+      {sprintShow && (
+        <div
+          className="card"
+          style={{
+            marginTop: 14,
+            border: "1px solid rgba(var(--brand-rgb), 0.35)",
+            background:
+              "linear-gradient(135deg, rgba(var(--brand-rgb), 0.12), rgba(var(--accent-rgb), 0.10))",
+          }}
+        >
+          <div className="row row--between" style={{ alignItems: "center" }}>
+            <strong>
+              🚀 冲刺期 · 距{examName}还有 {sprintShow.daysLeft} 天
+            </strong>
+            <span className="chip chip--warn">{sprintShow.phase.name}</span>
+          </div>
+          <div className="muted" style={{ marginTop: 4, fontSize: 13 }}>
+            {sprintShow.phase.target} · {sprintShow.phase.daily}
+          </div>
+          {sprintShow.weak.length > 0 && (
+            <>
+              <div className="muted" style={{ marginTop: 8, fontSize: 13 }}>
+                🎯 今日冲刺（薄弱点优先）：
+              </div>
+              <div className="chip-row" style={{ marginTop: 4 }}>
+                {sprintShow.weak.map((w) => (
+                  <button
+                    key={w.knowledge_point}
+                    className="chip chip--on"
+                    onClick={() => nav(`/practice?kp=${encodeURIComponent(w.knowledge_point)}`)}
+                  >
+                    {w.knowledge_point}（{Math.round(w.mastery * 100)}%）
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+          <div className="row" style={{ gap: 8, marginTop: 10 }}>
+            <button className="btn btn--primary btn--sm" onClick={() => nav("/exam")}>
+              📝 今日模考
+            </button>
+            <button className="btn btn--ghost btn--sm" onClick={() => nav("/wrong")}>
+              📕 错题复盘
+            </button>
+            <button className="btn btn--ghost btn--sm" onClick={() => nav("/learn")}>
+              查看冲刺计划
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 冷启动新手引导：零作答用户首登破冰，做第一题后自动消失 */}
       {isNew && (

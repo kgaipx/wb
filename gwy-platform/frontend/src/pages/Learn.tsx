@@ -7,6 +7,7 @@ import KpHeatmapView from "../components/KpHeatmap";
 import EmptyState from "../components/EmptyState";
 import Reveal from "../components/Reveal";
 import { TargetIcon, RepeatIcon } from "../icons";
+import { SPRINT_PHASES, calcSprint } from "../sprint";
 
 export default function Learn() {
   const nav = useNavigate();
@@ -31,25 +32,14 @@ export default function Learn() {
       .catch(() => {});
   };
   const REC_PAGE = 10;
-  // —— 冲刺模式：按剩余天数划分 4 阶段（常量；sprint 计算在 dash 就绪后）——
-  const SPRINT_PHASES = [
-    { key: "base", name: "基础巩固", cond: (d: number) => d > 60, target: "系统过考点，建立知识框架", daily: "每日 30 题 + 错题当天复盘", examFreq: "每周 1 套摸底" },
-    { key: "special", name: "专项突破", cond: (d: number) => d > 30, target: "主攻薄弱点，正确率提到 80%", daily: "每日 40 题专项 + 15 题回顾", examFreq: "每周 1-2 套限时模考" },
-    { key: "paper", name: "套卷模拟", cond: (d: number) => d > 14, target: "全真限时模拟，训练时间分配", daily: "每 2 天 1 套完整套卷 + 复盘", examFreq: "隔天 1 套" },
-    { key: "final", name: "冲刺回归", cond: (d: number) => d >= 0, target: "回归错题本，保持手感稳定心态", daily: "错题本过一遍 + 每日 20 题保持手感", examFreq: "考前 3 天停模考" },
-  ];
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
   const [heat, setHeat] = useState<KpHeatmap | null>(null);
-  const sprint = useMemo(() => {
-    if (daysLeft === null || daysLeft < 0) return null;
-    const phase = SPRINT_PHASES.find((p) => p.cond(daysLeft)) ?? SPRINT_PHASES[0];
-    const weak = (dash?.ability || [])
-      .filter((a) => a.attempts > 0)
-      .sort((a, b) => a.mastery - b.mastery)
-      .slice(0, 3);
-    return { phase, weak, daysLeft };
-  }, [daysLeft, dash]);
+  // —— 冲刺模式：共享 sprint.ts（Learn 面板与 Home 横幅同源，改阶段配置只动一处）——
+  const sprint = useMemo(
+    () => calcSprint(daysLeft, dash?.ability || []),
+    [daysLeft, dash]
+  );
   const [explain, setExplain] = useState<Record<number, string>>({});
   const [upgradeFor, setUpgradeFor] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
