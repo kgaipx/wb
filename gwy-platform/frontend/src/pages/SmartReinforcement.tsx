@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, Ability, WrongItem } from "../api/client";
 import EmptyState from "../components/EmptyState";
 import Spinner from "../components/Spinner";
+import Reveal from "../components/Reveal";
 import { TargetIcon } from "../icons";
 
 /* ============================================================
@@ -118,7 +119,7 @@ export default function SmartReinforcement() {
       {err && <div className="err-text">{err}</div>}
 
       {/* 统计 */}
-      <div className="grid-3 mat-stats">
+      <Reveal className="grid-3 mat-stats">
         <div className="metric">
           <div className="metric__num">{weak.length}</div>
           <div className="metric__label">薄弱知识点</div>
@@ -133,10 +134,11 @@ export default function SmartReinforcement() {
           </div>
           <div className="metric__label">可强化题</div>
         </div>
-      </div>
+      </Reveal>
 
       {/* 一键强化 */}
       {weak.length > 0 && (
+        <Reveal>
         <div className="card re-cta">
           <div className="re-cta__txt">
             <div className="re-cta__title">一键强化全部薄弱点</div>
@@ -149,6 +151,7 @@ export default function SmartReinforcement() {
             {busy === "all" ? "生成中…" : <><TargetIcon /> 开始强化</>}
           </button>
         </div>
+        </Reveal>
       )}
 
       {/* 薄弱点列表 */}
@@ -159,8 +162,9 @@ export default function SmartReinforcement() {
         </div>
       ) : (
         <div className="re-kp-list">
-          {weak.map((a) => (
-            <div key={a.knowledge_point} className="card re-kp">
+          {weak.map((a, i) => (
+            <Reveal key={a.knowledge_point} delay={Math.min(i, 8) * 50}>
+            <div className="card re-kp">
               <div className="re-kp__head">
                 <span className="re-kp__name">{a.knowledge_point}</span>
                 <span className="re-kp__pct" style={{ color: masteryColor(a.mastery) }}>
@@ -185,6 +189,7 @@ export default function SmartReinforcement() {
                 {busy === a.knowledge_point ? "生成中…" : <><TargetIcon /> 生成强化包</>}
               </button>
             </div>
+            </Reveal>
           ))}
         </div>
       )}
@@ -197,8 +202,9 @@ export default function SmartReinforcement() {
         </div>
       ) : (
         <div className="re-wrong-list">
-          {wrongs.slice(0, 30).map((w) => (
-            <div key={w.question.id} className="card re-wrong">
+          {wrongs.slice(0, 30).map((w, i) => (
+            <Reveal key={w.question.id} delay={Math.min(i, 8) * 50}>
+            <div className="card re-wrong">
               <div className="re-wrong__meta">
                 <span className="tag tag--brand">{w.question.knowledge_point}</span>
                 {w.recurrence_rate != null && (
@@ -215,6 +221,7 @@ export default function SmartReinforcement() {
                 {busy === "w" + w.question.id ? "生成中…" : <><TargetIcon /> 强化这题</>}
               </button>
             </div>
+            </Reveal>
           ))}
         </div>
       )}
