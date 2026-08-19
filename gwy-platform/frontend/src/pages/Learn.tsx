@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Dashboard } from "../api/client";
+import { api, Dashboard, KpHeatmap } from "../api/client";
 import Markdown from "../components/Markdown";
 import { RadarChart } from "../components/RadarChart";
+import KpHeatmapView from "../components/KpHeatmap";
+import EmptyState from "../components/EmptyState";
+import Reveal from "../components/Reveal";
+import { TargetIcon, RepeatIcon } from "../icons";
 
 export default function Learn() {
   const nav = useNavigate();
   const REC_PAGE = 10;
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
+  const [heat, setHeat] = useState<KpHeatmap | null>(null);
   const [explain, setExplain] = useState<Record<number, string>>({});
   const [upgradeFor, setUpgradeFor] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -19,15 +24,27 @@ export default function Learn() {
   const [recRefreshing, setRecRefreshing] = useState(false);
 
   async function load() {
-    try {
-      const [d, r] = await Promise.all([api.dashboard(), api.recommend(REC_PAGE)]);
-      setDash(d);
+    // 三个接口独立兜底：推荐/热力图任一超时失败，不应拖垮整页「学习中心」
+    const [dR, rR, hR] = await Promise.allSettled([
+      api.dashboard(),
+      api.recommend(REC_PAGE),
+      api.kpHeatmap(),
+    ]);
+    if (dR.status === "fulfilled") setDash(dR.value);
+    else {
+      setDash(null);
+      setErr("学情概览加载失败，请重试");
+    }
+    if (rR.status === "fulfilled") {
+      const r = rR.value;
       setRec(r);
       setRecTopN(REC_PAGE);
       setRecHasMore(r.questions.length === REC_PAGE);
-    } catch (e: any) {
-      setErr(e.message);
+    } else {
+      setRec(null);
     }
+    if (hR.status === "fulfilled") setHeat(hR.value);
+    else setHeat(null);
   }
 
   async function loadMoreRec() {
@@ -93,7 +110,7 @@ export default function Learn() {
   return (
     <section>
       <h2 className="page-title">学习中心</h2>
-      <div className="card">
+      <Reveal className="card">
         <strong>学情概览</strong>
         <div className="muted" style={{ marginTop: 4 }}>
           累计答题 {dash.total_answers} 次 · 正确率 {Math.round(dash.correct_rate * 100)}%
@@ -101,15 +118,27 @@ export default function Learn() {
         {dash.ability.length > 0 ? (
           <div className="radar-wrap">
             <RadarChart
-              data={dash.ability
-                .slice(0, 8)
-                .map((a) => ({ label: a.knowledge_point, value: a.mastery }))}
+              series={[
+                {
+                  name: "当前掌握度",
+                  color: "var(--brand)",
+                  data: [...dash.ability]
+                    .sort((a, b) => a.mastery - b.mastery)
+                    .slice(0, 8)
+                    .map((a) => ({
+                      label: a.knowledge_point,
+                      value: a.mastery,
+                      meta: `${a.attempts} 次作答`,
+                    })),
+                },
+              ]}
+              target={0.85}
+              targetLabel="目标 85%"
+              onAxisClick={(kp) => nav(`/practice?kp=${encodeURIComponent(kp)}`)}
             />
-            {dash.ability.length > 8 && (
-              <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
-                仅展示掌握度最低的 8 个知识点
-              </div>
-            )}
+            <div className="muted" style={{ fontSize: 12, textAlign: "center" }}>
+              雷达越“瘪”越薄弱；虚线为你应达到的目标掌握度 85%
+            </div>
           </div>
         ) : (
           <div className="muted" style={{ marginTop: 10 }}>
@@ -131,9 +160,55 @@ export default function Learn() {
             </div>
           );
         })}
-      </div>
+        {/* 强项 / 最弱 速览（点击直达针对性练习） */}
+        <div style={{ marginTop: 12 }}>
+          <div className="muted" style={{ fontSize: 12 }}>强项</div>
+          <div className="chip-row" style={{ marginTop: 4 }}>
+            {[...dash.ability]
+              .sort((a, b) => b.mastery - a.mastery)
+              .slice(0, 3)
+              .map((a) => (
+                <button
+                  key={a.knowledge_point}
+                  className="chip"
+                  onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
+                >
+                  {a.knowledge_point} {Math.round(a.mastery * 100)}%
+                </button>
+              ))}
+          </div>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          <div className="muted" style={{ fontSize: 12 }}>最弱（优先补）</div>
+          <div className="chip-row" style={{ marginTop: 4 }}>
+            {[...dash.ability]
+              .sort((a, b) => a.mastery - b.mastery)
+              .slice(0, 3)
+              .map((a) => (
+                <button
+                  key={a.knowledge_point}
+                  className="chip chip--on"
+                  onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
+                >
+                  {a.knowledge_point} {Math.round(a.mastery * 100)}%
+                </button>
+              ))}
+          </div>
+        </div>
+        {/* 分科掌握度热力图（紧凑版，无图例/薄弱数） */}
+        {heat && heat.subjects.length > 0 && (
+          <div style={{ marginTop: 12 }}>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 2 }}>分科掌握度速览</div>
+            <KpHeatmapView
+              subjects={heat.subjects}
+              onSelect={(kp) => nav("/practice?kp=" + encodeURIComponent(kp))}
+              compact
+            />
+          </div>
+        )}
+      </Reveal>
 
-      <div className="card card--warning" style={{ marginTop: 12 }}>
+      <Reveal className="card card--warning" style={{ marginTop: 12 }} delay={60}>
         <strong>薄弱知识点（AI 诊断）</strong>
         <div style={{ marginTop: 4 }}>
           {rec && rec.knowledge_points.length ? rec.knowledge_points.join("、") : "暂无明显薄弱点，继续保持 👍"}
@@ -148,12 +223,12 @@ export default function Learn() {
             onClick={() => nav(`/practice?kp=${encodeURIComponent(rec.knowledge_points[0])}`)}
             title="按最弱知识点专项刷题"
           >
-            🎯 针对薄弱点练习 →
+            <><TargetIcon /> 针对薄弱点练习 →</>
           </button>
         )}
-      </div>
+      </Reveal>
 
-      <div className="card card--soft" style={{ marginTop: 12 }}>
+      <Reveal className="card card--soft" style={{ marginTop: 12 }} delay={120}>
         <div className="row row--between">
           <strong>AI 周学习计划</strong>
           <span className="badge badge--soft">私教大脑</span>
@@ -164,24 +239,20 @@ export default function Learn() {
         <button className="btn btn--primary btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/plan")}>
           生成我的学习计划 →
         </button>
-      </div>
+      </Reveal>
 
       <div className="row row--between" style={{ marginTop: 16 }}>
         <h3 className="section-title" style={{ marginTop: 0 }}>为你推荐练习</h3>
         <button className="btn btn--ghost btn--sm" disabled={recRefreshing} onClick={refreshRec}>
-          {recRefreshing ? "换题中…" : "🔄 换一批"}
+          {recRefreshing ? "换题中…" : <><RepeatIcon /> 换一批</>}
         </button>
       </div>
       {rec && rec.questions.length === 0 && (
-        <div className="empty empty--tight">
-          <div className="empty__icon">🧭</div>
-          <div className="empty__title">暂无可推荐题目</div>
-          <div className="empty__desc">去「刷题」或「模考」积累数据后再回来。</div>
-        </div>
+        <EmptyState tight icon="compass" title="暂无可推荐题目" desc="去「刷题」或「模考」积累数据后再回来。" />
       )}
       {rec &&
-        rec.questions.map((q: any) => (
-          <div key={q.id} className="q-item">
+        rec.questions.map((q: any, i: number) => (
+          <Reveal key={q.id} className="q-item" delay={Math.min(i, 6) * 40}>
             <div className="q-item__meta">
               <span className="tag tag--brand">{q.subject}</span>
               <span>{q.knowledge_point}</span>
@@ -214,7 +285,7 @@ export default function Learn() {
                 <div className="tutor-box__body"><Markdown>{explain[q.id]}</Markdown></div>
               </div>
             )}
-          </div>
+          </Reveal>
         ))}
         {rec && recHasMore && (
           <button className="btn btn--ghost btn--block" style={{ marginTop: 14 }} disabled={recLoadingMore} onClick={loadMoreRec}>

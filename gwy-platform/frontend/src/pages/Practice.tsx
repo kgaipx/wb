@@ -8,6 +8,7 @@ import { RadarChart } from "../components/RadarChart";
 import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
 import Spinner from "../components/Spinner";
+import Reveal from "../components/Reveal";
 import { TargetIcon, SearchIcon, BrainIcon } from "../icons";
 
 const PAGE = 60;
@@ -432,38 +433,39 @@ export default function Practice() {
           </div>
           )}
           {list.map((q) => (
-            <div
-              key={q.id}
-              className="q-item"
-              role="button"
-              tabIndex={0}
-              onClick={() => openQuestion(q)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.preventDefault();
-                  openQuestion(q);
-                }
-              }}
-            >
-              <div className="q-item__meta">
-                <span className="tag tag--brand">{q.subject}</span>
-                <span>{q.knowledge_point}</span>
-                <span>· 难度 {q.difficulty}</span>
-                {q.is_verified && <span className="tag tag--verified">✓ 已审核</span>}
+            <Reveal key={q.id}>
+              <div
+                className="q-item"
+                role="button"
+                tabIndex={0}
+                onClick={() => openQuestion(q)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    openQuestion(q);
+                  }
+                }}
+              >
+                <div className="q-item__meta">
+                  <span className="tag tag--brand">{q.subject}</span>
+                  <span>{q.knowledge_point}</span>
+                  <span>· 难度 {q.difficulty}</span>
+                  {q.is_verified && <span className="tag tag--verified">✓ 已审核</span>}
+                </div>
+                <div className="q-item__stem">{q.stem}</div>
+                <div className="q-item__foot">
+                  <button
+                    className="link-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setExplainId(q.id);
+                    }}
+                  >
+                    看解析 <SearchIcon />
+                  </button>
+                </div>
               </div>
-              <div className="q-item__stem">{q.stem}</div>
-              <div className="q-item__foot">
-                <button
-                  className="link-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setExplainId(q.id);
-                  }}
-                >
-                  看解析 <SearchIcon />
-                </button>
-              </div>
-            </div>
+            </Reveal>
           ))}
           {list.length === 0 && (loading ? (
             <div className="sk-card" style={{ marginTop: 8 }}>

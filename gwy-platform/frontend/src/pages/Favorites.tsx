@@ -7,6 +7,7 @@ import EmptyState from "../components/EmptyState";
 import { TargetIcon, PenIcon } from "../icons";
 import { useToast } from "../components/ToastProvider";
 import Spinner from "../components/Spinner";
+import Reveal from "../components/Reveal";
 
 // 自定义标签白名单（与后端 patch_favorite 校验一致）
 const TAG_DEFS: { key: string; icon: string; label: string }[] = [
@@ -259,8 +260,10 @@ export default function Favorites() {
                       </button>
                     </span>
                   </div>
-                  {items.slice(0, take).map((it) => (
-                    <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+                  {items.slice(0, take).map((it, i) => (
+                    <Reveal key={it.question.id} delay={Math.min(i, 6) * 40}>
+                      <FavCard item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+                    </Reveal>
                   ))}
                 </div>
               );
@@ -270,8 +273,10 @@ export default function Favorites() {
       )}
 
       {!loading && list.length > 0 && groupBy === "list" && (
-        filtered.slice(0, shown).map((it) => (
-          <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+        filtered.slice(0, shown).map((it, i) => (
+          <Reveal key={it.question.id} delay={Math.min(i, 6) * 40}>
+            <FavCard item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+          </Reveal>
         ))
       )}
 
