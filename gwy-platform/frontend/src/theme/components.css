@@ -162,6 +162,15 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+/* 路由切换：进入淡入（仅 opacity，避免对 fixed/sticky 后代建立包含块） */
+.route-anim { animation: route-fade var(--t-lift) var(--ease-out) both; }
+@keyframes route-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .route-anim { animation: none; }
+}
 .more-sheet__head {
   display: flex;
   align-items: center;
