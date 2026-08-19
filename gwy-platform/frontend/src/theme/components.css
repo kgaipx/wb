@@ -1929,10 +1929,17 @@
   margin-top: 12px;
   padding: 12px 14px;
   background: var(--info-050);
+  border: 1px solid var(--surface-2);
+  border-left: 3px solid var(--brand);
   border-radius: var(--r-sm);
 }
 .tutor-box__title {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
   font-weight: 700;
+  letter-spacing: 0.04em;
   color: var(--brand);
   margin-bottom: 6px;
 }
@@ -1940,7 +1947,7 @@
   font-size: var(--fs-base);
   color: var(--text);
   white-space: pre-wrap;
-  line-height: 1.6;
+  line-height: 1.72;
 }
 .tutor-box__cite {
   margin-top: 8px;
