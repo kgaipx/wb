@@ -5279,3 +5279,34 @@
   }
 }
 
+/* ===================== 键盘可达性：补齐 focus-visible 环 ===================== */
+/* .btn / .card 已有；此处为其余可点击的卡/行/筛选控件补齐，保持视觉一致 */
+.more-item:focus-visible,
+.q-item:focus-visible,
+.opt:focus-visible,
+.manage-card:focus-visible,
+.plan-task--link:focus-visible,
+.home-plan__task.is-link:focus-visible,
+.notif-item:focus-visible,
+.notif-page__item:focus-visible,
+.cite-card:focus-visible,
+.chip:focus-visible,
+.fav-tag:focus-visible,
+.link-btn:focus-visible,
+.bell-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* ===================== 尊重「减少动态效果」系统偏好 ===================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
