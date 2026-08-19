@@ -253,14 +253,10 @@ export default function Wrong() {
   }
 
   // 打印友好视图：新窗口渲染 A4 排版（正确答案标注/上次错误作答/解析），一键打印
-  function printWrong() {
-    if (!items.length) {
-      toast.info("暂无可打印的错题");
-      return;
-    }
+  function openPrintWindow(list: WrongItem[], title: string, subtitle: string) {
     const esc = (s: string) =>
       (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const cards = items
+    const cards = list
       .map((it, i) => {
         const q = it.question;
         const correct = it.correct_answer;
@@ -290,7 +286,7 @@ export default function Wrong() {
       return;
     }
     w.document.write(
-      `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>错题本打印 · ${stamp()}</title>
+      `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><title>${title} · ${stamp()}</title>
       <style>
         * { box-sizing: border-box; }
         body { font-family: "Microsoft YaHei", "PingFang SC", sans-serif; color: #1f2430; margin: 0; padding: 24px; }
@@ -311,14 +307,48 @@ export default function Wrong() {
           .q { border-color: #d1d5db; }
         }
       </style></head><body>
-      <h1>错题本</h1>
-      <div class="sub">打印时间：${stamp().replace(/_/, " ")} · 共 ${items.length} 道待复盘错题 · 绿色为正确答案，红色为你的错误作答</div>
+      <h1>${title}</h1>
+      <div class="sub">${subtitle} · 绿色为正确答案，红色为你的错误作答</div>
       ${cards}
       <script>window.onload = function(){ setTimeout(function(){ window.print(); }, 250); };</script>
       </body></html>`
     );
     w.document.close();
-    toast.success(`已打开打印视图（共 ${items.length} 题）`);
+    toast.success(`已打开打印视图（共 ${list.length} 题）`);
+  }
+
+  function printWrong() {
+    if (!items.length) {
+      toast.info("暂无可打印的错题");
+      return;
+    }
+    openPrintWindow(items, "错题本", `打印时间：${stamp().replace(/_/, " ")} · 共 ${items.length} 道待复盘错题`);
+  }
+
+  // 本周一 00:00（北京时间）时间戳；last_attempted_at 为后端 UTC naive 字符串，前端按 +8h 归一到北京时间
+  function thisWeekMondayTs(): number {
+    const now = Date.now();
+    const bj = new Date(now + 8 * 3600000);
+    const dow = (bj.getUTCDay() + 6) % 7; // 周一=0
+    return Date.UTC(bj.getUTCFullYear(), bj.getUTCMonth(), bj.getUTCDate() - dow);
+  }
+  function isThisWeek(iso: string | null): boolean {
+    if (!iso) return false;
+    const d = new Date(iso.replace(" ", "T") + (iso.includes("Z") || iso.includes("+") ? "" : "Z"));
+    if (isNaN(d.getTime())) return false;
+    return d.getTime() + 8 * 3600000 >= thisWeekMondayTs();
+  }
+  function printWeekly() {
+    const weekly = items.filter((it) => isThisWeek(it.last_attempted_at));
+    if (!weekly.length) {
+      toast.info("本周还没有新的错题记录");
+      return;
+    }
+    openPrintWindow(
+      weekly,
+      "错题本 · 本周错题周报",
+      `本周（周一起）错题汇总 · 打印时间：${stamp().replace(/_/, " ")} · 共 ${weekly.length} 道 · 已掌握/复练通过的题不在此列`
+    );
   }
 
   return (
@@ -353,7 +383,10 @@ export default function Wrong() {
         <button className="btn btn--sm btn--ghost" disabled={busy} onClick={printWrong}>
           🖨 打印视图
         </button>
-        <span className="text-3 export-bar__hint">可导出 Markdown、复制全文，或打开打印视图（正确答案已标注）</span>
+        <button className="btn btn--sm btn--ghost" disabled={busy} onClick={printWeekly}>
+          🗓 本周错题周报
+        </button>
+        <span className="text-3 export-bar__hint">可导出/复制全文，或打印全量视图与本周错题周报（正确答案已标注）</span>
       </div>
       {err && <div className="err-text">{err}</div>}
       {loading && (
