@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../api/client";
 import type { NotificationOut } from "../api/client";
 import { notifMeta, formatNotifTime } from "../components/notifMeta";
+import { PartyIcon } from "../icons";
 
 const PAGE = 20;
 
@@ -117,7 +118,7 @@ export default function Notifications() {
         </div>
       ) : view.length === 0 && filter === "unread" ? (
         <div className="notif-empty notif-empty--page">
-          🎉 没有未读通知，所有提醒都已查看
+          <span className="notif-empty__ico"><PartyIcon /></span>没有未读通知，所有提醒都已查看
         </div>
       ) : (
         <>

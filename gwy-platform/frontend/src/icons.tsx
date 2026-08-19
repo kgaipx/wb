@@ -170,3 +170,12 @@ export const CompassIcon = () => (
     <path d="M15.5 8.5l-2 5-5 2 2-5z" />
   </svg>
 );
+
+/** 警告（三角 + 感叹，替代 ⚠️）。 */
+export const WarningIcon = () => (
+  <svg viewBox="0 0 24 24" {...stroke}>
+    <path d="M12 3.5l9 15.5H3z" />
+    <path d="M12 10v4.5" />
+    <circle cx="12" cy="17.5" r="0.6" fill="currentColor" stroke="none" />
+  </svg>
+);

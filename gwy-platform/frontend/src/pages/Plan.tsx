@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, PlanDay, PlanOut, PlanProgress, PlanTask } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
+import { PartyIcon } from "../icons";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -231,7 +232,7 @@ export default function Plan() {
         <>
           {todayAllDone && (
             <div className="card plan-celebrate">
-              <div className="plan-celebrate__emoji">🎉</div>
+              <div className="plan-celebrate__emoji"><PartyIcon /></div>
               <div>
                 <strong>今日任务已全部清空！</strong>
                 <div className="muted" style={{ marginTop: 2 }}>

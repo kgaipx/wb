@@ -6,7 +6,7 @@ import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
 import EmptyState from "../components/EmptyState";
-import { TargetIcon } from "../icons";
+import { TargetIcon, PartyIcon } from "../icons";
 
 interface ItemState {
   open: boolean;
@@ -456,7 +456,7 @@ export default function Wrong() {
                     )}
                     {st.result.is_correct && !st.suggestDismissed && (
                       <div className="master-suggest">
-                        <div className="master-suggest__title">🎉 已答对，建议标记为「已掌握」</div>
+                        <div className="master-suggest__title"><PartyIcon /> 已答对，建议标记为「已掌握」</div>
                         <div className="master-suggest__actions">
                           <button
                             className="btn btn--primary btn--sm"

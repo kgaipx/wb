@@ -579,6 +579,16 @@
   color: var(--text-3);
   font-size: var(--fs-sm);
 }
+.notif-empty__ico {
+  display: inline-flex;
+  vertical-align: -3px;
+  margin-right: 4px;
+  color: var(--success);
+}
+.notif-empty__ico svg {
+  width: 15px;
+  height: 15px;
+}
 .notif-item {
   display: block;
   width: 100%;
@@ -1238,15 +1248,25 @@
   gap: 12px;
   margin-top: 12px;
   padding: 14px 16px;
-  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
-  border: 1px solid #b7dfb9;
+  background: color-mix(in srgb, var(--success) 10%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--success) 24%, var(--border));
   border-radius: var(--radius);
 }
 .plan-celebrate__emoji {
-  font-size: 30px;
-  line-height: 1;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
+  background: color-mix(in srgb, var(--success) 16%, var(--surface));
+  color: var(--success);
   animation: planPop .4s ease;
+}
+.plan-celebrate__emoji svg {
+  width: 24px;
+  height: 24px;
 }
 @keyframes planPop {
   0% { transform: scale(.4); opacity: 0; }
@@ -1687,9 +1707,16 @@
   border: 1px solid rgba(16, 185, 129, 0.35);
 }
 .master-suggest__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
   font-weight: 700;
   color: var(--success);
+}
+.master-suggest__title svg {
+  width: 15px;
+  height: 15px;
 }
 .master-suggest__actions {
   display: flex;
@@ -2083,8 +2110,19 @@
   padding: 28px 22px;
 }
 .error-screen__icon {
-  font-size: 40px;
-  margin-bottom: 6px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 6px;
+  background: var(--warning-050);
+  color: var(--warning);
+}
+.error-screen__icon svg {
+  width: 32px;
+  height: 32px;
 }
 .error-screen__card h2 {
   margin: 6px 0 8px;
@@ -4444,8 +4482,20 @@
 }
 .flash-start__icon,
 .flash-done__icon {
-  font-size: 40px;
-  margin-bottom: var(--sp-2);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--sp-2);
+  background: linear-gradient(135deg, var(--brand-050), #ffffff);
+  color: var(--brand);
+}
+.flash-start__icon svg,
+.flash-done__icon svg {
+  width: 32px;
+  height: 32px;
 }
 .flash-start__title,
 .flash-done__title {
@@ -5185,6 +5235,10 @@
     border-color: var(--brand-100);
   }
   .empty__icon {
+    background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
+  }
+  .flash-start__icon,
+  .flash-done__icon {
     background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
   }
   .flash-card__back {
