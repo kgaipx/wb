@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Dashboard, KpHeatmap } from "../api/client";
 import Markdown from "../components/Markdown";
@@ -10,6 +10,20 @@ import { TargetIcon, RepeatIcon } from "../icons";
 
 export default function Learn() {
   const nav = useNavigate();
+  // —— 备考倒计时：目标考试日期（本地持久化；跨设备同步留作后端字段扩展）——
+  const [examDate, setExamDate] = useState<string>(() => localStorage.getItem("gwy_target_exam_date") || "");
+  const [examName, setExamName] = useState<string>(() => localStorage.getItem("gwy_target_exam_name") || "目标考试");
+  const [editTarget, setEditTarget] = useState(false);
+  const daysLeft = useMemo(() => {
+    if (!examDate) return null;
+    return Math.ceil((new Date(examDate + "T00:00:00").getTime() - Date.now()) / 86400000);
+  }, [examDate]);
+  const saveTarget = () => {
+    if (!examDate) return;
+    localStorage.setItem("gwy_target_exam_date", examDate);
+    localStorage.setItem("gwy_target_exam_name", examName.trim() || "目标考试");
+    setEditTarget(false);
+  };
   const REC_PAGE = 10;
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
@@ -110,6 +124,48 @@ export default function Learn() {
   return (
     <section>
       <h2 className="page-title">学习中心</h2>
+      {/* 备考倒计时：目标考试日期（本地持久化） */}
+      <Reveal className="card">
+        <div className="row row--between" style={{ alignItems: "center" }}>
+          <strong>
+            {daysLeft !== null
+              ? daysLeft >= 0
+                ? `⏳ 距${examName}还有 ${daysLeft} 天`
+                : `🎉 ${examName}已结束，可更新目标日期`
+              : "🎯 备考倒计时"}
+          </strong>
+          <button className="link-btn" onClick={() => setEditTarget((v) => !v)}>
+            {editTarget ? "取消" : daysLeft !== null ? "修改" : "设置目标"}
+          </button>
+        </div>
+        {editTarget && (
+          <div className="row" style={{ gap: 8, marginTop: 8 }}>
+            <input
+              type="date"
+              className="input"
+              style={{ flex: 1, minWidth: 0 }}
+              value={examDate}
+              onChange={(e) => setExamDate(e.target.value)}
+            />
+            <input
+              type="text"
+              className="input"
+              style={{ flex: 1, minWidth: 0 }}
+              placeholder="考试名称（如 2027 国考）"
+              value={examName}
+              onChange={(e) => setExamName(e.target.value)}
+            />
+            <button className="btn btn--primary btn--sm" disabled={!examDate} onClick={saveTarget}>
+              保存
+            </button>
+          </div>
+        )}
+        {daysLeft !== null && daysLeft >= 0 && (
+          <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
+            保持节奏，每天点亮一点进度 💪
+          </div>
+        )}
+      </Reveal>
       <Reveal className="card">
         <strong>学情概览</strong>
         <div className="muted" style={{ marginTop: 4 }}>
