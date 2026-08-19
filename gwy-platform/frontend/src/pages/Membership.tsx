@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, AiQuota } from "../api/client";
-import EmptyState from "../components/EmptyState";
-import { TargetIcon, PenIcon, InfinityIcon } from "../icons";
 
 interface Plan {
   id: string;
@@ -30,7 +28,6 @@ export default function Membership() {
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
   const [sandbox, setSandbox] = useState(false); // 真实收银台未接入时为 true
-  const [loading, setLoading] = useState(true);
 
   async function refresh() {
     try {
@@ -41,8 +38,6 @@ export default function Membership() {
       setQuota(q);
     } catch (e: any) {
       setErr(e.message || "加载会员信息失败");
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -112,35 +107,23 @@ export default function Membership() {
         </div>
       </div>
 
-      {loading ? (
-        <div className="card sk-card">
-          <div className="sk-head">
-            <div className="sk sk-circle" style={{ width: 36, height: 36 }} />
-            <div className="sk sk-line" style={{ width: "50%" }} />
-          </div>
-          <div className="sk sk-line" style={{ width: "100%" }} />
-          <div className="sk sk-line" style={{ width: "82%" }} />
-          <div className="sk sk-line" style={{ width: "64%" }} />
-        </div>
-      ) : (
-      <>
       {/* 价值引导 hero */}
       <div className="card mem-hero">
         <div className="mem-hero__title">升级会员，把 AI 私教装进口袋</div>
         <div className="mem-hero__subs">从「盲目刷题」到「精准提分」，AI 全程陪你走完备考每一步</div>
         <div className="mem-hero__props">
           <div className="mem-prop">
-            <span className="mem-prop__ic"><TargetIcon /></span>
+            <span className="mem-prop__ic">🎯</span>
             <b>精准提分</b>
             <span>学情诊断 + 个性化计划</span>
           </div>
           <div className="mem-prop">
-            <span className="mem-prop__ic"><PenIcon /></span>
+            <span className="mem-prop__ic">✍️</span>
             <b>申论精批</b>
             <span>五维评分逐段批注</span>
           </div>
           <div className="mem-prop">
-            <span className="mem-prop__ic"><InfinityIcon /></span>
+            <span className="mem-prop__ic">♾️</span>
             <b>无限畅学</b>
             <span>AI 讲解不再限次</span>
           </div>
@@ -152,7 +135,7 @@ export default function Membership() {
         <div className="card mem-compare">
           <div className="mem-compare__col">
             <div className="mem-compare__h mem-compare__h--free">免费版</div>
-            <ul className="mem-compare__list">
+            <ul>
               {(freePlan?.benefits || ["每日 AI 讲解额度", "基础申论批改", "学习计划", "题库刷题"]).map((b) => (
                 <li key={b}>
                   <span className="mem-cmp-ic">✓</span>
@@ -163,7 +146,7 @@ export default function Membership() {
           </div>
           <div className="mem-compare__col mem-compare__col--paid">
             <div className="mem-compare__h mem-compare__h--paid">会员版 · {paidPlan.name}</div>
-            <ul className="mem-compare__list">
+            <ul>
               {paidPlan.benefits.map((b) => (
                 <li key={b}>
                   <span className="mem-cmp-ic mem-cmp-ic--on">★</span>
@@ -292,7 +275,10 @@ export default function Membership() {
       <h3 className="section-title" style={{ marginTop: 16 }}>账单记录</h3>
       <div className="card">
         {!me?.orders?.length && !me?.refunds?.length && (
-          <EmptyState tight icon="card" title="暂无订单记录" />
+          <div className="empty empty--tight">
+            <div className="empty__icon">💳</div>
+            <div className="empty__title">暂无订单记录</div>
+          </div>
         )}
         {me?.orders?.map((o) => (
           <div key={o.id} className="bill-row">
@@ -330,8 +316,6 @@ export default function Membership() {
 
       {msg && <div className="ok-text" style={{ marginTop: 10 }}>{msg}</div>}
       {err && <div className="err-text" style={{ marginTop: 10 }}>{err}</div>}
-      </>
-      )}
     </section>
   );
 }

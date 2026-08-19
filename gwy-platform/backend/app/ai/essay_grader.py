@@ -65,11 +65,6 @@ class EssayGrader:
             dims, rationale = self._parse(resp.content)
             if dims is None:
                 raise ValueError("LLM 未返回可解析 JSON")
-            # 维度分按 max_score 缩放：LLM 固定按 0-20 返回（满分 100 时 per_dim=20，缩放因子=1，零变化）；
-            # max_score≠100 时统一缩放到 0-per_dim，保证 total≤max_score，且与 essay_compare 的 per 假设一致。
-            # 启发式回退路径已在 _heuristic_score 内用 per_dim 缩放，不经过此处，不会双重缩放。
-            scale = max_score / 100.0
-            dims = {d: round(float(v) * scale, 1) for d, v in dims.items()}
         except Exception:
             # 回退：基于要点的规则化预评（保障可用性且给出有区分度的分数，仍一律转人工复核）
             dims, rationale = self._heuristic_score(essay_text, prompt_material, per_dim)

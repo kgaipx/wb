@@ -22,12 +22,6 @@ import Dashboard from "./pages/Dashboard";
 import Admin from "./pages/Admin";
 import Notifications from "./pages/Notifications";
 import Assessment from "./pages/Assessment";
-import Search from "./pages/Search";
-import MaterialLibrary from "./pages/MaterialLibrary";
-import SmartReinforcement from "./pages/SmartReinforcement";
-import ExamPrediction from "./pages/ExamPrediction";
-import Flashcards from "./pages/Flashcards";
-import { getStoredMode, resolveTheme, applyTheme, setMode, watchSystem, type ThemeMode } from "./theme/theme";
 
 type Icon = () => JSX.Element;
 
@@ -100,20 +94,6 @@ const GaugeIcon: Icon = () => (
     <circle cx="12" cy="14" r="1.2" fill="currentColor" />
   </svg>
 );
-const TargetIcon: Icon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="9" />
-    <circle cx="12" cy="12" r="5" />
-    <circle cx="12" cy="12" r="1.4" fill="currentColor" />
-  </svg>
-);
-const PaperIcon: Icon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6 3h9l3 3v15a0 0 0 0 1 0 0H6a0 0 0 0 1 0 0V4a1 1 0 0 1 1-1z" />
-    <path d="M14 3v4h4" />
-    <path d="M8.5 13h7M8.5 16.5h5" />
-  </svg>
-);
 const StarIcon: Icon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
     <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 17l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z" />
@@ -136,19 +116,6 @@ const EssayIcon: Icon = () => (
     <path d="M6 3h8l4 4v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
     <path d="M13 3v5h5" />
     <path d="M8.5 12.5h7M8.5 16h5" />
-  </svg>
-);
-const SearchIcon: Icon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="7" />
-    <path d="M21 21l-4-4" />
-  </svg>
-);
-
-const CardsIcon: Icon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="7" width="13" height="11" rx="2" />
-    <path d="M8 7V5a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
   </svg>
 );
 const MoreIcon: Icon = () => (
@@ -178,18 +145,13 @@ const PRIMARY = [
 type MoreEntry = { to: string; label: string; icon: Icon; end?: boolean; role?: "reviewer" | "admin" };
 const MORE: MoreEntry[] = [
   { to: "/learn", label: "学习", icon: BookIcon },
-  { to: "/search", label: "搜题", icon: SearchIcon },
   { to: "/exam", label: "模考", icon: ExamIcon },
-  { to: "/predict", label: "真题", icon: PaperIcon },
   { to: "/data", label: "数据", icon: ChartIcon },
   { to: "/favorites", label: "收藏", icon: StarIcon },
   { to: "/plan", label: "计划", icon: PlanIcon },
   { to: "/membership", label: "会员", icon: CrownIcon },
   { to: "/notifications", label: "通知", icon: BellIcon },
   { to: "/essay", label: "申论", icon: EssayIcon },
-  { to: "/material", label: "素材", icon: BookIcon },
-  { to: "/reinforce", label: "强化包", icon: TargetIcon },
-  { to: "/flashcards", label: "速记卡", icon: CardsIcon },
   { to: "/review", label: "审核", icon: ShieldIcon, role: "reviewer" },
   { to: "/admin", label: "运营", icon: GaugeIcon, role: "admin" },
 ];
@@ -212,28 +174,7 @@ function FloatingTutor() {
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
   const loc = useLocation();
-  if (loading) return (
-    <div className="splash">
-      <div className="sk-stack splash__skel">
-        <div className="sk-card">
-          <div className="sk-head">
-            <div className="sk sk-circle" style={{ width: 48, height: 48 }} />
-            <div style={{ flex: 1 }}>
-              <div className="sk sk-line" style={{ width: "52%" }} />
-              <div className="sk sk-line" style={{ width: "32%", height: 10 }} />
-            </div>
-          </div>
-          <div className="sk sk-line" style={{ width: "100%" }} />
-          <div className="sk sk-line" style={{ width: "86%" }} />
-        </div>
-        <div className="sk-card">
-          <div className="sk sk-line" style={{ width: "40%" }} />
-          <div className="sk sk-line" style={{ width: "94%" }} />
-          <div className="sk sk-line" style={{ width: "70%" }} />
-        </div>
-      </div>
-    </div>
-  );
+  if (loading) return <div className="splash">加载中…</div>;
   if (!user) return <Navigate to="/login" state={{ from: loc.pathname }} replace />;
   return children;
 }
@@ -267,21 +208,6 @@ function AppShell() {
   const [online, setOnline] = useState(
     typeof navigator !== "undefined" ? navigator.onLine : true
   );
-
-  // —— 暗色模式：读取持久化模式，应用并（system 时）跟随系统偏好变化 ——
-  const [themeMode, setThemeMode] = useState<ThemeMode>(() => getStoredMode());
-  const themeResolved = resolveTheme(themeMode);
-  useEffect(() => {
-    const apply = () => applyTheme(themeMode);
-    apply();
-    if (themeMode === "system") return watchSystem(apply);
-    return undefined;
-  }, [themeMode]);
-  const toggleTheme = useCallback(() => {
-    const next: ThemeMode = themeResolved === "dark" ? "light" : "dark";
-    setThemeMode(next);
-    setMode(next);
-  }, [themeResolved]);
 
   // —— PWA 安装引导 ——
   useEffect(() => {
@@ -379,19 +305,12 @@ function AppShell() {
     }
   }, [user, isAuth, loadNotifs, loc.pathname]);
 
-  // 通知中心页内标记已读后回写顶部铃铛角标（跨组件共享刷新）
-  useEffect(() => {
-    const onChanged = () => loadNotifs();
-    window.addEventListener("notif-changed", onChanged);
-    return () => window.removeEventListener("notif-changed", onChanged);
-  }, [loadNotifs]);
-
   const openNotif = async (n: NotificationOut) => {
     setPanelOpen(false);
     if (!n.is_read) {
       try {
         await api.markNotificationRead(n.id);
-        await loadNotifs();
+        setUnread((u) => Math.max(0, u - 1));
       } catch {
         /* ignore */
       }
@@ -402,7 +321,8 @@ function AppShell() {
   const readAll = async () => {
     try {
       await api.markAllNotificationsRead();
-      await loadNotifs();
+      setUnread(0);
+      setNotifs((list) => list.map((x) => ({ ...x, is_read: true })));
     } catch {
       /* ignore */
     }
@@ -425,38 +345,19 @@ function AppShell() {
             <div className="app-header__name">AI 公考私教</div>
             <div className="app-header__tag">懂你短板 · 内容可信</div>
           </div>
-          <div className="app-header__actions">
-            <button
-              className="bell-btn"
-              aria-label={themeResolved === "dark" ? "切换到浅色模式" : "切换到深色模式"}
-              title={themeResolved === "dark" ? "浅色模式" : "深色模式"}
-              onClick={toggleTheme}
-            >
-              {themeResolved === "dark" ? (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="4.2" />
-                  <path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 14.5A8 8 0 1 1 9.5 4a6.3 6.3 0 0 0 10.5 10.5z" />
-                </svg>
-              )}
-            </button>
-            <button
-              className="bell-btn"
-              aria-label="通知"
-              onClick={() => setPanelOpen((o) => !o)}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.7 21a2 2 0 0 1-3.4 0" />
-              </svg>
-              {unread > 0 && (
-                <span className="unread-dot">{unread > 99 ? "99+" : unread}</span>
-              )}
-            </button>
-          </div>
+          <button
+            className="bell-btn"
+            aria-label="通知"
+            onClick={() => setPanelOpen((o) => !o)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.7 21a2 2 0 0 1-3.4 0" />
+            </svg>
+            {unread > 0 && (
+              <span className="unread-dot">{unread > 99 ? "99+" : unread}</span>
+            )}
+          </button>
 
           {panelOpen && (
             <div className="notif-panel">
@@ -559,11 +460,6 @@ function AppShell() {
             <Route path="/membership" element={<RequireAuth><Membership /></RequireAuth>} />
             <Route path="/essay" element={<RequireAuth><Essay /></RequireAuth>} />
             <Route path="/data" element={<RequireAuth><Dashboard /></RequireAuth>} />
-            <Route path="/search" element={<RequireAuth><Search /></RequireAuth>} />
-            <Route path="/material" element={<RequireAuth><MaterialLibrary /></RequireAuth>} />
-            <Route path="/reinforce" element={<RequireAuth><SmartReinforcement /></RequireAuth>} />
-            <Route path="/predict" element={<RequireAuth><ExamPrediction /></RequireAuth>} />
-            <Route path="/flashcards" element={<RequireAuth><Flashcards /></RequireAuth>} />
             <Route path="/admin" element={<RequireAuth><Admin /></RequireAuth>} />
             <Route path="/notifications" element={<RequireAuth><Notifications /></RequireAuth>} />
             <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />

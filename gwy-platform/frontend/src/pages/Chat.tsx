@@ -3,8 +3,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { api, Ability, ChatMessage, ChatSession } from "../api/client";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
-import EmptyState from "../components/EmptyState";
-import { ChartIcon, TargetIcon, CompassIcon } from "../icons";
 
 const SUGGESTIONS = [
   "类比推理总做错，怎么破？",
@@ -14,7 +12,7 @@ const SUGGESTIONS = [
 ];
 
 const WELCOME =
-  "我是你的 AI 公考私教，可以问我知识点、解题技巧、申论写法、复习规划。回答会尽量标注资料来源，离线时也能基于本地知识库给你建议。";
+  "我是你的 AI 公考私教 🤖 可以问我知识点、解题技巧、申论写法、复习规划。回答会尽量标注资料来源，离线时也能基于本地知识库给你建议。";
 
 const LS_KEY = "activeChatSession";
 
@@ -35,7 +33,6 @@ export default function Chat() {
   const [loading, setLoading] = useState(true);
   const endRef = useRef<HTMLDivElement>(null);
   const [weak, setWeak] = useState<Ability[]>([]);
-  const [profileReady, setProfileReady] = useState(false);
 
   // 挂载即恢复会话列表与上次会话（DB 为真相源，刷新不丢）
   useEffect(() => {
@@ -66,10 +63,8 @@ export default function Chat() {
     .studentStats()
     .then((st) => {
       if (st?.ability?.length) setWeak(st.ability.slice(0, 5));
-      setProfileReady(true);
     })
     .catch(() => {
-      setProfileReady(true);
       /* 画像缺失不影响对话主流程 */
     });
   }, []);
@@ -102,13 +97,13 @@ export default function Chat() {
     localStorage.removeItem(LS_KEY);
   }
 
-  async function doSend(sid: number, q: string, kpHint?: string) {
+  async function doSend(sid: number, q: string) {
     const uid = -Date.now();
     setMessages((prev) => [...prev, { id: uid, role: "user", content: q }]);
     setInput("");
     setBusy(true);
     try {
-      const r = await api.chatSend(sid, q, kpHint);
+      const r = await api.chatSend(sid, q);
       setMessages((prev) => [
         ...prev.filter((m) => m.id !== uid),
         { id: uid, role: "user", content: q },
@@ -145,7 +140,7 @@ export default function Chat() {
     }
   }
 
-  async function send(text: string, kpHint?: string) {
+  async function send(text: string) {
     const q = text.trim();
     if (!q || busy) return;
     setErr("");
@@ -155,12 +150,12 @@ export default function Chat() {
         setSessions((prev) => [s, ...prev]);
         setActiveId(s.id);
         localStorage.setItem(LS_KEY, String(s.id));
-        await doSend(s.id, q, kpHint);
+        await doSend(s.id, q);
       } catch (e: any) {
         setErr(e.message || "创建会话失败");
       }
     } else {
-      await doSend(activeId, q, kpHint);
+      await doSend(activeId, q);
     }
   }
 
@@ -202,13 +197,6 @@ export default function Chat() {
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
   const offline = lastAssistant?.offline ?? false;
-  // 最弱知识点：用于首条建议聚焦 + 头部个性化提示
-  const TOP_WEAK = weak[0] ?? null;
-  const statusText = offline
-    ? "离线检索模式"
-    : weak.length
-    ? `个性化私教 · 已结合 ${weak.length} 个薄弱点`
-    : "RAG 溯源 · 接通大模型";
 
   return (
     <section className="chat">
@@ -218,13 +206,7 @@ export default function Chat() {
         </button>
         <div className="chat__headinfo">
           <div className="chat__title">AI 公考私教</div>
-          <div
-            className="chat__status"
-            title={weak.length ? "私教已读取你的能力画像，会优先针对最薄弱知识点给建议" : undefined}
-          >
-            {weak.length > 0 && <TargetIcon />}
-            {statusText}
-          </div>
+          <div className="chat__status">{offline ? "离线检索模式" : "RAG 溯源 · 接通大模型"}</div>
         </div>
         <button
           className="iconbtn"
@@ -251,20 +233,16 @@ export default function Chat() {
             </div>
             <div className="chat-drawer__list">
               {loading && sessions.length === 0 && (
-                <div className="sk-stack" style={{ padding: 12, gap: 10 }}>
-                  {[0, 1, 2, 3].map((i) => (
-                    <div className="sk-row" key={i}>
-                      <div className="sk sk-circle" style={{ width: 36, height: 36 }} />
-                      <div style={{ flex: 1 }}>
-                        <div className="sk sk-line" style={{ width: "70%" }} />
-                        <div className="sk sk-line" style={{ width: "45%", height: 10 }} />
-                      </div>
-                    </div>
-                  ))}
+                <div className="muted" style={{ padding: 12 }}>
+                  加载中…
                 </div>
               )}
               {!loading && sessions.length === 0 && (
-                <EmptyState tight icon="chat" title="还没有历史对话" desc="开启一段新对话，AI 私教会记住你的薄弱点。" style={{ paddingTop: 28, paddingBottom: 28 }} />
+                <div className="empty empty--tight" style={{ paddingTop: 28, paddingBottom: 28 }}>
+                  <div className="empty__icon">💬</div>
+                  <div className="empty__title">还没有历史对话</div>
+                  <div className="empty__desc">开启一段新对话，AI 私教会记住你的薄弱点。</div>
+                </div>
               )}
               {sessions.map((s) => (
                 <div
@@ -394,7 +372,7 @@ export default function Chat() {
 
         {!loading && messages.length === 0 && activeId == null && weak.length > 0 && (
           <div className="bubble bubble--assistant profile-card">
-            <div className="profile-card__title"><ChartIcon /> 私教已了解你的薄弱点</div>
+            <div className="profile-card__title">📊 私教已了解你的薄弱点</div>
             <div className="profile-card__desc">
               依据你的练习数据，以下知识点掌握度偏低。点选其一，私教会给出针对性突破建议：
             </div>
@@ -403,22 +381,13 @@ export default function Chat() {
                 <button
                   key={w.knowledge_point}
                   className="chip chip--click chip--btn"
-                  onClick={() => send(`帮我重点突破「${w.knowledge_point}」这个知识点`, w.knowledge_point)}
+                  onClick={() => send(`帮我重点突破「${w.knowledge_point}」这个知识点`)}
                   disabled={busy}
                 >
                   {w.knowledge_point}
                   <span className="profile-card__pct">{Math.round(w.mastery * 100)}%</span>
                 </button>
               ))}
-            </div>
-          </div>
-        )}
-
-        {!loading && messages.length === 0 && activeId == null && profileReady && weak.length === 0 && (
-          <div className="bubble bubble--assistant profile-card">
-            <div className="profile-card__title"><CompassIcon /> 让私教更懂你</div>
-            <div className="profile-card__desc">
-              完成几道题或一次能力测评后，私教会结合你的薄弱点给出针对性突破建议。
             </div>
           </div>
         )}
@@ -438,19 +407,8 @@ export default function Chat() {
 
       {!loading && messages.length === 0 && activeId == null && (
         <div className="chat__suggest">
-          {(TOP_WEAK
-            ? [`帮我重点突破「${TOP_WEAK.knowledge_point}」这个知识点`, ...SUGGESTIONS.slice(1, 4)]
-            : SUGGESTIONS
-          ).map((s, i) => (
-            <button
-              key={s}
-              className="chip"
-              onClick={() => {
-                const isFocus = TOP_WEAK != null && i === 0;
-                send(s, isFocus ? TOP_WEAK!.knowledge_point : undefined);
-              }}
-              disabled={busy}
-            >
+          {SUGGESTIONS.map((s) => (
+            <button key={s} className="chip" onClick={() => send(s)} disabled={busy}>
               {s}
             </button>
           ))}

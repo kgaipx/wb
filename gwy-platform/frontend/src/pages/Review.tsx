@@ -8,7 +8,6 @@ import {
   ReviewStats,
 } from "../api/client";
 import { useAuth } from "../auth";
-import EmptyState from "../components/EmptyState";
 
 const TYPE_LABEL: Record<string, string> = {
   question: "题目解析",
@@ -522,7 +521,11 @@ export default function Review() {
           )}
           {qPending.length === 0 && !qBusy && (
             <div className="card review-empty">
-              <EmptyState tight icon="check" title="暂无待核实题目" desc="全部已双签通过 🎉" />
+              <div className="empty empty--tight">
+                <div className="empty__icon">✅</div>
+                <div className="empty__title">暂无待核实题目</div>
+                <div className="empty__desc">全部已双签通过 🎉</div>
+              </div>
             </div>
           )}
 

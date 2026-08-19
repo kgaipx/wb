@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, WrongItem, Citation } from "../api/client";
 import { triggerDownload, copyText, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
 import MasteryBadge from "../components/MasteryBadge";
 import CiteCards from "../components/CiteCards";
-import EmptyState from "../components/EmptyState";
-import { TargetIcon, PartyIcon } from "../icons";
 
 interface ItemState {
   open: boolean;
@@ -41,7 +39,6 @@ export default function Wrong() {
   const [wf, setWf] = useState<string>("全部"); // 错题本科目筛选
   const [sortBy, setSortBy] = useState<"risk" | "attempts">("risk"); // 列表排序：复错风险↓ / 练习次数↓
   const [loading, setLoading] = useState(true);
-  const [activeQid, setActiveQid] = useState<number | null>(null); // 键盘快捷键作用的「激活」错题卡
 
   function refresh() {
     setLoading(true);
@@ -49,49 +46,6 @@ export default function Wrong() {
   }
   useEffect(() => {
     refresh();
-  }, []);
-
-  // 错题本 inline 重练键盘快捷键：对齐刷题/模考/测评的作答体验。
-  // 仅对「激活」的错题卡生效（最近一次点开重练/点选项的题），多卡并存时不串扰。
-  const stateRef = useRef<{
-    activeQid: number | null;
-    states: Record<number, ItemState>;
-    busy: boolean;
-    submit: (qid: number) => void;
-    patch: (qid: number, p: Partial<ItemState>) => void;
-  }>({ activeQid: null, states: {}, busy: false, submit: () => {}, patch: () => {} });
-  stateRef.current = { activeQid, states, busy, submit, patch };
-  useEffect(() => {
-    const map: Record<string, string> = { a: "A", b: "B", c: "C", d: "D", e: "E", "1": "A", "2": "B", "3": "C", "4": "D", "5": "E" };
-    function onKey(e: KeyboardEvent) {
-      const { activeQid, states, busy, submit, patch } = stateRef.current;
-      if (activeQid == null) return;
-      const st = states[activeQid];
-      if (!st || !st.open) return;
-      const t = e.target as HTMLElement | null;
-      if (t && (t.tagName === "TEXTAREA" || (t.tagName === "INPUT" && (t as HTMLInputElement).type === "text"))) return;
-      const k = e.key.toLowerCase();
-      if (k in map) {
-        e.preventDefault();
-        patch(activeQid, { selected: map[k] });
-        return;
-      }
-      if (k === "enter") {
-        if (t && t.tagName === "BUTTON") return; // 让原生按钮点击生效，避免重复提交
-        if (st.selected && !st.result && !busy) {
-          e.preventDefault();
-          submit(activeQid);
-        }
-        return;
-      }
-      if (k === "escape") {
-        e.preventDefault();
-        patch(activeQid, { selected: "" });
-        return;
-      }
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   function s(qid: number): ItemState {
@@ -192,7 +146,6 @@ export default function Wrong() {
       await api.wrongReview(qid);
       await syncMasteredTag(qid);
       setItems((prev) => prev.filter((it) => it.question.id !== qid));
-      if (qid === activeQid) setActiveQid(null);
       setToast("已标记为「已掌握」并移出错题本");
       setTimeout(() => setToast(""), 2200);
     } catch (e: any) {
@@ -256,7 +209,7 @@ export default function Wrong() {
       {items.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, alignItems: "center", marginTop: 12 }}>
           <button className="btn btn--primary" disabled={busy} onClick={retryAll}>
-            <><TargetIcon /> 智能重练全部（{items.length}）</>
+            🎯 智能重练全部（{items.length}）
           </button>
           <button
             className="btn btn--ghost"
@@ -296,7 +249,11 @@ export default function Wrong() {
       )}
 
       {!loading && items.length === 0 && (
-        <EmptyState icon="book" title="暂无待复盘错题" desc="多做「刷题」和「模考」，这里会自动收集你的错答。" />
+        <div className="empty">
+          <div className="empty__icon">📕</div>
+          <div className="empty__title">暂无待复盘错题</div>
+          <div className="empty__desc">多做「刷题」和「模考」，这里会自动收集你的错答。</div>
+        </div>
       )}
 
       {items.length > 0 && overview && (
@@ -358,7 +315,10 @@ export default function Wrong() {
         </div>
       )}
       {items.length > 0 && visible.length === 0 && (
-        <EmptyState tight icon="inbox" title="该科目暂无错题" />
+        <div className="empty empty--tight">
+          <div className="empty__icon">📭</div>
+          <div className="empty__title">该科目暂无错题</div>
+        </div>
       )}
 
       {sorted.map((it) => {
@@ -396,7 +356,7 @@ export default function Wrong() {
 
             {!st.open ? (
               <div className="row" style={{ marginTop: 8, gap: 8 }}>
-                <button className="btn btn--primary" style={{ flex: 1 }} onClick={() => { setActiveQid(q.id); patch(q.id, { open: true }); }}>
+                <button className="btn btn--primary" style={{ flex: 1 }} onClick={() => patch(q.id, { open: true })}>
                   重练这题
                 </button>
                 <button className="btn btn--ghost" style={{ flex: 1 }} disabled={busy} onClick={() => askTutor(q.id)}>
@@ -405,28 +365,17 @@ export default function Wrong() {
               </div>
             ) : (
               <div style={{ marginTop: 8 }}>
-                {q.options.map((o) => {
-                  let cls = "opt";
-                  if (st.result) {
-                    const ca = st.result.correct_answer || "";
-                    if (ca.includes(o.label)) cls += " opt--correct";
-                    else if (st.selected === o.label) cls += " opt--wrong";
-                  } else if (st.selected === o.label) {
-                    cls += " opt--selected";
-                  }
-                  return (
-                    <label key={o.id} className={cls}>
-                      <input
-                        type="radio"
-                        name={`w${q.id}`}
-                        checked={st.selected === o.label}
-                        disabled={!!st.result}
-                        onChange={() => { setActiveQid(q.id); patch(q.id, { selected: o.label }); }}
-                      />
-                      <b>{o.label}.</b> <span>{o.content}</span>
-                    </label>
-                  );
-                })}
+                {q.options.map((o) => (
+                  <label key={o.id} className={"opt" + (st.selected === o.label ? " opt--selected" : "")}>
+                    <input
+                      type="radio"
+                      name={`w${q.id}`}
+                      checked={st.selected === o.label}
+                      onChange={() => patch(q.id, { selected: o.label })}
+                    />
+                    <b>{o.label}.</b> <span>{o.content}</span>
+                  </label>
+                ))}
                 <div className="row" style={{ marginTop: 8, gap: 8 }}>
                   <button className="btn btn--primary" style={{ flex: 1 }} disabled={busy || !st.selected} onClick={() => submit(q.id)}>
                     提交重练
@@ -435,11 +384,6 @@ export default function Wrong() {
                     标记已掌握
                   </button>
                 </div>
-                {!st.result && (
-                  <div className="text-3" style={{ fontSize: 12, marginTop: 6 }}>
-                    ⌨ A–D / 1–4 选择 · Enter 提交 · Esc 取消
-                  </div>
-                )}
                 {st.result && (
                   <div className={"result " + (st.result.is_correct ? "result--ok" : st.result.skipped ? "result--skip" : "result--bad")}>
                     <b>
@@ -456,7 +400,7 @@ export default function Wrong() {
                     )}
                     {st.result.is_correct && !st.suggestDismissed && (
                       <div className="master-suggest">
-                        <div className="master-suggest__title"><PartyIcon /> 已答对，建议标记为「已掌握」</div>
+                        <div className="master-suggest__title">🎉 已答对，建议标记为「已掌握」</div>
                         <div className="master-suggest__actions">
                           <button
                             className="btn btn--primary btn--sm"

@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, Dashboard, StudentStats, EssayPrompt, EssayModel, EssayCompare } from "../api/client";
+import { api, Dashboard, EssayPrompt } from "../api/client";
 import { useAuth } from "../auth";
-import { LineChart } from "../components/LineChart";
 import { DimensionBars } from "../components/DimensionBars";
-import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
-import { PenIcon, ChartIcon } from "../icons";
 
 function fmtDate(iso: string | null): string {
   if (!iso) return "—";
@@ -19,7 +16,6 @@ export default function Profile() {
   const nav = useNavigate();
   const { logout, user } = useAuth();
   const [dash, setDash] = useState<Dashboard | null>(null);
-  const [stats, setStats] = useState<StudentStats | null>(null);
   const [plan, setPlan] = useState("free");
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
   const [wrongCount, setWrongCount] = useState(0);
@@ -28,10 +24,6 @@ export default function Profile() {
   const [essay, setEssay] = useState("");
   const [grade, setGrade] = useState<any>(null);
   const [essayPrompt, setEssayPrompt] = useState<EssayPrompt | null>(null);
-  const [essayModel, setEssayModel] = useState<EssayModel | null>(null);
-  const [modelBusy, setModelBusy] = useState(false);
-  const [compare, setCompare] = useState<EssayCompare | null>(null);
-  const [compareBusy, setCompareBusy] = useState(false);
 
   const [nickname, setNickname] = useState("");
   const [province, setProvince] = useState("");
@@ -57,8 +49,6 @@ export default function Profile() {
     }).catch((e) => setErr(e.message));
     api.wrongList().then((w) => setWrongCount(w.length)).catch(() => {});
     api.favoriteList().then((f) => setFavCount(f.length)).catch(() => {});
-    // 成长总览：连续打卡 / 7日趋势 / 弱项（与 Dashboard 同源，但本页只做概览，详情跳 Dashboard）
-    api.studentStats().then(setStats).catch(() => {});
     // 取首个申论题作为快速批改的真实材料/要求（避免占位文本误导评分）
     api.essayPrompts().then((ps) => setEssayPrompt(ps[0] || null)).catch(() => {});
   }, []);
@@ -92,41 +82,6 @@ export default function Profile() {
   function resetProfileEssay() {
     setEssay("");
     setGrade(null);
-    setCompare(null);
-  }
-
-  async function loadProfileModel() {
-    setModelBusy(true);
-    try {
-      setEssayModel(await api.essayModel(essayPrompt?.material ?? "", essayPrompt?.requirement ?? "", essayPrompt?.id ?? null));
-    } catch (e: any) {
-      setErr(e.message);
-    } finally {
-      setModelBusy(false);
-    }
-  }
-
-  async function loadProfileCompare() {
-    if (!grade) return;
-    setCompareBusy(true);
-    setErr("");
-    try {
-      const mat = essayPrompt?.material ?? "";
-      const req = essayPrompt?.requirement ?? "";
-      let me = essayModel?.model_essay ?? null;
-      if (!me) {
-        const m = await api.essayModel(mat, req, essayPrompt?.id ?? null);
-        setEssayModel(m);
-        me = m.model_essay;
-      }
-      setCompare(
-        await api.essayCompare(essay, mat, req, essayPrompt?.id ?? null, me, grade.dimensions, grade.total),
-      );
-    } catch (e: any) {
-      setErr(e.message);
-    } finally {
-      setCompareBusy(false);
-    }
   }
 
   async function changePwd() {
@@ -199,59 +154,6 @@ export default function Profile() {
         </button>
         {profileOk && <div className="ok-text" style={{ marginTop: 6 }}>{profileOk}</div>}
       </div>
-
-      {/* 成长总览（个人中心的成长档案收口，详情见 Dashboard） */}
-      {stats && (
-        <div className="card" style={{ marginTop: 12 }}>
-          <div className="row row--between">
-            <strong>成长总览</strong>
-            <span className="muted" style={{ fontSize: 12 }}>近 7 日</span>
-          </div>
-          <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
-            <div className="metric">
-              <div className="metric__num" style={{ color: "var(--brand)" }}>🔥 {stats.streak_days}</div>
-              <div className="metric__label">连续打卡 (天)</div>
-            </div>
-            <div className="metric">
-              <div className="metric__num">{stats.last_7_days.reduce((s, d) => s + d.answers, 0)}</div>
-              <div className="metric__label">本周练习 (题)</div>
-            </div>
-          </div>
-          {stats.last_7_days.length >= 2 && (
-            <div style={{ marginTop: 10 }}>
-              <LineChart
-                points={stats.last_7_days.map((d) => ({
-                  label: d.date.slice(5),
-                  value: d.answers ? Math.round((d.correct / d.answers) * 100) : 0,
-                }))}
-                max={100}
-                min={0}
-                unit="%"
-                color="var(--brand)"
-              />
-            </div>
-          )}
-          {stats.ability.length > 0 && (
-            <div style={{ marginTop: 10 }}>
-              <div className="muted" style={{ fontSize: 12, marginBottom: 4 }}>最弱知识点（点击去专项练习）</div>
-              <div className="chip-row">
-                {stats.ability.slice(0, 3).map((a) => (
-                  <button
-                    key={a.knowledge_point}
-                    className="chip chip--warn"
-                    onClick={() => nav(`/practice?kp=${encodeURIComponent(a.knowledge_point)}`)}
-                  >
-                    {a.knowledge_point}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          <button className="btn btn--ghost btn--block btn--sm" style={{ marginTop: 10 }} onClick={() => nav("/data")}>
-            查看完整学习分析 →
-          </button>
-        </div>
-      )}
 
       {/* 学习管理 */}
       <div className="card" style={{ marginTop: 12 }}>
@@ -338,12 +240,6 @@ export default function Profile() {
         <button className="btn btn--primary btn--block" style={{ marginTop: 8 }} disabled={!essay} onClick={gradeEssay}>
           批改（满分 100）
         </button>
-        <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadProfileModel}>
-          {modelBusy ? "生成范文中…" : <><PenIcon /> 查看范文参考</>}
-        </button>
-        <button className="btn btn--ghost btn--block" style={{ marginTop: 8 }} disabled={!grade || compareBusy} onClick={loadProfileCompare}>
-          {compareBusy ? "对比点评中…" : <><ChartIcon /> 对比范文点评</>}
-        </button>
         {grade && (
           <div className="tutor-box" style={{ marginTop: 8 }}>
             <div className="row row--between">
@@ -351,7 +247,7 @@ export default function Profile() {
                 <b>总分：{grade.total}</b>{" "}
                 {grade.needs_human_review && <span className="text-warning">（已转人工复核）</span>}
               </div>
-              <button className="btn btn--ghost btn--sm" onClick={resetProfileEssay}><><PenIcon /> 再写一篇</></button>
+              <button className="btn btn--ghost btn--sm" onClick={resetProfileEssay}>✍ 再写一篇</button>
             </div>
             <DimensionBars dims={grade.dimensions} />
             {grade.rationale && (
@@ -361,33 +257,6 @@ export default function Profile() {
             )}
           </div>
         )}
-        {essayModel && (
-          <div className="tutor-box" style={{ marginTop: 10 }}>
-            <div className="row row--between">
-              <div className="tutor-box__title"><PenIcon /> 高分范文参考</div>
-              {essayModel.offline && <span className="text-warning" style={{ fontSize: 12 }}>范文生成暂不可用</span>}
-            </div>
-            {essayModel.outline.length > 0 && (
-              <>
-                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>结构提纲</div>
-                <ul className="tutor-box__body" style={{ margin: "4px 0 0 18px" }}>
-                  {essayModel.outline.map((o, i) => <li key={i}>{o}</li>)}
-                </ul>
-              </>
-            )}
-            {essayModel.key_points.length > 0 && (
-              <>
-                <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>高分要点</div>
-                <ul className="tutor-box__body" style={{ margin: "4px 0 0 18px" }}>
-                  {essayModel.key_points.map((o, i) => <li key={i}>{o}</li>)}
-                </ul>
-              </>
-            )}
-            <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>范文</div>
-            <div className="tutor-box__body"><Markdown>{essayModel.model_essay}</Markdown></div>
-          </div>
-        )}
-        {compare && <EssayCompareCard data={compare} />}
       </div>
 
       {/* 账号安全（WBS 2.1） */}

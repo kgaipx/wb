@@ -13,15 +13,7 @@ from sqlalchemy.orm import Session
 from app.api.routes.auth import get_current_user
 from app.db.session import get_db
 from app.models import AbilityProfile, Question, User, UserAnswer
-from app.schemas.progress import (
-    AbilityOut,
-    DayTrend,
-    KpHeatItem,
-    KpHeatmap,
-    KpHeatSubject,
-    StudentDashboard,
-    StudentStats,
-)
+from app.schemas.progress import AbilityOut, DayTrend, StudentDashboard, StudentStats
 from app.schemas.question import QuestionOut, WrongItem
 from app.schemas.user import UserOut
 from app.services.scoring import has_correct_option_filter
@@ -257,69 +249,3 @@ def stats(current: User = Depends(get_current_user), db: Session = Depends(get_d
         last_7_days=last_7_days,
         streak_days=streak_days,
     )
-
-
-@router.get("/kp-heatmap", response_model=KpHeatmap)
-def kp_heatmap(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """知识点掌握度热力图：按科目分面，科目按平均掌握度升序（最弱在最前）。
-
-    AbilityProfile 无 subject 列 → 先按用户已有能力画像的知识点去 Question 表
-    JOIN 出 kp→subject 映射（同一知识点取其在题库中归属的科目，取 id 最小者保证确定）。
-    仅含用户练过的知识点：从未练过的不出现，避免满屏 0% 误导性红块。
-    """
-    abilities = (
-        db.query(AbilityProfile)
-        .filter(AbilityProfile.user_id == current.id)
-        .all()
-    )
-    if not abilities:
-        return KpHeatmap(subjects=[])
-
-    kps = [a.knowledge_point for a in abilities]
-    # kp → subject：取该知识点在题库中 id 最小的题目所属科目（确定性映射）
-    subq = (
-        db.query(
-            Question.knowledge_point,
-            func.min(Question.id).label("min_id"),
-        )
-        .filter(Question.knowledge_point.in_(kps))
-        .group_by(Question.knowledge_point)
-        .subquery()
-    )
-    kp_subject = {
-        kp: sj
-        for kp, sj in (
-            db.query(Question.knowledge_point, Question.subject)
-            .join(subq, Question.id == subq.c.min_id)
-            .all()
-        )
-    }
-
-    by_kp = {a.knowledge_point: a for a in abilities}
-    subj_map: dict[str, list[AbilityProfile]] = defaultdict(list)
-    for a in abilities:
-        sj = kp_subject.get(a.knowledge_point)
-        if sj is None:
-            continue  # 题库里查不到该知识点（脏数据），跳过不进热力图
-        subj_map[sj].append(a)
-
-    subjects: list[KpHeatSubject] = []
-    for sj, items in subj_map.items():
-        items_sorted = sorted(items, key=lambda a: a.mastery)
-        avg = round(sum(a.mastery for a in items) / len(items), 3)
-        subjects.append(
-            KpHeatSubject(
-                subject=sj,
-                avg_mastery=avg,
-                kps=[
-                    KpHeatItem(
-                        knowledge_point=a.knowledge_point,
-                        mastery=a.mastery,
-                        attempts=a.attempts,
-                    )
-                    for a in items_sorted
-                ],
-            )
-        )
-    subjects.sort(key=lambda s: s.avg_mastery)
-    return KpHeatmap(subjects=subjects)

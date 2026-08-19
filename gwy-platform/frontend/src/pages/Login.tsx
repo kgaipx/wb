@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
-import { UserIcon, RobotIcon, PenIcon, ChartIcon, RepeatIcon } from "../icons";
+import { UserIcon } from "../icons";
 import { api } from "../api/client";
 
 type Mode = "login" | "register" | "forgot";
@@ -261,10 +261,10 @@ export default function Login() {
       </div>
 
       <div className="auth-values">
-        <div className="auth-value"><span className="auth-value__ico"><RobotIcon /></span><span>AI 私教陪跑</span></div>
-        <div className="auth-value"><span className="auth-value__ico"><PenIcon /></span><span>申论 AI 批改</span></div>
-        <div className="auth-value"><span className="auth-value__ico"><ChartIcon /></span><span>能力雷达诊断</span></div>
-        <div className="auth-value"><span className="auth-value__ico"><RepeatIcon /></span><span>错题复错闭环</span></div>
+        <div className="auth-value"><span className="auth-value__ico">🤖</span><span>AI 私教陪跑</span></div>
+        <div className="auth-value"><span className="auth-value__ico">📝</span><span>申论 AI 批改</span></div>
+        <div className="auth-value"><span className="auth-value__ico">📊</span><span>能力雷达诊断</span></div>
+        <div className="auth-value"><span className="auth-value__ico">🔁</span><span>错题复错闭环</span></div>
       </div>
       </div>
     </div>

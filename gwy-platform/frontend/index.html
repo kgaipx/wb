@@ -6,24 +6,6 @@
     <meta name="theme-color" content="#1B4FB5" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <title>AI公务员考前培训学习平台</title>
-    <!-- 防闪白：在 React 渲染前根据 localStorage / 系统偏好提前设 data-theme -->
-    <script>
-      (function () {
-        try {
-          var m = localStorage.getItem("gwy-theme-mode");
-          var dark = false;
-          if (m === "dark") dark = true;
-          else if (m === "light") dark = false;
-          else
-            dark =
-              window.matchMedia &&
-              window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
-          var meta = document.querySelector('meta[name="theme-color"]');
-          if (meta) meta.setAttribute("content", dark ? "#0E1117" : "#1B4FB5");
-        } catch (e) {}
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>

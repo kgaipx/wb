@@ -2,9 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, FavoriteItem } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
-import ExplainModal from "../components/ExplainModal";
-import EmptyState from "../components/EmptyState";
-import { TargetIcon, PenIcon } from "../icons";
 
 // 自定义标签白名单（与后端 patch_favorite 校验一致）
 const TAG_DEFS: { key: string; icon: string; label: string }[] = [
@@ -23,7 +20,6 @@ export default function Favorites() {
   const [tagFilter, setTagFilter] = useState<string>("全部"); // 全部 | 易错 | 重点
   const [groupBy, setGroupBy] = useState<"list" | "kp">("list");
   const [toast, setToast] = useState("");
-  const [explainId, setExplainId] = useState<number | null>(null);
 
   function refresh() {
     setLoading(true);
@@ -74,21 +70,6 @@ export default function Favorites() {
     return c;
   }, [list]);
 
-  const batchIds = useMemo(() => {
-    const all = list.map((it) => it.question.id);
-    const err = list.filter((it) => it.tags.includes("易错")).map((it) => it.question.id);
-    const key = list.filter((it) => it.tags.includes("重点")).map((it) => it.question.id);
-    return { all, err, key };
-  }, [list]);
-
-  function practiceIds(ids: number[]) {
-    if (!ids.length) {
-      flash("该筛选下暂无可练习的收藏");
-      return;
-    }
-    nav(`/practice?ids=${ids.join(",")}`);
-  }
-
   async function remove(qid: number) {
     setBusy(true);
     try {
@@ -137,27 +118,6 @@ export default function Favorites() {
       {/* 分类方式 + 科目筛选 + 标签筛选 + 导出 */}
       {!loading && list.length > 0 && (
         <div className="fav-bar">
-          <div className="fav-batch">
-            <button className="btn btn--primary btn--sm" disabled={busy} onClick={() => practiceIds(batchIds.all)}>
-              <><TargetIcon /> 练习全部（{list.length}）</>
-            </button>
-            <button
-              className="btn btn--ghost btn--sm"
-              disabled={busy || tagCounts["易错"] === 0}
-              onClick={() => practiceIds(batchIds.err)}
-              title="仅练习标记「易错」的收藏"
-            >
-              🔴 只练易错（{tagCounts["易错"] || 0}）
-            </button>
-            <button
-              className="btn btn--ghost btn--sm"
-              disabled={busy || tagCounts["重点"] === 0}
-              onClick={() => practiceIds(batchIds.key)}
-              title="仅练习标记「重点」的收藏"
-            >
-              🟡 只练重点（{tagCounts["重点"] || 0}）
-            </button>
-          </div>
           <div className="row row--between" style={{ gap: 8, marginBottom: 8 }}>
             <div className="chip-row fav-filters">
               <button className={"chip" + (groupBy === "list" ? " chip--on" : "")} onClick={() => setGroupBy("list")}>
@@ -215,12 +175,16 @@ export default function Favorites() {
 
       {!loading && list.length === 0 && (
         <div className="card fav-empty">
-          <EmptyState tight icon="star" title="还没有收藏" desc="在「刷题」「模考」或「错题本」中可把题目加入收藏。" />
+          <div className="empty empty--tight">
+            <div className="empty__icon">⭐</div>
+            <div className="empty__title">还没有收藏</div>
+            <div className="empty__desc">在「刷题」「模考」或「错题本」中可把题目加入收藏。</div>
             <div className="empty__action">
               <button className="btn btn--primary btn--sm" onClick={() => nav("/practice")}>
                 去题库练习 →
               </button>
             </div>
+          </div>
         </div>
       )}
 
@@ -230,19 +194,10 @@ export default function Favorites() {
             <div key={kp}>
               <div className="fav-group-title">
                 <span>{kp}</span>
-                <span className="fav-group-right">
-                  <span className="muted">{items.length} 题</span>
-                  <button
-                    className="btn btn--ghost btn--sm"
-                    disabled={busy}
-                    onClick={() => practiceIds(items.map((i) => i.question.id))}
-                  >
-                    练习这组
-                  </button>
-                </span>
+                <span className="muted">{items.length} 题</span>
               </div>
               {items.map((it) => (
-                <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+                <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} />
               ))}
             </div>
           ))}
@@ -251,17 +206,9 @@ export default function Favorites() {
 
       {!loading && list.length > 0 && groupBy === "list" && (
         filtered.map((it) => (
-          <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+          <FavCard key={it.question.id} item={it} busy={busy} onRemove={remove} onPatch={applyPatch} />
         ))
       )}
-
-      <ExplainModal
-        questionId={explainId}
-        onClose={() => setExplainId(null)}
-        onFavToggle={(id, willFav) => {
-          if (!willFav) remove(id);
-        }}
-      />
     </section>
   );
 }
@@ -271,13 +218,11 @@ function FavCard({
   busy,
   onRemove,
   onPatch,
-  onExplain,
 }: {
   item: FavoriteItem;
   busy: boolean;
   onRemove: (id: number) => void;
   onPatch: (qid: number, patch: { note?: string; tags?: string[] }) => Promise<FavoriteItem>;
-  onExplain?: (id: number) => void;
 }) {
   const nav = useNavigate();
   const q = item.question;
@@ -337,7 +282,7 @@ function FavCard({
       </div>
 
       {!noteOpen && item.note.trim() && (
-        <div className="fav-note-preview"><PenIcon /> {item.note.trim()}</div>
+        <div className="fav-note-preview">📝 {item.note.trim()}</div>
       )}
 
       {noteOpen && (
@@ -370,17 +315,14 @@ function FavCard({
         <button className="btn btn--primary" style={{ flex: 1 }} onClick={() => nav(`/practice?q=${q.id}`)}>
           去练习
         </button>
-        <button className="btn btn--ghost btn--sm" onClick={() => onExplain?.(q.id)}>
-          看解析
+        <button className="btn btn--ghost" style={{ flex: 1 }} disabled={busy} onClick={() => onRemove(q.id)}>
+          取消收藏
         </button>
         <button
           className="btn btn--ghost btn--sm"
           onClick={() => setNoteOpen((v) => !v)}
         >
           {noteOpen ? "收起" : item.note.trim() ? "笔记" : "加笔记"}
-        </button>
-        <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => onRemove(q.id)}>
-          取消收藏
         </button>
       </div>
       {saved && <div className="ok-text" style={{ fontSize: 12, marginTop: 4 }}>笔记已云端保存</div>}

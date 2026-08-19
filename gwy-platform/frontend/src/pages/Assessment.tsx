@@ -9,7 +9,6 @@ import {
 } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { triggerDownload, shareOrCopy, stamp } from "../utils/exportUtils";
-import EmptyState from "../components/EmptyState";
 
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
 
@@ -44,20 +43,20 @@ function RadarChart({ dims }: { dims: AssessmentDim[] }) {
       style={{ maxWidth: 320, display: "block", margin: "0 auto" }}
     >
       {rings.map((ring, i) => (
-        <polygon key={i} points={ring} fill="none" style={{ stroke: "var(--border)" }} strokeWidth={1} />
+        <polygon key={i} points={ring} fill="none" stroke="#e6e9f0" strokeWidth={1} />
       ))}
       {dims.map((_, i) => {
         const [x, y] = pt(i, R);
-        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} style={{ stroke: "var(--border)" }} strokeWidth={1} />;
+        return <line key={i} x1={cx} y1={cy} x2={x} y2={y} stroke="#e6e9f0" strokeWidth={1} />;
       })}
-      <polygon points={dataPoly} style={{ fill: "rgba(var(--brand-rgb),0.22)", stroke: "var(--brand)" }} strokeWidth={2} />
+      <polygon points={dataPoly} fill="rgba(59,111,224,0.22)" stroke="#3b6fe0" strokeWidth={2} />
       {dataPts.map((p, i) => (
         <circle
           key={i}
           cx={p[0]}
           cy={p[1]}
           r={3.5}
-          style={{ fill: dims[i].mastery < 0.6 ? "var(--danger)" : "var(--brand)" }}
+          fill={dims[i].mastery < 0.6 ? "#e0533b" : "#3b6fe0"}
         />
       ))}
       {dims.map((d, i) => {
@@ -70,7 +69,7 @@ function RadarChart({ dims }: { dims: AssessmentDim[] }) {
             fontSize={11}
             textAnchor="middle"
             dominantBaseline="middle"
-            style={{ fill: d.mastery < 0.6 ? "var(--danger)" : "var(--text-2)" }}
+            fill={d.mastery < 0.6 ? "#e0533b" : "#4a5160"}
           >
             {d.knowledge_point}
           </text>
@@ -339,7 +338,7 @@ export default function Assessment() {
           <div className="card" style={{ marginTop: 12 }}>
             <strong style={{ display: "block", marginBottom: 6 }}>提升建议</strong>
             {r.suggestions.map((s: string, i: number) => (
-              <div key={i} style={{ fontSize: 14, margin: "4px 0", color: "var(--text-2)" }}>
+              <div key={i} style={{ fontSize: 14, margin: "4px 0", color: "#374151" }}>
                 · {s}
               </div>
             ))}
@@ -656,12 +655,16 @@ export default function Assessment() {
           </div>
           {history.length === 0 && !hisLoading && (
             <div className="card">
-              <EmptyState tight icon="assess" title="还没有测评记录" desc="去完成一次能力测评，生成你的能力雷达图。" />
+              <div className="empty empty--tight">
+                <div className="empty__icon">📊</div>
+                <div className="empty__title">还没有测评记录</div>
+                <div className="empty__desc">去完成一次能力测评，生成你的能力雷达图。</div>
                 <div className="empty__action">
                   <button className="btn btn--primary btn--sm" onClick={start}>
                     开始测评 →
                   </button>
                 </div>
+              </div>
             </div>
           )}
 

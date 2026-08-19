@@ -29,7 +29,6 @@ class ExplainOut(BaseModel):
     knowledge_point: str
     explanation: str
     citations: list[CitationOut] = []
-    correct_answer: str | None = None  # 正确答案标签拼接（如 "A" / "AB"），讲解场景展示用
     model: str | None = None
     quota_remaining: int | None = None  # 免费版剩余配额（pro 为 None）
     offline: bool = False  # True 表示 LLM 不可用时走了离线降级讲解
@@ -77,50 +76,6 @@ class EssayGradeOut(BaseModel):
     rationale: str
     consistency: dict = {}  # 人 AI 一致性门禁报告（coefficient/threshold/ok/evaluated）
     record_id: int | None = None  # 落库后的记录 id（save=True 时返回）
-
-
-class EssayModelIn(BaseModel):
-    material: str = ""  # 给定材料（供生成上下文）
-    requirement: str = ""  # 作答要求（供生成上下文）
-    prompt_id: int | None = None  # 可选：关联申论题库题目，缺 material/requirement 时回查
-
-
-class EssayModelOut(BaseModel):
-    model_essay: str  # 生成的高分范文正文（markdown）
-    outline: list[str] = []  # 结构提纲
-    key_points: list[str] = []  # 高分要点
-    offline: bool = False  # True 表示 LLM 不可用时走了降级提示
-
-
-class EssayGap(BaseModel):
-    """单维度差距点评：维度名 + 该维度考生与范文的具体差距说明。"""
-    dimension: str
-    comment: str
-
-
-class EssayCompareIn(BaseModel):
-    student_essay: str
-    material: str = ""  # 给定材料（对比上下文）
-    requirement: str = ""  # 作答要求（对比上下文）
-    max_score: int = 100
-    prompt_id: int | None = None  # 可选：关联申论题库题目
-    model_essay: str | None = None  # 可选：前端已生成范文则直接传入，省一次生成
-    student_dimensions: dict | None = None  # 可选：前端已有批改维度则传入，避免重复评分漂移
-    student_total: float | None = None
-
-
-class EssayCompareOut(BaseModel):
-    student_total: float
-    model_total: float
-    student_dimensions: dict[str, float]
-    model_dimensions: dict[str, float]
-    gaps: list[EssayGap]
-    suggestions: list[str]
-    narrative: str
-    model_essay: str = ""  # 回传范文，前端无需二次持有
-    offline: bool = False  # True 表示 LLM 不可用，走了启发式降级对比
-
-    model_config = {"protected_namespaces": ()}  # 避免 model_essay 触发 pydantic "model_" 保护命名警告
 
 
 class PlanTaskOut(BaseModel):

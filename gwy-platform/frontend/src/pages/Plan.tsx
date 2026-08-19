@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { api, PlanDay, PlanOut, PlanProgress, PlanTask } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
-import { PartyIcon } from "../icons";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -16,12 +15,12 @@ const KIND_LABEL: Record<string, string> = {
 
 const TYPE_ORDER = ["practice", "review_wrong", "favorite", "explain", "mock", "read"];
 const TYPE_COLOR: Record<string, string> = {
-  practice: "var(--brand)",
-  review_wrong: "var(--danger)",
-  favorite: "var(--warning)",
-  explain: "var(--success)",
-  mock: "var(--info)",
-  read: "var(--text-2)",
+  practice: "#2563EB",
+  review_wrong: "#C0392B",
+  favorite: "#B26A00",
+  explain: "#1D7A46",
+  mock: "#3457B0",
+  read: "#475569",
 };
 
 /** 完成度环形进度 */
@@ -232,7 +231,7 @@ export default function Plan() {
         <>
           {todayAllDone && (
             <div className="card plan-celebrate">
-              <div className="plan-celebrate__emoji"><PartyIcon /></div>
+              <div className="plan-celebrate__emoji">🎉</div>
               <div>
                 <strong>今日任务已全部清空！</strong>
                 <div className="muted" style={{ marginTop: 2 }}>
