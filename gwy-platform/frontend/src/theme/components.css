@@ -357,6 +357,10 @@
 }
 .btn--ghost:not(:disabled):hover {
   background: var(--brand-050);
+  transform: translateY(-1px);
+}
+.btn--ghost:not(:disabled):active {
+  transform: scale(0.98);
 }
 .btn--block {
   width: 100%;
@@ -378,6 +382,10 @@
 }
 .btn--inverse:not(:disabled):hover {
   background: #f1f5ff;
+  transform: translateY(-1px);
+}
+.btn--inverse:not(:disabled):active {
+  transform: scale(0.98);
 }
 /* 渐变底色上的描边幽灵按钮（hero 次操作） */
 .btn--ghost-on {
@@ -387,6 +395,10 @@
 }
 .btn--ghost-on:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.26);
+  transform: translateY(-1px);
+}
+.btn--ghost-on:not(:disabled):active {
+  transform: scale(0.98);
 }
 
 /* ===================== 卡片 ===================== */
@@ -400,6 +412,7 @@
     transform var(--t-lift) var(--ease-out);
 }
 .card:hover {
+  transform: translateY(-2px);
   box-shadow: var(--sh-card-hover);
   border-color: color-mix(in srgb, var(--brand) 16%, var(--border));
 }
