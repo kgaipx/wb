@@ -431,6 +431,21 @@ export interface AiQuota {
   date: string; // YYYY-MM-DD
 }
 
+export interface MorningReport {
+  date: string; // 北京时间日期
+  report: string; // 播报文案
+  generated: boolean; // LLM 是否生成
+  model: string | null;
+  offline: boolean;
+  yesterday_answers: number;
+  yesterday_rate: number;
+  week_answers: number;
+  weak: string[];
+  plan_today: number;
+  plan_done: number;
+  countdown_days: number | null;
+}
+
 export const api = {
   health: () => request<{ status: string }>("/health"),
 
@@ -519,6 +534,8 @@ export const api = {
     ),
   // 会员配额（免费版每日 AI 讲解额度；pro 不限）
   quota: () => request<AiQuota>("/ai/quota"),
+  // AI 备考晨报：昨日表现 + 薄弱点 + 今日计划 + 倒计时的口语化播报（前端按日缓存）
+  morningReport: () => request<MorningReport>("/ai/morning-report"),
   // 引用详情反查：按知识点/来源/标题/正文检索知识原文（点击引用卡片看详情）
   knowledgeLookup: (q: string, limit = 6) =>
     request<KnowledgeChunkOut[]>(

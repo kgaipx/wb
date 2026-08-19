@@ -174,3 +174,20 @@ class PlanToggleOut(BaseModel):
     """打卡切换后的返回：更新后的任务状态 + 最新进度。"""
     task: dict
     progress: PlanProgress
+
+
+class MorningReportOut(BaseModel):
+    """AI 备考晨报：昨日表现 + 薄弱点 + 今日计划 + 倒计时的口语化播报。"""
+
+    date: str  # 北京时间日期 YYYY-MM-DD
+    report: str  # 播报文案（LLM 生成，失败时模板兜底）
+    generated: bool = False  # LLM 是否成功生成
+    model: str | None = None
+    offline: bool = False
+    yesterday_answers: int = 0
+    yesterday_rate: int = 0  # 昨日正确率（整数百分比）
+    week_answers: int = 0  # 本周（周一起）做题数
+    weak: list[str] = []  # 薄弱点 top3
+    plan_today: int = 0  # 今日计划任务数
+    plan_done: int = 0  # 今日已完成
+    countdown_days: int | None = None  # 距目标考试天数

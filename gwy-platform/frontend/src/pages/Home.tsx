@@ -49,6 +49,36 @@ export default function Home() {
   );
   const sprintShow = sprint && sprint.daysLeft <= 45 ? sprint : null; // 冲刺期 = 剩余 ≤45 天
 
+  // —— AI 备考晨报：每日首次进入自动生成（前端按北京时间自然日缓存，每日至多一次 LLM 调用）——
+  const [morning, setMorning] = useState<any>(null);
+  const [morningLoading, setMorningLoading] = useState(false);
+  useEffect(() => {
+    if (!user) return;
+    const todayKey = new Date(Date.now() + 8 * 3600000).toISOString().slice(0, 10);
+    const cached = localStorage.getItem("gwy_morning_" + todayKey);
+    if (cached) {
+      try {
+        setMorning(JSON.parse(cached));
+        return;
+      } catch {
+        /* 缓存损坏则重新请求 */
+      }
+    }
+    setMorningLoading(true);
+    api
+      .morningReport()
+      .then((r) => {
+        setMorning(r);
+        try {
+          localStorage.setItem("gwy_morning_" + todayKey, JSON.stringify(r));
+        } catch {
+          /* 存储满等场景忽略 */
+        }
+      })
+      .catch(() => {})
+      .finally(() => setMorningLoading(false));
+  }, [user]);
+
   // PWA 已安装态检测：standalone 显示模式（Android Chrome / 桌面）或 iOS Safari navigator.standalone
   useEffect(() => {
     const mq = window.matchMedia("(display-mode: standalone)");
@@ -282,6 +312,42 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* AI 备考晨报：昨日表现 + 薄弱点 + 今日计划 + 倒计时（LLM 播报，模板兜底；按日缓存） */}
+      <div className="card" style={{ marginTop: 14 }}>
+        <div className="row row--between" style={{ alignItems: "center" }}>
+          <strong>🌅 AI 备考晨报</strong>
+          {morning && <span className="muted" style={{ fontSize: 12 }}>{morning.date}</span>}
+        </div>
+        {morningLoading && !morning ? (
+          <div className="muted" style={{ marginTop: 8, fontSize: 13 }}>
+            <span className="sk sk-line" style={{ width: "88%", display: "inline-block", height: 12 }} />
+            <span className="muted" style={{ marginLeft: 8 }}>晨报生成中…</span>
+          </div>
+        ) : morning ? (
+          <>
+            <div style={{ marginTop: 6, fontSize: 14, lineHeight: 1.7 }}>{morning.report}</div>
+            <div className="muted" style={{ marginTop: 8, fontSize: 12 }}>
+              昨日 {morning.yesterday_answers} 题 · 正确率 {morning.yesterday_rate}% · 本周 {morning.week_answers} 题
+              {morning.plan_today > 0 && ` · 今日计划 ${morning.plan_done}/${morning.plan_today}`}
+              {morning.countdown_days != null && ` · 距考试 ${morning.countdown_days} 天`}
+            </div>
+            {morning.weak.length > 0 && (
+              <div className="chip-row" style={{ marginTop: 6 }}>
+                {morning.weak.map((w: string) => (
+                  <button
+                    key={w}
+                    className="chip chip--on"
+                    onClick={() => nav(`/practice?kp=${encodeURIComponent(w)}`)}
+                  >
+                    {w}
+                  </button>
+                ))}
+              </div>
+            )}
+          </>
+        ) : null}
+      </div>
 
       {/* 冷启动新手引导：零作答用户首登破冰，做第一题后自动消失 */}
       {isNew && (

@@ -2,20 +2,21 @@
 
 所有端点均受 get_current_user 保护；LLM 调用失败时由能力层降级（见 essay_grader 回退）。
 """
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, datetime, time, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import case, or_
+from sqlalchemy import case, func, or_
 from sqlalchemy.orm import Session
 
 from app.ai.adaptive import recommend_questions
 from app.ai.essay_grader import EssayGrader
+from app.ai.llm_gateway import LLMGateway
 from app.ai.study_planner import generate_plan
 from app.ai.tutor_agent import TutorAgent
 from app.api.routes.auth import get_current_user, require_admin
 from app.core.config import settings
 from app.db.session import get_db
-from app.models import AbilityProfile, EssayGradeRecord, EssayPrompt, KnowledgeChunk, Question, User
+from app.models import AbilityProfile, EssayGradeRecord, EssayPrompt, KnowledgeChunk, Question, User, UserAnswer
 from app.schemas.ai import (
     AiQuota,
     ChatIn,
@@ -30,6 +31,7 @@ from app.schemas.ai import (
     ExplainIn,
     ExplainOut,
     KnowledgeChunkOut,
+    MorningReportOut,
     PlanIn,
     PlanOut,
     PlanProgress,
@@ -39,6 +41,7 @@ from app.schemas.ai import (
 from app.schemas.essay import EssayHistoryItem, EssayPromptOut
 from app.services import chat_service as chat_svc
 from app.services import study_plan_service as sp_svc
+from app.services.scoring import has_correct_option_filter
 
 router = APIRouter()
 
@@ -328,3 +331,133 @@ def knowledge_lookup(
         )
         for c in chunks
     ]
+
+
+_MORNING_SYSTEM = (
+    "你是公考备考 AI 私教晨报助手。基于考生的学习数据生成简短中文晨报：2-4 句话，"
+    "先播报昨日表现，再点出今日重点（薄弱点/计划/倒计时），最后给一句今日行动建议。"
+    "语气亲切有鼓励感，自然口语化，不要 markdown 标题，不要罗列数字清单。"
+)
+
+
+def _bj_midnight_utc(d: date) -> datetime:
+    """北京时间 d 日 00:00 对应的 UTC 时刻（北京 = UTC+8）。"""
+    return datetime.combine(d, time.min) - timedelta(hours=8)
+
+
+@router.get("/morning-report", response_model=MorningReportOut, tags=["ai"])
+def morning_report(
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """AI 备考晨报：昨日做题表现 + 薄弱点 + 今日计划 + 倒计时 → LLM 口语化播报（失败模板兜底）。
+
+    仅统计客观可判分题（排除申论与坏题）；「按日」一律北京时间。前端按自然日缓存，每日至多触发一次 LLM。
+    """
+    now = datetime.now(timezone.utc)
+    today = (now + timedelta(hours=8)).date()
+    y_lo = _bj_midnight_utc(today - timedelta(days=1))
+    y_hi = _bj_midnight_utc(today)
+
+    base = [UserAnswer.user_id == current.id, Question.qtype != "essay"]
+    y_total = (
+        db.query(func.count(UserAnswer.id))
+        .join(Question, Question.id == UserAnswer.question_id)
+        .filter(*base, UserAnswer.submitted_at >= y_lo, UserAnswer.submitted_at < y_hi)
+        .filter(has_correct_option_filter())
+        .scalar()
+        or 0
+    )
+    y_correct = (
+        db.query(func.count(UserAnswer.id))
+        .join(Question, Question.id == UserAnswer.question_id)
+        .filter(*base, UserAnswer.is_correct == True, UserAnswer.submitted_at >= y_lo, UserAnswer.submitted_at < y_hi)  # noqa: E712
+        .filter(has_correct_option_filter())
+        .scalar()
+        or 0
+    )
+    y_rate = round(y_correct / y_total * 100) if y_total else 0
+
+    monday = today - timedelta(days=today.weekday())
+    w_total = (
+        db.query(func.count(UserAnswer.id))
+        .join(Question, Question.id == UserAnswer.question_id)
+        .filter(*base, UserAnswer.submitted_at >= _bj_midnight_utc(monday))
+        .filter(has_correct_option_filter())
+        .scalar()
+        or 0
+    )
+
+    weak = [
+        a.knowledge_point
+        for a in (
+            db.query(AbilityProfile)
+            .filter(AbilityProfile.user_id == current.id)
+            .order_by(AbilityProfile.mastery)
+            .all()
+        )
+        if a.attempts > 0
+    ][:3]
+
+    plan_today = plan_done = 0
+    sp = sp_svc.get_current_plan(db, current)
+    if sp is not None:
+        ti = (sp_svc.compute_progress(db, sp) or {}).get("today_index") or 0
+        if ti:
+            tt = [t for t in sp.tasks if t.day == ti]
+            plan_today = len(tt)
+            plan_done = sum(1 for t in tt if t.done)
+
+    countdown_days = None
+    if current.target_exam_date:
+        try:
+            left = (date.fromisoformat(current.target_exam_date) - today).days
+            if left >= 0:
+                countdown_days = left
+        except ValueError:
+            pass
+
+    data = dict(
+        date=today.isoformat(),
+        yesterday_answers=y_total,
+        yesterday_rate=y_rate,
+        week_answers=w_total,
+        weak=weak,
+        plan_today=plan_today,
+        plan_done=plan_done,
+        countdown_days=countdown_days,
+    )
+
+    # LLM 生成口语化播报；失败/不可用 → 模板兜底（不拖垮首页）
+    try:
+        gw = LLMGateway()
+        payload = {
+            "昨日做题数": y_total,
+            "昨日正确率%": y_rate,
+            "本周做题数": w_total,
+            "薄弱点": weak or "暂无（继续刷题建立画像）",
+            "今日计划任务": f"{plan_done}/{plan_today}" if plan_today else "无计划",
+            "距目标考试天数": countdown_days,
+            "目标考试": current.target_exam_name or current.target_exam,
+        }
+        resp = gw.complete(
+            f"考生数据：{payload}",
+            system=_MORNING_SYSTEM,
+            temperature=0.6,
+            max_tokens=400,
+        )
+        if resp and resp.strip():
+            return MorningReportOut(report=resp.strip(), generated=True, offline=False, **data)
+    except Exception:
+        pass
+
+    parts = [f"早上好！昨天你练了 {y_total} 题，正确率 {y_rate}%"]
+    if weak:
+        parts.append(f"当前最需要加强的是「{weak[0]}」，建议今天优先做一组专项")
+    if plan_today:
+        parts.append(f"今日计划 {plan_done}/{plan_today} 项任务待完成")
+    elif sp is None:
+        parts.append("还没有学习计划，可在学习中心一键生成 7 天计划")
+    if countdown_days is not None:
+        parts.append(f"距离 {current.target_exam_name or current.target_exam} 还有 {countdown_days} 天，稳住节奏")
+    return MorningReportOut(report="，".join(parts) + "。", generated=False, offline=True, **data)
