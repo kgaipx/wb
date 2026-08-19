@@ -8,6 +8,7 @@ import { ReportExport } from "../components/ReportExport";
 import EmptyState from "../components/EmptyState";
 import Spinner from "../components/Spinner";
 import { RobotIcon, RepeatIcon } from "../icons";
+import Reveal from "../components/Reveal";
 
 interface PaperQ {
   id: number;
@@ -346,10 +347,13 @@ export default function Exam() {
       .sort((a: any, b: any) => b.delta - a.delta);
     return (
       <>
+        <Reveal delay={0}>
         <div className="card report-hero">
           <div className={"big-rate " + tone}>{rate}<span>%</span></div>
           <div className="muted">正确率 · 答对 {rep.correct}/{rep.total} 题</div>
         </div>
+        </Reveal>
+        <Reveal delay={60}>
         <div className="card" style={{ marginTop: 12 }}>
           <div className="row row--between">
             <strong>各知识点正确率</strong>
@@ -385,6 +389,8 @@ export default function Exam() {
             </div>
           )}
         </div>
+        </Reveal>
+        <Reveal delay={120}>
         <div className="card" style={{ marginTop: 12 }}>
           <div className="row row--between">
             <strong>本次模考能力变化</strong>
@@ -416,6 +422,8 @@ export default function Exam() {
             </div>
           )}
         </div>
+        </Reveal>
+        <Reveal delay={180}>
         <div className="card card--warning" style={{ marginTop: 12 }}>
           <strong>薄弱知识点（AI 诊断）</strong>
           <div className="chip-row" style={{ marginTop: 8 }}>
@@ -433,6 +441,7 @@ export default function Exam() {
             去学习中心针对性重练 →
           </button>
         </div>
+        </Reveal>
         <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
         {(rep.details || []).map((d: any, i: number) => {
           const meta = getMeta(d) || {};
@@ -444,7 +453,8 @@ export default function Exam() {
           const ex = explainMap[d.question_id];
           const fav = favMap[d.question_id];
           return (
-            <div className="card" key={d.question_id} style={{ marginTop: 12 }}>
+            <Reveal key={d.question_id} delay={Math.min(i, 10) * 40}>
+            <div className="card" style={{ marginTop: 12 }}>
               <div className="row row--between">
                 <span className="text-3">第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}</span>
                 <span className={d.is_correct ? "text-success" : d.skipped ? "text-3" : "text-danger"}>
@@ -537,6 +547,7 @@ export default function Exam() {
                 </div>
               )}
             </div>
+            </Reveal>
           );
         })}
       </>
@@ -554,6 +565,7 @@ export default function Exam() {
       {info && <div className="info-text">{info}</div>}
 
       {tab === "exam" && phase === "setup" && (
+        <Reveal delay={0}>
         <div className="card">
           <p className="muted" style={{ marginTop: 0 }}>
             还原真实考场节奏：限时组卷、隐藏答案，交卷后生成「提分报告」（正确率 + 薄弱知识点），并自动存入历史可随时复盘。
@@ -579,6 +591,7 @@ export default function Exam() {
             {busy ? "组卷中…" : "开始模考"}
           </button>
         </div>
+        </Reveal>
       )}
 
       {tab === "exam" && phase === "doing" && (
@@ -721,6 +734,7 @@ export default function Exam() {
               const deltaCls =
                 delta > 0 ? "rate-trend--up" : delta < 0 ? "rate-trend--down" : "rate-trend--flat";
               return (
+                <Reveal delay={0}>
                 <div className="card">
                   <div className="row row--between">
                     <strong>成绩进步趋势</strong>
@@ -751,16 +765,19 @@ export default function Exam() {
                     </div>
                   )}
                 </div>
+                </Reveal>
               );
             })()}
           <div className="muted" style={{ fontSize: 13, marginBottom: 8 }}>已加载 {history.length} 次模考记录</div>
           {history.length === 0 && (
+            <Reveal delay={0}>
             <div className="card">
               <EmptyState tight icon="exam" title="还没有模考记录" desc="去「模考」完成一次，检验真实水平。" />
                 <div className="empty__action">
                   <button className="btn btn--primary btn--sm" onClick={() => setTab("exam")}>去模考 →</button>
                 </div>
             </div>
+            </Reveal>
           )}
           {history.map((h) => {
             const rate = Math.round((h.correct_rate || 0) * 100);

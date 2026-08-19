@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { api, PlanDay, PlanOut, PlanProgress, PlanTask } from "../api/client";
 import { triggerDownload, stamp } from "../utils/exportUtils";
 import Markdown from "../components/Markdown";
+import { PartyIcon } from "../icons";
+import { useToast } from "../components/ToastProvider";
+import Reveal from "../components/Reveal";
 
 const KIND_LABEL: Record<string, string> = {
   practice: "刷题",
@@ -15,12 +18,12 @@ const KIND_LABEL: Record<string, string> = {
 
 const TYPE_ORDER = ["practice", "review_wrong", "favorite", "explain", "mock", "read"];
 const TYPE_COLOR: Record<string, string> = {
-  practice: "#2563EB",
-  review_wrong: "#C0392B",
-  favorite: "#B26A00",
-  explain: "#1D7A46",
-  mock: "#3457B0",
-  read: "#475569",
+  practice: "var(--brand)",
+  review_wrong: "var(--danger)",
+  favorite: "var(--warning)",
+  explain: "var(--success)",
+  mock: "var(--info)",
+  read: "var(--text-2)",
 };
 
 /** 完成度环形进度 */
@@ -60,7 +63,7 @@ export default function Plan() {
   const [days, setDays] = useState(7);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [toast, setToast] = useState("");
+  const toast = useToast();
 
   const regenerate = useCallback(
     async (d: number) => {
@@ -155,8 +158,7 @@ export default function Plan() {
   }
 
   function flash(msg: string) {
-    setToast(msg);
-    setTimeout(() => setToast(""), 2000);
+    toast.success(msg);
   }
 
   // 可视化派生数据：计划日历（每日完成度）+ 任务类型分布
@@ -216,7 +218,7 @@ export default function Plan() {
   return (
     <section>
       <h2 className="page-title">AI 学习计划</h2>
-      {toast && <div className="ok-text ok-text--float">{toast}</div>}
+      <Reveal delay={0}>
       <div className="card card--soft">
         <div className="row row--between">
           <strong>你的私教大脑已就位</strong>
@@ -226,12 +228,14 @@ export default function Plan() {
           基于你的学情掌握度、错题本与收藏夹自动编排。完成打卡后，进度与连续打卡天数会实时更新。
         </div>
       </div>
+      </Reveal>
 
       {plan && (
         <>
           {todayAllDone && (
+            <Reveal delay={60}>
             <div className="card plan-celebrate">
-              <div className="plan-celebrate__emoji">🎉</div>
+              <div className="plan-celebrate__emoji"><PartyIcon /></div>
               <div>
                 <strong>今日任务已全部清空！</strong>
                 <div className="muted" style={{ marginTop: 2 }}>
@@ -239,8 +243,10 @@ export default function Plan() {
                 </div>
               </div>
             </div>
+            </Reveal>
           )}
           {/* 进度总览 */}
+          <Reveal delay={120}>
           <div className="card plan-progress">
             <Ring rate={plan.progress.rate} />
             <div className="plan-progress__stats">
@@ -267,6 +273,7 @@ export default function Plan() {
               </button>
             </div>
           </div>
+          </Reveal>
           <div className="progress" style={{ marginTop: 8 }}>
             <div
               className="progress__bar"
@@ -275,6 +282,7 @@ export default function Plan() {
           </div>
 
           {/* 计划日历：每日完成度可视化 */}
+          <Reveal delay={180}>
           <div className="card plan-cal-card">
             <div className="row row--between">
               <div className="row" style={{ gap: 8, alignItems: "center" }}>
@@ -327,8 +335,10 @@ export default function Plan() {
               <span><i className="dot dot--future" />未到</span>
             </div>
           </div>
+          </Reveal>
 
           {/* 任务类型分布 */}
+          <Reveal delay={240}>
           <div className="card plan-dist-card">
             <div className="row row--between">
               <strong>任务构成</strong>
@@ -356,6 +366,7 @@ export default function Plan() {
               ))}
             </div>
           </div>
+          </Reveal>
         </>
       )}
 
@@ -386,17 +397,21 @@ export default function Plan() {
       {plan && (
         <>
           {plan.offline && (
+            <Reveal delay={300}>
             <div className="card card--warning" style={{ marginTop: 10 }}>
               <strong>离线模式</strong>
               <div className="muted" style={{ marginTop: 2 }}>
                 AI 服务暂不可用，已用规则引擎生成计划；联网后将有更个性化的编排。
               </div>
             </div>
+            </Reveal>
           )}
           {plan.summary && (
+            <Reveal delay={360}>
             <div className="card" style={{ marginTop: 10 }}>
               <div className="tutor-box__body"><Markdown>{plan.summary}</Markdown></div>
             </div>
+            </Reveal>
           )}
 
           {plan.items.map((day: PlanDay) => {
@@ -405,8 +420,8 @@ export default function Plan() {
             const dayDone = day.tasks.filter((t) => t.done).length;
             const dayPct = dayTotal ? Math.round((dayDone / dayTotal) * 100) : 0;
             return (
+              <Reveal key={day.day} delay={Math.min(day.day, 10) * 40}>
               <div
-                key={day.day}
                 className={"plan-day" + (isToday ? " plan-day--today" : "")}
               >
                 <div className="plan-day__head">
@@ -454,6 +469,7 @@ export default function Plan() {
                   })}
                 </div>
               </div>
+              </Reveal>
             );
           })}
         </>

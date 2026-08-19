@@ -8,6 +8,8 @@ import {
   ReviewStats,
 } from "../api/client";
 import { useAuth } from "../auth";
+import EmptyState from "../components/EmptyState";
+import Reveal from "../components/Reveal";
 
 const TYPE_LABEL: Record<string, string> = {
   question: "题目解析",
@@ -273,6 +275,7 @@ export default function Review() {
       </div>
 
       {noPerm && (
+        <Reveal delay={0}>
         <div className="card" style={{ marginTop: 12, borderColor: "var(--danger, #d92b1c)" }}>
           <div className="muted">
             当前账号无审核权限。审核台仅对 <b>reviewer / admin</b> 角色开放；请用审核员账号登录，或联系管理员在后台分配角色。
@@ -281,6 +284,7 @@ export default function Review() {
             返回我的
           </button>
         </div>
+        </Reveal>
       )}
 
       {/* Tab 切换 */}
@@ -298,6 +302,7 @@ export default function Review() {
       {tab === "content" && !noPerm && (
         <>
           {/* 信任徽章 / 抽检 */}
+          <Reveal delay={60}>
           <div className="card review-trust">
             <div className="review-trust__main">
               <div className={"big-rate " + (passPct >= 99 ? "rate--good" : passPct >= 80 ? "rate--mid" : "rate--bad")}>
@@ -311,8 +316,10 @@ export default function Review() {
               <span><b>{stats?.sample_target ?? 0}</b> 抽检目标</span>
             </div>
           </div>
+          </Reveal>
 
           {/* 审核员身份 */}
+          <Reveal delay={120}>
           <div className="card" style={{ marginTop: 12 }}>
             <div className="row row--between">
               <strong>当前审核员</strong>
@@ -323,6 +330,7 @@ export default function Review() {
             </div>
             {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
           </div>
+          </Reveal>
 
           <h3 className="section-title" style={{ marginTop: 16 }}>待复核队列（{pending.length}）</h3>
           {subOk && <div className="ok-text" style={{ marginBottom: 8 }}>{subOk}</div>}
@@ -347,6 +355,7 @@ export default function Review() {
           )}
 
           {showForm && (
+            <Reveal delay={180}>
             <div className="card review-submit" style={{ marginTop: 12 }}>
               <div className="row row--between">
                 <strong>报送新内容（AI 生成 / 入库前须复核）</strong>
@@ -373,14 +382,16 @@ export default function Review() {
                 <button className="btn btn--ghost btn--sm" onClick={() => { setSubBody(SAMPLE_BODY); setSubType("question"); }}>载入示例</button>
               </div>
             </div>
+            </Reveal>
           )}
 
-          {pending.map((r) => {
+          {pending.map((r, idx) => {
             const signed1 = !!r.reviewer_1;
             const signed2 = !!r.reviewer_2;
             const isEditing = editing?.id === r.id;
             return (
-              <div className="card review-card" key={r.id} style={{ marginTop: 12 }}>
+              <Reveal key={r.id} delay={Math.min(idx, 8) * 40}>
+              <div className="card review-card" style={{ marginTop: 12 }}>
                 <div className="row row--between">
                   <div className="q-item__meta">
                     <span className="tag tag--brand">{TYPE_LABEL[r.item_type] || r.item_type}</span>
@@ -444,19 +455,21 @@ export default function Review() {
                     <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => setEditing({ id: r.id, mode: "reject", body: r.body, note: "" })}>
                       驳回
                     </button>
-                    <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => setEditing({ id: r.id, mode: "correct", body: r.body, note: "" })}>
-                      更正
-                    </button>
-                  </div>
+                  <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => setEditing({ id: r.id, mode: "correct", body: r.body, note: "" })}>
+                    更正
+                  </button>
+                </div>
                 )}
               </div>
+              </Reveal>
             );
           })}
 
           {done.length > 0 && (
             <>
               <h3 className="section-title" style={{ marginTop: 18 }}>已处理（{done.length}）</h3>
-              {done.map((r) => (
+              {done.map((r, idx) => (
+                <Reveal key={r.id} delay={Math.min(idx, 8) * 40}>
                 <div className="card review-card review-card--done" key={r.id} style={{ marginTop: 12 }}>
                   <div className="row row--between">
                     <div className="q-item__meta">
@@ -469,6 +482,7 @@ export default function Review() {
                   {r.body && <div className="review-body review-body--mini">{r.body}</div>}
                   {r.reviewer_note && <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>驳回意见：{r.reviewer_note}</div>}
                 </div>
+                </Reveal>
               ))}
             </>
           )}
@@ -479,6 +493,7 @@ export default function Review() {
       {tab === "questions" && !noPerm && (
         <>
           {/* 题库核实概览 */}
+          <Reveal delay={240}>
           <div className="card review-trust">
             <div className="review-trust__stat" style={{ width: "100%", justifyContent: "space-between" }}>
               <span><b>{qStats?.total ?? 0}</b> 题库总量</span>
@@ -487,7 +502,9 @@ export default function Review() {
               <span><b>{qStats?.awaiting_second ?? 0}</b> 待二审</span>
             </div>
           </div>
+          </Reveal>
 
+          <Reveal delay={300}>
           <div className="card" style={{ marginTop: 12 }}>
             <div className="row row--between">
               <strong>当前审核员</strong>
@@ -506,6 +523,7 @@ export default function Review() {
             </div>
             {qErr && <div className="err-text" style={{ marginTop: 8 }}>{qErr}</div>}
           </div>
+          </Reveal>
 
           <h3 className="section-title" style={{ marginTop: 16 }}>待核实题库（{qPending.length}）</h3>
           {qBusy && qPending.length === 0 && (
@@ -521,18 +539,15 @@ export default function Review() {
           )}
           {qPending.length === 0 && !qBusy && (
             <div className="card review-empty">
-              <div className="empty empty--tight">
-                <div className="empty__icon">✅</div>
-                <div className="empty__title">暂无待核实题目</div>
-                <div className="empty__desc">全部已双签通过 🎉</div>
-              </div>
+              <EmptyState tight icon="check" title="暂无待核实题目" desc="全部已双签通过 🎉" />
             </div>
           )}
 
-          {qPending.map((q) => {
+          {qPending.map((q, idx) => {
             const signed1 = !!q.reviewer_1;
             const signed2 = !!q.reviewer_2;
             return (
+              <Reveal key={q.question_id} delay={Math.min(idx, 8) * 40}>
               <div className="card qrev-card" key={q.question_id} style={{ marginTop: 12 }}>
                 <div className="row row--between">
                   <div className="q-item__meta">
@@ -585,13 +600,15 @@ export default function Review() {
                   </button>
                 </div>
               </div>
+              </Reveal>
             );
           })}
 
           {qSigned.length > 0 && (
             <>
               <h3 className="section-title" style={{ marginTop: 18 }}>本会话已处理（{qSigned.length}）</h3>
-              {qSigned.map((q) => (
+              {qSigned.map((q, idx) => (
+                <Reveal key={q.question_id} delay={Math.min(idx, 8) * 40}>
                 <div className="card qrev-card qrev-card--done" key={q.question_id} style={{ marginTop: 12 }}>
                   <div className="row row--between">
                     <div className="q-item__meta">
@@ -609,6 +626,7 @@ export default function Review() {
                     </div>
                   )}
                 </div>
+                </Reveal>
               ))}
             </>
           )}
