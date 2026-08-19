@@ -14,6 +14,7 @@ export default function Learn() {
   const [examDate, setExamDate] = useState<string>(() => localStorage.getItem("gwy_target_exam_date") || "");
   const [examName, setExamName] = useState<string>(() => localStorage.getItem("gwy_target_exam_name") || "目标考试");
   const [editTarget, setEditTarget] = useState(false);
+  const [sprintOpen, setSprintOpen] = useState(false);
   const daysLeft = useMemo(() => {
     if (!examDate) return null;
     return Math.ceil((new Date(examDate + "T00:00:00").getTime() - Date.now()) / 86400000);
@@ -30,9 +31,25 @@ export default function Learn() {
       .catch(() => {});
   };
   const REC_PAGE = 10;
+  // —— 冲刺模式：按剩余天数划分 4 阶段（常量；sprint 计算在 dash 就绪后）——
+  const SPRINT_PHASES = [
+    { key: "base", name: "基础巩固", cond: (d: number) => d > 60, target: "系统过考点，建立知识框架", daily: "每日 30 题 + 错题当天复盘", examFreq: "每周 1 套摸底" },
+    { key: "special", name: "专项突破", cond: (d: number) => d > 30, target: "主攻薄弱点，正确率提到 80%", daily: "每日 40 题专项 + 15 题回顾", examFreq: "每周 1-2 套限时模考" },
+    { key: "paper", name: "套卷模拟", cond: (d: number) => d > 14, target: "全真限时模拟，训练时间分配", daily: "每 2 天 1 套完整套卷 + 复盘", examFreq: "隔天 1 套" },
+    { key: "final", name: "冲刺回归", cond: (d: number) => d >= 0, target: "回归错题本，保持手感稳定心态", daily: "错题本过一遍 + 每日 20 题保持手感", examFreq: "考前 3 天停模考" },
+  ];
   const [dash, setDash] = useState<Dashboard | null>(null);
   const [rec, setRec] = useState<any>(null);
   const [heat, setHeat] = useState<KpHeatmap | null>(null);
+  const sprint = useMemo(() => {
+    if (daysLeft === null || daysLeft < 0) return null;
+    const phase = SPRINT_PHASES.find((p) => p.cond(daysLeft)) ?? SPRINT_PHASES[0];
+    const weak = (dash?.ability || [])
+      .filter((a) => a.attempts > 0)
+      .sort((a, b) => a.mastery - b.mastery)
+      .slice(0, 3);
+    return { phase, weak, daysLeft };
+  }, [daysLeft, dash]);
   const [explain, setExplain] = useState<Record<number, string>>({});
   const [upgradeFor, setUpgradeFor] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -174,11 +191,84 @@ export default function Learn() {
           </div>
         )}
         {daysLeft !== null && daysLeft >= 0 && (
-          <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-            保持节奏，每天点亮一点进度 💪
+          <div className="row row--between" style={{ marginTop: 6, alignItems: "center" }}>
+            <div className="muted" style={{ fontSize: 12 }}>
+              {sprint ? (
+                <>
+                  <span className="chip chip--warn" style={{ marginRight: 6 }}>🚀 冲刺期</span>
+                  <span>剩余 {daysLeft} 天 · {sprint.phase.name}</span>
+                </>
+              ) : (
+                "保持节奏，每天点亮一点进度 💪"
+              )}
+            </div>
+            {sprint && (
+              <button className="link-btn" onClick={() => setSprintOpen((v) => !v)}>
+                {sprintOpen ? "收起冲刺计划" : "查看冲刺计划"}
+              </button>
+            )}
           </div>
         )}
       </Reveal>
+      {sprint && sprintOpen && (
+        <Reveal className="card" style={{ marginTop: 12 }}>
+          <div className="row row--between" style={{ alignItems: "center" }}>
+            <strong>🚀 冲刺模式 · {sprint.phase.name}</strong>
+            <span className="muted" style={{ fontSize: 12 }}>剩余 {sprint.daysLeft} 天</span>
+          </div>
+          <div className="muted" style={{ marginTop: 4, fontSize: 13 }}>{sprint.phase.target}</div>
+          {/* 四阶段时间轴 */}
+          <div className="row" style={{ gap: 6, marginTop: 10, flexWrap: "wrap" }}>
+            {SPRINT_PHASES.map((p, i) => {
+              const cur = p.key === sprint.phase.key;
+              return (
+                <div
+                  key={p.key}
+                  style={{
+                    flex: 1, minWidth: 76, textAlign: "center", padding: "6px 4px", borderRadius: 8,
+                    fontSize: 12, background: cur ? "var(--brand)" : "var(--surface-2)",
+                    color: cur ? "var(--on-brand)" : "var(--text-2)", fontWeight: cur ? 600 : 400,
+                  }}
+                >
+                  {i + 1}. {p.name}
+                </div>
+              );
+            })}
+          </div>
+          <div className="card card--hint" style={{ marginTop: 10 }}>
+            <div>📋 每日建议：{sprint.phase.daily}</div>
+            <div style={{ marginTop: 4 }}>⏱ 模考建议：{sprint.phase.examFreq}</div>
+          </div>
+          {sprint.weak.length > 0 ? (
+            <>
+              <div className="muted" style={{ marginTop: 10, fontSize: 13 }}>🎯 今日专项（薄弱点优先）：</div>
+              <div className="chip-row" style={{ marginTop: 6 }}>
+                {sprint.weak.map((w) => (
+                  <button
+                    key={w.knowledge_point}
+                    className="chip chip--on"
+                    onClick={() => nav(`/practice?kp=${encodeURIComponent(w.knowledge_point)}`)}
+                  >
+                    {w.knowledge_point}（{Math.round(w.mastery * 100)}%）
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="muted" style={{ marginTop: 10, fontSize: 13 }}>
+              还没有做题数据，先去刷题建立画像，冲刺计划会更精准
+            </div>
+          )}
+          <div className="row" style={{ gap: 8, marginTop: 12 }}>
+            <button className="btn btn--primary btn--sm" onClick={() => nav("/exam")}>
+              📝 开始模考
+            </button>
+            <button className="btn btn--ghost btn--sm" onClick={() => nav("/wrong")}>
+              📕 错题复盘
+            </button>
+          </div>
+        </Reveal>
+      )}
       <Reveal className="card">
         <strong>学情概览</strong>
         <div className="muted" style={{ marginTop: 4 }}>
