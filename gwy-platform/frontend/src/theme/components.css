@@ -4067,6 +4067,7 @@
 
 /* ===================== 空状态统一组件 ===================== */
 .empty {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -4074,6 +4075,24 @@
   text-align: center;
   padding: 44px 24px;
   gap: 8px;
+}
+/* 零数据场景的柔和品牌光晕：让空态像「引导区」而非漂浮在纯白里（与 hero 光晕同源），
+   仅作用于独立态，tight 内嵌卡片态不加以免干扰卡片边界 */
+.empty:not(.empty--tight)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    140px 140px at 50% 40%,
+    color-mix(in srgb, var(--brand) 8%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+.empty:not(.empty--tight) > * {
+  position: relative;
+  z-index: 1;
 }
 .empty__icon {
   width: 64px;
