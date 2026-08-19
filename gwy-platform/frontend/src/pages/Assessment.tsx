@@ -404,7 +404,7 @@ export default function Assessment() {
                     <span className="text-3">
                       第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}
                     </span>
-                    <span className={d.is_correct ? "text-success" : "text-danger"}>
+                    <span className={"verdict " + (d.is_correct ? "verdict--ok" : "verdict--bad")}>
                       {d.is_correct ? "✔ 答对" : "✘ 答错"}
                     </span>
                   </div>

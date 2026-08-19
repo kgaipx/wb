@@ -1910,6 +1910,33 @@
 .result b {
   font-weight: 700;
 }
+/* 答题结论状态药丸：与 dim-chip / gap-badge 同源（药丸 + 浅底 + 描边） */
+.verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+.verdict--ok {
+  color: var(--success);
+  background: var(--success-050);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.verdict--bad {
+  color: var(--danger);
+  background: var(--danger-050);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.verdict--skip {
+  color: var(--brand);
+  background: var(--info-050, #eef2f7);
+  border: 1px solid rgba(37, 99, 235, 0.25);
+}
 /* 解析块：在结果色块内嵌套「表面卡 + 左侧品牌描边 + 解析标签」，提升长解析可读性 */
 .explain-block {
   margin-top: 10px;

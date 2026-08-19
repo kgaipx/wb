@@ -624,11 +624,11 @@ export default function Practice() {
               <div className="result__head">
                 <div>
                   {result.skipped ? (
-                    <b>⚠ 本题暂无标准答案，已跳过</b>
+                    <span className="verdict verdict--skip">⚠ 本题暂无标准答案，已跳过</span>
                   ) : result.is_correct ? (
-                    <b>✔ 答对</b>
+                    <span className="verdict verdict--ok">✔ 答对</span>
                   ) : (
-                    <b>{`✘ 答错，正确答案：${result.correct_answer ?? ""}`}</b>
+                    <span className="verdict verdict--bad">{`✘ 答错，正确答案：${result.correct_answer ?? ""}`}</span>
                   )}
                   <div className="text-3" style={{ marginTop: 4, fontSize: 12 }}>
                     {result.skipped

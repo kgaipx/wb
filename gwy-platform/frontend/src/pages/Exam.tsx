@@ -457,7 +457,7 @@ export default function Exam() {
             <div className="card" style={{ marginTop: 12 }}>
               <div className="row row--between">
                 <span className="text-3">第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}</span>
-                <span className={d.is_correct ? "text-success" : d.skipped ? "text-3" : "text-danger"}>
+                <span className={"verdict " + (d.is_correct ? "verdict--ok" : d.skipped ? "verdict--skip" : "verdict--bad")}>
                   {d.is_correct ? "✔ 答对" : d.skipped ? "⚠ 暂无答案" : "✘ 答错"}
                 </span>
               </div>

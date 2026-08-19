@@ -450,13 +450,13 @@ export default function Wrong() {
                 )}
                 {st.result && (
                   <div className={"result " + (st.result.is_correct ? "result--ok" : st.result.skipped ? "result--skip" : "result--bad")}>
-                    <b>
+                    <span className={"verdict " + (st.result.skipped ? "verdict--skip" : st.result.is_correct ? "verdict--ok" : "verdict--bad")}>
                       {st.result.skipped
                         ? "⚠ 本题暂无标准答案，已跳过"
                         : st.result.is_correct
                         ? "✔ 答对了！"
                         : `✘ 还是错了，正确答案：${st.result.correct_answer ?? ""}`}
-                    </b>
+                    </span>
                     {st.result.explanation && (
                       <div className="explain-block" style={{ marginTop: 8 }}>
                         <div className="explain-block__label">解析</div>
