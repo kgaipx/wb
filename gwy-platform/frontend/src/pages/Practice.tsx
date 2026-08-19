@@ -682,7 +682,8 @@ export default function Practice() {
                 </div>
               )}
               {result.explanation && (
-                <div style={{ marginTop: 8 }}>
+                <div className="explain-block">
+                  <div className="explain-block__label">解析</div>
                   <Markdown>{result.explanation}</Markdown>
                 </div>
               )}

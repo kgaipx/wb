@@ -1812,6 +1812,25 @@
 .result b {
   font-weight: 700;
 }
+/* 解析块：在结果色块内嵌套「表面卡 + 左侧品牌描边 + 解析标签」，提升长解析可读性 */
+.explain-block {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: var(--surface);
+  border: 1px solid var(--surface-2);
+  border-left: 3px solid var(--brand);
+}
+.explain-block__label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
 /* 错题本：重练答对后的「已掌握」建议卡 */
 .master-suggest {
   margin-top: 10px;

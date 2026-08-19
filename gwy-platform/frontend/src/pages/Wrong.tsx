@@ -458,7 +458,8 @@ export default function Wrong() {
                         : `✘ 还是错了，正确答案：${st.result.correct_answer ?? ""}`}
                     </b>
                     {st.result.explanation && (
-                      <div style={{ marginTop: 6 }}>
+                      <div className="explain-block" style={{ marginTop: 8 }}>
+                        <div className="explain-block__label">解析</div>
                         <Markdown>{st.result.explanation}</Markdown>
                       </div>
                     )}
