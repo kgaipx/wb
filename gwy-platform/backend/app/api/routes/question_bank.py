@@ -139,6 +139,7 @@ def list_questions(
     knowledge_point: str | None = None,
     source: str | None = Query(None, description="来源模糊匹配（上岸村/FB/ZG/刷题组 等）"),
     difficulty: int | None = Query(None, ge=1, le=5, description="难度过滤 1-5"),
+    year: int | None = Query(None, ge=2010, le=2035, description="真题年份过滤（source 以该年份开头，如 2018·深圳）"),
     sort: str = Query("default", description="排序：default / newest / difficulty / difficulty_desc"),
     ids: list[int] | None = Query(None, description="指定题集出题（错题本/收藏夹智能重练）"),
     offset: int = Query(0, ge=0),
@@ -164,6 +165,9 @@ def list_questions(
         q = q.filter(Question.source.like(f"%{source}%"))
     if difficulty:
         q = q.filter(Question.difficulty == difficulty)
+    if year:
+        # 真题来源以年份开头（2016·联考 / 2018·深圳 / 2019），年份开头匹配避免命中资料版本年份（2024 刷题组等）
+        q = q.filter(Question.source.like(f"{year}%"))
 
     # 指定题集出题（错题重练 / 收藏重练）：用户已明确题集，按传入 id 顺序返回，
     # 分页安全；不做掌握度加权。可与 subject/category 过滤叠加（本场景通常不传）。

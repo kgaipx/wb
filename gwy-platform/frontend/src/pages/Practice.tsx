@@ -33,6 +33,7 @@ export default function Practice() {
   const [kpFilter, setKpFilter] = useState<string>(""); // 测评弱项专项练习（按 knowledge_point）
   const [srcFilter, setSrcFilter] = useState<string>("全部"); // 来源筛选（上岸村/FB/ZG/刷题组）
   const [diffFilter, setDiffFilter] = useState<number>(0); // 难度筛选 0=全部，1-5
+  const [yearFilter, setYearFilter] = useState<number>(0); // 真题年份筛选 0=全部
   const [sortBy, setSortBy] = useState<string>("default"); // 排序：default/newest/difficulty/difficulty_desc
   const kpAutoOpened = useRef(false);
   const [upgrade, setUpgrade] = useState(false);
@@ -116,6 +117,7 @@ export default function Practice() {
         knowledge_point: kpFilter || undefined,
         source: srcFilter !== "全部" ? srcFilter : undefined,
         difficulty: diffFilter > 0 ? diffFilter : undefined,
+        year: yearFilter > 0 ? yearFilter : undefined,
         sort: sortBy !== "default" ? sortBy : undefined,
       })
       .then((qs) => {
@@ -125,7 +127,7 @@ export default function Practice() {
       })
       .catch((e) => setErr(e.message))
       .finally(() => setLoading(false));
-  }, [filter, kpFilter, srcFilter, diffFilter, sortBy]);
+  }, [filter, kpFilter, srcFilter, diffFilter, yearFilter, sortBy]);
 
   useEffect(() => {
     if (!active) return;
@@ -466,6 +468,17 @@ export default function Practice() {
                 {d === 0 ? "全部" : d}
               </button>
             ))}
+            <select
+              className="input"
+              style={{ width: "auto", marginLeft: 8, padding: "4px 8px", fontSize: 13 }}
+              value={yearFilter}
+              onChange={(e) => setYearFilter(Number(e.target.value))}
+            >
+              <option value={0}>全部年份</option>
+              {[2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024].map((y) => (
+                <option key={y} value={y}>{y} 年真题</option>
+              ))}
+            </select>
             <select
               className="input"
               style={{ width: "auto", marginLeft: 8, padding: "4px 8px", fontSize: 13 }}
