@@ -99,7 +99,7 @@ def _inject_headers(headers: list, request: Request) -> None:
             b"default-src 'self'; "
             b"img-src 'self' data: https:; "
             b"style-src 'self' 'unsafe-inline'; "
-            b"script-src 'self'; "
+            b"script-src 'self' 'sha256-oAU4lZf78jFB8cAMqapQ5AOYxrAJKR9Z/s4a6B8V4N8='; "
             b"font-src 'self' data:; "
             b"connect-src 'self'"
         ),
