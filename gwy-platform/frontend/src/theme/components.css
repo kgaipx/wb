@@ -5421,6 +5421,10 @@
   }
   .adopt { background: var(--surface-2); }
   .review-body--mini { background: var(--surface-2); }
+  /* 记忆属性卡：亮色下为半透明白面容器 + 纯白图标芯片，暗色下二者均刺眼，
+     翻为暗表面并保持「面板沉(--surface-2)、芯片抬(--surface)」的层级对比 */
+  .mem-prop { background: var(--surface-2); }
+  .mem-prop__ic { background: var(--surface); }
 
   /* PWA 徽章：暗底上改用亮蓝文字保证对比度 */
   .home-pwa__badge--info {
