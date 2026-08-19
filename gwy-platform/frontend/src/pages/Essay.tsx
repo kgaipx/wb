@@ -8,7 +8,7 @@ import Markdown from "../components/Markdown";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 import EmptyState from "../components/EmptyState";
 import Spinner from "../components/Spinner";
-import { PenIcon, ChartIcon } from "../icons";
+import { PenIcon } from "../icons";
 
 export default function Essay() {
   const [tab, setTab] = useState<"write" | "history">("write");
@@ -26,6 +26,7 @@ export default function Essay() {
   const [modelBusy, setModelBusy] = useState(false);
   const [compare, setCompare] = useState<EssayCompare | null>(null);
   const compareRef = useRef<HTMLDivElement>(null);
+  const enrichRun = useRef(0);
   const gradeRef = useRef<HTMLDivElement>(null);
   const historyRef = useRef<HTMLDivElement>(null);
   const [compareBusy, setCompareBusy] = useState(false);
@@ -45,10 +46,13 @@ export default function Essay() {
     setBusy(true);
     setErr("");
     setGrade(null);
+    setModel(null);
     setCompare(null);
     try {
       const r = await api.essayGrade(essay, material, 100, promptId, requirement);
       setGrade(r);
+      // 批改即完整报告：后台预取范文与对比点评，数据就绪原地展开，免去多次点击与串行等待
+      enrich(r, ++enrichRun.current);
     } catch (e: any) {
       setErr(e.message);
     } finally {
@@ -56,31 +60,31 @@ export default function Essay() {
     }
   }
 
-  async function loadCompare() {
-    if (!grade) return;
+  // 批改后后台预取：范文 → 对比点评（对比依赖范文），数据就绪即原地展开
+  async function enrich(g: any, myRun: number) {
+    if (!g) return;
+    setModelBusy(true);
     setCompareBusy(true);
     setErr("");
     try {
-      // 复用已生成的范文（避免重复生成）；缺失则现场生成
-      let me = model?.model_essay ?? null;
-      if (!me) {
-        const m = await api.essayModel(material, requirement, promptId);
-        setModel(m);
-        me = m.model_essay;
-      }
+      const m = await api.essayModel(material, requirement, promptId);
+      if (enrichRun.current !== myRun) return; // 已重置/重新批改，丢弃在途结果
+      setModel(m);
       const c = await api.essayCompare(
         essay,
         material,
         requirement,
         promptId,
-        me,
-        grade.dimensions,
-        grade.total,
+        m.model_essay,
+        g.dimensions,
+        g.total,
       );
+      if (enrichRun.current !== myRun) return;
       setCompare(c);
     } catch (e: any) {
       setErr(e.message);
     } finally {
+      setModelBusy(false);
       setCompareBusy(false);
     }
   }
@@ -97,22 +101,12 @@ export default function Essay() {
   }
 
   function resetEssay() {
+    enrichRun.current++; // 作废可能在途的范文/对比预取
     setEssay("");
     setGrade(null);
+    setModel(null);
     setCompare(null);
     setErr("");
-  }
-
-  async function loadModel() {
-    setModelBusy(true);
-    setErr("");
-    try {
-      setModel(await api.essayModel(material, requirement, promptId));
-    } catch (e: any) {
-      setErr(e.message);
-    } finally {
-      setModelBusy(false);
-    }
   }
 
   return (
@@ -190,14 +184,9 @@ export default function Essay() {
               {busy && <Spinner size={15} />}
               {busy ? "批改中…" : "AI 批改（满分 100）"}
             </button>
-            <button className={"btn btn--ghost btn--block" + (modelBusy ? " btn--loading" : "")} style={{ marginTop: 8 }} disabled={modelBusy} onClick={loadModel}>
-              {modelBusy && <Spinner size={14} />}
-              {modelBusy ? "生成范文中…" : <><PenIcon /> 查看范文参考</>}
-            </button>
-            <button className={"btn btn--ghost btn--block" + (compareBusy ? " btn--loading" : "")} style={{ marginTop: 8 }} disabled={!grade || compareBusy} onClick={loadCompare}>
-              {compareBusy && <Spinner size={14} />}
-              {compareBusy ? "对比点评中…" : <><ChartIcon /> 对比范文点评</>}
-            </button>
+            <div className="muted" style={{ marginTop: 8, fontSize: 12, textAlign: "center" }}>
+              批改后将自动生成高分范文与对比点评，无需额外操作
+            </div>
           </div>
 
           {grade && (
@@ -221,6 +210,12 @@ export default function Essay() {
                   <div className="tutor-box" style={{ marginTop: 12 }}>
                     <div className="tutor-box__title">总评</div>
                     <div className="tutor-box__body"><Markdown>{grade.rationale}</Markdown></div>
+                  </div>
+                )}
+                {(modelBusy || compareBusy) && (
+                  <div className="row" style={{ marginTop: 12, gap: 6 }}>
+                    <Spinner size={14} />
+                    <span className="muted" style={{ fontSize: 12 }}>正在生成高分范文与对比点评…</span>
                   </div>
                 )}
               </div>
