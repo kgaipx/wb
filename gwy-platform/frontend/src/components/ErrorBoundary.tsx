@@ -1,4 +1,5 @@
 import { Component, ErrorInfo, ReactNode } from "react";
+import { WarningIcon } from "../icons";
 
 interface Props {
   children: ReactNode;
@@ -33,7 +34,7 @@ class ErrorBoundaryInner extends Component<Props, State> {
       return (
         <div className="error-screen">
           <div className="error-screen__card">
-            <div className="error-screen__icon">⚠️</div>
+            <div className="error-screen__icon"><WarningIcon /></div>
             <h2>页面出错了</h2>
             <p className="muted">
               程序遇到了一个意外错误，已为你保留当前位置。可重试恢复，或返回首页。

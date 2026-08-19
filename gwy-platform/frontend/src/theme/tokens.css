@@ -22,11 +22,17 @@
   --bg: #F3F5F9;             /* 页面底色 */
   --surface: #FFFFFF;        /* 卡片 / 表面 */
   --surface-2: #F7F9FC;      /* 次级表面 / 进度槽 */
+  --bg-2: rgba(127, 127, 127, 0.05); /* 极淡底纹（cite-card / segmented 等复用） */
   --border: #E6E9F0;         /* 描边 */
   --text: #1F2733;           /* 主文本 */
   --text-2: #5C6675;         /* 次文本 */
   --text-3: #98A2B3;         /* 弱文本 / 元信息 */
   --on-brand: #FFFFFF;
+
+  /* ===== 主色 RGB 通道（半透明品牌阴影 / 光环，避免硬编码）===== */
+  --brand-rgb: 27, 79, 181;
+  --accent-rgb: 217, 43, 28;
+  --success-rgb: 26, 155, 87;
 
   /* ===== 品牌渐变（header logo / fab / hero / 主按钮统一复用）===== */
   --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
@@ -34,6 +40,11 @@
 
   /* ===== 统一缓动曲线（hover / active / tap 一致手感，与 auth-in 同源）===== */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* ===== 统一过渡时长（hover / active / 抬升 一致手感，避免 0.12~0.25s 散落）===== */
+  --t-fast: 0.12s;   /* 微交互：开关 / 勾选 / 分段按压 */
+  --t-base: 0.18s;   /* 标准反馈：颜色 / 背景 / 描边 / 阴影 */
+  --t-lift: 0.22s;   /* 抬升反馈：卡片 / 按钮 hover 位移 + 阴影 */
 
   /* ===== 字体 ===== */
   --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui,
@@ -64,12 +75,81 @@
   --r-md: 12px;
   --r-lg: 16px;
   --r-pill: 999px;
+  --radius: 10px;            /* 通用圆角（cite-card 等复用） */
 
-  /* ===== 阴影 ===== */
-  --sh-sm: 0 1px 3px rgba(16, 24, 40, 0.06), 0 1px 2px rgba(16, 24, 40, 0.04);
-  --sh-md: 0 6px 18px rgba(16, 24, 40, 0.08);
-  --sh-lg: 0 10px 30px rgba(16, 24, 40, 0.12);
+  /* ===== 阴影（多层级 + 低透明度，营造细腻纵深，接近主流 App 质感）===== */
+  --sh-xs: 0 1px 2px rgba(16, 24, 40, 0.06);
+  --sh-sm: 0 1px 2px rgba(16, 24, 40, 0.04), 0 2px 6px rgba(16, 24, 40, 0.05);
+  --sh-md: 0 4px 12px rgba(16, 24, 40, 0.06), 0 12px 28px rgba(16, 24, 40, 0.08);
+  --sh-lg: 0 10px 24px rgba(16, 24, 40, 0.10), 0 20px 48px rgba(16, 24, 40, 0.12);
+  /* 卡片悬停抬升阴影 */
+  --sh-card-hover: 0 2px 8px rgba(16, 24, 40, 0.06), 0 12px 26px rgba(16, 24, 40, 0.10);
+  /* 统一聚焦光环（键盘可达性 + 大厂手感）*/
+  --ring: 0 0 0 3px var(--brand-050);
+  --ring-strong: 0 0 0 3px rgba(27, 79, 181, 0.32);
 
   /* ===== 布局 ===== */
   --app-max: 480px;
+  /* 应用头部高度（含顶部安全区），供 sticky 子栏/离线条定位复用。
+     公式 = max(顶内边距, 安全区) + 底内边距(12) + 内容高(logo 32 + 底边 1)。
+     实测：无安全区 ≈57px，刘海屏(safe-area≈44) ≈89px。 */
+  --app-header-h: calc(max(var(--sp-3), env(safe-area-inset-top)) + var(--sp-3) + 33px);
+}
+
+/* ============================================================
+   暗色模式调色板
+   仅覆盖语义 token，全站组件自动翻转；具体「白玻璃条 / 白表面」
+   的暗色专属处理见 components.css 末尾 [data-theme="dark"] 块。
+   主题由 <html data-theme="dark"> 控制（见 index.html 防闪白内联脚本）。
+   ============================================================ */
+[data-theme="dark"] {
+  /* 品牌提亮，暗底上更通透（政务蓝 → 电光蓝）*/
+  --brand: #4C8DFF;
+  --brand-600: #4C8DFF;
+  --brand-700: #3B7BF0;          /* hover / active（暗底上略收一档，避免过曝）*/
+  --brand-050: rgba(76, 141, 255, 0.14);  /* 极浅蓝底：暗底上改为半透明蓝染 */
+  --brand-100: rgba(76, 141, 255, 0.22);  /* 浅蓝描边 */
+
+  --accent: #FF6B5E;             /* 中国红点缀：暗底上略提亮 */
+  --accent-050: rgba(217, 43, 28, 0.18);
+
+  --success: #36C97F;
+  --success-050: rgba(26, 155, 87, 0.18);
+  --warning: #F0A833;
+  --warning-050: rgba(217, 131, 0, 0.18);
+  --danger: #FF6B5E;
+  --danger-050: rgba(217, 43, 28, 0.18);
+  --info: #5B9BFF;
+  --info-050: rgba(37, 99, 235, 0.18);
+
+  /* ===== 中性色（深蓝灰底，贴合政务蓝调性）===== */
+  --bg: #0E1117;                 /* 页面底色：近黑蓝 */
+  --surface: #171B22;            /* 卡片 / 表面 */
+  --surface-2: #1F2530;          /* 次级表面 / 进度槽 */
+  --bg-2: rgba(255, 255, 255, 0.04); /* 极淡底纹（暗底上改白染）*/
+  --border: #2A313C;             /* 描边：暗底上更沉 */
+  --text: #E6E9EF;               /* 主文本 */
+  --text-2: #A7B0BE;             /* 次文本 */
+  --text-3: #6B7585;             /* 弱文本 / 元信息 */
+  --on-brand: #FFFFFF;
+
+  /* ===== 主色 RGB 通道（暗底上阴影/光环改亮蓝）===== */
+  --brand-rgb: 76, 141, 255;
+  --accent-rgb: 255, 107, 94;
+  --success-rgb: 54, 201, 127;
+
+  /* ===== 品牌渐变（暗底上提亮一档，保持同一视觉语言）===== */
+  --grad-brand: linear-gradient(135deg, #3B7BF0 0%, #4C8DFF 60%, #5B9BFF 100%);
+  --grad-brand-soft: linear-gradient(135deg, rgba(76, 141, 255, 0.12) 0%, rgba(76, 141, 255, 0.04) 100%);
+
+  /* ===== 阴影（暗底上改用深色投影营造纵深，强度略高于亮色）===== */
+  --sh-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
+  --sh-sm: 0 1px 2px rgba(0, 0, 0, 0.30), 0 2px 6px rgba(0, 0, 0, 0.35);
+  --sh-md: 0 4px 12px rgba(0, 0, 0, 0.40), 0 12px 28px rgba(0, 0, 0, 0.50);
+  --sh-lg: 0 10px 24px rgba(0, 0, 0, 0.50), 0 20px 48px rgba(0, 0, 0, 0.60);
+  --sh-card-hover: 0 2px 8px rgba(0, 0, 0, 0.45), 0 12px 26px rgba(0, 0, 0, 0.55);
+
+  /* 统一聚焦光环：暗底上改用亮蓝光环 */
+  --ring: 0 0 0 3px rgba(76, 141, 255, 0.35);
+  --ring-strong: 0 0 0 3px rgba(76, 141, 255, 0.55);
 }

@@ -30,6 +30,35 @@ class DayTrend(BaseModel):
     correct: int
 
 
+class KpHeatItem(BaseModel):
+    """单知识点掌握度热力单元（能力图谱无 subject 列，subject 由路由侧 JOIN 注入）。"""
+
+    knowledge_point: str
+    mastery: float
+    attempts: int
+
+    model_config = {"from_attributes": True}
+
+
+class KpHeatSubject(BaseModel):
+    """按科目分面的知识点热力分组：科目按平均掌握度升序（最弱科目在最前）。"""
+
+    subject: str
+    avg_mastery: float
+    kps: list[KpHeatItem]
+
+
+class KpHeatmap(BaseModel):
+    """知识点掌握度热力图（按科目分面）。
+
+    - subjects 按平均掌握度升序（最弱科目排最前，优先被看到）。
+    - 每个 subject 内 kps 按掌握度升序（最弱知识点排最前）。
+    - 仅含该用户已有能力画像的知识点；从未练过的知识点不出现（避免误导性的 0% 满屏）。
+    """
+
+    subjects: list[KpHeatSubject]
+
+
 class StudentStats(BaseModel):
     """学情数据看板（P0 信号承载）：复错率、正确率、弱项、趋势、连续打卡。
 

@@ -71,11 +71,11 @@ export function LineChart({
       {points.map((p, i) => (
         <g key={i}>
           <circle cx={x(i)} cy={y(p.value)} r={3.5} fill={color} />
-          <text x={x(i)} y={y(p.value) - 9} fontSize={10} textAnchor="middle" fill="#4a5160">
+          <text x={x(i)} y={y(p.value) - 9} fontSize={10} textAnchor="middle" fill="var(--text-3, #4a5160)">
             {formatValue(p.value)}
             {unit}
           </text>
-          <text x={x(i)} y={H - 6} fontSize={10} textAnchor="middle" fill="#9aa0ab">
+          <text x={x(i)} y={H - 6} fontSize={10} textAnchor="middle" fill="var(--text-3, #9aa0ab)">
             {p.label}
           </text>
         </g>

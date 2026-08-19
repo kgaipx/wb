@@ -63,3 +63,55 @@ textarea {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
 }
+
+/* ===== 文本选区（品牌色高亮，贴合主色）===== */
+::selection {
+  background: var(--brand-050);
+  color: var(--brand-700);
+}
+
+/* ===== 滚动条（细窄、中性色，营造原生 App 质感）===== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(16, 24, 40, 0.18) transparent;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(16, 24, 40, 0.16);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 24, 40, 0.30);
+  background-clip: padding-box;
+}
+
+/* ===== 暗色滚动条（细窄、浅色半透明，暗底上保持可见）===== */
+[data-theme="dark"] * {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+}
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.30);
+}
+
+/* ===== 尊重「减少动态效果」系统偏好（无障碍 + 大厂规范）===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -2,7 +2,7 @@
 
 所有端点均受 get_current_user 保护；LLM 调用失败时由能力层降级（见 essay_grader 回退）。
 """
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy import case, or_
@@ -22,6 +22,11 @@ from app.schemas.ai import (
     ChatOut,
     EssayGradeIn,
     EssayGradeOut,
+    EssayModelIn,
+    EssayModelOut,
+    EssayCompareIn,
+    EssayCompareOut,
+    EssayGap,
     ExplainIn,
     ExplainOut,
     KnowledgeChunkOut,
@@ -32,6 +37,7 @@ from app.schemas.ai import (
     RecommendOut,
 )
 from app.schemas.essay import EssayHistoryItem, EssayPromptOut
+from app.services import chat_service as chat_svc
 from app.services import study_plan_service as sp_svc
 
 router = APIRouter()
@@ -41,7 +47,8 @@ _FREE_QUOTA = settings.FREE_AI_EXPLAIN_QUOTA
 
 def _quota_state(user: User) -> dict:
     """返回当前用户当日 AI 讲解配额状态（is_pro 不限）。"""
-    today = date.today().isoformat()
+    # 平台规则：所有"按日"统计一律用北京时间（dt+8h），不能依赖服务器墙钟。
+    today = (datetime.now(timezone.utc) + timedelta(hours=8)).date().isoformat()
     if user.plan != "free":
         return {"is_pro": True, "limit": -1, "used": user.ai_quota_used, "remaining": -1, "date": today}
     # 跨日则重置计数
@@ -79,7 +86,8 @@ def explain(payload: ExplainIn, current: User = Depends(get_current_user), db: S
     remaining = None
     if current.plan == "free":
         remaining = max(0, _FREE_QUOTA - current.ai_quota_used)
-    return ExplainOut(**out, quota_remaining=remaining)
+    correct = "".join(o.label for o in q.options if getattr(o, "is_correct", False)) or None
+    return ExplainOut(**out, correct_answer=correct, quota_remaining=remaining)
 
 
 @router.get("/recommend", response_model=RecommendOut)
@@ -108,9 +116,11 @@ def recommend(top_n: int = 10, seed: int | None = None, current: User = Depends(
 
 
 @router.post("/chat", response_model=ChatOut)
-def chat(payload: ChatIn, current: User = Depends(get_current_user)):
+def chat(payload: ChatIn, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     tutor = TutorAgent()
-    return ChatOut(**tutor.chat(payload.messages, payload.kp_hint))
+    # 与会话路由一致：注入学员能力画像（最弱且练过的考点），让私教个性化
+    weak = chat_svc.build_weak_points(db, current)
+    return ChatOut(**tutor.chat(payload.messages, payload.kp_hint, weak_points=weak))
 
 
 @router.get("/essay-prompts", response_model=list[EssayPromptOut], tags=["ai"])
@@ -150,6 +160,43 @@ def essay_grade(payload: EssayGradeIn, current: User = Depends(get_current_user)
         rationale=score.rationale,
         consistency=getattr(score, "consistency", {}),
         record_id=record_id,
+    )
+
+
+@router.post("/essay/model", response_model=EssayModelOut, tags=["ai"])
+def essay_model(
+    payload: EssayModelIn,
+    current: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """申论范文参考：基于材料/要求生成高分范文 + 结构提纲 + 高分要点（LLM 不可用时降级）。"""
+    material = payload.material
+    requirement = payload.requirement
+    if (not material and not requirement) and payload.prompt_id:
+        p = db.get(EssayPrompt, payload.prompt_id)
+        if p:
+            material = material or p.material
+            requirement = requirement or p.requirement
+    from app.ai.essay_model import generate_model_essay
+
+    return EssayModelOut(**generate_model_essay(material, requirement))
+
+
+@router.post("/essay/compare", response_model=EssayCompareOut, tags=["ai"])
+def essay_compare(payload: EssayCompareIn, current: User = Depends(get_current_user)):
+    """将考生作答与高分范文做维度级对比点评（差距分析 + 改进建议）。"""
+    from app.ai.essay_compare import compare_essay
+
+    return EssayCompareOut(
+        **compare_essay(
+            student_essay=payload.student_essay,
+            material=payload.material,
+            requirement=payload.requirement,
+            max_score=payload.max_score,
+            model_essay=payload.model_essay,
+            student_dimensions=payload.student_dimensions,
+            student_total=payload.student_total,
+        )
     )
 
 

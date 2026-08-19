@@ -76,6 +76,23 @@ class FavoritePatch(BaseModel):
     tags: list[str] | None = None
 
 
+class QuestionSearchHit(BaseModel):
+    """题库检索命中（仅列表所需字段，不泄漏选项/答案）。
+
+    stem 完整返回，前端自行截断展示；点击结果跳练习/收藏/看解析。
+    """
+
+    id: int
+    subject: str
+    category: str
+    difficulty: int
+    knowledge_point: str
+    is_verified: bool
+    stem: str
+
+    model_config = {"from_attributes": True}
+
+
 class FavoriteOut(BaseModel):
     """收藏条目：题目本体 + 云端笔记 + 自定义标签。"""
 

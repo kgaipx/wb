@@ -28,6 +28,7 @@ from app.schemas.question import (
     PracticeResult,
     PracticeSubmit,
     QuestionOut,
+    QuestionSearchHit,
 )
 from app.services.scoring import has_correct_option_filter, score_selection
 
@@ -184,12 +185,110 @@ def list_questions(
     return q.offset(offset).limit(limit).all()
 
 
+@router.get("/questions/search", response_model=list[QuestionSearchHit])
+def search_questions(
+    q: str = Query("", description="关键词：匹配题干或知识点（模糊）"),
+    subject: str | None = Query(None, description="限定科目（行测 / 申论）"),
+    category: str | None = Query(None, description="限定模块（言语理解与表达 / 判断推理 / 数量关系 / 资料分析 / 常识判断 等）"),
+    knowledge_point: str | None = Query(None, description="限定知识点（精确）"),
+    limit: int = Query(20, le=50, ge=1),
+    current: User | None = Depends(get_optional_user),
+    db: Session = Depends(get_db),
+):
+    """全局题库检索：按关键词 + 科目/模块/知识点筛选，结果可跳练习/收藏/看解析。
+
+    注意：必须注册在 /questions/{qid} 之前——FastAPI 不会在路径参数类型转换失败时
+    回退到后续路由，否则 /questions/search 会被 /questions/{qid} 拦截并报 int 解析错误。
+    - 匿名也可检索（get_optional_user）；仅对题干与知识点做 LIKE，不泄漏选项/答案。
+    - 仅检索可判分题（有正确选项标记），保证点击「去练习」能正常判分。
+    - 排序：先按相关性粗排（题干命中优先于仅知识点命中），再按 id 稳定序。
+    """
+    if not q and not knowledge_point and not subject and not category:
+        # 空查询（无筛选）视为「浏览题库」：返回前 N 道可判分题作为样例，
+        # 受 limit 约束，不会拉全库。
+        rows = (
+            db.query(Question)
+            .filter(has_correct_option_filter())
+            .order_by(Question.id)
+            .limit(limit)
+            .all()
+        )
+        return rows
+
+    query = db.query(Question).filter(has_correct_option_filter())
+    if subject:
+        query = query.filter(Question.subject == subject)
+    if category:
+        query = query.filter(Question.category == category)
+    if knowledge_point:
+        query = query.filter(Question.knowledge_point == knowledge_point)
+
+    like = f"%{q}%"
+    if q:
+        query = query.filter(
+            Question.stem.like(like) | Question.knowledge_point.like(like)
+        )
+
+    rows = query.order_by(Question.id).limit(limit * 3).all()
+
+    # 相关性粗排：题干命中（强）> 仅知识点命中（弱）
+    def _score(qq: Question) -> int:
+        s = 0
+        if q and q in (qq.knowledge_point or ""):
+            s += 1
+        if q and q in (qq.stem or ""):
+            s += 2
+        return s
+
+    if q:
+        rows.sort(key=lambda qq: (-_score(qq), qq.id))
+    rows = rows[:limit]
+    return rows
+
+
 @router.get("/questions/{qid}", response_model=QuestionOut)
 def get_question(qid: int, db: Session = Depends(get_db)):
     q = db.get(Question, qid)
     if q is None:
         raise HTTPException(status_code=404, detail="题目不存在")
     return q
+
+
+@router.get("/questions/{qid}/similar", response_model=list[QuestionSearchHit])
+def similar_questions(
+    qid: int,
+    limit: int = Query(12, le=30, ge=1),
+    db: Session = Depends(get_db),
+):
+    """智能错题强化包：返回与指定题同知识点（优先）/ 同模块（兜底）的题，
+    排除自身，仅含可判分题。前端据此拼成强化练习包跳 /practice?ids=。"""
+    q = db.get(Question, qid)
+    if q is None:
+        raise HTTPException(status_code=404, detail="题目不存在")
+    same_kp = (
+        db.query(Question)
+        .filter(
+            Question.knowledge_point == q.knowledge_point,
+            Question.id != qid,
+            has_correct_option_filter(),
+        )
+        .limit(limit)
+        .all()
+    )
+    if len(same_kp) < limit:
+        extra = (
+            db.query(Question)
+            .filter(
+                Question.category == q.category,
+                Question.id != qid,
+                Question.knowledge_point != q.knowledge_point,
+                has_correct_option_filter(),
+            )
+            .limit(limit - len(same_kp))
+            .all()
+        )
+        same_kp = same_kp + extra
+    return same_kp
 
 
 @router.post("/practice", response_model=PracticeResult)
@@ -201,6 +300,29 @@ def practice(
     q = db.get(Question, payload.question_id)
     if q is None:
         raise HTTPException(status_code=404, detail="题目不存在")
+
+    # 仅揭示答案（模考复盘中的「未作答」题目）：不写入 UserAnswer、不更新能力图谱，
+    # 避免把「没做」污染成「做错」。对应前端交卷时对未答题调用 practice(sel="")。
+    if not payload.selected:
+        correct_labels, _, scorable = score_selection("", q.options, q.qtype)
+        ab = (
+            db.query(AbilityProfile)
+            .filter(
+                AbilityProfile.user_id == current.id,
+                AbilityProfile.knowledge_point == q.knowledge_point,
+            )
+            .first()
+        )
+        mastery = ab.mastery if ab else 0.0
+        return PracticeResult(
+            question_id=q.id,
+            is_correct=False,
+            correct_answer="".join(correct_labels) if scorable else None,
+            explanation=q.explanation if scorable else "本题暂无标准答案，已跳过。",
+            mastery=mastery,
+            mastery_before=mastery,
+            skipped=not scorable,
+        )
 
     correct_labels, is_correct, scorable = score_selection(
         payload.selected, q.options, q.qtype

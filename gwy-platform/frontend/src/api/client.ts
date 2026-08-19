@@ -73,6 +73,30 @@ export interface StudentStats {
   last_7_days: DayTrend[];
   streak_days: number; // 连续打卡天数
 }
+// 知识点掌握度热力图（按科目分面；仅含练过的知识点）
+export interface KpHeatItem {
+  knowledge_point: string;
+  mastery: number;
+  attempts: number;
+}
+export interface KpHeatSubject {
+  subject: string;
+  avg_mastery: number;
+  kps: KpHeatItem[];
+}
+export interface KpHeatmap {
+  subjects: KpHeatSubject[];
+}
+// 题库检索命中（不泄漏选项/答案）
+export interface SearchHit {
+  id: number;
+  subject: string;
+  category: string;
+  difficulty: number;
+  knowledge_point: string;
+  is_verified: boolean;
+  stem: string;
+}
 export interface Question {
   id: number;
   subject: string;
@@ -90,6 +114,17 @@ export interface FavoriteItem {
   note: string; // 私人笔记（云端同步）
   tags: string[]; // 自定义标签，如 ["易错","重点"]
   created_at: string;
+}
+
+// 单次练习判分结果；mastery_before 为练习前掌握度，用于结果页展示本题带来的掌握度变化
+export interface PracticeResult {
+  question_id: number;
+  is_correct: boolean;
+  correct_answer: string | null;
+  explanation: string | null;
+  mastery: number;
+  mastery_before: number;
+  skipped?: boolean;
 }
 export interface WrongItem {
   question: Question;
@@ -285,6 +320,29 @@ export interface EssayHistoryItem {
   rationale: string | null;
   created_at: string;
 }
+export interface EssayModel {
+  model_essay: string; // 生成的高分范文正文（markdown）
+  outline: string[]; // 结构提纲
+  key_points: string[]; // 高分要点
+  offline?: boolean; // True 表示 LLM 不可用走了降级提示
+}
+
+// 申论对比点评（WBS 4.1 增强）：考生作答 vs 高分范文的维度级差距分析
+export interface EssayGap {
+  dimension: string; // 维度名（立意/结构/论证/语言/素材）
+  comment: string; // 该维度考生与范文的具体差距（可能为空，表示差距不显著）
+}
+export interface EssayCompare {
+  student_total: number; // 考生总分
+  model_total: number; // 范文总分
+  student_dimensions: Record<string, number>; // 考生五维分
+  model_dimensions: Record<string, number>; // 范文五维分
+  gaps: EssayGap[]; // 维度级差距（五维齐全）
+  suggestions: string[]; // 可操作改进建议
+  narrative: string; // 总体对比点评（markdown-ish 纯文本）
+  model_essay: string; // 回传范文正文
+  offline?: boolean; // True 表示 LLM 不可用走了启发式降级
+}
 
 // 能力测评（WBS 3.2 自适应诊断）
 export interface AssessmentDim {
@@ -375,6 +433,8 @@ export const api = {
   dashboard: () => request<Dashboard>("/student/me"),
   // 学情数据看板（P0 信号：复错率 / 正确率 / 弱项 / 趋势 / 连续打卡）
   studentStats: () => request<StudentStats>("/student/stats"),
+  // 知识点掌握度热力图（按科目分面，科目按平均掌握度升序）
+  kpHeatmap: () => request<KpHeatmap>("/student/kp-heatmap"),
 
   // 错题本（WBS 2.2 衍生 / 复错率闭环）
   wrongList: () => request<WrongItem[]>("/student/wrong"),
@@ -393,8 +453,21 @@ export const api = {
     return request<Question[]>(`/bank/questions?${q.toString()}`);
   },
   bankGet: (id: number) => request<Question>(`/bank/questions/${id}`),
+  // 智能错题强化包：取同知识点/同模块相似题（排除自身），拼成强化题集
+  similarQuestions: (qid: number, limit = 12) =>
+    request<SearchHit[]>(`/bank/questions/${qid}/similar?limit=${limit}`),
+  // 全局题库检索：关键词 + 科目/模块/知识点筛选，结果可跳练习/收藏/看解析（支持匿名）
+  questionSearch: (params: { q?: string; subject?: string; category?: string; knowledge_point?: string; limit?: number } = {}) => {
+    const q = new URLSearchParams();
+    if (params.q) q.set("q", params.q);
+    if (params.subject) q.set("subject", params.subject);
+    if (params.category) q.set("category", params.category);
+    if (params.knowledge_point) q.set("knowledge_point", params.knowledge_point);
+    if (params.limit) q.set("limit", String(params.limit));
+    return request<SearchHit[]>(`/bank/questions/search?${q.toString()}`);
+  },
   practice: (question_id: number, selected: string) =>
-    request<{ question_id: number; is_correct: boolean; correct_answer: string | null; explanation: string | null; mastery: number; skipped?: boolean }>(
+    request<PracticeResult>(
       "/bank/practice",
       { method: "POST", body: JSON.stringify({ question_id, selected }) }
     ),
@@ -413,7 +486,7 @@ export const api = {
 
   // AI 私教 / 自适应（WBS 3.1 / 3.2）
   explain: (question_id: number, selected?: string) =>
-    request<{ knowledge_point: string; explanation: string; citations: Citation[]; model: string | null; offline?: boolean }>("/ai/explain", {
+    request<{ knowledge_point: string; explanation: string; citations: Citation[]; correct_answer: string | null; model: string | null; quota_remaining: number | null; offline?: boolean }>("/ai/explain", {
       method: "POST",
       body: JSON.stringify({ question_id, selected }),
     }),
@@ -479,6 +552,38 @@ export const api = {
       { method: "POST", body: JSON.stringify({ essay_text, prompt_material, requirement, max_score, prompt_id }) }
     ),
   essayHistory: () => request<EssayHistoryItem[]>("/ai/essay-history"),
+  // 申论范文参考（WBS 4.1 增强）：生成高分范文 + 结构提纲 + 高分要点
+  essayModel: (
+    material = "",
+    requirement = "",
+    prompt_id: number | null = null,
+  ) =>
+    request<EssayModel>("/ai/essay/model", {
+      method: "POST",
+      body: JSON.stringify({ material, requirement, prompt_id }),
+    }),
+  // 申论对比点评（WBS 4.1 增强）：将考生作答与范文做维度级对比
+  essayCompare: (
+    student_essay: string,
+    material = "",
+    requirement = "",
+    prompt_id: number | null = null,
+    model_essay: string | null = null,
+    student_dimensions: Record<string, number> | null = null,
+    student_total: number | null = null,
+  ) =>
+    request<EssayCompare>("/ai/essay/compare", {
+      method: "POST",
+      body: JSON.stringify({
+        student_essay,
+        material,
+        requirement,
+        prompt_id,
+        model_essay,
+        student_dimensions,
+        student_total,
+      }),
+    }),
 
   // 在线模考（WBS 4.2）
   examStart: (subject?: string, count = 20) =>
@@ -487,7 +592,7 @@ export const api = {
       body: JSON.stringify({ subject, count }),
     }),
   examSubmit: (answers: { question_id: number; selected: string }[]) =>
-    request<{ id: number; total: number; correct: number; correct_rate: number; weak_points: string[]; details: any[] }>(
+    request<{ id: number; total: number; correct: number; correct_rate: number;  weak_points: string[]; details: any[]; kp_mastery?: any[] }>(
       "/exam/submit",
       { method: "POST", body: JSON.stringify({ answers }) }
     ),
@@ -495,6 +600,18 @@ export const api = {
     request<any[]>("/exam/history?limit=" + limit + "&offset=" + offset),
   examHistoryDetail: (id: number) =>
     request<any>("/exam/history/" + id),
+  examSavePredict: (rec: {
+    subject: string;
+    total: number;
+    correct: number;
+    correct_rate: number;
+    weak_points: string[];
+    details: any[];
+  }) =>
+    request<{ id: number }>("/exam/predict-record", {
+      method: "POST",
+      body: JSON.stringify(rec),
+    }),
 
   // 能力测评（WBS 3.2 自适应诊断）
   assessmentPaper: () =>
