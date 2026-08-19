@@ -9,6 +9,7 @@ import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
 import Spinner from "../components/Spinner";
 import Reveal from "../components/Reveal";
+import { useToast } from "../components/ToastProvider";
 import { TargetIcon, SearchIcon, BrainIcon } from "../icons";
 
 const PAGE = 60;
@@ -16,6 +17,7 @@ const PAGE = 60;
 export default function Practice() {
   const [params] = useSearchParams();
   const nav = useNavigate();
+  const toast = useToast();
   const [list, setList] = useState<Question[]>([]);
   const [active, setActive] = useState<Question | null>(null);
   const [selected, setSelected] = useState("");
@@ -285,13 +287,10 @@ export default function Practice() {
       } catch {
         /* ignore */
       }
-      // 拉取练习后最新能力概览（弱项升序最多 8），用于结果页雷达；匿名或接口失败静默跳过
-      try {
-        const s = await api.studentStats();
-        setAbility(s.ability || []);
-      } catch {
-        setAbility([]);
-      }
+      // 练习后能力概览（结果页雷达）后台预取，不阻塞「结果区」即时渲染，降低提交后等待
+      api.studentStats()
+        .then((s) => setAbility(s.ability || []))
+        .catch(() => setAbility([]));
       if (r.skipped) {
         // 暂无标准答案：不计入连续答对，也不打断连对，也不计入本轮统计
       } else {
@@ -313,6 +312,21 @@ export default function Practice() {
     } finally {
       setBusy(false);
     }
+  }
+
+  // 重练闭环：原地标记本题已掌握（移除错题本条目），并继续下一题，不强制跳回错题本
+  async function markMasteredRetry() {
+    if (!active) return;
+    setBusy(true);
+    try {
+      await api.wrongReview(active.id);
+      toast.success("已标记为已掌握 👍");
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setBusy(false);
+    }
+    nextQuestion();
   }
 
   async function askTutor() {
@@ -686,6 +700,11 @@ export default function Practice() {
                   <div className="explain-block__label">解析</div>
                   <Markdown>{result.explanation}</Markdown>
                 </div>
+              )}
+              {mode === "retry" && (
+                <button className="btn btn--ok btn--block" style={{ marginTop: 10 }} disabled={busy} onClick={markMasteredRetry}>
+                  ✅ 标记已掌握
+                </button>
               )}
               <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={busy} onClick={nextQuestion}>
                 {nextLabel}

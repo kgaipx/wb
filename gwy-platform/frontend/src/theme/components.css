@@ -359,6 +359,20 @@
 .btn--primary:not(:disabled):active {
   transform: translateY(0) scale(0.99);
 }
+/* 成功/正向主操作（答对、标记已掌握等）—— 复用主按钮质感，改用成功色 token，双主题自适应 */
+.btn--ok {
+  background: var(--success);
+  color: var(--on-brand);
+  box-shadow: 0 2px 8px rgba(var(--success-rgb), 0.28), 0 1px 2px rgba(var(--success-rgb), 0.20);
+}
+.btn--ok:not(:disabled):hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(var(--success-rgb), 0.34), 0 2px 4px rgba(var(--success-rgb), 0.20);
+}
+.btn--ok:not(:disabled):active {
+  transform: translateY(0) scale(0.99);
+}
 .btn--ghost {
   background: var(--surface);
   color: var(--brand);

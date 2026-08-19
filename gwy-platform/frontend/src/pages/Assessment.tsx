@@ -7,11 +7,15 @@ import {
   AssessmentReport,
   AssessmentRecordOut,
   AssessmentDim,
+  Citation,
 } from "../api/client";
 import { LineChart } from "../components/LineChart";
 import { triggerDownload, shareOrCopy, stamp } from "../utils/exportUtils";
 import EmptyState from "../components/EmptyState";
 import Spinner from "../components/Spinner";
+import { RobotIcon, RepeatIcon } from "../icons";
+import CiteCards from "../components/CiteCards";
+import Markdown from "../components/Markdown";
 
 type Phase = "setup" | "doing" | "report" | "history" | "historyDetail";
 
@@ -102,6 +106,12 @@ export default function Assessment() {
   const [detail, setDetail] = useState<AssessmentRecordOut | null>(null);
   const [prevOverall, setPrevOverall] = useState<number | null>(null);
   const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [expQ, setExpQ] = useState<Record<number, boolean>>({});
+  const [explainMap, setExplainMap] = useState<Record<number, { explanation: string; citations: Citation[] }>>({});
+  const [favMap, setFavMap] = useState<Record<number, boolean>>({});
+  const [explainBusy, setExplainBusy] = useState<Record<number, boolean>>({});
+  const [favBusy, setFavBusy] = useState<Record<number, boolean>>({});
+  const [expBatchBusy, setExpBatchBusy] = useState(false);
   const toast = useToast();
 
   const cur = paper[idx];
@@ -394,7 +404,17 @@ export default function Assessment() {
 
         {r.details?.length > 0 && (
           <>
-            <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
+            <div className="row row--between" style={{ marginTop: 16 }}>
+              <h3 className="section-title" style={{ margin: 0 }}>逐题回顾</h3>
+              <button
+                className={"btn btn--ghost btn--sm" + (expBatchBusy ? " btn--loading" : "")}
+                disabled={expBatchBusy || !r.details?.length}
+                onClick={() => batchExplain(r.details, !((r.details || []).every((d: any) => expQ[d.question_id])))}
+              >
+                {expBatchBusy && <Spinner size={14} />}
+                {((r.details || []).every((d: any) => expQ[d.question_id])) ? "收起全部讲解" : "一键展开全部讲解"}
+              </button>
+            </div>
             {r.details.map((d: any, i: number) => {
               const opts: Array<{ label: string; content: string; is_correct: boolean }> = d.options || [];
               const userLabels = new Set((d.selected || "").split("").filter(Boolean));
@@ -404,8 +424,8 @@ export default function Assessment() {
                     <span className="text-3">
                       第 {i + 1} 题{d.knowledge_point ? ` · ${d.knowledge_point}` : ""}
                     </span>
-                    <span className={"verdict " + (d.is_correct ? "verdict--ok" : "verdict--bad")}>
-                      {d.is_correct ? "✔ 答对" : "✘ 答错"}
+                    <span className={"verdict " + (d.is_correct ? "verdict--ok" : d.skipped ? "verdict--skip" : "verdict--bad")}>
+                      {d.is_correct ? "✔ 答对" : d.skipped ? "⚠ 暂无答案" : "✘ 答错"}
                     </span>
                   </div>
                   <div className="q-item__stem" style={{ marginTop: 4 }}>{d.stem}</div>
@@ -436,6 +456,7 @@ export default function Assessment() {
                       {d.selected ? `（你的作答：${d.selected}）` : ""}
                     </div>
                   )}
+                  {renderAdetailActions(d)}
                 </div>
               );
             })}
@@ -447,6 +468,107 @@ export default function Assessment() {
 
   function flash(msg: string) {
     toast.success(msg);
+  }
+
+  // 逐题复盘：就地展开/收起 AI 讲解（复用 /ai/explain，含 RAG 溯源引用）
+  async function toggleExplain(qid: number, selected?: string) {
+    if (expQ[qid]) {
+      setExpQ((s) => ({ ...s, [qid]: false }));
+      return;
+    }
+    setExplainBusy((s) => ({ ...s, [qid]: true }));
+    try {
+      const r = await api.explain(qid, selected || undefined);
+      setExplainMap((s) => ({ ...s, [qid]: { explanation: r.explanation, citations: r.citations } }));
+      setExpQ((s) => ({ ...s, [qid]: true }));
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setExplainBusy((s) => ({ ...s, [qid]: false }));
+    }
+  }
+
+  // 逐题复盘：一键收藏（沉淀好题）
+  async function doFav(qid: number) {
+    if (favMap[qid]) return;
+    setFavBusy((s) => ({ ...s, [qid]: true }));
+    try {
+      await api.favoriteAdd(qid);
+      setFavMap((s) => ({ ...s, [qid]: true }));
+    } catch (e: any) {
+      setErr(e.message);
+    } finally {
+      setFavBusy((s) => ({ ...s, [qid]: false }));
+    }
+  }
+
+  // 一键展开/收起全部逐题讲解（已缓存的题直接展开不重复请求）
+  async function batchExplain(details: any[], expand: boolean) {
+    if (!expand) {
+      setExpQ({});
+      return;
+    }
+    setExpBatchBusy(true);
+    try {
+      await Promise.all(
+        (details || []).map(async (d: any) => {
+          const qid = d.question_id;
+          if (explainMap[qid]) {
+            setExpQ((s) => ({ ...s, [qid]: true }));
+            return;
+          }
+          try {
+            const r = await api.explain(qid, d.selected);
+            setExplainMap((s) => ({ ...s, [qid]: { explanation: r.explanation, citations: r.citations } }));
+            setExpQ((s) => ({ ...s, [qid]: true }));
+          } catch {
+            /* 单题失败不影响其余 */
+          }
+        })
+      );
+    } finally {
+      setExpBatchBusy(false);
+    }
+  }
+
+  // 逐题回顾卡片底部的操作行 + AI 讲解展开区（与模考体验对齐）
+  function renderAdetailActions(d: any) {
+    const qid = d.question_id;
+    const open = expQ[qid];
+    const ex = explainMap[qid];
+    const fav = favMap[qid];
+    return (
+      <>
+        <div className="row" style={{ gap: 8, marginTop: 8 }}>
+          <button
+            className={"btn btn--ghost btn--sm" + (explainBusy[qid] ? " btn--loading" : "")}
+            disabled={explainBusy[qid]}
+            onClick={() => toggleExplain(qid, d.selected)}
+          >
+            {explainBusy[qid] && <Spinner size={14} />}
+            {explainBusy[qid] ? "讲解中…" : open ? "收起讲解" : <><RobotIcon /> AI 讲解</>}
+          </button>
+          <button
+            className={"btn btn--ghost btn--sm" + (favBusy[qid] ? " btn--loading" : "")}
+            disabled={favBusy[qid] || fav}
+            onClick={() => doFav(qid)}
+          >
+            {favBusy[qid] && <Spinner size={14} />}
+            {fav ? "⭐ 已收藏" : favBusy[qid] ? "收藏中…" : "☆ 收藏"}
+          </button>
+          <button className="btn btn--ghost btn--sm" onClick={() => nav(`/practice?q=${qid}`)}>
+            <><RepeatIcon /> 重练</>
+          </button>
+        </div>
+        {open && ex && (
+          <div className="tutor-box" style={{ marginTop: 8 }}>
+            <div className="tutor-box__title">AI 私教讲解</div>
+            <div className="tutor-box__body"><Markdown>{ex.explanation}</Markdown></div>
+            {ex.citations.length > 0 && <CiteCards cites={ex.citations} />}
+          </div>
+        )}
+      </>
+    );
   }
 
   // 成长趋势：基于历史测评记录计算首次/最佳/平均与本次对比（导出与内联展示共用）

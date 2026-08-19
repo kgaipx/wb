@@ -119,6 +119,7 @@ export default function Exam() {
   const [favMap, setFavMap] = useState<Record<number, boolean>>({});
   const [explainBusy, setExplainBusy] = useState<Record<number, boolean>>({});
   const [favBusy, setFavBusy] = useState<Record<number, boolean>>({});
+  const [expBatchBusy, setExpBatchBusy] = useState(false);
 
   async function loadHistory(reset = true) {
     const off = reset ? 0 : hisOffset;
@@ -319,6 +320,35 @@ export default function Exam() {
     }
   }
 
+  // 一键展开/收起全部逐题讲解（报告页批量触发每题 /ai/explain，已缓存的题直接展开不重复请求）
+  async function batchExplain(details: any[], expand: boolean) {
+    if (!expand) {
+      setExpQ({});
+      return;
+    }
+    setExpBatchBusy(true);
+    try {
+      await Promise.all(
+        (details || []).map(async (d: any) => {
+          const qid = d.question_id;
+          if (explainMap[qid]) {
+            setExpQ((s) => ({ ...s, [qid]: true }));
+            return;
+          }
+          try {
+            const r = await api.explain(qid, d.selected);
+            setExplainMap((s) => ({ ...s, [qid]: { explanation: r.explanation, citations: r.citations } }));
+            setExpQ((s) => ({ ...s, [qid]: true }));
+          } catch {
+            /* 单题失败不影响其余 */
+          }
+        })
+      );
+    } finally {
+      setExpBatchBusy(false);
+    }
+  }
+
   function renderReport(rep: any, getMeta: (d: any) => { stem?: string | null; options?: any[] | null }) {
     const rate = Math.round((rep.correct_rate || 0) * 100);
     const tone = rate >= 70 ? "rate--good" : rate >= 50 ? "rate--mid" : "rate--bad";
@@ -442,7 +472,17 @@ export default function Exam() {
           </button>
         </div>
         </Reveal>
-        <h3 className="section-title" style={{ marginTop: 16 }}>逐题回顾</h3>
+        <div className="row row--between" style={{ marginTop: 16 }}>
+          <h3 className="section-title" style={{ margin: 0 }}>逐题回顾</h3>
+          <button
+            className={"btn btn--ghost btn--sm" + (expBatchBusy ? " btn--loading" : "")}
+            disabled={expBatchBusy || !(rep.details || []).length}
+            onClick={() => batchExplain(rep.details, !((rep.details || []).every((d: any) => expQ[d.question_id])))}
+          >
+            {expBatchBusy && <Spinner size={14} />}
+            {((rep.details || []).every((d: any) => expQ[d.question_id])) ? "收起全部讲解" : "一键展开全部讲解"}
+          </button>
+        </div>
         {(rep.details || []).map((d: any, i: number) => {
           const meta = getMeta(d) || {};
           const opts = meta.options || [];
