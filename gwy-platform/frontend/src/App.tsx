@@ -209,6 +209,49 @@ function FloatingTutor() {
   );
 }
 
+/**
+ * 桌面端左侧导航栏分组（≥1024px 显示，替代底部 tab + 「更多」抽屉）。
+ * 与底部 PRIMARY / MORE 共用同一批图标组件，路径保持单一数据源语义一致。
+ */
+type RailEntry = { to: string; label: string; icon: Icon; end?: boolean; role?: "reviewer" | "admin" };
+const RAIL: { title: string; items: RailEntry[] }[] = [
+  {
+    title: "练习闭环",
+    items: [
+      { to: "/", label: "首页", icon: HomeIcon, end: true },
+      { to: "/practice", label: "刷题", icon: PenIcon },
+      { to: "/assessment", label: "测评", icon: AssessIcon },
+      { to: "/wrong", label: "错题", icon: WrongIcon },
+      { to: "/exam", label: "模考", icon: ExamIcon },
+    ],
+  },
+  {
+    title: "学习提升",
+    items: [
+      { to: "/learn", label: "学习", icon: BookIcon },
+      { to: "/predict", label: "真题", icon: PaperIcon },
+      { to: "/essay", label: "申论", icon: EssayIcon },
+      { to: "/material", label: "素材", icon: BookIcon },
+      { to: "/flashcards", label: "速记卡", icon: CardsIcon },
+      { to: "/reinforce", label: "强化包", icon: TargetIcon },
+      { to: "/search", label: "搜题", icon: SearchIcon },
+      { to: "/plan", label: "计划", icon: PlanIcon },
+    ],
+  },
+  {
+    title: "数据与我的",
+    items: [
+      { to: "/data", label: "数据", icon: ChartIcon },
+      { to: "/favorites", label: "收藏", icon: StarIcon },
+      { to: "/notifications", label: "通知", icon: BellIcon },
+      { to: "/membership", label: "会员", icon: CrownIcon },
+      { to: "/profile", label: "我的", icon: UserIcon },
+      { to: "/review", label: "审核", icon: ShieldIcon, role: "reviewer" },
+      { to: "/admin", label: "运营", icon: GaugeIcon, role: "admin" },
+    ],
+  },
+];
+
 /** 受保护路由：未登录跳转 /login 并记录来源页。 */
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
@@ -543,6 +586,50 @@ function AppShell() {
         </div>
       )}
 
+      <div className="app-body">
+      {!isAuth && (
+        <aside className="side-rail" aria-label="主导航">
+          <nav className="side-rail__nav">
+            {RAIL.map((g) => {
+              const items = g.items.filter(
+                (m) => !m.role || m.role === role || (m.role === "reviewer" && role === "admin")
+              );
+              if (items.length === 0) return null;
+              return (
+                <div key={g.title} className="side-rail__group">
+                  <div className="side-rail__title">{g.title}</div>
+                  {items.map((t) => {
+                    const Icon = t.icon;
+                    return (
+                      <NavLink
+                        key={t.to}
+                        to={t.to}
+                        end={t.end}
+                        className={({ isActive }) => "side-item" + (isActive ? " active" : "")}
+                      >
+                        <span className="side-item__ico">
+                          <Icon />
+                        </span>
+                        <span className="side-item__label">{t.label}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </nav>
+          <div className="side-rail__foot">
+            <Link to="/chat" className="side-rail__tutor">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z" />
+                <path d="M8.5 9.5h7M8.5 13h4" />
+              </svg>
+              AI 私教
+            </Link>
+          </div>
+        </aside>
+      )}
+
       <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
         <ErrorBoundary>
           <div key={loc.pathname} className="route-anim">
@@ -574,6 +661,7 @@ function AppShell() {
           </div>
         </ErrorBoundary>
       </main>
+      </div>
 
       {!isAuth && <FloatingTutor />}
 

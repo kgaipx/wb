@@ -26,7 +26,8 @@ body {
   font-size: var(--fs-base);
   line-height: 1.55;
   color: var(--text);
-  background: var(--bg);
+  /* 桌面端用更深一档的画布色，衬托居中的 App 面板（手机端由下方媒体查询重置为 --bg） */
+  background: var(--bg-canvas, var(--bg));
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -62,6 +63,13 @@ textarea {
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
+}
+
+/* 手机端：App 面板铺满整屏，画布色与面板底色一致，避免出现无意义的色差边 */
+@media (max-width: 1023px) {
+  body {
+    background: var(--bg);
+  }
 }
 
 /* ===== 文本选区（品牌色高亮，贴合主色）===== */

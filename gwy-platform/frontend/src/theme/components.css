@@ -55,9 +55,24 @@
 }
 .app-main {
   flex: 1;
+  min-width: 0; /* 桌面端与侧栏并排时，防止长内容把栅格撑破 */
   padding: var(--sp-4);
   /* 给固定底部导航留出空间，并叠加底部安全区 */
   padding-bottom: calc(84px + env(safe-area-inset-bottom));
+}
+
+/* 侧栏 + 正文 的横向容器：手机端退化为单列纵向流（侧栏本身 display:none），
+   桌面端由文件末尾 @media (min-width: 1024px) 切换为并排两列。 */
+.app-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===================== 桌面端左侧导航栏（<1024px 隐藏） ===================== */
+.side-rail {
+  display: none;
 }
 
 /* 页面切换：路由变更时新页面淡入，营造顺畅的 App 级过渡（仅 opacity，不破坏页面内 fixed 定位） */
@@ -5699,6 +5714,174 @@
 .bell-btn:focus-visible {
   outline: none;
   box-shadow: var(--ring);
+}
+
+/* ===================== 桌面端适配（≥1024px） =====================
+   原本全站只有 480px 手机栏，桌面浏览器上是一条窄条居中、两侧大片空白。
+   此处切换为「左侧导航栏 + 加宽正文」的工作台布局：
+   - 底部 tab 栏与「更多」抽屉隐藏，全部入口平铺进侧栏（不再需要二次点击）
+   - 正文区加宽到舒适阅读列宽，窄屏时期为单列 / 双列的栅格同步放宽
+   - 外壳加深色投影浮在更深一档的画布上，形成桌面软件的空间层级
+   ================================================================ */
+@media (min-width: 1024px) {
+  /* —— 外壳：居中面板 + 投影浮起 —— */
+  .app-shell {
+    max-width: var(--app-max-wide);
+    box-shadow: var(--shell-shadow);
+  }
+
+  /* —— 侧栏 + 正文 并排 —— */
+  .app-body {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .side-rail {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 var(--sidebar-w);
+    width: var(--sidebar-w);
+    /* 吸顶跟随：头部固定，侧栏在头部之下独立滚动 */
+    position: sticky;
+    top: var(--app-header-h);
+    align-self: flex-start;
+    height: calc(100dvh - var(--app-header-h));
+    padding: var(--sp-4) var(--sp-3) var(--sp-3);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+  }
+  .side-rail__nav {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    padding-right: 2px;
+  }
+  .side-rail__group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .side-rail__title {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    color: var(--text-3);
+    padding: 0 var(--sp-2);
+    margin-bottom: var(--sp-1);
+  }
+  .side-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px var(--sp-2);
+    border-radius: var(--r-sm);
+    color: var(--text-2);
+    font-size: var(--fs-base);
+    font-weight: 500;
+    transition: background var(--t-base) var(--ease-out),
+      color var(--t-base) var(--ease-out), transform var(--t-fast) var(--ease-out);
+  }
+  .side-item:hover {
+    background: var(--bg-2);
+    color: var(--text);
+  }
+  .side-item:active {
+    transform: scale(0.98);
+  }
+  .side-item.active {
+    background: var(--brand-050);
+    color: var(--brand);
+    font-weight: 600;
+  }
+  .side-item:focus-visible {
+    outline: none;
+    box-shadow: var(--ring);
+  }
+  .side-item__ico {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+  }
+  .side-item__ico svg {
+    width: 20px;
+    height: 20px;
+  }
+  .side-item.active .side-item__ico {
+    transform: scale(1.06);
+  }
+  .side-item__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .side-rail__foot {
+    padding-top: var(--sp-3);
+    margin-top: var(--sp-3);
+    border-top: 1px solid var(--border);
+  }
+  .side-rail__tutor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: var(--r-sm);
+    background: var(--grad-brand);
+    color: #fff;
+    font-size: var(--fs-base);
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.28);
+    transition: transform var(--t-base) var(--ease-out),
+      box-shadow var(--t-base) var(--ease-out);
+  }
+  .side-rail__tutor svg {
+    width: 18px;
+    height: 18px;
+  }
+  .side-rail__tutor:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(var(--brand-rgb), 0.34);
+  }
+
+  /* —— 正文区：加宽内边距、取消底部导航留白，并限制阅读列宽后居中 ——
+     实测题干在 1004px 通栏下宽达 914px（约 60 字/行，远超中文舒适区间），
+     收到 --content-max 后约 730px（约 48 字/行），长文阅读明显更轻松。 */
+  .app-main {
+    padding: var(--sp-6) var(--sp-8) var(--sp-8);
+    max-width: calc(var(--content-max) + var(--sp-8) * 2);
+    margin-inline: auto;
+  }
+
+  /* —— 移动端专属容器隐藏 —— */
+  .nav-bar {
+    display: none;
+  }
+  .more-sheet,
+  .more-backdrop {
+    display: none !important;
+  }
+
+  /* —— 悬浮私教按钮：对齐面板右缘（视口不足宽时回落到 24px 边距） —— */
+  .fab {
+    right: max(24px, calc((100vw - var(--app-max-wide)) / 2 + 24px));
+    bottom: 24px;
+  }
+
+  /* —— 窄屏栅格在宽屏上放宽，避免大块留白 —— */
+  .plans-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .flash-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .trend-grid {
+    gap: var(--sp-3);
+  }
 }
 
 /* ===================== 尊重「减少动态效果」系统偏好 ===================== */
