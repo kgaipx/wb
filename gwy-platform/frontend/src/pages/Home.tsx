@@ -682,7 +682,7 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="card" style={{ marginTop: 14 }}>
+      <div className={"card" + (user.plan === "free" ? " home-membership--free" : "")} style={{ marginTop: 14 }}>
         <div className="row row--between">
           <strong>会员中心</strong>
           {user.plan === "free" && (
