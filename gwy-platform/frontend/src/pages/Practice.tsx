@@ -522,7 +522,7 @@ export default function Practice() {
             ))}
             <select
               className="input"
-              style={{ width: "auto", marginLeft: 8, padding: "4px 8px", fontSize: 13 }}
+              style={{ width: "auto", marginLeft: 8, padding: "6px 10px", fontSize: 14 }}
               value={yearFilter}
               onChange={(e) => setYearFilter(Number(e.target.value))}
             >
@@ -533,7 +533,7 @@ export default function Practice() {
             </select>
             <select
               className="input"
-              style={{ width: "auto", marginLeft: 8, padding: "4px 8px", fontSize: 13 }}
+              style={{ width: "auto", marginLeft: 8, padding: "6px 10px", fontSize: 14 }}
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >

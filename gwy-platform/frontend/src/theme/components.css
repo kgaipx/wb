@@ -1304,7 +1304,7 @@
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  padding: 10px 12px;
+  padding: 12px 14px;
   cursor: default;
   font: inherit;
   color: inherit;
@@ -1399,13 +1399,13 @@
 }
 .plan-check {
   flex: 0 0 auto;
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 2px solid var(--border);
   background: var(--surface);
   color: #fff;
-  font-size: 14px;
+  font-size: 17px;
   font-weight: 800;
   line-height: 1;
   cursor: pointer;
@@ -1438,6 +1438,17 @@
   background: var(--accent);
   border-radius: 999px;
   padding: 2px 9px;
+}
+.plan-day__rate {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--brand);
+  background: var(--brand-050);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 .kind--mock { background: #eaf1ff; color: #3457b0; }
 .kind--review_wrong { background: #fdeceb; color: #c0392b; }
@@ -1842,18 +1853,26 @@
   font-size: 13px;
 }
 
+/* 做题屏进度头：与题面用细分隔线区分，节奏更清晰 */
+.practice-pos {
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
 /* ===================== 选项 ===================== */
 .opt {
   display: flex;
-  gap: 9px;
+  gap: 10px;
   align-items: flex-start;
-  padding: 11px 12px;
+  padding: 12px 14px;
+  min-height: 48px;
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
-  margin-bottom: 7px;
+  margin-bottom: 8px;
   cursor: pointer;
   background: var(--surface);
-  transition: border-color var(--t-base), background var(--t-base);
+  transition: border-color var(--t-base), background var(--t-base), box-shadow var(--t-base);
 }
 .opt:hover {
   border-color: var(--brand-100);
@@ -1865,14 +1884,17 @@
 .opt--selected {
   background: var(--brand-050);
   border-color: var(--brand);
+  box-shadow: inset 3px 0 0 var(--brand);
 }
 .opt--correct {
   background: var(--success-050);
   border-color: var(--success);
+  box-shadow: inset 3px 0 0 var(--success);
 }
 .opt--wrong {
   background: var(--danger-050);
   border-color: var(--danger);
+  box-shadow: inset 3px 0 0 var(--danger);
 }
 .opt:disabled {
   cursor: default;
@@ -1946,6 +1968,18 @@
 }
 .result b {
   font-weight: 700;
+}
+/* 结果头：结论药丸与掌握度徽标左右对齐、顶部对齐，排版更紧凑专业 */
+.result__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+}
+.result__head > div:last-child {
+  flex: 0 0 auto;
+  text-align: right;
 }
 /* 答题结论状态药丸：与 dim-chip / gap-badge 同源（药丸 + 浅底 + 描边） */
 .verdict {
@@ -2990,7 +3024,7 @@
   background: var(--surface);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   transition: transform var(--t-lift) var(--ease-out), box-shadow var(--t-lift) var(--ease-out),
     border-color var(--t-lift) var(--ease-out);
 }
@@ -2998,8 +3032,27 @@
   border-color: var(--brand);
   box-shadow: 0 0 0 3px var(--brand-050);
 }
+/* 推荐套餐：品牌描边 + 浅底 + 阴影 + 「推荐」徽标，强化转化 CTA */
 .plan-card--hot {
-  border-color: var(--accent);
+  border: 2px solid var(--brand);
+  background: var(--brand-050);
+  box-shadow: 0 10px 26px rgba(27, 79, 181, 0.18);
+}
+.plan-card--hot .plan-card__name {
+  color: var(--brand);
+}
+.plan-card--hot::after {
+  content: "推荐";
+  position: absolute;
+  top: -11px;
+  right: 14px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(27, 79, 181, 0.3);
 }
 .plan-card:hover {
   transform: translateY(-3px);

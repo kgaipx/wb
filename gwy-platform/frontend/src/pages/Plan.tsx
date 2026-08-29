@@ -45,7 +45,7 @@ function Ring({ rate }: { rate: number }) {
         strokeDasharray={c}
         strokeDashoffset={off}
         transform="rotate(-90 42 42)"
-        style={{ transition: "stroke-dashoffset .5s ease" }}
+        style={{ transition: "stroke-dashoffset .5s var(--ease-out)" }}
       />
       <text x="42" y="40" textAnchor="middle" fontSize="18" fontWeight="800" fill="var(--brand)">
         {Math.round(rate * 100)}
