@@ -84,7 +84,7 @@
   to { opacity: 1; }
 }
 .app-main > * {
-  animation: page-in 0.26s ease-out both;
+  animation: page-in 0.26s var(--ease-out) both;
 }
 
 /* ===================== 底部导航 ===================== */
@@ -116,7 +116,7 @@
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  transition: color var(--t-base) var(--ease-out);
+  transition: color var(--t-base) var(--var(--ease-out));
 }
 .nav-link.active {
   color: var(--brand);
@@ -133,7 +133,7 @@
   border-radius: 0 0 3px 3px;
   background: var(--brand);
   opacity: 0;
-  transition: transform var(--t-lift) var(--ease-out), opacity var(--t-base) var(--ease-out);
+  transition: transform var(--t-lift) var(--var(--ease-out)), opacity var(--t-base) var(--var(--ease-out));
 }
 .nav-link.active::before {
   opacity: 1;
@@ -144,7 +144,7 @@
   height: 22px;
   display: grid;
   place-items: center;
-  transition: transform var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--var(--ease-out));
 }
 .nav-link.active .nav-link__ico {
   transform: translateY(-1px) scale(1.08);
@@ -156,7 +156,7 @@
   inset: 0;
   background: rgba(16, 24, 40, 0.42);
   z-index: 45;
-  animation: fade-in 0.18s ease;
+  animation: fade-in 0.18s var(--ease-out);
 }
 .more-sheet {
   position: fixed;
@@ -170,7 +170,7 @@
   box-shadow: 0 -8px 30px rgba(16, 24, 40, 0.18);
   z-index: 46;
   padding: var(--sp-3) var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom));
-  animation: sheet-up 0.22s ease;
+  animation: sheet-up 0.22s var(--ease-out);
 }
 @keyframes sheet-up {
   from { transform: translate(-50%, 100%); }
@@ -181,7 +181,7 @@
   to { opacity: 1; }
 }
 /* 路由切换：进入淡入（仅 opacity，避免对 fixed/sticky 后代建立包含块） */
-.route-anim { animation: route-fade var(--t-lift) var(--ease-out) both; }
+.route-anim { animation: route-fade var(--t-lift) var(--var(--ease-out)) both; }
 @keyframes route-fade {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -225,7 +225,7 @@
   text-decoration: none;
   font-size: var(--fs-xs);
   font-weight: 500;
-  transition: transform var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out),
+  transition: transform var(--t-base) var(--var(--ease-out)), background var(--t-base) var(--var(--ease-out)),
     color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
 }
 .more-item:hover {
@@ -332,7 +332,7 @@
   line-height: 1;
   min-height: 44px; /* 移动端触控目标下限（WCAG 2.5.5 / Apple HIG） */
   border: 1px solid transparent;
-  transition: background var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out), transform var(--t-fast) var(--ease-out);
+  transition: background var(--t-base) var(--var(--ease-out)), box-shadow var(--t-base) var(--var(--ease-out)), transform var(--t-fast) var(--var(--ease-out));
   white-space: nowrap;
 }
 .btn:active:not(:disabled) {
@@ -450,7 +450,7 @@
   border-radius: var(--r-lg);
   padding: var(--sp-4);
   box-shadow: var(--sh-sm);
-  transition: box-shadow var(--t-lift) var(--ease-out), border-color var(--t-base) var(--ease-out),
+  transition: box-shadow var(--t-lift) var(--var(--ease-out)), border-color var(--t-base) var(--var(--ease-out)),
     transform var(--t-lift) var(--ease-out);
 }
 .card:hover {
@@ -505,7 +505,7 @@
   place-items: center;
   box-shadow: 0 8px 22px rgba(27, 79, 181, 0.38);
   text-decoration: none;
-  transition: transform var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--var(--ease-out));
 }
 .fab:hover { transform: translateY(-2px); }
 .fab svg { width: 24px; height: 24px; }
@@ -548,7 +548,7 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: background var(--t-base) var(--ease-out);
+  transition: background var(--t-base) var(--var(--ease-out));
 }
 .bell-btn:hover { background: rgba(27, 79, 181, 0.08); }
 .bell-btn svg { width: 22px; height: 22px; }
@@ -672,7 +672,7 @@
   background: transparent;
   padding: var(--sp-3) var(--sp-4);
   cursor: pointer;
-  transition: background var(--t-fast) var(--ease-out);
+  transition: background var(--t-fast) var(--var(--ease-out));
 }
 .notif-item:last-child { border-bottom: none; }
 .notif-item:hover { background: rgba(27, 79, 181, 0.05); }
@@ -747,7 +747,7 @@
   padding: var(--sp-3) var(--sp-4);
   cursor: pointer;
   position: relative;
-  transition: background var(--t-base) var(--ease-out), box-shadow var(--t-lift) var(--ease-out),
+  transition: background var(--t-base) var(--var(--ease-out)), box-shadow var(--t-lift) var(--var(--ease-out)),
     transform var(--t-lift) var(--ease-out), border-color var(--t-lift) var(--ease-out);
 }
 .notif-page__item:hover {
@@ -902,7 +902,7 @@
   display: flex; align-items: center; gap: 8px;
   padding: 8px 10px; border-radius: 10px;
   background: var(--surface-2); font-size: 14px;
-  transition: background var(--t-base) var(--ease-out), transform var(--t-base) var(--ease-out),
+  transition: background var(--t-base) var(--var(--ease-out)), transform var(--t-base) var(--var(--ease-out)),
     box-shadow var(--t-base) var(--ease-out);
 }
 .home-plan__task.is-link { cursor: pointer; }
@@ -1091,7 +1091,7 @@
   font-weight: 700;
   font-size: 14px;
   box-shadow: 0 4px 12px rgba(255, 94, 58, 0.35);
-  animation: streakPop 0.4s ease;
+  animation: streakPop 0.4s var(--ease-out);
 }
 @keyframes streakPop {
   0% { transform: scale(0.7); opacity: 0; }
@@ -1112,7 +1112,7 @@
   text-align: center;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(59, 111, 224, 0.35);
-  animation: streakPop 0.35s ease;
+  animation: streakPop 0.35s var(--ease-out);
 }
 .mastery-badge { flex: 0 0 auto; }
 .wrong-item__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
@@ -1182,7 +1182,7 @@
   border: 1px solid var(--border);
   background: var(--surface-2);
   cursor: pointer;
-  transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-lift) var(--ease-out),
+  transition: border-color var(--t-base) var(--var(--ease-out)), box-shadow var(--t-lift) var(--var(--ease-out)),
     transform var(--t-lift) var(--ease-out);
 }
 .manage-card:hover {
@@ -1236,13 +1236,13 @@
   box-shadow: var(--sh-md);
   pointer-events: auto;
   cursor: pointer;
-  animation: toast-item-in 0.26s var(--ease-out);
+  animation: toast-item-in 0.26s var(--var(--ease-out));
 }
 .toast-item svg { width: 16px; height: 16px; flex: none; }
 .toast-item--success { background: var(--success); }
 .toast-item--error { background: var(--danger); }
 .toast-item--info { background: var(--brand); }
-.toast-item--leaving { animation: toast-item-out 0.32s var(--ease-out) forwards; }
+.toast-item--leaving { animation: toast-item-out 0.32s var(--var(--ease-out)) forwards; }
 @keyframes toast-item-in {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -1363,7 +1363,7 @@
   flex: 0 0 auto;
   background: color-mix(in srgb, var(--success) 16%, var(--surface));
   color: var(--success);
-  animation: planPop .4s ease;
+  animation: planPop .4s var(--ease-out);
 }
 .plan-celebrate__emoji svg {
   width: 24px;
@@ -1411,7 +1411,7 @@
   cursor: pointer;
   display: grid;
   place-items: center;
-  transition: background var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out);
+  transition: background var(--t-base) var(--var(--ease-out)), border-color var(--t-base) var(--var(--ease-out));
 }
 .plan-check--on {
   background: var(--success);
@@ -1537,7 +1537,7 @@
 .word-meter__fill {
   height: 100%;
   border-radius: 999px;
-  transition: width 0.35s var(--ease-out), background 0.35s var(--ease-out);
+  transition: width 0.35s var(--var(--ease-out)), background 0.35s var(--var(--ease-out));
 }
 
 /* ===================== 标签 ===================== */
@@ -1602,7 +1602,7 @@
   height: 100%;
   background: var(--brand);
   border-radius: var(--r-pill);
-  transition: width 0.45s ease;
+  transition: width 0.45s var(--ease-out);
 }
 .progress--success .progress__bar {
   background: var(--success);
@@ -1743,7 +1743,7 @@
   border-radius: 50%;
   background: #7cffb2;
   box-shadow: 0 0 0 0 rgba(124, 255, 178, 0.7);
-  animation: heroPulse 2s ease-out infinite;
+  animation: heroPulse 2s var(--ease-out) infinite;
 }
 @keyframes heroPulse {
   0% { box-shadow: 0 0 0 0 rgba(124, 255, 178, 0.55); }
@@ -1790,7 +1790,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   cursor: pointer;
-  transition: border-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
+  transition: border-color var(--t-base) var(--var(--ease-out)), box-shadow var(--t-base) var(--var(--ease-out)),
     transform var(--t-base) var(--ease-out);
 }
 .q-item:hover {
@@ -2072,7 +2072,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius, 10px);
   background: var(--bg-2, rgba(127, 127, 127, 0.04));
-  transition: transform var(--t-base) var(--ease-out),
+  transition: transform var(--t-base) var(--var(--ease-out)),
     box-shadow var(--t-base) var(--ease-out);
 }
 .cite-card:hover {
@@ -2151,7 +2151,7 @@
   font-size: var(--fs-xs, 11px);
   color: var(--brand, #3b6cff);
   opacity: 0;
-  transition: opacity var(--t-base) var(--ease-out);
+  transition: opacity var(--t-base) var(--var(--ease-out));
 }
 .cite-card--btn:hover .cite-card__more,
 .cite-card--btn:focus-visible .cite-card__more {
@@ -2169,7 +2169,7 @@
   background: rgba(15, 20, 35, 0.45);
   backdrop-filter: blur(2px);
   padding: 0;
-  animation: cite-fade 0.16s ease-out;
+  animation: cite-fade 0.16s var(--ease-out);
 }
 @keyframes cite-fade {
   from { opacity: 0; }
@@ -2394,13 +2394,13 @@
   color: var(--danger);
   font-size: var(--fs-sm);
   margin-top: 6px;
-  animation: fade-in 0.2s ease;
+  animation: fade-in 0.2s var(--ease-out);
 }
 .ok-text {
   color: var(--success);
   font-size: var(--fs-sm);
   margin-top: 6px;
-  animation: fade-in 0.2s ease;
+  animation: fade-in 0.2s var(--ease-out);
 }
 .info-text {
   color: var(--brand);
@@ -2498,7 +2498,7 @@
   font-size: var(--fs-sm);
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--var(--ease-out));
 }
 .chip:not(.chip--on):hover {
   border-color: var(--brand-100);
@@ -2566,7 +2566,7 @@
 }
 .chip--click {
   cursor: pointer;
-  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+  transition: transform var(--t-fast) var(--var(--ease-out)), box-shadow var(--t-fast) var(--var(--ease-out));
 }
 .chip--click:hover {
   transform: translateY(-1px);
@@ -2658,7 +2658,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--var(--ease-out));
   -webkit-tap-highlight-color: transparent;
 }
 .exam-palette__chip:active { transform: scale(0.92); }
@@ -2843,7 +2843,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  animation: fade-in 0.15s ease;
+  animation: fade-in 0.15s var(--ease-out);
 }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .chat-drawer__panel {
@@ -2857,7 +2857,7 @@
   padding: var(--sp-4);
   display: flex;
   flex-direction: column;
-  animation: sheet-up 0.2s ease;
+  animation: sheet-up 0.2s var(--ease-out);
 }
 @keyframes sheet-up { from { transform: translateY(20px); opacity: 0.6; } to { transform: translateY(0); opacity: 1; } }
 .chat-drawer__head {
@@ -2991,7 +2991,7 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  transition: transform var(--t-lift) var(--ease-out), box-shadow var(--t-lift) var(--ease-out),
+  transition: transform var(--t-lift) var(--var(--ease-out)), box-shadow var(--t-lift) var(--var(--ease-out)),
     border-color var(--t-lift) var(--ease-out);
 }
 .plan-card--on {
@@ -3136,7 +3136,7 @@
   border-radius: 12px;
   padding: 10px 12px;
   backdrop-filter: blur(4px);
-  transition: transform var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--var(--ease-out)), background var(--t-base) var(--var(--ease-out));
 }
 .auth-value:hover {
   background: rgba(255, 255, 255, 0.28);
@@ -3204,7 +3204,7 @@
   font-weight: 600;
   color: var(--text-2);
   cursor: pointer;
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--var(--ease-out));
 }
 .seg__btn--on {
   background: var(--surface);
@@ -3406,7 +3406,7 @@
   border-radius: 6px 6px 3px 3px;
   position: relative;
   min-height: 3px;
-  transition: height 0.4s ease;
+  transition: height 0.4s var(--ease-out);
 }
 .trend__num {
   position: absolute;
@@ -3599,7 +3599,7 @@
   bottom: 0;
   background: var(--brand);
   opacity: 0.16;
-  transition: height 0.4s ease;
+  transition: height 0.4s var(--ease-out);
 }
 .plan-cal__cell--done .plan-cal__fill {
   background: var(--success);
@@ -3660,7 +3660,7 @@
 }
 .plan-dist__seg {
   height: 100%;
-  transition: width 0.4s ease;
+  transition: width 0.4s var(--ease-out);
 }
 .plan-dist__legend {
   display: flex;
@@ -3700,7 +3700,7 @@
   height: 100%;
   background: var(--brand);
   border-radius: var(--r-pill);
-  transition: width 0.4s ease;
+  transition: width 0.4s var(--ease-out);
 }
 
 /* ===== 会员页：价值引导 ===== */
@@ -3992,7 +3992,7 @@
   border-radius: 12px;
   padding: 10px 12px;
   cursor: pointer;
-  transition: background var(--t-base) var(--ease-out), border-color var(--t-base) var(--ease-out),
+  transition: background var(--t-base) var(--var(--ease-out)), border-color var(--t-base) var(--var(--ease-out)),
     transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
 }
 .onboard__step:hover {
@@ -4088,7 +4088,7 @@
 /* ===================== 可点击卡片按压态（统一实体感） ===================== */
 .card--tap {
   cursor: pointer;
-  transition: transform var(--t-lift) var(--ease-out), box-shadow var(--t-lift) var(--ease-out),
+  transition: transform var(--t-lift) var(--var(--ease-out)), box-shadow var(--t-lift) var(--var(--ease-out)),
     border-color var(--t-lift) var(--ease-out);
 }
 .card--tap:hover {
@@ -4197,10 +4197,10 @@
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.empty__icon { animation: empty-icon-in 0.36s var(--ease-out) both; }
-.empty__title { animation: empty-rise 0.34s var(--ease-out) 0.05s both; }
-.empty__desc { animation: empty-rise 0.34s var(--ease-out) 0.1s both; }
-.empty__action { animation: empty-rise 0.34s var(--ease-out) 0.15s both; }
+.empty__icon { animation: empty-icon-in 0.36s var(--var(--ease-out)) both; }
+.empty__title { animation: empty-rise 0.34s var(--var(--ease-out)) 0.05s both; }
+.empty__desc { animation: empty-rise 0.34s var(--var(--ease-out)) 0.1s both; }
+.empty__action { animation: empty-rise 0.34s var(--var(--ease-out)) 0.15s both; }
 
 /* ===== 知识点掌握度热力图（按科目分面）===== */
 .kpheat {
@@ -4266,7 +4266,7 @@
   color: #fff;
   cursor: pointer;
   text-align: left;
-  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-fast) var(--ease-out);
+  transition: transform var(--t-fast) var(--var(--ease-out)), box-shadow var(--t-fast) var(--var(--ease-out));
 }
 .kpheat__cell:hover {
   transform: translateY(-2px);
@@ -4395,7 +4395,7 @@
   padding: 6vh 14px;
   z-index: 60;
   overflow-y: auto;
-  animation: explain-fade .16s ease;
+  animation: explain-fade .16s var(--ease-out);
 }
 @keyframes explain-fade { from { opacity: 0; } to { opacity: 1; } }
 .explain-modal {
@@ -4408,7 +4408,7 @@
   display: flex;
   flex-direction: column;
   max-height: 88vh;
-  animation: explain-pop .18s ease;
+  animation: explain-pop .18s var(--ease-out);
 }
 @keyframes explain-pop { from { transform: translateY(8px); opacity: 0; } to { transform: none; opacity: 1; } }
 .explain-modal__head {
@@ -4558,7 +4558,7 @@
 .mat-card {
   margin-top: var(--sp-3);
   border-left: 4px solid var(--brand);
-  transition: transform var(--t-lift) var(--ease-out), box-shadow var(--t-lift) var(--ease-out),
+  transition: transform var(--t-lift) var(--var(--ease-out)), box-shadow var(--t-lift) var(--var(--ease-out)),
     border-color var(--t-base) var(--ease-out);
 }
 .mat-card:hover {
@@ -4606,7 +4606,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-2);
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--var(--ease-out));
 }
 .mat-act:active {
   transform: scale(0.96);
@@ -4749,7 +4749,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.5s var(--ease-out);
+  transition: transform 0.5s var(--var(--ease-out));
   transform-style: preserve-3d;
 }
 .flash-card.is-flipped .flash-card__inner {
@@ -4855,7 +4855,7 @@
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text-2);
-  transition: transform var(--t-fast) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+  transition: transform var(--t-fast) var(--var(--ease-out)), box-shadow var(--t-base) var(--var(--ease-out));
 }
 .flash-grade__btn:active {
   transform: scale(0.97);
@@ -4933,7 +4933,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  transition: transform var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out);
+  transition: transform var(--t-base) var(--var(--ease-out)), box-shadow var(--t-base) var(--var(--ease-out));
 }
 .flash-mini:hover {
   transform: translateY(-2px);
@@ -5204,7 +5204,7 @@
   border: 1px solid var(--border);
   border-radius: var(--r-md);
   padding: 12px;
-  transition: all var(--t-base) var(--ease-out);
+  transition: all var(--t-base) var(--var(--ease-out));
 }
 .pred-opt:active {
   transform: scale(0.99);
@@ -5465,7 +5465,7 @@
   align-items: flex-end;
   justify-content: center;
   z-index: 50;
-  animation: pred-fade 0.18s var(--ease-out);
+  animation: pred-fade 0.18s var(--var(--ease-out));
 }
 @keyframes pred-fade {
   from { opacity: 0; }
@@ -5479,7 +5479,7 @@
   border-radius: var(--r-xl) var(--r-xl) 0 0;
   padding: var(--sp-4);
   box-shadow: var(--sh-3);
-  animation: pred-slide 0.22s var(--ease-out);
+  animation: pred-slide 0.22s var(--var(--ease-out));
 }
 @keyframes pred-slide {
   from { transform: translateY(16px); }
@@ -5520,7 +5520,7 @@
   font-weight: 700;
   font-size: var(--fs-sm);
   cursor: pointer;
-  transition: transform var(--t-fast) var(--ease-out);
+  transition: transform var(--t-fast) var(--var(--ease-out));
 }
 .pred-pcell:active {
   transform: scale(0.94);
@@ -5603,7 +5603,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 .fx-stagger > * {
-  animation: fx-fade-up 0.52s var(--ease-out) both;
+  animation: fx-fade-up 0.52s var(--var(--ease-out)) both;
 }
 .fx-stagger > *:nth-child(1)  { animation-delay: 0ms; }
 .fx-stagger > *:nth-child(2)  { animation-delay: 55ms; }
@@ -5625,7 +5625,7 @@
    .js 门控：仅当 <html> 含 .js（main.tsx 渲染前同步添加）才隐藏初始态，
    无 JS / 不支持 IntersectionObserver 时 .reveal 不隐藏，内容正常显示（渐进增强）。 */
 .js .reveal { opacity: 0; }
-.js .reveal.in { animation: fx-fade-up 0.52s var(--ease-out) both; }
+.js .reveal.in { animation: fx-fade-up 0.52s var(--var(--ease-out)) both; }
 @media (prefers-reduced-motion: reduce) {
   .js .reveal, .js .reveal.in { opacity: 1 !important; animation: none !important; transform: none !important; }
 }
@@ -5866,7 +5866,7 @@
     color: var(--text-2);
     font-size: var(--fs-base);
     font-weight: 500;
-    transition: background var(--t-base) var(--ease-out),
+    transition: background var(--t-base) var(--var(--ease-out)),
       color var(--t-base) var(--ease-out), transform var(--t-fast) var(--ease-out);
   }
   .side-item:hover {
@@ -5921,7 +5921,7 @@
     font-size: var(--fs-base);
     font-weight: 600;
     box-shadow: 0 6px 16px rgba(var(--brand-rgb), 0.28);
-    transition: transform var(--t-base) var(--ease-out),
+    transition: transform var(--t-base) var(--var(--ease-out)),
       box-shadow var(--t-base) var(--ease-out);
   }
   .side-rail__tutor svg {
