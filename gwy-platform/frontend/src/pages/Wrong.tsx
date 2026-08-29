@@ -33,6 +33,14 @@ function isReviewDue(it: WrongItem): boolean {
   return d !== null && d >= 3 && (it.recurrence_rate ?? 0) >= 0.3;
 }
 
+/** 多选题选择态切换：已选则取消，未选则加入（保持字母有序，便于与后端集合比对）。 */
+function toggleSel(cur: string, label: string): string {
+  const set = cur.split("").filter(Boolean);
+  return set.includes(label)
+    ? set.filter((c) => c !== label).sort().join("")
+    : [...set, label].sort().join("");
+}
+
 export default function Wrong() {
   const nav = useNavigate();
   const [items, setItems] = useState<WrongItem[]>([]);
@@ -517,23 +525,37 @@ export default function Wrong() {
               </div>
             ) : (
               <div style={{ marginTop: 8 }}>
+                {q.qtype === "multiple" && !st.result && (
+                  <div className="text-3" style={{ fontSize: 12, marginBottom: 6 }}>
+                    ✱ 多选题：可勾选多个选项，全部选对才算答对
+                  </div>
+                )}
                 {q.options.map((o) => {
+                  const isMulti = q.qtype === "multiple";
+                  const picked = isMulti
+                    ? (st.selected || "").includes(o.label)
+                    : st.selected === o.label;
                   let cls = "opt";
                   if (st.result) {
                     const ca = st.result.correct_answer || "";
                     if (ca.includes(o.label)) cls += " opt--correct";
-                    else if (st.selected === o.label) cls += " opt--wrong";
-                  } else if (st.selected === o.label) {
+                    else if (picked) cls += " opt--wrong";
+                  } else if (picked) {
                     cls += " opt--selected";
                   }
                   return (
                     <label key={o.id} className={cls}>
                       <input
-                        type="radio"
+                        type={isMulti ? "checkbox" : "radio"}
                         name={`w${q.id}`}
-                        checked={st.selected === o.label}
+                        checked={picked}
                         disabled={!!st.result}
-                        onChange={() => { setActiveQid(q.id); patch(q.id, { selected: o.label }); }}
+                        onChange={() => {
+                          setActiveQid(q.id);
+                          patch(q.id, {
+                            selected: isMulti ? toggleSel(st.selected || "", o.label) : o.label,
+                          });
+                        }}
                       />
                       <span className="opt__badge">{o.label}</span>
                       <span className="opt__text">{o.content}</span>

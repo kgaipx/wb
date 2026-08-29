@@ -712,14 +712,42 @@ export default function Exam() {
                 <span>· 难度 {q.difficulty}</span>
               </div>
               <div className="q-stem">{q.stem}</div>
+              {q.qtype === "multiple" && (
+                <div className="text-3" style={{ fontSize: 12, marginBottom: 6 }}>
+                  ✱ 多选题：可勾选多个选项，全部选对才算答对
+                </div>
+              )}
               {q.options.map((o) => (
-                <label key={o.id} className={"opt" + (answers[q.id] === o.label ? " opt--selected" : "")}>
+                <label
+                  key={o.id}
+                  className={
+                    "opt" +
+                    (q.qtype === "multiple"
+                      ? (answers[q.id] || "").includes(o.label)
+                        ? " opt--selected"
+                        : ""
+                      : answers[q.id] === o.label
+                        ? " opt--selected"
+                        : "")
+                  }
+                >
                   <input
-                    type="radio"
+                    type={q.qtype === "multiple" ? "checkbox" : "radio"}
                     name={`q-${q.id}`}
-                    checked={answers[q.id] === o.label}
+                    checked={
+                      q.qtype === "multiple"
+                        ? (answers[q.id] || "").includes(o.label)
+                        : answers[q.id] === o.label
+                    }
                     onChange={() => {
-                      setAnswers((s) => ({ ...s, [q.id]: o.label }));
+                      const cur = answers[q.id] || "";
+                      const next =
+                        q.qtype === "multiple"
+                          ? cur.includes(o.label)
+                            ? cur.split("").filter((c) => c !== o.label).sort().join("")
+                            : [...cur.split("").filter(Boolean), o.label].sort().join("")
+                          : o.label;
+                      setAnswers((s) => ({ ...s, [q.id]: next }));
                       setActiveQid(q.id);
                     }}
                   />

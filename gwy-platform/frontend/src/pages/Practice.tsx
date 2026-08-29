@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { api, Question, Citation, Ability, PracticeResult } from "../api/client";
 import Markdown from "../components/Markdown";
@@ -14,13 +14,37 @@ import { TargetIcon, SearchIcon, BrainIcon } from "../icons";
 
 const PAGE = 60;
 
+/** 学科 → 细分分类（题库 category 取值；政治理论为 2026 国考新增板块）。 */
+const CATEGORIES: Record<string, string[]> = {
+  行测: ["政治理论", "常识判断", "常识", "言语理解与表达", "判断推理", "数量关系", "资料分析"],
+  申论: ["归纳概括", "综合分析", "提出对策", "贯彻执行", "申论写作"],
+};
+
 export default function Practice() {
   const [params] = useSearchParams();
   const nav = useNavigate();
   const toast = useToast();
   const [list, setList] = useState<Question[]>([]);
   const [active, setActive] = useState<Question | null>(null);
-  const [selected, setSelected] = useState("");
+  const [selected, setSelected] = useState(""); // 单选 "A"；多选题为多字母串 "ABD"
+
+  // 多选题（qtype=multiple，如政治理论板块）：可多选，选择态用多字母字符串表示
+  const isMulti = active?.qtype === "multiple";
+  const pick = useCallback(
+    (label: string) => {
+      if (active?.qtype === "multiple") {
+        setSelected((s) => {
+          const set = s.split("").filter(Boolean);
+          return set.includes(label)
+            ? set.filter((c) => c !== label).sort().join("")
+            : [...set, label].sort().join("");
+        });
+      } else {
+        setSelected(label);
+      }
+    },
+    [active]
+  );
   const [result, setResult] = useState<PracticeResult | null>(null);
   const [explain, setExplain] = useState<string>("");
   const [cites, setCites] = useState<Citation[]>([]);
@@ -30,6 +54,7 @@ export default function Practice() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [filter, setFilter] = useState<string>("全部");
+  const [catFilter, setCatFilter] = useState<string>("全部"); // 细分分类（如 政治理论）
   const [kpFilter, setKpFilter] = useState<string>(""); // 测评弱项专项练习（按 knowledge_point）
   const [srcFilter, setSrcFilter] = useState<string>("全部"); // 来源筛选（上岸村/FB/ZG/刷题组）
   const [diffFilter, setDiffFilter] = useState<number>(0); // 难度筛选 0=全部，1-5
@@ -114,6 +139,7 @@ export default function Practice() {
         limit: PAGE,
         offset: 0,
         subject: filter !== "全部" ? filter : undefined,
+        category: catFilter !== "全部" ? catFilter : undefined,
         knowledge_point: kpFilter || undefined,
         source: srcFilter !== "全部" ? srcFilter : undefined,
         difficulty: diffFilter > 0 ? diffFilter : undefined,
@@ -127,7 +153,7 @@ export default function Practice() {
       })
       .catch((e) => setErr(e.message))
       .finally(() => setLoading(false));
-  }, [filter, kpFilter, srcFilter, diffFilter, yearFilter, sortBy]);
+  }, [filter, catFilter, kpFilter, srcFilter, diffFilter, yearFilter, sortBy]);
 
   useEffect(() => {
     if (!active) return;
@@ -173,7 +199,7 @@ export default function Practice() {
         };
         if (map[k]) {
           e.preventDefault();
-          setSelected(map[k]);
+          pick(map[k]); // 多选题：A–D 为切换选择；单选题：替换选择
           return;
         }
         if (k === "enter") {
@@ -199,7 +225,7 @@ export default function Practice() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active, result, selected, busy, submit, nextQuestion]);
+  }, [active, result, selected, busy, submit, nextQuestion, pick]);
 
   async function loadMore() {
     if (loadingMore || !hasMore) return;
@@ -210,6 +236,7 @@ export default function Practice() {
         limit: PAGE,
         offset,
         subject: filter !== "全部" ? filter : undefined,
+        category: catFilter !== "全部" ? catFilter : undefined,
         knowledge_point: kpFilter || undefined,
       });
       setList((prev) => [...prev, ...qs]);
@@ -369,6 +396,7 @@ export default function Practice() {
           limit: PAGE,
           offset,
           subject: filter !== "全部" ? filter : undefined,
+        category: catFilter !== "全部" ? catFilter : undefined,
           knowledge_point: kpFilter || undefined,
         })
         .catch(() => []);
@@ -392,6 +420,12 @@ export default function Practice() {
     const set = new Set(list.map((q) => q.subject));
     return ["全部", ...Array.from(set)];
   }, [list]);
+
+  // 分类选项随学科联动；学科为「全部」时列出所有分类
+  const catOptions = useMemo(() => {
+    if (filter !== "全部") return ["全部", ...(CATEGORIES[filter] || [])];
+    return ["全部", ...Object.values(CATEGORIES).flat()];
+  }, [filter]);
 
   const nextLabel = (() => {
     if (!active) return "下一题 →";
@@ -448,8 +482,26 @@ export default function Practice() {
           {mode === "practice" && (
           <div className="chip-row" style={{ marginBottom: 10 }}>
             {subjects.map((s) => (
-              <button key={s} className={"chip " + (filter === s ? "chip--on" : "")} onClick={() => setFilter(s)}>
+              <button
+                key={s}
+                className={"chip " + (filter === s ? "chip--on" : "")}
+                onClick={() => { setFilter(s); setCatFilter("全部"); }}
+              >
                 {s}
+              </button>
+            ))}
+          </div>
+          )}
+          {mode === "practice" && (
+          <div className="chip-row" style={{ marginBottom: 10, flexWrap: "wrap", gap: 6 }}>
+            <span className="muted" style={{ fontSize: 12 }}>分类</span>
+            {catOptions.map((c) => (
+              <button
+                key={c}
+                className={"chip " + (catFilter === c ? "chip--on" : "") + (c === "政治理论" ? " chip--brand" : "")}
+                onClick={() => setCatFilter(c)}
+              >
+                {c === "政治理论" ? "🆕 政治理论" : c}
               </button>
             ))}
           </div>
@@ -614,23 +666,31 @@ export default function Practice() {
           </div>
           <div className="q-stem">{active.stem}</div>
 
+          {isMulti && !result && (
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              ✱ 多选题：可勾选多个选项，全部选对才算答对
+            </div>
+          )}
           {active.options.map((o) => {
+            const picked = isMulti ? selected.includes(o.label) : selected === o.label;
+            const ca = result?.correct_answer || "";
             let cls = "opt";
             if (result) {
-              if (o.label === result.correct_answer) cls += " opt--correct";
-              else if (o.label === selected && !result.is_correct) cls += " opt--wrong";
-              else if (selected === o.label) cls += " opt--selected";
-            } else if (selected === o.label) {
+              // 多选时 correct_answer 形如 "ABD"，用 includes 兼容单选/多选
+              if (ca.includes(o.label)) cls += " opt--correct";
+              else if (picked && !result.is_correct) cls += " opt--wrong";
+              else if (picked) cls += " opt--selected";
+            } else if (picked) {
               cls += " opt--selected";
             }
             return (
               <label key={o.id} className={cls}>
                 <input
-                  type="radio"
+                  type={isMulti ? "checkbox" : "radio"}
                   name="opt"
                   disabled={!!result}
-                  checked={selected === o.label}
-                  onChange={() => setSelected(o.label)}
+                  checked={picked}
+                  onChange={() => pick(o.label)}
                 />
                 <span className="opt__badge">{o.label}</span>
                 <span className="opt__text">{o.content}</span>
@@ -648,7 +708,7 @@ export default function Practice() {
           </div>
           {!result && (
             <div className="muted" style={{ fontSize: 12, marginTop: 6 }}>
-              ⌨️ 快捷键：<b>A–D</b> 选择 · <b>Enter</b> 提交 · <b>Esc</b> 取消选择
+              ⌨️ 快捷键：<b>A–D</b> {isMulti ? "切换勾选" : "选择"} · <b>Enter</b> 提交 · <b>Esc</b> 取消选择
             </div>
           )}
           {result && (
