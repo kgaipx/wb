@@ -45,6 +45,27 @@ KP_RULES = [
 ]
 DEFAULT_KP = "政治理论"
 
+# 人工补答：答案册 PDF 原档缺这两题（417/649），经核对后补录。
+# 来源标注为人工补答，is_verified 仍为 False（待核实），不冒充原书答案。
+MANUAL_ANSWERS = {
+    417: {
+        "answer": "D",
+        "explanation": (
+            "1956年6月，周恩来在第一届全国人民代表大会第三次会议上首次公开提出和平解放台湾的主张，"
+            "并宣布愿意在可能的条件下争取用和平方式解放台湾。1981年叶剑英发表“叶九条”进一步阐述，"
+            "邓小平在此基础上提出“一国两制”构想，但首次公开提出者是周恩来。故选D。"
+        ),
+    },
+    649: {
+        "answer": "D",
+        "explanation": (
+            "毛泽东把辩证唯物主义和历史唯物主义的思想路线，用中国语言概括为“实事求是”四个大字。"
+            "“实事求是”出自《汉书》，毛泽东在《改造我们的学习》中赋予其新的哲学内涵，"
+            "使之成为党的思想路线的核心。故选D。"
+        ),
+    },
+}
+
 
 def classify_kp(stem: str) -> str:
     for kp, kws in KP_RULES:
@@ -63,6 +84,12 @@ for q in qs:
     n, qtype, stem = q["n"], q["qtype"], q["stem"]
     ans = q.get("answer")
     ana = (q.get("analysis") or "").strip()
+    manual = False
+    if not ans and n in MANUAL_ANSWERS:
+        # 答案册原档缺失 → 用人工核对后的补答，并在 source 中显式标注
+        ans = MANUAL_ANSWERS[n]["answer"]
+        ana = ana or MANUAL_ANSWERS[n]["explanation"]
+        manual = True
     if not ans:
         skipped.append((n, "缺答案"))
         continue
@@ -109,7 +136,7 @@ for q in qs:
         "knowledge_point": classify_kp(stem),
         "answer": answer_text,
         "explanation": ana or None,
-        "source": "2026国省考政治理论1000题",
+        "source": "2026国省考政治理论1000题（人工补答·答案册原档缺失）" if manual else "2026国省考政治理论1000题",
         "copyright_owner": "导入-待核实",
         "is_verified": False,
         "options": options,
