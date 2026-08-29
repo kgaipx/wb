@@ -27,7 +27,7 @@ export default function MasteryBadge({ value, size = 72 }: { value: number; size
         <text x="36" y="34" textAnchor="middle" fontSize="16" fontWeight={700} fill={tone}>
           {pctv}%
         </text>
-        <text x="36" y="50" textAnchor="middle" fontSize={10} fill="var(--text-3, #9aa0ab)">
+        <text x="36" y="50" textAnchor="middle" fontSize={12} fill="var(--text-3, #9aa0ab)">
           {label}
         </text>
       </svg>

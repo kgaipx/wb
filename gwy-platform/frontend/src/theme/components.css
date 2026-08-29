@@ -48,7 +48,7 @@
   line-height: 1.2;
 }
 .app-header__tag {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
   letter-spacing: 0.2px;
   line-height: 1.25;
@@ -57,8 +57,11 @@
   flex: 1;
   min-width: 0; /* 桌面端与侧栏并排时，防止长内容把栅格撑破 */
   padding: var(--sp-4);
-  /* 给固定底部导航留出空间，并叠加底部安全区 */
-  padding-bottom: calc(84px + env(safe-area-inset-bottom));
+  /* 底部留白需同时避开「固定底栏」与「悬浮私教按钮(FAB)」：
+     FAB 高 56px、距底 76px，占据视口底部 76–132px 区间，故留白取 140px（8px 余量）。
+     实测 /data 页滚到底时 FAB 会压住「继续刷题」按钮 32%，存在误触。
+     桌面端 FAB 在正文列之外无此问题，已在桌面媒体查询里改回常规值。 */
+  padding-bottom: calc(140px + env(safe-area-inset-bottom));
 }
 
 /* 侧栏 + 正文 的横向容器：手机端退化为单列纵向流（侧栏本身 display:none），
@@ -249,7 +252,7 @@
 /* 极窄屏（<380px，如 iPhone SE / 老安卓）：主栏 5 个 tab 收紧，避免文字挤出 */
 @media (max-width: 380px) {
   .nav-link {
-    font-size: 11px;
+    font-size: 12px;
     gap: 2px;
     padding: 8px 0 7px;
   }
@@ -327,6 +330,7 @@
   font-size: var(--fs-md);
   font-weight: 600;
   line-height: 1;
+  min-height: 44px; /* 移动端触控目标下限（WCAG 2.5.5 / Apple HIG） */
   border: 1px solid transparent;
   transition: background var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out), transform var(--t-fast) var(--ease-out);
   white-space: nowrap;
@@ -508,7 +512,7 @@
 .fab__label {
   position: absolute;
   bottom: -19px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--brand);
   font-weight: 600;
 }
@@ -566,7 +570,7 @@
   border-radius: 9px;
   background: var(--accent);
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   line-height: 17px;
   text-align: center;
   font-weight: 700;
@@ -696,7 +700,7 @@
 }
 .notif-time {
   margin-top: 5px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
   opacity: 0.8;
 }
@@ -865,7 +869,7 @@
 .adopt__mark {
   margin-left: auto;
   flex: 0 0 auto;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: #1a7f37;
   padding-left: 8px;
@@ -912,15 +916,15 @@
 .home-plan__check {
   flex: none; width: 18px; height: 18px; border-radius: 50%;
   border: 2px solid var(--text-3); display: inline-flex; align-items: center;
-  justify-content: center; font-size: 11px; color: #fff; line-height: 1;
+  justify-content: center; font-size: 12px; color: #fff; line-height: 1;
 }
 .home-plan__check.on { background: var(--success); border-color: var(--success); }
 .home-plan__kind {
-  flex: none; font-size: 11px; padding: 2px 6px; border-radius: 6px;
+  flex: none; font-size: 12px; padding: 2px 6px; border-radius: 6px;
   background: var(--brand-soft); color: var(--brand); font-weight: 600;
 }
 .home-plan__title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.home-plan__badge { flex: none; font-size: 11px; color: var(--success); font-weight: 600; }
+.home-plan__badge { flex: none; font-size: 12px; color: var(--success); font-weight: 600; }
 
 .chat {
   display: flex;
@@ -987,7 +991,7 @@
 .profile-card .profile-card__title { font-weight: 700; margin-bottom: 4px; display: inline-flex; align-items: center; gap: 6px; }
 .profile-card .profile-card__desc { font-size: 12px; color: var(--text-3); line-height: 1.5; margin-bottom: 8px; }
 .profile-card .chip { display: inline-flex; align-items: center; gap: 5px; }
-.profile-card__pct { font-size: 11px; font-weight: 600; color: var(--warning, #b8860b); }
+.profile-card__pct { font-size: 12px; font-weight: 600; color: var(--warning, #b8860b); }
 .chat__suggest {
   display: flex;
   flex-wrap: wrap;
@@ -1024,7 +1028,11 @@
   color: var(--brand);
   font-weight: 600;
   font-size: var(--fs-sm);
-  padding: 0;
+  /* 用「内边距 + 等量负外边距」扩展命中区：视觉位置与排版完全不变，
+     只放大可点范围。基线给鼠标留到 ~29px（桌面下限 24px），
+     触屏端在 @media (max-width:1023px) 里再加厚到 44px。 */
+  padding: 6px 4px;
+  margin: -6px -4px;
   cursor: pointer;
 }
 .link-btn:hover {
@@ -1386,7 +1394,7 @@
   font-variant-numeric: tabular-nums;
 }
 .plan-progress__stats span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
 }
 .plan-check {
@@ -1424,7 +1432,7 @@
   box-shadow: 0 0 0 3px var(--brand-050);
 }
 .plan-day__today {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
   background: var(--accent);
@@ -1622,7 +1630,7 @@
   margin-left: 4px;
   padding: 0 7px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   line-height: 1.7;
 }
@@ -1768,7 +1776,7 @@
   border-radius: 50%;
   background: var(--success-050);
   color: var(--success);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -2074,7 +2082,7 @@
 }
 .cite-card__kp {
   align-self: flex-start;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--brand, #3b6cff);
   background: var(--brand-050, rgba(59, 108, 255, 0.08));
@@ -2259,7 +2267,7 @@
   color: var(--text, #1f2430);
 }
 .cite-modal__badge {
-  font-size: 10px;
+  font-size: 12px;
   color: #1a9d6b;
   background: rgba(26, 157, 107, 0.12);
   border-radius: 999px;
@@ -2669,7 +2677,7 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
 }
 .exam-palette__legend span { display: inline-flex; align-items: center; gap: 4px; }
@@ -2737,7 +2745,7 @@
   fill: var(--brand);
 }
 .radar__label {
-  font-size: 10px;
+  font-size: 12px;
   fill: var(--text-2);
 }
 .radar__legend {
@@ -3045,7 +3053,7 @@
   border-radius: 50%;
   background: var(--success-050);
   color: var(--success);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 .bill-row {
@@ -3255,7 +3263,7 @@
 .qrev-opt__content { color: var(--text-2); flex: 1; word-break: break-word; }
 .qrev-opt__mark {
   flex: 0 0 auto;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--ok, #1a7f37);
 }
@@ -3363,7 +3371,7 @@
   font-variant-numeric: tabular-nums;
 }
 .recur__sub {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
   margin-top: 2px;
 }
@@ -3405,12 +3413,12 @@
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-2);
   font-variant-numeric: tabular-nums;
 }
 .trend__date {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
 }
 
@@ -3480,11 +3488,11 @@
   flex: 0 0 auto;
 }
 .usr-row__date {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
 }
 .role-chip {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   padding: 1px 7px;
   border-radius: 999px;
@@ -3527,7 +3535,7 @@
   color: var(--brand);
 }
 .install-banner__txt span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-2);
   margin-top: 1px;
 }
@@ -3613,7 +3621,7 @@
 .plan-cal__pct {
   position: relative;
   z-index: 1;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-3);
   margin-top: 1px;
 }
@@ -3767,7 +3775,7 @@
   margin-top: 3px;
 }
 .mem-prop span {
-  font-size: 11px;
+  font-size: 12px;
   opacity: 0.88;
   display: block;
   margin-top: 1px;
@@ -3826,7 +3834,7 @@
   .mem-hero__props { gap: 6px; margin-top: 12px; }
   .mem-prop { padding: 8px 4px; }
   .mem-prop b { font-size: 12px; }
-  .mem-prop span { font-size: 10px; }
+  .mem-prop span { font-size: 12px; }
   .mem-compare { gap: 8px; }
   .mem-compare__col { padding: 10px; }
   .mem-compare__list li { font-size: 11.5px; }
@@ -3857,7 +3865,7 @@
 }
 .mem-step span {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-2);
   margin-top: 5px;
 }
@@ -3914,7 +3922,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
   margin-top: 2px;
 }
@@ -3936,7 +3944,7 @@
   fill: var(--text-1);
 }
 .adm-donut__sub {
-  font-size: 10px;
+  font-size: 12px;
   fill: var(--text-3);
 }
 .adm-donut__legend {
@@ -4234,7 +4242,7 @@
 }
 .kpheat__subj-weak {
   margin-left: auto;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--accent);
   background: var(--accent-050);
   padding: 1px 8px;
@@ -4856,7 +4864,7 @@
   font-size: var(--fs-md);
 }
 .flash-grade__btn span {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
 }
 .flash-grade__again {
@@ -4932,7 +4940,7 @@
   box-shadow: var(--sh-sm);
 }
 .flash-mini__deck {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 .flash-mini__front {
@@ -4946,7 +4954,7 @@
   overflow: hidden;
 }
 .flash-mini__status {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-3);
 }
 .flash-mini--due {
@@ -5087,7 +5095,7 @@
 }
 .pred-mod__n {
   display: block;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-2);
   margin-top: 2px;
 }
@@ -5165,7 +5173,7 @@
   50% { opacity: 0.4; }
 }
 .pred-top__answered {
-  font-size: 11px;
+  font-size: 12px;
   margin-top: 6px;
 }
 .pred-q {
@@ -5318,7 +5326,7 @@
   background: var(--surface-2);
 }
 .pred-trend__row .tag {
-  font-size: 11px;
+  font-size: 12px;
   padding: 1px 7px;
 }
 
@@ -5728,6 +5736,49 @@
   box-shadow: var(--ring);
 }
 
+/* ===================== 触控目标尺寸（<1024px 触屏设备） =====================
+   实测移动端 42 类可点控件小于 44×44（WCAG 2.5.5 / Apple HIG 下限）。
+   分两类处理：
+   - 有边框或背景的控件（图标按钮 / 勾选圈 / 筛选 chip / 小按钮）：直接放大到 44px，
+     它们本就是独立控件，放大不破坏排版。
+   - 纯文字链接 .link-btn：用「内边距 + 等量负外边距」扩展命中区到 44px，
+     视觉位置与行高完全不变，只放大可点范围（比用伪元素更安全，无层叠与抢点击问题）。
+   ================================================================ */
+@media (max-width: 1023px) {
+  .bell-btn {
+    width: 44px;
+    height: 44px;
+  }
+  .iconbtn {
+    width: 44px;
+    height: 44px;
+  }
+  .plan-check {
+    width: 44px;
+    height: 44px;
+  }
+  .chip {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .btn--sm {
+    min-height: 44px;
+  }
+  /* 下拉筛选框（刷题/错题等页的 .input 实为 <select>），原高仅 27px */
+  .input,
+  select {
+    min-height: 44px;
+  }
+  /* 视觉位置不变，仅把命中区扩到 44px（17px 行高 + 上下各 14px） */
+  .link-btn {
+    padding: 14px 8px;
+    margin: -14px -8px;
+  }
+}
+
 /* ===================== 平板适配（680px – 1023px） =====================
    iPad 竖屏(768/834)、折叠屏展开、手机横屏都落在这个区间。
    此前这里仍沿用手机的 480px 窄栏：834px 屏幕上两侧各空 177px，非常空旷。
@@ -5742,8 +5793,7 @@
   }
   .app-main {
     padding: var(--sp-5);
-    /* 底部导航仍在（未到桌面断点），保留安全区留白 */
-    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    /* 底部留白沿用基础值（已含 FAB 避让），此处不覆盖 */
   }
   /* 悬浮私教按钮跟随面板右缘，避免贴到视口边缘而与面板脱节 */
   .fab {
@@ -5800,7 +5850,7 @@
     gap: 2px;
   }
   .side-rail__title {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     letter-spacing: 0.6px;
     color: var(--text-3);

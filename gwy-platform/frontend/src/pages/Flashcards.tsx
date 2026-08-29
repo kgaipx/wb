@@ -394,7 +394,7 @@ function Ring({ pct, label }: { pct: number; label: string }) {
           style={{ transition: "stroke-dashoffset .5s var(--ease-out)" }}
         />
         <text x="40" y="38" textAnchor="middle" fontSize="18" fontWeight="800" fill="#fff">{pct}%</text>
-        <text x="40" y="54" textAnchor="middle" fontSize="9" fill="rgba(255,255,255,0.85)">{label}</text>
+        <text x="40" y="54" textAnchor="middle" fontSize="12" fill="rgba(255,255,255,0.92)">{label}</text>
       </svg>
     </div>
   );

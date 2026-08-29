@@ -781,7 +781,7 @@ function Gauge({ pct, color }: { pct: number; color: string }) {
           style={{ transition: "stroke-dashoffset .6s var(--ease-out)" }}
         />
         <text x="40" y="37" textAnchor="middle" fontSize="17" fontWeight="800" fill={color}>{pct}%</text>
-        <text x="40" y="53" textAnchor="middle" fontSize="9" fill="var(--text-3)">上岸概率</text>
+        <text x="40" y="53" textAnchor="middle" fontSize="12" fill="var(--text-3)">上岸概率</text>
       </svg>
     </div>
   );

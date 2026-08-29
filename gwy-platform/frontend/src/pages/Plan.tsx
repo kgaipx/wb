@@ -50,7 +50,7 @@ function Ring({ rate }: { rate: number }) {
       <text x="42" y="40" textAnchor="middle" fontSize="18" fontWeight="800" fill="var(--brand)">
         {Math.round(rate * 100)}
       </text>
-      <text x="42" y="56" textAnchor="middle" fontSize="10" fill="var(--text-3)">
+      <text x="42" y="56" textAnchor="middle" fontSize="12" fill="var(--text-3)">
         完成度
       </text>
     </svg>
