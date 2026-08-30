@@ -5161,6 +5161,9 @@
   margin-bottom: var(--sp-4);
   line-height: 1.6;
 }
+.flash-all {
+  margin-top: var(--sp-5);
+}
 .flash-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;

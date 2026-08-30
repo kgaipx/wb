@@ -147,6 +147,7 @@ export default function Login() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && submit()}
             />
 
             {mode === "register" && (
@@ -219,6 +220,7 @@ export default function Login() {
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && requestReset()}
             />
             <button className={"btn btn--ghost btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 12 }} disabled={busy} onClick={requestReset}>
               {busy && <Spinner size={15} />}

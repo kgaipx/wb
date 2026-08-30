@@ -353,7 +353,7 @@ export default function Flashcards() {
 
       {/* 全部卡片（点击可单独学习） */}
       <div className="flash-all">
-        <div className="section-title" style={{ marginTop: "var(--sp-5)" }}>全部卡片</div>
+        <div className="section-title">全部卡片</div>
         <div className="flash-grid">
           {candidates.map((c) => {
             const st = states[c.id];
