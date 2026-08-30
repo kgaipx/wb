@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api, PlanOut, PlanTask, StudentStats, WrongItem } from "../api/client";
 import { useAuth } from "../auth";
 import EmptyState from "../components/EmptyState";
+import CountUp from "../components/CountUp";
 import { TargetIcon, CalendarIcon, SparkleIcon } from "../icons";
 import { calcSprint, daysLeftOf } from "../sprint";
 
@@ -274,7 +275,7 @@ export default function Home() {
         >
           <div className="row row--between" style={{ alignItems: "center" }}>
             <strong>
-              🚀 冲刺期 · 距{examName}还有 {sprintShow.daysLeft} 天
+              🚀 冲刺期 · 距{examName}还有 <CountUp value={sprintShow.daysLeft} /> 天
             </strong>
             <span className="chip chip--warn">{sprintShow.phase.name}</span>
           </div>
@@ -424,7 +425,7 @@ export default function Home() {
             <button className="link-btn" onClick={() => nav("/plan")}>完整计划 →</button>
           </div>
           <div className="home-plan__top">
-            <span className="home-plan__streak">🔥 连续打卡 {plan.progress.streak_days} 天</span>
+            <span className="home-plan__streak">🔥 连续打卡 <CountUp value={plan.progress.streak_days} /> 天</span>
             <span className="home-plan__today">
               今日 {plan.progress.today_done}/{plan.progress.today_total}
             </span>
@@ -560,7 +561,7 @@ export default function Home() {
                   <span className="muted" style={{ fontSize: 13 }}>
                     最近一次 · {last.created_at.slice(5, 10) + " " + last.created_at.slice(11, 16)}
                   </span>
-                  <span className={"big-rate " + tone} style={{ fontSize: 22 }}>{rate}<span>%</span></span>
+                  <span className={"big-rate " + tone} style={{ fontSize: 22 }}><CountUp value={rate} suffix="%" /></span>
                 </div>
                 {prevRate !== null && (
                   <div className="row row--between" style={{ marginTop: 4, fontSize: 12 }}>
@@ -588,15 +589,15 @@ export default function Home() {
         </div>
         <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
           <div className="metric">
-            <div className="metric__num" style={{ color: "var(--accent)" }}>{stats ? stats.streak_days : "—"}</div>
+            <div className="metric__num" style={{ color: "var(--accent)" }}>{stats ? <CountUp value={stats.streak_days} /> : "—"}</div>
             <div className="metric__label">🔥连续打卡</div>
           </div>
           <div className="metric">
-            <div className="metric__num" style={{ color: "var(--brand)" }}>{stats ? Math.round(stats.correct_rate * 100) + "%" : "—"}</div>
+            <div className="metric__num" style={{ color: "var(--brand)" }}>{stats ? <CountUp value={Math.round(stats.correct_rate * 100)} suffix="%" /> : "—"}</div>
             <div className="metric__label">客观正确率</div>
           </div>
           <div className="metric">
-            <div className="metric__num" style={{ color: "var(--danger)" }}>{stats ? Math.max(0, stats.wrong_distinct - stats.reviewed_distinct) : "—"}</div>
+            <div className="metric__num" style={{ color: "var(--danger)" }}>{stats ? <CountUp value={Math.max(0, stats.wrong_distinct - stats.reviewed_distinct)} /> : "—"}</div>
             <div className="metric__label">待攻克错题</div>
           </div>
         </div>
@@ -625,15 +626,15 @@ export default function Home() {
         </div>
         <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
           <div className="metric">
-            <div className="metric__num" style={{ color: "var(--warning)" }}>{dueCount}</div>
+            <div className="metric__num" style={{ color: "var(--warning)" }}><CountUp value={dueCount} /></div>
             <div className="metric__label">间隔到期待复习</div>
           </div>
           <div className="metric">
-            <div className="metric__num" style={{ color: "var(--accent)" }}>{newToday}</div>
+            <div className="metric__num" style={{ color: "var(--accent)" }}><CountUp value={newToday} /></div>
             <div className="metric__label">今日新错题</div>
           </div>
           <div className="metric">
-            <div className="metric__num" style={{ color: "var(--brand)" }}>{stats ? stats.streak_days : "—"}</div>
+            <div className="metric__num" style={{ color: "var(--brand)" }}>{stats ? <CountUp value={stats.streak_days} /> : "—"}</div>
             <div className="metric__label">🔥连续打卡</div>
           </div>
         </div>
