@@ -372,43 +372,80 @@
   box-shadow: var(--ring-strong);
 }
 .btn--primary {
-  background: var(--brand);
+  background-color: var(--brand);
+  /* 顶部镜面高光：玻璃实心钮质感（文字始终在背景之上，不受影响）*/
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 62%);
   color: var(--on-brand);
-  box-shadow: 0 2px 8px rgba(var(--brand-rgb), 0.28), 0 1px 2px rgba(var(--brand-rgb), 0.20);
+  box-shadow: 0 2px 8px rgba(var(--brand-rgb), 0.28), 0 1px 2px rgba(var(--brand-rgb), 0.20), var(--edge-hi);
+  transition: background-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
+    transform var(--t-fast) var(--ease-spring);
 }
 .btn--primary:not(:disabled):hover {
-  background: var(--brand-700);
+  background-color: var(--brand-700);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.34), 0 2px 4px rgba(var(--brand-rgb), 0.20);
+  box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.34), 0 2px 4px rgba(var(--brand-rgb), 0.20), var(--edge-hi);
 }
 .btn--primary:not(:disabled):active {
-  transform: translateY(0) scale(0.99);
+  /* 物理下压：下沉 + 内陷高光 + 轻微变暗，模拟真实按键 */
+  transform: translateY(1px) scale(0.985);
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0) 50%);
+  box-shadow: 0 1px 3px rgba(var(--brand-rgb), 0.22), inset 0 1px 2px rgba(0, 0, 0, 0.20), var(--edge-hi);
 }
 /* 成功/正向主操作（答对、标记已掌握等）—— 复用主按钮质感，改用成功色 token，双主题自适应 */
 .btn--ok {
-  background: var(--success);
+  background-color: var(--success);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 62%);
   color: var(--on-brand);
-  box-shadow: 0 2px 8px rgba(var(--success-rgb), 0.28), 0 1px 2px rgba(var(--success-rgb), 0.20);
+  box-shadow: 0 2px 8px rgba(var(--success-rgb), 0.28), 0 1px 2px rgba(var(--success-rgb), 0.20), var(--edge-hi);
+  transition: background-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
+    transform var(--t-fast) var(--ease-spring);
 }
 .btn--ok:not(:disabled):hover {
   filter: brightness(0.95);
   transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(var(--success-rgb), 0.34), 0 2px 4px rgba(var(--success-rgb), 0.20);
+  box-shadow: 0 6px 18px rgba(var(--success-rgb), 0.34), 0 2px 4px rgba(var(--success-rgb), 0.20), var(--edge-hi);
 }
 .btn--ok:not(:disabled):active {
-  transform: translateY(0) scale(0.99);
+  transform: translateY(1px) scale(0.985);
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0) 50%);
+  box-shadow: 0 1px 3px rgba(var(--success-rgb), 0.22), inset 0 1px 2px rgba(0, 0, 0, 0.20), var(--edge-hi);
 }
+/* 危险/破坏性操作（驳回、删除）：语义红 + 与主按钮同款玻璃质感与按压反馈
+   红值复用 --accent-rgb（危险红与强调红同族），无需新增 token */
+.btn--danger {
+  background-color: var(--danger);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 62%);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(var(--accent-rgb), 0.30), 0 1px 2px rgba(var(--accent-rgb), 0.20), var(--edge-hi);
+  transition: background-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
+    transform var(--t-fast) var(--ease-spring);
+}
+.btn--danger:not(:disabled):hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(var(--accent-rgb), 0.36), 0 2px 4px rgba(var(--accent-rgb), 0.20), var(--edge-hi);
+}
+.btn--danger:not(:disabled):active {
+  transform: translateY(1px) scale(0.985);
+  background-image: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0) 50%);
+  box-shadow: 0 1px 3px rgba(var(--accent-rgb), 0.24), inset 0 1px 2px rgba(0, 0, 0, 0.22), var(--edge-hi);
+}
+[data-theme="dark"] .btn--danger { color: var(--on-brand); }
 .btn--ghost {
   background: var(--surface);
   color: var(--brand);
   border-color: var(--brand);
+  box-shadow: var(--edge-hi);
 }
 .btn--ghost:not(:disabled):hover {
   background: var(--brand-050);
   transform: translateY(-1px);
+  box-shadow: var(--edge-hi);
 }
 .btn--ghost:not(:disabled):active {
   transform: scale(0.98);
+  background: var(--brand-050);
+  box-shadow: inset 0 1px 2px rgba(var(--brand-rgb), 0.18), var(--edge-hi);
 }
 .btn--block {
   width: 100%;
@@ -426,7 +463,7 @@
 .btn--inverse {
   background: #fff;
   color: var(--brand-ink);
-  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12);
+  box-shadow: 0 4px 12px rgba(16, 24, 40, 0.12), var(--edge-hi);
 }
 .btn--inverse:not(:disabled):hover {
   background: #f1f5ff;
@@ -434,12 +471,14 @@
 }
 .btn--inverse:not(:disabled):active {
   transform: scale(0.98);
+  box-shadow: inset 0 1px 2px rgba(16, 24, 40, 0.14), var(--edge-hi);
 }
 /* 渐变底色上的描边幽灵按钮（hero 次操作） */
 .btn--ghost-on {
   background: rgba(255, 255, 255, 0.16);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: var(--edge-hi);
 }
 .btn--ghost-on:not(:disabled):hover {
   background: rgba(255, 255, 255, 0.26);
@@ -447,6 +486,8 @@
 }
 .btn--ghost-on:not(:disabled):active {
   transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.10);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.20), var(--edge-hi);
 }
 
 /* ===================== 卡片 ===================== */
@@ -4251,23 +4292,42 @@
   );
   pointer-events: none;
   z-index: 0;
+  animation: empty-glow 6s var(--ease-ios) infinite;
 }
 .empty:not(.empty--tight) > * {
   position: relative;
   z-index: 1;
 }
 .empty__icon {
+  position: relative;
+  z-index: 0; /* 形成层叠上下文，使外环 ::after (z-index:-1) 始终位于图标之上、页面之下 */
   width: 64px;
   height: 64px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--brand-050), #ffffff);
+  /* 三段式渐变 + 流动：空态像「被点亮的引导区」而非静止灰圆 */
+  background: linear-gradient(135deg, var(--brand-050), #ffffff, var(--brand-050));
+  background-size: 200% 200%;
   color: var(--brand);
   font-size: 28px;
   margin-bottom: 4px;
-  box-shadow: 0 8px 20px rgba(var(--brand-rgb), 0.18), inset 0 0 0 1px rgba(var(--brand-rgb), 0.10);
+  box-shadow: 0 8px 20px rgba(var(--brand-rgb), 0.18), inset 0 0 0 1px rgba(var(--brand-rgb), 0.10), var(--edge-hi);
+  animation: empty-icon-in 0.36s var(--ease-out) both, empty-shimmer 4.5s var(--ease-ios) infinite;
+}
+/* 空态外环：缓慢旋转的镜面光环，强化「引导区」质感（mask 只留 3px 细环） */
+.empty__icon::after {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 50%;
+  z-index: -1;
+  background: conic-gradient(from 0deg, transparent 0 55%, color-mix(in srgb, var(--brand) 40%, transparent) 75%, transparent 100%);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px));
+  opacity: 0.7;
+  animation: empty-ring 6.5s linear infinite;
 }
 .empty__title {
   font-size: var(--fs-md);
@@ -4322,10 +4382,25 @@
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.empty__icon { animation: empty-icon-in 0.36s var(--ease-out) both; }
+.empty__icon { animation: empty-icon-in 0.36s var(--ease-out) both, empty-shimmer 4.5s var(--ease-ios) infinite; }
 .empty__title { animation: empty-rise 0.34s var(--ease-out) 0.05s both; }
 .empty__desc { animation: empty-rise 0.34s var(--ease-out) 0.1s both; }
 .empty__action { animation: empty-rise 0.34s var(--ease-out) 0.15s both; }
+/* 空态图标流光：三段渐变缓动位移，营造「被点亮」的呼吸感 */
+@keyframes empty-shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+/* 空态外环旋转 */
+@keyframes empty-ring {
+  to { transform: rotate(360deg); }
+}
+/* 空态光晕呼吸 */
+@keyframes empty-glow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.06); }
+}
 
 /* ===== 知识点掌握度热力图（按科目分面）===== */
 .kpheat {
@@ -5840,7 +5915,8 @@
     border-color: var(--brand-100);
   }
   .empty__icon {
-    background: linear-gradient(135deg, var(--brand-050), var(--surface-2));
+    background: linear-gradient(135deg, var(--brand-050), var(--surface-2), var(--brand-050));
+    background-size: 200% 200%;
   }
   .flash-start__icon,
   .flash-done__icon {
