@@ -10,6 +10,10 @@ html {
   /* 禁止 iOS 在横屏/某些场景下自动放大字体 */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* 让原生控件（滚动条 / 表单）跟随明色主题，与整体设计语言一致 */
+  color-scheme: light;
+  /* iOS 滚动回弹 + 惯性滚动（现代 WebView 默认即有，显式声明更稳）*/
+  -webkit-overflow-scrolling: touch;
 }
 
 html,
@@ -122,5 +126,18 @@ textarea {
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ===== 触屏点按反馈（haptic 质感：按下微缩、松手回弹）=====
+   仅对 coarse pointer（手指）生效；桌面端以 hover 反馈为主，不叠加缩放以免抖动。
+   用 :where() 零特异性，方便任意组件按需覆盖；排除已实现 3D 翻转的翻卡(.flash-card)。 */
+@media (hover: none) and (pointer: coarse) {
+  :where(button, [role="button"], a, .btn, .iconbtn, .chip, .seg__btn,
+    .nav-link, .q-item, .card, .mat-card, .fav, .tag, .tab, .manage-card,
+    .notif-page__item, .cap-list li, .cite-card, .pred-pcell,
+    .exam-palette__chip):active {
+    transform: scale(0.965);
+    transition: transform var(--t-fast) var(--ease-spring);
   }
 }

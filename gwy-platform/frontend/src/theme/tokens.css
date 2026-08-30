@@ -46,13 +46,19 @@
   --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
   --grad-brand-soft: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 100%);
 
-  /* ===== 统一缓动曲线（hover / active / tap 一致手感，与 auth-in 同源）===== */
+  /* ===== 统一缓动曲线 =====
+     --ease-out  ：通用缓出（hover / 抬升 / 大多数过渡）
+     --ease-ios  ：iOS 系统级标准曲线(0.32,0.72,0,1)，用于 sheet/弹窗滑入，落位更「沉稳」
+     --ease-spring：带轻微回弹的弹簧曲线，用于按压/点按反馈，贴近原生 App 手感 */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
 
   /* ===== 统一过渡时长（hover / active / 抬升 一致手感，避免 0.12~0.25s 散落）===== */
-  --t-fast: 0.12s;   /* 微交互：开关 / 勾选 / 分段按压 */
-  --t-base: 0.18s;   /* 标准反馈：颜色 / 背景 / 描边 / 阴影 */
-  --t-lift: 0.22s;   /* 抬升反馈：卡片 / 按钮 hover 位移 + 阴影 */
+  --t-fast: 0.14s;   /* 微交互：开关 / 勾选 / 分段按压 */
+  --t-base: 0.2s;    /* 标准反馈：颜色 / 背景 / 描边 / 阴影 */
+  --t-lift: 0.26s;   /* 抬升反馈：卡片 / 按钮 hover 位移 + 阴影 */
+  --t-sheet: 0.42s;  /* 底部 sheet / 弹窗滑入：接近 iOS 0.4s，落位更「重」有质感 */
 
   /* ===== 字体 ===== */
   --font-sans: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", system-ui,
@@ -78,12 +84,13 @@
   --sp-6: 24px;
   --sp-8: 32px;
 
-  /* ===== 圆角 ===== */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
+  /* ===== 圆角（加大一档，更贴近 iOS 的丰润手感）===== */
+  --r-sm: 10px;
+  --r-md: 14px;
+  --r-lg: 20px;
+  --r-xl: 28px;             /* 底部 sheet / 大面板顶部圆角（此前缺定义导致方块角，已修）*/
   --r-pill: 999px;
-  --radius: 10px;            /* 通用圆角（cite-card 等复用） */
+  --radius: 12px;            /* 通用圆角（cite-card 等复用） */
 
   /* ===== 阴影（多层级 + 低透明度，营造细腻纵深，接近主流 App 质感）===== */
   --sh-xs: 0 1px 2px rgba(16, 24, 40, 0.06);
@@ -95,6 +102,15 @@
   /* 统一聚焦光环（键盘可达性 + 大厂手感）*/
   --ring: 0 0 0 3px var(--brand-050);
   --ring-strong: 0 0 0 3px rgba(27, 79, 181, 0.32);
+
+  /* ===== 玻璃材质（iOS 导航栏 / 底部 Tab / 分段控件 / sheet 通用）=====
+     20px 高饱和模糊 + 半透明白，是 iOS 通透质感的核心。 */
+  --glass-blur: saturate(180%) blur(20px);
+  --surface-glass: rgba(255, 255, 255, 0.82);   /* 亮色：磨砂玻璃底 */
+  /* 镜面高光：卡片/按钮顶部 1px 内描边，营造「玻璃边缘」的 premium 触感 */
+  --edge-hi: inset 0 1px 0 rgba(255, 255, 255, 0.65), inset 0 0 0 0.5px rgba(255, 255, 255, 0.35);
+  /* 毛玻璃容器描边（比纯 border 更柔，贴合通透感）*/
+  --glass-border: rgba(16, 24, 40, 0.06);
 
   /* ===== 布局 ===== */
   --app-max: 480px;
@@ -119,6 +135,8 @@
    主题由 <html data-theme="dark"> 控制（见 index.html 防闪白内联脚本）。
    ============================================================ */
 [data-theme="dark"] {
+  /* 原生控件（滚动条 / 表单）跟随暗色主题 */
+  color-scheme: dark;
   /* 品牌提亮，暗底上更通透（政务蓝 → 电光蓝）*/
   --brand: #4C8DFF;
   --brand-600: #4C8DFF;
@@ -174,6 +192,11 @@
   /* 统一聚焦光环：暗底上改用亮蓝光环 */
   --ring: 0 0 0 3px rgba(76, 141, 255, 0.35);
   --ring-strong: 0 0 0 3px rgba(76, 141, 255, 0.55);
+
+  /* ===== 玻璃材质：暗底上半透明深玻璃 + 顶部高光改为极淡白，保持玻璃边缘感 ===== */
+  --surface-glass: rgba(23, 27, 34, 0.62);
+  --edge-hi: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+  --glass-border: rgba(255, 255, 255, 0.08);
 
   /* ===== 桌面端画布：暗底上再压一档，面板与画布形成层级差 ===== */
   --bg-canvas: #05070A;
