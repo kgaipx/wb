@@ -1040,10 +1040,10 @@
   font-weight: 600;
   font-size: var(--fs-sm);
   /* 用「内边距 + 等量负外边距」扩展命中区：视觉位置与排版完全不变，
-     只放大可点范围。基线给鼠标留到 ~29px（桌面下限 24px），
+     只放大可点范围。桌面基线抬到 ~32px（与全站触控地板一致），
      触屏端在 @media (max-width:1023px) 里再加厚到 44px。 */
-  padding: 6px 4px;
-  margin: -6px -4px;
+  padding: 8px 4px;
+  margin: -8px -4px;
   cursor: pointer;
 }
 .link-btn:hover {
