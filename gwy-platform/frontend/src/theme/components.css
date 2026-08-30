@@ -4625,6 +4625,11 @@
 .mat-stats .metric__num {
   font-size: 22px;
 }
+@media (max-width: 560px) {
+  .mat-stats {
+    grid-template-columns: 1fr;
+  }
+}
 .mat-daily {
   margin-bottom: var(--sp-4);
 }
@@ -5095,13 +5100,22 @@
 .re-cta__btn:disabled {
   opacity: 0.7;
 }
+@media (max-width: 480px) {
+  .re-cta {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .re-cta__btn {
+    width: 100%;
+  }
+}
 .re-kp-list {
   display: grid;
   gap: var(--sp-3);
 }
 .re-kp__head {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
 }
