@@ -2829,7 +2829,7 @@
 .review-trust__stat b { color: var(--text-1); margin-right: 4px; }
 .review-empty { text-align: center; padding: 20px 12px; }
 .review-card { border-left: 3px solid var(--brand); }
-.review-card--done { border-left-color: var(--border); opacity: 0.82; }
+.review-card--done { border-left-color: var(--border); opacity: 0.82; background: var(--surface-2); }
 .review-body {
   margin-top: 8px;
   font-size: 13px;
@@ -2867,6 +2867,13 @@
 .status--approved { background: rgba(22, 163, 74, 0.12); color: var(--success); }
 .status--rejected { background: rgba(217, 43, 28, 0.14); color: var(--danger); }
 .status--corrected { background: rgba(245, 158, 11, 0.14); color: var(--warning); }
+@media (max-width: 480px) {
+  .review-trust {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
 
 /* ===================== AI 私教对话：会话抽屉 ===================== */
 .chat__headinfo {
@@ -3285,7 +3292,7 @@
 
 /* ===== 题库审核卡片 ===== */
 .qrev-card { border-left: 3px solid var(--brand); }
-.qrev-card--done { border-left-color: var(--border); opacity: 0.82; }
+.qrev-card--done { border-left-color: var(--border); opacity: 0.82; background: var(--surface-2); }
 .qrev-stem {
   margin-top: 8px;
   font-size: 14px;
