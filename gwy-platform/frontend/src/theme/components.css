@@ -187,10 +187,10 @@
   to { opacity: 1; }
 }
 /* 路由切换：进入淡入（仅 opacity，避免对 fixed/sticky 后代建立包含块） */
-.route-anim { animation: route-fade var(--t-lift) var(--ease-out) both; }
+.route-anim { animation: route-fade var(--t-sheet) var(--ease-ios) both; will-change: transform, opacity; }
 @keyframes route-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(12px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) {
   .route-anim { animation: none; }
@@ -373,17 +373,17 @@
 }
 .btn--primary {
   background-color: var(--brand);
-  /* 顶部镜面高光：玻璃实心钮质感（文字始终在背景之上，不受影响）*/
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 62%);
+  /* 品牌渐变 + 顶部高光叠层：主 CTA 色彩权重拉满，与描边次级钮形成明显层级落差 */
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 52%), var(--grad-brand);
   color: var(--on-brand);
-  box-shadow: 0 2px 8px rgba(var(--brand-rgb), 0.28), 0 1px 2px rgba(var(--brand-rgb), 0.20), var(--edge-hi);
+  box-shadow: 0 4px 14px rgba(var(--brand-rgb), 0.34), 0 1px 2px rgba(var(--brand-rgb), 0.24), var(--edge-hi);
   transition: background-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
     transform var(--t-fast) var(--ease-spring);
 }
 .btn--primary:not(:disabled):hover {
   background-color: var(--brand-700);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(var(--brand-rgb), 0.34), 0 2px 4px rgba(var(--brand-rgb), 0.20), var(--edge-hi);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(var(--brand-rgb), 0.44), 0 3px 6px rgba(var(--brand-rgb), 0.26), var(--edge-hi);
 }
 .btn--primary:not(:disabled):active {
   /* 物理下压：下沉 + 内陷高光 + 轻微变暗，模拟真实按键 */
@@ -394,16 +394,16 @@
 /* 成功/正向主操作（答对、标记已掌握等）—— 复用主按钮质感，改用成功色 token，双主题自适应 */
 .btn--ok {
   background-color: var(--success);
-  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 62%);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 52%), var(--grad-success);
   color: var(--on-brand);
-  box-shadow: 0 2px 8px rgba(var(--success-rgb), 0.28), 0 1px 2px rgba(var(--success-rgb), 0.20), var(--edge-hi);
+  box-shadow: 0 4px 14px rgba(var(--success-rgb), 0.34), 0 1px 2px rgba(var(--success-rgb), 0.24), var(--edge-hi);
   transition: background-color var(--t-base) var(--ease-out), box-shadow var(--t-base) var(--ease-out),
     transform var(--t-fast) var(--ease-spring);
 }
 .btn--ok:not(:disabled):hover {
-  filter: brightness(0.95);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(var(--success-rgb), 0.34), 0 2px 4px rgba(var(--success-rgb), 0.20), var(--edge-hi);
+  filter: brightness(1.05);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(var(--success-rgb), 0.44), 0 3px 6px rgba(var(--success-rgb), 0.26), var(--edge-hi);
 }
 .btn--ok:not(:disabled):active {
   transform: translateY(1px) scale(0.985);

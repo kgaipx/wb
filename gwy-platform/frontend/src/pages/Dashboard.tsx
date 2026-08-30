@@ -7,6 +7,7 @@ import KpHeatmapView from "../components/KpHeatmap";
 import { ReportExport } from "../components/ReportExport";
 import EmptyState from "../components/EmptyState";
 import Reveal from "../components/Reveal";
+import CountUp from "../components/CountUp";
 
 function pct(v: number) {
   return Math.round(v * 100);
@@ -116,19 +117,19 @@ export default function Dashboard() {
             <div className="muted" style={{ marginTop: 6, fontSize: 13 }}>{week.summary}</div>
             <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 10 }}>
               <div className="metric">
-                <div className="metric__num">{week.week_answers}</div>
+                <div className="metric__num"><CountUp value={week.week_answers} /></div>
                 <div className="metric__label">
                   本周做题{week.delta_answers !== 0 ? `（${week.delta_answers > 0 ? "+" : ""}${week.delta_answers}）` : ""}
                 </div>
               </div>
               <div className="metric">
-                <div className="metric__num" style={{ color: "var(--brand)" }}>{pct(week.week_rate)}%</div>
+                <div className="metric__num" style={{ color: "var(--brand)" }}><CountUp value={pct(week.week_rate)} suffix="%" /></div>
                 <div className="metric__label">
                   本周正确率{week.delta_rate !== 0 ? `（${week.delta_rate > 0 ? "+" : ""}${week.delta_rate}pp）` : ""}
                 </div>
               </div>
               <div className="metric">
-                <div className="metric__num" style={{ color: "var(--warning)" }}>{week.last_answers}</div>
+                <div className="metric__num" style={{ color: "var(--warning)" }}><CountUp value={week.last_answers} /></div>
                 <div className="metric__label">上周做题</div>
               </div>
             </div>
@@ -154,17 +155,17 @@ export default function Dashboard() {
       {/* 核心指标 */}
       <Reveal delay={0}><div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
         <div className="metric">
-          <div className="metric__num">{stats.total_answers}</div>
+          <div className="metric__num"><CountUp value={stats.total_answers} /></div>
           <div className="metric__label">累计答题</div>
         </div>
-        <div className="metric">
-          <div className="metric__num" style={{ color: "var(--brand)" }}>{pct(stats.correct_rate)}%</div>
-          <div className="metric__label">客观正确率</div>
-        </div>
-        <div className="metric">
-          <div className="metric__num" style={{ color: "var(--accent)" }}>{stats.streak_days}</div>
-          <div className="metric__label">连续打卡(天)</div>
-        </div>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--brand)" }}><CountUp value={pct(stats.correct_rate)} suffix="%" /></div>
+            <div className="metric__label">客观正确率</div>
+          </div>
+          <div className="metric">
+            <div className="metric__num" style={{ color: "var(--accent)" }}><CountUp value={stats.streak_days} /></div>
+            <div className="metric__label">连续打卡(天)</div>
+          </div>
       </div>
       </Reveal>
 
@@ -182,7 +183,7 @@ export default function Dashboard() {
             }}
           >
             <div className="recur__inner">
-              <div className="recur__val" style={{ color: recColor }}>{pct(stats.recurrence_rate)}%</div>
+              <div className="recur__val" style={{ color: recColor }}><CountUp value={pct(stats.recurrence_rate)} suffix="%" /></div>
               <div className="recur__sub">复错率</div>
             </div>
           </div>

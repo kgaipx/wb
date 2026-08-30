@@ -7,6 +7,7 @@ import { DimensionBars } from "../components/DimensionBars";
 import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
 import Reveal from "../components/Reveal";
+import CountUp from "../components/CountUp";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 import { PenIcon, ChartIcon } from "../icons";
 
@@ -215,11 +216,11 @@ export default function Profile() {
           </div>
           <div className="grid-2" style={{ gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 8 }}>
             <div className="metric">
-              <div className="metric__num" style={{ color: "var(--brand)" }}>🔥 {stats.streak_days}</div>
+              <div className="metric__num" style={{ color: "var(--brand)" }}>🔥 <CountUp value={stats.streak_days} /></div>
               <div className="metric__label">连续打卡 (天)</div>
             </div>
             <div className="metric">
-              <div className="metric__num">{stats.last_7_days.reduce((s, d) => s + d.answers, 0)}</div>
+              <div className="metric__num"><CountUp value={stats.last_7_days.reduce((s, d) => s + d.answers, 0)} /></div>
               <div className="metric__label">本周练习 (题)</div>
             </div>
           </div>

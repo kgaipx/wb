@@ -45,6 +45,7 @@
   /* ===== 品牌渐变（header logo / fab / hero / 主按钮统一复用）===== */
   --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
   --grad-brand-soft: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 100%);
+  --grad-success: linear-gradient(135deg, #15a05c 0%, #2ec07d 100%); /* 成功/正向主操作渐变（与 --grad-brand 同款质感）*/
 
   /* ===== 统一缓动曲线 =====
      --ease-out  ：通用缓出（hover / 抬升 / 大多数过渡）
@@ -181,6 +182,7 @@
   /* ===== 品牌渐变（暗底上提亮一档，保持同一视觉语言）===== */
   --grad-brand: linear-gradient(135deg, #3B7BF0 0%, #4C8DFF 60%, #5B9BFF 100%);
   --grad-brand-soft: linear-gradient(135deg, rgba(76, 141, 255, 0.12) 0%, rgba(76, 141, 255, 0.04) 100%);
+  --grad-success: linear-gradient(135deg, #2ec07d 0%, #4fd993 100%);
 
   /* ===== 阴影（暗底上改用深色投影营造纵深，强度略高于亮色）===== */
   --sh-xs: 0 1px 2px rgba(0, 0, 0, 0.30);
