@@ -321,9 +321,9 @@ export default function Home() {
           {morning && <span className="muted" style={{ fontSize: 12 }}>{morning.date}</span>}
         </div>
         {morningLoading && !morning ? (
-          <div className="muted" style={{ marginTop: 8, fontSize: 13 }}>
-            <span className="sk sk-line" style={{ width: "88%", display: "inline-block", height: 12 }} />
-            <span className="muted" style={{ marginLeft: 8 }}>晨报生成中…</span>
+          <div className="muted" style={{ marginTop: 8, fontSize: 13, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <span className="sk sk-line" style={{ flex: 1, height: 12, minWidth: 0 }} />
+            <span style={{ whiteSpace: 'nowrap' }}>晨报生成中…</span>
           </div>
         ) : morning ? (
           <>
