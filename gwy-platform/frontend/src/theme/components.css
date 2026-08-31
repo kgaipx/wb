@@ -475,18 +475,18 @@
 }
 /* 渐变底色上的描边幽灵按钮（hero 次操作） */
 .btn--ghost-on {
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.78);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.55);
   box-shadow: var(--edge-hi);
 }
 .btn--ghost-on:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.26);
+  background: rgba(0, 0, 0, 0.84);
   transform: translateY(-1px);
 }
 .btn--ghost-on:not(:disabled):active {
   transform: scale(0.98);
-  background: rgba(255, 255, 255, 0.10);
+  background: rgba(0, 0, 0, 0.66);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.20), var(--edge-hi);
 }
 
@@ -1642,6 +1642,10 @@
   background: var(--brand-050);
   color: var(--brand);
 }
+/* 暗色下品牌蓝（#4C8DFF）压在极浅蓝染底上仅 ~4.18:1（<4.5），提亮一档到 #6FAEFF 留足裕度 */
+[data-theme="dark"] .tag--brand {
+  color: #6FAEFF;
+}
 .tag--verified {
   background: var(--success-050);
   color: var(--success);
@@ -1796,11 +1800,19 @@
   margin-top: 8px;
   font-size: var(--fs-base);
   opacity: 0.95;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.22);
   border: 1px solid rgba(255, 255, 255, 0.22);
   padding: 5px 12px;
   border-radius: 999px;
   backdrop-filter: blur(3px);
+}
+/* 暗色下 hero 是亮蓝渐变 + 近黑文字（tonal 方案）；原半透明黑玻璃胶囊会让
+   14px 副标题「近黑字压在偏亮蓝底」仅 ~3.13:1（<4.5）。改为浅色胶囊承托近黑字，
+   既保持标题/副标题同为深字的一致性，又给足对比度（约 15:1+）。 */
+[data-theme="dark"] .hero__sub {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: rgba(255, 255, 255, 0.7);
+  color: #0B1220;
 }
 .hero__actions {
   margin-top: var(--sp-4);
@@ -3278,15 +3290,15 @@
   font-size: 13px;
   font-weight: 600;
   color: #fff;
-  background: rgba(255, 255, 255, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(15, 28, 56, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.34);
   border-radius: 12px;
   padding: 10px 12px;
   backdrop-filter: blur(4px);
   transition: transform var(--t-base) var(--ease-out), background var(--t-base) var(--ease-out);
 }
 .auth-value:hover {
-  background: rgba(255, 255, 255, 0.28);
+  background: rgba(15, 28, 56, 0.92);
   transform: translateY(-2px);
 }
 .auth-value__ico {
@@ -3913,6 +3925,13 @@
   font-size: 13px;
   opacity: 0.92;
   margin-top: 4px;
+}
+/* 暗色下 --brand 提亮（tonal 按钮用），但「会员 hero」这类白字区块若沿用提亮蓝会变浅、
+   白字对比度跌破 AA。故显式锁定为深蓝渐变，保证白字 >= 4.5:1。
+   （注意：通用 .hero 不能整体覆盖——多数 .hero 在暗色下自带深底/深字，
+   强制深蓝会反成「深字压深蓝」；仅会员页 .mem-hero 是白字区块，单独锁定。） */
+[data-theme="dark"] .mem-hero {
+  background: linear-gradient(135deg, #0E2A57 0%, #1B4FB5 100%);
 }
 .mem-hero__props {
   display: flex;

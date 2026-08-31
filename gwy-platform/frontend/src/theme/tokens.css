@@ -43,7 +43,7 @@
   --success-rgb: 26, 155, 87;
 
   /* ===== 品牌渐变（header logo / fab / hero / 主按钮统一复用）===== */
-  --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #3b7bf0 100%);
+  --grad-brand: linear-gradient(135deg, var(--brand) 0%, #2f6be0 60%, #2a64d6 100%);
   --grad-brand-soft: linear-gradient(135deg, #eef3ff 0%, #f7f9ff 100%);
   --grad-success: linear-gradient(135deg, #15a05c 0%, #2ec07d 100%); /* 成功/正向主操作渐变（与 --grad-brand 同款质感）*/
 
