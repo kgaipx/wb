@@ -412,17 +412,26 @@ export default function Profile() {
       <Reveal delay={480}>
       <div className="card" style={{ marginTop: 12 }}>
         <strong>账号安全</strong>
-        <div className="field-label" style={{ marginTop: 8 }}>原密码</div>
-        <input className="input" type="password" value={pwdOld} onChange={(e) => setPwdOld(e.target.value)} placeholder="请输入原密码" />
-        <div className="field-label" style={{ marginTop: 8 }}>新密码</div>
-        <input className="input" type="password" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} placeholder="至少 6 位" />
-        <div className="field-label" style={{ marginTop: 8 }}>确认新密码</div>
-        <input className="input" type="password" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} placeholder="再次输入新密码" />
-        {pwdErr && <div className="err-text" style={{ marginTop: 6 }}>{pwdErr}</div>}
-        {pwdOk && <div className="ok-text" style={{ marginTop: 6 }}>{pwdOk}</div>}
-        <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={pwdBusy} onClick={changePwd}>
-          {pwdBusy ? "修改中…" : "修改密码"}
-        </button>
+        {/* 表单化：密码框包进 <form>，消除 Chrome「Password field is not contained in a
+            form」告警（密码管理器/自动填充依赖此结构），回车提交改走原生 onSubmit。 */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            changePwd();
+          }}
+        >
+          <div className="field-label" style={{ marginTop: 8 }}>原密码</div>
+          <input className="input" type="password" value={pwdOld} onChange={(e) => setPwdOld(e.target.value)} placeholder="请输入原密码" />
+          <div className="field-label" style={{ marginTop: 8 }}>新密码</div>
+          <input className="input" type="password" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} placeholder="至少 6 位" />
+          <div className="field-label" style={{ marginTop: 8 }}>确认新密码</div>
+          <input className="input" type="password" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} placeholder="再次输入新密码" />
+          {pwdErr && <div className="err-text" style={{ marginTop: 6 }}>{pwdErr}</div>}
+          {pwdOk && <div className="ok-text" style={{ marginTop: 6 }}>{pwdOk}</div>}
+          <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={pwdBusy}>
+            {pwdBusy ? "修改中…" : "修改密码"}
+          </button>
+        </form>
       </div>
       </Reveal>
 

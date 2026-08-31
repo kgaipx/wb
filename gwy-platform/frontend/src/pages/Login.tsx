@@ -138,60 +138,67 @@ export default function Login() {
 
         {mode !== "forgot" && (
           <>
-            <div className="field-label" style={{ marginTop: 14 }}>邮箱</div>
-            <input
-              className="input"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && submit()}
-            />
-
-            {mode === "register" && (
-              <>
-                <div className="field-label" style={{ marginTop: 10 }}>昵称（可选）</div>
-                <input
-                  className="input"
-                  placeholder="如何称呼你"
-                  value={nickname}
-                  onChange={(e) => setNickname(e.target.value)}
-                />
-              </>
-            )}
-
-            <div className="field-label" style={{ marginTop: 10 }}>密码</div>
-            <div className="pwd-wrap">
+            {/* 表单化：密码框包进 <form>，消除 Chrome「Password field is not contained in a
+                form」告警（密码管理器/自动填充依赖此结构），回车提交改走原生 onSubmit。 */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                submit();
+              }}
+            >
+              <div className="field-label" style={{ marginTop: 14 }}>邮箱</div>
               <input
                 className="input"
-                type={showPwd ? "text" : "password"}
-                autoComplete={mode === "login" ? "current-password" : "new-password"}
-                placeholder="至少 6 位"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && submit()}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <button type="button" className="pwd-eye" onClick={() => setShowPwd((v) => !v)} aria-label="切换密码可见">
-                {showPwd ? "隐藏" : "显示"}
+
+              {mode === "register" && (
+                <>
+                  <div className="field-label" style={{ marginTop: 10 }}>昵称（可选）</div>
+                  <input
+                    className="input"
+                    placeholder="如何称呼你"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                  />
+                </>
+              )}
+
+              <div className="field-label" style={{ marginTop: 10 }}>密码</div>
+              <div className="pwd-wrap">
+                <input
+                  className="input"
+                  type={showPwd ? "text" : "password"}
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  placeholder="至少 6 位"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button type="button" className="pwd-eye" onClick={() => setShowPwd((v) => !v)} aria-label="切换密码可见">
+                  {showPwd ? "隐藏" : "显示"}
+                </button>
+              </div>
+
+              {mode === "login" && (
+                <label className="check-row" style={{ marginTop: 10 }}>
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+                  <span>记住我（保持登录）</span>
+                </label>
+              )}
+
+              {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
+              {info && <div className="ok-text" style={{ marginTop: 8 }}>{info}</div>}
+
+              <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy}>
+                {busy && <Spinner size={15} />}
+                {busy ? "处理中…" : mode === "login" ? "登录" : "注册并登录"}
               </button>
-            </div>
-
-            {mode === "login" && (
-              <label className="check-row" style={{ marginTop: 10 }}>
-                <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                <span>记住我（保持登录）</span>
-              </label>
-            )}
-
-            {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
-            {info && <div className="ok-text" style={{ marginTop: 8 }}>{info}</div>}
-
-            <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy} onClick={submit}>
-              {busy && <Spinner size={15} />}
-              {busy ? "处理中…" : mode === "login" ? "登录" : "注册并登录"}
-            </button>
+            </form>
 
             {mode === "login" && (
               <div style={{ marginTop: 10, textAlign: "right" }}>
@@ -211,53 +218,67 @@ export default function Login() {
 
         {mode === "forgot" && (
           <>
-            <div className="field-label" style={{ marginTop: 14 }}>注册邮箱</div>
-            <input
-              className="input"
-              type="email"
-              inputMode="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && requestReset()}
-            />
-            <button className={"btn btn--ghost btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 12 }} disabled={busy} onClick={requestReset}>
-              {busy && <Spinner size={15} />}
-              获取重置令牌
-            </button>
-
-            <div className="field-label" style={{ marginTop: 14 }}>重置令牌</div>
-            <input
-              className="input"
-              placeholder="邮箱收到的令牌（开发模式自动填入）"
-              value={resetToken}
-              onChange={(e) => setResetToken(e.target.value)}
-            />
-
-            <div className="field-label" style={{ marginTop: 10 }}>新密码</div>
-            <div className="pwd-wrap">
+            {/* 找回密码拆成两个 form：邮箱段提交=获取令牌，令牌+新密码段提交=重置密码，
+                回车在各自段内触发对应动作，互不串扰。 */}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                requestReset();
+              }}
+            >
+              <div className="field-label" style={{ marginTop: 14 }}>注册邮箱</div>
               <input
                 className="input"
-                type={showPwd ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="至少 6 位"
-                value={newPwd}
-                onChange={(e) => setNewPwd(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && doReset()}
+                type="email"
+                inputMode="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <button type="button" className="pwd-eye" onClick={() => setShowPwd((v) => !v)} aria-label="切换密码可见">
-                {showPwd ? "隐藏" : "显示"}
+              <button className={"btn btn--ghost btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 12 }} disabled={busy}>
+                {busy && <Spinner size={15} />}
+                获取重置令牌
               </button>
-            </div>
+            </form>
 
-            {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
-            {info && <div className="ok-text" style={{ marginTop: 8 }}>{info}</div>}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                doReset();
+              }}
+            >
+              <div className="field-label" style={{ marginTop: 14 }}>重置令牌</div>
+              <input
+                className="input"
+                placeholder="邮箱收到的令牌（开发模式自动填入）"
+                value={resetToken}
+                onChange={(e) => setResetToken(e.target.value)}
+              />
 
-            <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy} onClick={doReset}>
-              {busy && <Spinner size={15} />}
-              {busy ? "处理中…" : "重置密码"}
-            </button>
+              <div className="field-label" style={{ marginTop: 10 }}>新密码</div>
+              <div className="pwd-wrap">
+                <input
+                  className="input"
+                  type={showPwd ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="至少 6 位"
+                  value={newPwd}
+                  onChange={(e) => setNewPwd(e.target.value)}
+                />
+                <button type="button" className="pwd-eye" onClick={() => setShowPwd((v) => !v)} aria-label="切换密码可见">
+                  {showPwd ? "隐藏" : "显示"}
+                </button>
+              </div>
+
+              {err && <div className="err-text" style={{ marginTop: 8 }}>{err}</div>}
+              {info && <div className="ok-text" style={{ marginTop: 8 }}>{info}</div>}
+
+              <button className={"btn btn--primary btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 14 }} disabled={busy}>
+                {busy && <Spinner size={15} />}
+                {busy ? "处理中…" : "重置密码"}
+              </button>
+            </form>
 
             <div className="auth-foot">
               <span><button className="link-btn" onClick={() => switchMode("login")}>返回登录</button></span>
