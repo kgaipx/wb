@@ -462,7 +462,7 @@ export default function Chat() {
         <textarea
           className="input"
           rows={1}
-          placeholder="问点什么，例如：资料分析怎么提速？"
+          placeholder="问公考问题，AI 私教即时回答…"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onFocus={(e) => {
