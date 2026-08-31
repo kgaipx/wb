@@ -3143,6 +3143,11 @@
   border-radius: 999px;
   box-shadow: 0 2px 6px rgba(27, 79, 181, 0.3);
 }
+/* 推荐卡片底色为品牌浅色（--brand-050），--text-3 在其上仅 4.35:1（低于 WCAG AA 4.5:1）；
+   改用 --text-2 提到 5.08:1，白底卡片仍沿用 --text-3 保持既有层级。 */
+.plan-card--hot .plan-card__period {
+  color: var(--text-2);
+}
 .plan-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--sh-md);
