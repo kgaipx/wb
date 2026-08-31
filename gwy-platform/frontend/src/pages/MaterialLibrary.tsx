@@ -145,6 +145,7 @@ const MATERIALS: Material[] = [
 
 const FAV_KEY = "gwy_material_favs";
 const MEM_KEY = "gwy_material_mem";
+const PAGE_SIZE = 15; // 移动端首屏避免 144 条全部渲染导致 .mat-list 1.5万px 过长
 
 function loadJSON<T>(key: string, fallback: T): T {
   try {
@@ -177,6 +178,12 @@ export default function MaterialLibrary() {
   const [favs, setFavs] = useState<string[]>(() => loadJSON(FAV_KEY, []));
   const [mem, setMem] = useState<Record<string, string[]>>(() => loadJSON(MEM_KEY, {}));
   const [randomId, setRandomId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+
+  // 筛选条件变化时回到第一页
+  useEffect(() => {
+    setPage(1);
+  }, [query, cat, onlyFav]);
 
   const memToday = mem[todayKey()] || [];
 
@@ -213,6 +220,22 @@ export default function MaterialLibrary() {
       return true;
     });
   }, [query, cat, onlyFav, favs]);
+
+  // 分页：避免 144 条卡片一次性渲染。
+  // 随机高亮项若在未加载页，将其顶到第一页可见区，保证「随机一条」跳转有效。
+  const visible = useMemo(() => {
+    let pool = filtered;
+    if (randomId) {
+      const idx = filtered.findIndex((m) => m.id === randomId);
+      if (idx >= 0 && idx >= page * PAGE_SIZE) {
+        pool = [filtered[idx], ...filtered.filter((m) => m.id !== randomId)];
+      }
+    }
+    return pool.slice(0, page * PAGE_SIZE);
+  }, [filtered, page, randomId]);
+  const showing = visible.length;
+  const totalFiltered = filtered.length;
+  const hasMore = showing < totalFiltered;
 
   // 随机一条（排除当前每日素材，提升新鲜感）
   function pickRandom() {
@@ -316,22 +339,33 @@ export default function MaterialLibrary() {
           <EmptyState tight icon="search" title="没有匹配的素材" desc="换个关键词，或清空筛选条件试试。" />
         </div>
       ) : (
-        <div className="mat-list">
-          {filtered.map((m, i) => (
-            <div id={"mat-" + m.id} key={m.id}>
-              <Reveal delay={Math.min(i, 8) * 40}>
-              <MaterialCard
-                m={m}
-                fav={favs.includes(m.id)}
-                memorized={memToday.includes(m.id)}
-                highlight={randomId === m.id}
-                onFav={() => toggleFav(m.id)}
-                onMem={() => toggleMem(m.id)}
-              />
-              </Reveal>
-            </div>
-          ))}
-        </div>
+        <>
+          <div className="mat-list">
+            {visible.map((m, i) => (
+              <div id={"mat-" + m.id} key={m.id}>
+                <Reveal delay={Math.min(i, 8) * 40}>
+                <MaterialCard
+                  m={m}
+                  fav={favs.includes(m.id)}
+                  memorized={memToday.includes(m.id)}
+                  highlight={randomId === m.id}
+                  onFav={() => toggleFav(m.id)}
+                  onMem={() => toggleMem(m.id)}
+                />
+                </Reveal>
+              </div>
+            ))}
+          </div>
+          {hasMore && (
+            <button
+              className="btn btn--ghost btn--block"
+              style={{ marginTop: 14 }}
+              onClick={() => setPage((p) => p + 1)}
+            >
+              加载更多 ({showing}/{totalFiltered} 条已展示)
+            </button>
+          )}
+        </>
       )}
 
       <div className="mat-foot muted">

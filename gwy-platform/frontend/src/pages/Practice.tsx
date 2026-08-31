@@ -12,7 +12,7 @@ import Reveal from "../components/Reveal";
 import { useToast } from "../components/ToastProvider";
 import { TargetIcon, SearchIcon, BrainIcon } from "../icons";
 
-const PAGE = 60;
+const PAGE = 20; // 移动端首屏 60 题导致 8000+px 过长，20 题更可控
 
 /** 学科 → 细分分类（题库 category 取值；政治理论为 2026 国考新增板块）。 */
 const CATEGORIES: Record<string, string[]> = {
