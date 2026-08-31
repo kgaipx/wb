@@ -4,7 +4,7 @@ import { api } from "../api/client";
 import type { NotificationOut } from "../api/client";
 import { notifMeta, formatNotifTime } from "../components/notifMeta";
 import Reveal from "../components/Reveal";
-import { PartyIcon } from "../icons";
+import EmptyState from "../components/EmptyState";
 
 const PAGE = 20;
 
@@ -114,13 +114,17 @@ export default function Notifications() {
           ))}
         </div>
       ) : items.length === 0 ? (
-        <div className="notif-empty notif-empty--page">
-          暂无通知，会员开通、测评完成等重要动态会在这里提醒你
-        </div>
+        <EmptyState
+          icon="inbox"
+          title="暂无通知"
+          desc="会员开通、测评完成等重要动态会在这里提醒你。"
+        />
       ) : view.length === 0 && filter === "unread" ? (
-        <div className="notif-empty notif-empty--page">
-          <span className="notif-empty__ico"><PartyIcon /></span>没有未读通知，所有提醒都已查看
-        </div>
+        <EmptyState
+          icon="check"
+          title="没有未读通知"
+          desc="所有提醒都已查看，你可以继续专注备考。"
+        />
       ) : (
         <>
           <div className="notif-list">
