@@ -420,12 +420,14 @@ export default function Profile() {
             changePwd();
           }}
         >
+          {/* 隐藏用户名框：满足 Chrome「密码表单应包含用户名字段」无障碍启发式，消除审计告警 */}
+          <input type="text" autoComplete="username" value={user?.email || ""} hidden readOnly />
           <div className="field-label" style={{ marginTop: 8 }}>原密码</div>
-          <input className="input" type="password" value={pwdOld} onChange={(e) => setPwdOld(e.target.value)} placeholder="请输入原密码" />
+          <input className="input" type="password" autoComplete="current-password" value={pwdOld} onChange={(e) => setPwdOld(e.target.value)} placeholder="请输入原密码" />
           <div className="field-label" style={{ marginTop: 8 }}>新密码</div>
-          <input className="input" type="password" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} placeholder="至少 6 位" />
+          <input className="input" type="password" autoComplete="new-password" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} placeholder="至少 6 位" />
           <div className="field-label" style={{ marginTop: 8 }}>确认新密码</div>
-          <input className="input" type="password" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} placeholder="再次输入新密码" />
+          <input className="input" type="password" autoComplete="new-password" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} placeholder="再次输入新密码" />
           {pwdErr && <div className="err-text" style={{ marginTop: 6 }}>{pwdErr}</div>}
           {pwdOk && <div className="ok-text" style={{ marginTop: 6 }}>{pwdOk}</div>}
           <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={pwdBusy}>
