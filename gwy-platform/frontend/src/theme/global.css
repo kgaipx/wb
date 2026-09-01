@@ -71,6 +71,33 @@ textarea {
   outline-offset: 2px;
 }
 
+/* 跳转主内容链接（WCAG 2.4.1 绕过区块）：键盘 Tab 首项聚焦时滑入，点击后焦点直达 #main-content，跳过侧栏/底栏导航 */
+.skip-link {
+  position: fixed;
+  left: 14px;
+  top: -64px;
+  z-index: 2000;
+  background: #0f1c38; /* 深蓝近黑，白字对比度 ~15:1，明暗主题均满足 AA（避免用 --brand 在暗色下偏亮导致 3.2 不达标）*/
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  transition: top 0.18s var(--ease-out);
+}
+.skip-link:focus {
+  top: 14px;
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* 路由切换后主内容区经 tabIndex=-1 接收程序化焦点，不应显示默认描边 */
+#main-content:focus,
+.app-main:focus {
+  outline: none;
+}
+
 /* 手机端（<680px）：App 面板铺满整屏，画布色与面板底色一致，避免出现无意义的色差边。
    680px 起进入平板/桌面模式，面板浮在 --bg-canvas 画布上并带投影。 */
 @media (max-width: 679px) {

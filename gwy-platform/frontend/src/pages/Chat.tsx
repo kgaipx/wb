@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { api, Ability, ChatMessage, ChatSession } from "../api/client";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import Markdown from "../components/Markdown";
 import CiteCards from "../components/CiteCards";
 import Spinner from "../components/Spinner";
@@ -30,6 +31,8 @@ export default function Chat() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const [drawer, setDrawer] = useState(false);
+  // 抽屉焦点陷阱：打开时焦点移入、Tab 循环、Esc 关闭、关闭后焦点归还
+  const drawerTrap = useFocusTrap<HTMLDivElement>(drawer, () => setDrawer(false));
   const [confirmId, setConfirmId] = useState<number | null>(null);
   const [editId, setEditId] = useState<number | null>(null);
   const [editText, setEditText] = useState("");
@@ -242,7 +245,7 @@ export default function Chat() {
 
       {/* 会话抽屉：历史切换 / 删除 */}
       {drawer && (
-        <div className="chat-drawer" onClick={() => setDrawer(false)}>
+        <div className="chat-drawer" ref={drawerTrap} tabIndex={-1} onClick={() => setDrawer(false)}>
           <div className="chat-drawer__panel" onClick={(e) => e.stopPropagation()}>
             <div className="chat-drawer__head">
               <strong>历史对话</strong>

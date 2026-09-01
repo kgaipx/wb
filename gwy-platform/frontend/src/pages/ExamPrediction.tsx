@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import { LineChart } from "../components/LineChart";
 import { PenIcon, PinIcon, LightbulbIcon, TargetIcon } from "../icons";
 
@@ -124,6 +125,9 @@ export default function ExamPrediction() {
   const [revFilter, setRevFilter] = useState<"all" | "wrong" | "unans">("all");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  // 浮层焦点陷阱：答题卡 / 交卷确认均为打开时焦点移入、Tab 循环、Esc 关闭、关闭后焦点归还
+  const paletteTrap = useFocusTrap<HTMLDivElement>(paletteOpen, () => setPaletteOpen(false));
+  const confirmTrap = useFocusTrap<HTMLDivElement>(confirmSubmit, () => setConfirmSubmit(false));
   const [hist, setHist] = useState<any[]>([]); // 模考历史（用于趋势）
   const [histLoading, setHistLoading] = useState(false);
   const timerRef = useRef<number | null>(null);
@@ -484,7 +488,7 @@ export default function ExamPrediction() {
         {/* 答题卡：题号网格，三态跳转 */}
         {paletteOpen && (
           <div className="pred-palette" onClick={() => setPaletteOpen(false)}>
-            <div className="pred-palette__sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="pred-palette__sheet" ref={paletteTrap} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
               <div className="pred-palette__head">
                 <span>答题卡</span>
                 <button className="pred-palette__close" onClick={() => setPaletteOpen(false)} aria-label="关闭">✕</button>
@@ -515,7 +519,7 @@ export default function ExamPrediction() {
         {/* 交卷二次确认 */}
         {confirmSubmit && (
           <div className="pred-confirm" onClick={() => setConfirmSubmit(false)}>
-            <div className="pred-confirm__sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="pred-confirm__sheet" ref={confirmTrap} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
               <div className="pred-confirm__title">确认交卷？</div>
               <div className="pred-confirm__body muted">
                 还有 <b>{paper.length - answeredCount}</b> 题未作答，交卷后未答题将不计分（按答错计）。

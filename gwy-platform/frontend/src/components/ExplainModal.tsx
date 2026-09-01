@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Question, Citation } from "../api/client";
+import { useFocusTrap } from "../hooks/useFocusTrap";
 import CiteCards from "./CiteCards";
 import Markdown from "./Markdown";
 import Spinner from "./Spinner";
@@ -76,19 +77,14 @@ export default function ExplainModal({
     };
   }, [questionId]);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  // 焦点陷阱：打开时焦点移入、Tab 循环、Esc 关闭、关闭后焦点归还触发元素
+  const trapRef = useFocusTrap<HTMLDivElement>(questionId != null, onClose);
 
   if (questionId == null) return null;
 
   return (
     <div className="explain-mask" onClick={onClose}>
-      <div className="explain-modal" onClick={(e) => e.stopPropagation()}>
+      <div className="explain-modal" ref={trapRef} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
         <div className="explain-modal__head">
           <div className="q-item__meta">
             {q && (

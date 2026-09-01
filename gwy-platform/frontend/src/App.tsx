@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import type { AnimationEvent as ReactAnimationEvent } from "react";
 import { Routes, Route, NavLink, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth";
@@ -306,6 +306,11 @@ function AppShell() {
   // 实现类原生 App 的从容淡入淡出（离场时旧页面不卸载，到位后瞬时切换为新页面）。
   const [displayLocation, setDisplayLocation] = useState(loc);
   const [stage, setStage] = useState<"in" | "out">("in");
+  const mainRef = useRef<HTMLElement>(null);
+  // 路由切换后，把键盘焦点移到主内容区首部，避免焦点残留在导航链接上（SPA 无障碍标准做法）
+  const focusMain = () => {
+    mainRef.current?.focus({ preventScroll: true });
+  };
   useEffect(() => {
     if (loc.pathname === displayLocation.pathname) return;
     const reduce =
@@ -316,6 +321,7 @@ function AppShell() {
       setDisplayLocation(loc);
       window.scrollTo(0, 0);
       setStage("in");
+      focusMain();
       return;
     }
     setStage("out");
@@ -326,6 +332,7 @@ function AppShell() {
       setDisplayLocation(loc);
       window.scrollTo(0, 0);
       setStage("in");
+      focusMain();
     }
   };
   const { user } = useAuth();
@@ -489,6 +496,7 @@ function AppShell() {
 
   return (
     <div className="app-shell">
+      <a href="#main-content" className="skip-link">跳到主内容</a>
       {!isAuth && (
         <header className="app-header">
           <div className="app-header__logo">公</div>
@@ -657,7 +665,7 @@ function AppShell() {
         </aside>
       )}
 
-      <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
+      <main id="main-content" ref={mainRef} tabIndex={-1} className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
         <ErrorBoundary>
           <div className={"route-anim route-anim--" + stage} onAnimationEnd={onRouteAnimEnd}>
           <Routes location={displayLocation}>
