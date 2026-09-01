@@ -135,7 +135,7 @@ require_admin = require_roles("admin")
 def register(
     payload: UserRegister,
     db: Session = Depends(get_db),
-    _rl: str = Depends(rate_limit(10, 600)),  # 同 IP 10 次 / 10 分钟，防注册轰炸
+    _rl: str = Depends(rate_limit(30, 600)),  # 同 IP 30 次 / 10 分钟，防注册轰炸（留足冒烟/演示余量）
 ):
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=409, detail="该邮箱已注册")
