@@ -6,7 +6,7 @@ WBS 3.1 私教、3.2 自适应(含能力测评)、4.1 申论批改（/ai）、4.
 """
 from fastapi import APIRouter
 
-from app.api.routes import admin, ai, assessment, auth, billing, chat, content, exam, notification, question_bank, student
+from app.api.routes import admin, ai, assessment, auth, billing, chat, compliance, content, exam, notification, question_bank, student
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -20,6 +20,7 @@ api_router.include_router(content.router, prefix="/content", tags=["content"])
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
 api_router.include_router(assessment.router, prefix="/assessment", tags=["assessment"])
 api_router.include_router(notification.router, prefix="/notifications", tags=["notifications"])
+api_router.include_router(compliance.router, prefix="/compliance", tags=["compliance"])
 
 
 @api_router.get("/ping", tags=["system"])

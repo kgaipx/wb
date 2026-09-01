@@ -52,6 +52,14 @@ export default function Profile() {
   const [pwdSubmitted, setPwdSubmitted] = useState(false);
   const [profileSubmitted, setProfileSubmitted] = useState(false);
 
+  // —— 合规（PIPL 45/47）：数据导出 + 账号注销 ——
+  const [expBusy, setExpBusy] = useState(false);
+  const [expErr, setExpErr] = useState("");
+  const [delOpen, setDelOpen] = useState(false); // 注销确认展开
+  const [delPwd, setDelPwd] = useState("");
+  const [delBusy, setDelBusy] = useState(false);
+  const [delErr, setDelErr] = useState("");
+
   // 受控字段校验控制器：失焦 / 提交后即时标红 + 内联错误，错误随输入实时变化
   const pwdOldErr = useField({ value: pwdOld, validate: (v) => (v.length === 0 ? "请输入原密码" : null), submitted: pwdSubmitted });
   const pwdNewErr = useField({ value: pwdNew, validate: (v) => (v.length < 6 ? "新密码至少 6 位" : null), submitted: pwdSubmitted });
@@ -517,6 +525,63 @@ export default function Profile() {
             {pwdBusy ? "修改中…" : "修改密码"}
           </button>
         </form>
+      </div>
+      </Reveal>
+
+      {/* 账号与数据（PIPL 45/47：查阅复制 + 删除注销） */}
+      <Reveal delay={500}>
+      <div className="card" style={{ marginTop: 12 }}>
+        <div style={{ fontSize: 14, fontWeight: 600 }}>账号与数据</div>
+        <div className="muted" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.7 }}>
+          依据《个人信息保护法》，您可随时导出本平台存储的全部个人信息，或注销账号并删除学习数据。
+        </div>
+        <button className="btn btn--ghost btn--block" style={{ marginTop: 10 }} disabled={expBusy}
+          onClick={async () => {
+            setExpBusy(true); setExpErr("");
+            try { await api.exportMyData(); } catch (e: any) { setExpErr(e.message || "导出失败"); }
+            finally { setExpBusy(false); }
+          }}>
+          {expBusy ? "导出中…" : "导出我的数据（JSON）"}
+        </button>
+        {expErr && <div className="err-text" style={{ fontSize: 12, marginTop: 6 }}>{expErr}</div>}
+
+        {!delOpen ? (
+          <button className="btn btn--ghost btn--block" style={{ marginTop: 8, color: "var(--danger, #d92b1c)" }}
+            onClick={() => { setDelOpen(true); setDelErr(""); setDelPwd(""); }}>
+            注销账号
+          </button>
+        ) : (
+          <div style={{ marginTop: 10, padding: 12, borderRadius: 10, border: "1px solid var(--danger, #d92b1c)" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: "var(--danger, #d92b1c)" }}>
+              ⚠️ 注销不可恢复
+            </div>
+            <div className="muted" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.7 }}>
+              将立即删除您的答题、聊天、收藏、测评、模考等全部学习数据并匿名化账号；
+              订单财务记录依法规留存（已与身份信息脱钩）。请输入登录密码确认。
+            </div>
+            <input className="input" type="password" style={{ marginTop: 8 }} placeholder="登录密码"
+              value={delPwd} onChange={e => { setDelPwd(e.target.value); setDelErr(""); }} />
+            <div className="row" style={{ gap: 8, marginTop: 8 }}>
+              <button className="btn btn--danger btn--sm" disabled={delBusy || !delPwd}
+                onClick={async () => {
+                  setDelBusy(true); setDelErr("");
+                  try {
+                    await api.deactivateAccount(delPwd);
+                    logout();
+                    nav("/login");
+                  } catch (e: any) {
+                    setDelErr(e.message || "注销失败");
+                  } finally { setDelBusy(false); }
+                }}>
+                {delBusy ? "注销中…" : "确认注销"}
+              </button>
+              <button className="btn btn--ghost btn--sm" disabled={delBusy} onClick={() => setDelOpen(false)}>
+                取消
+              </button>
+            </div>
+            {delErr && <div className="err-text" style={{ fontSize: 12, marginTop: 6 }}>{delErr}</div>}
+          </div>
+        )}
       </div>
       </Reveal>
 

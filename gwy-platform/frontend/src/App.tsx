@@ -32,6 +32,7 @@ const MaterialLibrary = lazy(() => import("./pages/MaterialLibrary"));
 const SmartReinforcement = lazy(() => import("./pages/SmartReinforcement"));
 const ExamPrediction = lazy(() => import("./pages/ExamPrediction"));
 const Flashcards = lazy(() => import("./pages/Flashcards"));
+const Legal = lazy(() => import("./pages/Legal"));
 import { getStoredMode, resolveTheme, applyTheme, setMode, watchSystem, type ThemeMode } from "./theme/theme";
 
 type Icon = () => JSX.Element;
@@ -693,6 +694,8 @@ function AppShell() {
           <Routes location={displayLocation}>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/privacy" element={<Legal kind="privacy" />} />
+            <Route path="/terms" element={<Legal kind="terms" />} />
             <Route path="/learn" element={<RequireAuth><Learn /></RequireAuth>} />
             <Route path="/practice" element={<RequireAuth><Practice /></RequireAuth>} />
             <Route path="/exam" element={<RequireAuth><Exam /></RequireAuth>} />

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth";
 import { UserIcon, RobotIcon, PenIcon, ChartIcon, RepeatIcon } from "../icons";
 import { api } from "../api/client";
@@ -246,6 +246,15 @@ export default function Login() {
                 {busy ? "处理中…" : mode === "login" ? "登录" : "注册并登录"}
               </button>
             </form>
+
+            {mode === "register" && (
+              <div className="muted" style={{ fontSize: 12, marginTop: 10, lineHeight: 1.7 }}>
+                注册即代表您已阅读并同意
+                <Link to="/terms" style={{ margin: "0 3px" }}>《用户服务协议》</Link>和
+                <Link to="/privacy" style={{ margin: "0 3px" }}>《隐私政策》</Link>。
+                平台仅收集备考必需信息，支持随时导出或注销删除（见「我的 → 账号与数据」）。
+              </div>
+            )}
 
             {mode === "login" && (
               <div style={{ marginTop: 10, textAlign: "right" }}>

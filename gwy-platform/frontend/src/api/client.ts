@@ -726,6 +726,27 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ old_password, new_password }),
     }),
+  // —— 合规（PIPL 第 45/47 条）：数据导出 + 账号注销 ——
+  exportMyData: async () => {
+    const token = localStorage.getItem("access_token");
+    const res = await fetch(`${BASE}/compliance/export`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+    if (!res.ok) throw new Error("导出失败，请稍后重试");
+    const blob = await res.blob();
+    const cd = res.headers.get("Content-Disposition") || "";
+    const m = cd.match(/filename="([^"]+)"/);
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = m ? m[1] : "gwy_export.json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  },
+  deactivateAccount: (password: string) =>
+    request<{ ok: boolean; message: string }>("/compliance/deactivate", {
+      method: "POST",
+      body: JSON.stringify({ password }),
+    }),
   // 账号找回 / 密码重置（WBS 2.1 安全）；开发模式 forgotPassword 会返回 dev_token
   forgotPassword: (email: string) =>
     request<{ ok: boolean; dev_token?: string; message: string }>("/auth/forgot-password", {
