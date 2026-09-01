@@ -14,6 +14,8 @@ html {
   color-scheme: light;
   /* iOS 滚动回弹 + 惯性滚动（现代 WebView 默认即有，显式声明更稳）*/
   -webkit-overflow-scrolling: touch;
+  /* 锚点 / window.scrollTo({behavior:'smooth'}) 具备原生顺滑滚动 */
+  scroll-behavior: smooth;
 }
 
 html,
@@ -81,6 +83,17 @@ textarea {
 ::selection {
   background: var(--brand-050);
   color: var(--brand-700);
+}
+
+/* ===== 占位符与光标统一为品牌/次文本色，避免浏览器默认灰色参差不齐 ===== */
+::placeholder {
+  color: var(--text-3);
+  opacity: 1;
+}
+input,
+textarea,
+[contenteditable="true"] {
+  caret-color: var(--brand);
 }
 
 /* ===== 滚动条（细窄、中性色，营造原生 App 质感）===== */
