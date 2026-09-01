@@ -91,6 +91,8 @@ class EssayModelOut(BaseModel):
     key_points: list[str] = []  # 高分要点
     offline: bool = False  # True 表示 LLM 不可用时走了降级提示
 
+    model_config = {"protected_namespaces": ()}  # model_essay 字段与 pydantic "model_" 保护前缀冲突，禁用告警
+
 
 class EssayGap(BaseModel):
     """单维度差距点评：维度名 + 该维度考生与范文的具体差距说明。"""
@@ -107,6 +109,8 @@ class EssayCompareIn(BaseModel):
     model_essay: str | None = None  # 可选：前端已生成范文则直接传入，省一次生成
     student_dimensions: dict | None = None  # 可选：前端已有批改维度则传入，避免重复评分漂移
     student_total: float | None = None
+
+    model_config = {"protected_namespaces": ()}  # model_essay 字段与 pydantic "model_" 保护前缀冲突，禁用告警
 
 
 class EssayCompareOut(BaseModel):
