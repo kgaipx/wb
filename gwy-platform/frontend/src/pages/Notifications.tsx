@@ -6,12 +6,14 @@ import { notifMeta, formatNotifTime } from "../components/notifMeta";
 import Reveal from "../components/Reveal";
 import EmptyState from "../components/EmptyState";
 import ErrorState from "../components/ErrorState";
+import { useToast } from "../components/ToastProvider";
 
 const PAGE = 20;
 
 /** 通知中心独立页：完整列表 + 分页加载更多 + 单条/全部已读 + 深链跳转。 */
 export default function Notifications() {
   const nav = useNavigate();
+  const toast = useToast();
   const [items, setItems] = useState<NotificationOut[]>([]);
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -67,8 +69,8 @@ export default function Notifications() {
         );
         // 回写顶部铃铛角标（App 监听此事件重新拉取未读真值）
         window.dispatchEvent(new Event("notif-changed"));
-      } catch {
-        /* ignore */
+      } catch (e: any) {
+        toast.error(e?.message || "标记已读失败，请稍后重试");
       }
     }
     if (n.link) nav(n.link);
@@ -81,8 +83,8 @@ export default function Notifications() {
       setItems((list) => list.map((x) => ({ ...x, is_read: true })));
       // 回写顶部铃铛角标（App 监听此事件重新拉取未读真值）
       window.dispatchEvent(new Event("notif-changed"));
-    } catch {
-      /* ignore */
+    } catch (e: any) {
+      toast.error(e?.message || "全部标为已读失败，请稍后重试");
     }
   };
 
