@@ -4,6 +4,7 @@ import { useAuth } from "../auth";
 import { UserIcon, RobotIcon, PenIcon, ChartIcon, RepeatIcon } from "../icons";
 import { api } from "../api/client";
 import Spinner from "../components/Spinner";
+import { useField } from "../hooks/useField";
 
 type Mode = "login" | "register" | "forgot";
 
@@ -22,10 +23,22 @@ export default function Login() {
   const [err, setErr] = useState("");
   const [info, setInfo] = useState("");
   const [busy, setBusy] = useState(false);
+  // 表单级「已提交」信号：首次提交后置 true，此后字段错误立即显示并随输入实时更新
+  const [mainSubmitted, setMainSubmitted] = useState(false);
+  const [resetSubmitted, setResetSubmitted] = useState(false);
+  const [doResetSubmitted, setDoResetSubmitted] = useState(false);
 
   // 找回密码流程状态
   const [resetToken, setResetToken] = useState("");
   const [newPwd, setNewPwd] = useState("");
+
+  // 受控字段校验控制器：失焦 / 提交后即时标红 + 内联错误，错误随输入实时变化
+  const emailErr = useField({ value: email, validate: (v) => (!EMAIL_RE.test(v.trim()) ? "请输入有效的邮箱地址" : null), submitted: mainSubmitted });
+  const pwdErr = useField({ value: password, validate: (v) => (v.length < 6 ? "密码至少 6 位" : null), submitted: mainSubmitted });
+  const nickErr = useField({ value: nickname, validate: (v) => (v.trim().length > 20 ? "昵称过长（≤20 字）" : null), submitted: mainSubmitted });
+  const frEmailErr = useField({ value: email, validate: (v) => (!EMAIL_RE.test(v.trim()) ? "请输入有效的邮箱地址" : null), submitted: resetSubmitted });
+  const tokenErr = useField({ value: resetToken, validate: (v) => (v.trim().length < 8 ? "请输入重置令牌" : null), submitted: doResetSubmitted });
+  const frPwdErr = useField({ value: newPwd, validate: (v) => (v.length < 6 ? "新密码至少 6 位" : null), submitted: doResetSubmitted });
 
   // 登录来源页（被路由守卫拦截后跳转回来）
   const from = (loc.state as any)?.from || "/";
@@ -38,11 +51,12 @@ export default function Login() {
   }
 
   async function submit() {
+    setMainSubmitted(true);
     setErr("");
     setInfo("");
     const ve = validate();
     if (ve) {
-      setErr(ve);
+      // 客户端错误已通过字段内联 .field-error 展示，这里仅做提交拦截
       return;
     }
     setBusy(true);
@@ -61,10 +75,11 @@ export default function Login() {
   }
 
   async function requestReset() {
+    setResetSubmitted(true);
     setErr("");
     setInfo("");
-    if (!EMAIL_RE.test(email)) {
-      setErr("请输入有效的邮箱地址");
+    if (!EMAIL_RE.test(email.trim())) {
+      // 邮箱错误已由 frEmailErr 内联展示，这里仅拦截提交
       return;
     }
     setBusy(true);
@@ -80,14 +95,15 @@ export default function Login() {
   }
 
   async function doReset() {
+    setDoResetSubmitted(true);
     setErr("");
     setInfo("");
     if (resetToken.trim().length < 8) {
-      setErr("请输入重置令牌");
+      // 令牌错误已由 tokenErr 内联展示，仅拦截提交
       return;
     }
     if (newPwd.length < 6) {
-      setErr("新密码至少 6 位");
+      // 新密码错误已由 frPwdErr 内联展示，仅拦截提交
       return;
     }
     setBusy(true);
@@ -109,6 +125,10 @@ export default function Login() {
     setMode(m);
     setErr("");
     setInfo("");
+    // 切换模式时重置各表单的「已提交」信号，避免上一模式残留的标红带到新模式
+    setMainSubmitted(false);
+    setResetSubmitted(false);
+    setDoResetSubmitted(false);
   }
 
   return (
@@ -148,41 +168,68 @@ export default function Login() {
             >
               <div className="field-label" style={{ marginTop: 14 }}>邮箱</div>
               <input
-                className="input"
+                className={"input" + (emailErr.invalid ? " is-invalid" : "")}
                 type="email"
                 inputMode="email"
                 autoComplete="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={emailErr.onBlur}
+                aria-invalid={emailErr.invalid || undefined}
+                aria-describedby={emailErr.describedBy}
               />
+              {emailErr.invalid && (
+                <div id={emailErr.describedBy} className="field-error" role="alert">
+                  <span className="field-error__ico" aria-hidden="true">!</span>
+                  <span>{emailErr.error}</span>
+                </div>
+              )}
 
               {mode === "register" && (
                 <>
                   <div className="field-label" style={{ marginTop: 10 }}>昵称（可选）</div>
                   <input
-                    className="input"
+                    className={"input" + (nickErr.invalid ? " is-invalid" : "")}
                     placeholder="如何称呼你"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
+                    onBlur={nickErr.onBlur}
+                    aria-invalid={nickErr.invalid || undefined}
+                    aria-describedby={nickErr.describedBy}
                   />
+                  {nickErr.invalid && (
+                    <div id={nickErr.describedBy} className="field-error" role="alert">
+                      <span className="field-error__ico" aria-hidden="true">!</span>
+                      <span>{nickErr.error}</span>
+                    </div>
+                  )}
                 </>
               )}
 
               <div className="field-label" style={{ marginTop: 10 }}>密码</div>
               <div className="pwd-wrap">
                 <input
-                  className="input"
+                  className={"input" + (pwdErr.invalid ? " is-invalid" : "")}
                   type={showPwd ? "text" : "password"}
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
                   placeholder="至少 6 位"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onBlur={pwdErr.onBlur}
+                  aria-invalid={pwdErr.invalid || undefined}
+                  aria-describedby={pwdErr.describedBy}
                 />
                 <button type="button" className="pwd-eye" onClick={() => setShowPwd((v) => !v)} aria-label="切换密码可见">
                   {showPwd ? "隐藏" : "显示"}
                 </button>
               </div>
+              {pwdErr.invalid && (
+                <div id={pwdErr.describedBy} className="field-error" role="alert">
+                  <span className="field-error__ico" aria-hidden="true">!</span>
+                  <span>{pwdErr.error}</span>
+                </div>
+              )}
 
               {mode === "login" && (
                 <label className="check-row" style={{ marginTop: 10 }}>
@@ -228,14 +275,23 @@ export default function Login() {
             >
               <div className="field-label" style={{ marginTop: 14 }}>注册邮箱</div>
               <input
-                className="input"
+                className={"input" + (frEmailErr.invalid ? " is-invalid" : "")}
                 type="email"
                 inputMode="email"
                 autoComplete="email"
                 placeholder="you@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                onBlur={frEmailErr.onBlur}
+                aria-invalid={frEmailErr.invalid || undefined}
+                aria-describedby={frEmailErr.describedBy}
               />
+              {frEmailErr.invalid && (
+                <div id={frEmailErr.describedBy} className="field-error" role="alert">
+                  <span className="field-error__ico" aria-hidden="true">!</span>
+                  <span>{frEmailErr.error}</span>
+                </div>
+              )}
               <button className={"btn btn--ghost btn--block" + (busy ? " btn--loading" : "")} style={{ marginTop: 12 }} disabled={busy}>
                 {busy && <Spinner size={15} />}
                 获取重置令牌
@@ -250,21 +306,33 @@ export default function Login() {
             >
               <div className="field-label" style={{ marginTop: 14 }}>重置令牌</div>
               <input
-                className="input"
+                className={"input" + (tokenErr.invalid ? " is-invalid" : "")}
                 placeholder="邮箱收到的令牌（开发模式自动填入）"
                 value={resetToken}
                 onChange={(e) => setResetToken(e.target.value)}
+                onBlur={tokenErr.onBlur}
+                aria-invalid={tokenErr.invalid || undefined}
+                aria-describedby={tokenErr.describedBy}
               />
+              {tokenErr.invalid && (
+                <div id={tokenErr.describedBy} className="field-error" role="alert">
+                  <span className="field-error__ico" aria-hidden="true">!</span>
+                  <span>{tokenErr.error}</span>
+                </div>
+              )}
 
               <div className="field-label" style={{ marginTop: 10 }}>新密码</div>
               <div className="pwd-wrap">
                 <input
-                  className="input"
+                  className={"input" + (frPwdErr.invalid ? " is-invalid" : "")}
                   type={showPwd ? "text" : "password"}
                   autoComplete="new-password"
                   placeholder="至少 6 位"
                   value={newPwd}
                   onChange={(e) => setNewPwd(e.target.value)}
+                  onBlur={frPwdErr.onBlur}
+                  aria-invalid={frPwdErr.invalid || undefined}
+                  aria-describedby={frPwdErr.describedBy}
                 />
                 <button type="button" className="pwd-eye" onClick={() => setShowPwd((v) => !v)} aria-label="切换密码可见">
                   {showPwd ? "隐藏" : "显示"}

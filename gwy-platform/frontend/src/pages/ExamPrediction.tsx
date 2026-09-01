@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, Question } from "../api/client";
 import { useFocusTrap } from "../hooks/useFocusTrap";
+import { useField } from "../hooks/useField";
 import { LineChart } from "../components/LineChart";
 import { PenIcon, PinIcon, LightbulbIcon, TargetIcon } from "../icons";
 
@@ -125,6 +126,18 @@ export default function ExamPrediction() {
   const [revFilter, setRevFilter] = useState<"all" | "wrong" | "unans">("all");
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [confirmSubmit, setConfirmSubmit] = useState(false);
+  const [lineSubmitted, setLineSubmitted] = useState(false);
+  // 进面线为影响预测结果的关键输入，失焦 / 提交后即时内联校验
+  const lineErr = useField({
+    value: String(line),
+    validate: (v) => {
+      const n = Number(v);
+      if (!v || isNaN(n) || n < 1) return "进面线需 ≥ 1 分";
+      if (n > 200) return "进面线需 ≤ 200 分";
+      return null;
+    },
+    submitted: lineSubmitted,
+  });
   // 浮层焦点陷阱：答题卡 / 交卷确认均为打开时焦点移入、Tab 循环、Esc 关闭、关闭后焦点归还
   const paletteTrap = useFocusTrap<HTMLDivElement>(paletteOpen, () => setPaletteOpen(false));
   const confirmTrap = useFocusTrap<HTMLDivElement>(confirmSubmit, () => setConfirmSubmit(false));
@@ -145,6 +158,11 @@ export default function ExamPrediction() {
   }
 
   async function startExam() {
+    setLineSubmitted(true);
+    if (line < 1 || line > 200) {
+      // 进面线错误已由 lineErr 内联展示，仅拦截组卷
+      return;
+    }
     setBuilding(true);
     setErr("");
     try {
@@ -386,7 +404,23 @@ export default function ExamPrediction() {
         <div className="card pred-params">
           <div className="pred-param">
             <label>目标进面线（总分）</label>
-            <input type="number" value={line} min={0} max={200} onChange={(e) => setLine(Number(e.target.value) || 0)} />
+            <input
+              type="number"
+              value={line}
+              min={0}
+              max={200}
+              className={"input" + (lineErr.invalid ? " is-invalid" : "")}
+              onChange={(e) => setLine(Number(e.target.value) || 0)}
+              onBlur={lineErr.onBlur}
+              aria-invalid={lineErr.invalid || undefined}
+              aria-describedby={lineErr.describedBy}
+            />
+            {lineErr.invalid && (
+              <div id={lineErr.describedBy} className="field-error" role="alert">
+                <span className="field-error__ico" aria-hidden="true">!</span>
+                <span>{lineErr.error}</span>
+              </div>
+            )}
           </div>
           <div className="pred-param">
             <label>申论基准分：<b>{essay}</b></label>

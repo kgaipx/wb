@@ -8,6 +8,7 @@ import { EssayCompareCard } from "../components/EssayCompareCard";
 import Markdown from "../components/Markdown";
 import Reveal from "../components/Reveal";
 import CountUp from "../components/CountUp";
+import { useField } from "../hooks/useField";
 import { parseWordTarget, wordStatus, countEssayChars } from "../utils/essayWord";
 import { PenIcon, ChartIcon } from "../icons";
 
@@ -47,6 +48,23 @@ export default function Profile() {
   const [pwdBusy, setPwdBusy] = useState(false);
   const [pwdOk, setPwdOk] = useState("");
   const [pwdErr, setPwdErr] = useState("");
+  // 表单级「已提交」信号：首次提交后置 true，字段错误立即显示并随输入实时更新
+  const [pwdSubmitted, setPwdSubmitted] = useState(false);
+  const [profileSubmitted, setProfileSubmitted] = useState(false);
+
+  // 受控字段校验控制器：失焦 / 提交后即时标红 + 内联错误，错误随输入实时变化
+  const pwdOldErr = useField({ value: pwdOld, validate: (v) => (v.length === 0 ? "请输入原密码" : null), submitted: pwdSubmitted });
+  const pwdNewErr = useField({ value: pwdNew, validate: (v) => (v.length < 6 ? "新密码至少 6 位" : null), submitted: pwdSubmitted });
+  const pwdConfirmErr = useField({
+    value: pwdConfirm,
+    validate: (v) => {
+      if (v.length < 6) return "新密码至少 6 位";
+      if (v !== pwdNew) return "两次输入的新密码不一致";
+      return null;
+    },
+    submitted: pwdSubmitted,
+  });
+  const nickErr = useField({ value: nickname, validate: (v) => (v.trim().length > 20 ? "昵称过长（≤20 字）" : null), submitted: profileSubmitted });
 
   useEffect(() => {
     api.dashboard().then((d) => {
@@ -66,9 +84,15 @@ export default function Profile() {
   }, []);
 
   async function saveProfile() {
+    setProfileSubmitted(true);
     setSavingProfile(true);
     setProfileOk("");
     setErr("");
+    if (nickname.trim().length > 20) {
+      // 昵称错误已由 nickErr 内联展示，仅拦截提交
+      setSavingProfile(false);
+      return;
+    }
     try {
       await api.updateMe({ nickname, province, target_exam: targetExam });
       setProfileOk("已保存");
@@ -132,14 +156,11 @@ export default function Profile() {
   }
 
   async function changePwd() {
+    setPwdSubmitted(true);
     setPwdOk("");
     setPwdErr("");
-    if (pwdNew.length < 6) {
-      setPwdErr("新密码至少 6 位");
-      return;
-    }
-    if (pwdNew !== pwdConfirm) {
-      setPwdErr("两次输入的新密码不一致");
+    if (pwdOld.length === 0 || pwdNew.length < 6 || pwdNew !== pwdConfirm) {
+      // 客户端错误已通过字段内联 .field-error 展示，这里仅拦截提交
       return;
     }
     setPwdBusy(true);
@@ -188,7 +209,21 @@ export default function Profile() {
       <div className="card" style={{ marginTop: 12 }}>
         <strong>学员画像</strong>
         <div className="field-label" style={{ marginTop: 8 }}>昵称</div>
-        <input className="input" value={nickname} onChange={(e) => setNickname(e.target.value)} placeholder="昵称" />
+        <input
+          className={"input" + (nickErr.invalid ? " is-invalid" : "")}
+          value={nickname}
+          onChange={(e) => setNickname(e.target.value)}
+          onBlur={nickErr.onBlur}
+          aria-invalid={nickErr.invalid || undefined}
+          aria-describedby={nickErr.describedBy}
+          placeholder="昵称"
+        />
+        {nickErr.invalid && (
+          <div id={nickErr.describedBy} className="field-error" role="alert">
+            <span className="field-error__ico" aria-hidden="true">!</span>
+            <span>{nickErr.error}</span>
+          </div>
+        )}
         <div className="field-label" style={{ marginTop: 8 }}>报考省份</div>
         <input className="input" value={province} onChange={(e) => setProvince(e.target.value)} placeholder="如：广东 / 北京" />
         <div className="field-label" style={{ marginTop: 8 }}>目标考试</div>
@@ -423,11 +458,59 @@ export default function Profile() {
           {/* 隐藏用户名框：满足 Chrome「密码表单应包含用户名字段」无障碍启发式，消除审计告警 */}
           <input type="text" autoComplete="username" value={user?.email || ""} hidden readOnly />
           <div className="field-label" style={{ marginTop: 8 }}>原密码</div>
-          <input className="input" type="password" autoComplete="current-password" value={pwdOld} onChange={(e) => setPwdOld(e.target.value)} placeholder="请输入原密码" />
+          <input
+            className={"input" + (pwdOldErr.invalid ? " is-invalid" : "")}
+            type="password"
+            autoComplete="current-password"
+            value={pwdOld}
+            onChange={(e) => setPwdOld(e.target.value)}
+            onBlur={pwdOldErr.onBlur}
+            aria-invalid={pwdOldErr.invalid || undefined}
+            aria-describedby={pwdOldErr.describedBy}
+            placeholder="请输入原密码"
+          />
+          {pwdOldErr.invalid && (
+            <div id={pwdOldErr.describedBy} className="field-error" role="alert">
+              <span className="field-error__ico" aria-hidden="true">!</span>
+              <span>{pwdOldErr.error}</span>
+            </div>
+          )}
           <div className="field-label" style={{ marginTop: 8 }}>新密码</div>
-          <input className="input" type="password" autoComplete="new-password" value={pwdNew} onChange={(e) => setPwdNew(e.target.value)} placeholder="至少 6 位" />
+          <input
+            className={"input" + (pwdNewErr.invalid ? " is-invalid" : "")}
+            type="password"
+            autoComplete="new-password"
+            value={pwdNew}
+            onChange={(e) => setPwdNew(e.target.value)}
+            onBlur={pwdNewErr.onBlur}
+            aria-invalid={pwdNewErr.invalid || undefined}
+            aria-describedby={pwdNewErr.describedBy}
+            placeholder="至少 6 位"
+          />
+          {pwdNewErr.invalid && (
+            <div id={pwdNewErr.describedBy} className="field-error" role="alert">
+              <span className="field-error__ico" aria-hidden="true">!</span>
+              <span>{pwdNewErr.error}</span>
+            </div>
+          )}
           <div className="field-label" style={{ marginTop: 8 }}>确认新密码</div>
-          <input className="input" type="password" autoComplete="new-password" value={pwdConfirm} onChange={(e) => setPwdConfirm(e.target.value)} placeholder="再次输入新密码" />
+          <input
+            className={"input" + (pwdConfirmErr.invalid ? " is-invalid" : "")}
+            type="password"
+            autoComplete="new-password"
+            value={pwdConfirm}
+            onChange={(e) => setPwdConfirm(e.target.value)}
+            onBlur={pwdConfirmErr.onBlur}
+            aria-invalid={pwdConfirmErr.invalid || undefined}
+            aria-describedby={pwdConfirmErr.describedBy}
+            placeholder="再次输入新密码"
+          />
+          {pwdConfirmErr.invalid && (
+            <div id={pwdConfirmErr.describedBy} className="field-error" role="alert">
+              <span className="field-error__ico" aria-hidden="true">!</span>
+              <span>{pwdConfirmErr.error}</span>
+            </div>
+          )}
           {pwdErr && <div className="err-text" style={{ marginTop: 6 }}>{pwdErr}</div>}
           {pwdOk && <div className="ok-text" style={{ marginTop: 6 }}>{pwdOk}</div>}
           <button className="btn btn--primary btn--block" style={{ marginTop: 10 }} disabled={pwdBusy}>
