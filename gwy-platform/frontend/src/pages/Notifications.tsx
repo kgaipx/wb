@@ -5,6 +5,7 @@ import type { NotificationOut } from "../api/client";
 import { notifMeta, formatNotifTime } from "../components/notifMeta";
 import Reveal from "../components/Reveal";
 import EmptyState from "../components/EmptyState";
+import ErrorState from "../components/ErrorState";
 
 const PAGE = 20;
 
@@ -18,17 +19,24 @@ export default function Notifications() {
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const [filter, setFilter] = useState<"all" | "unread">("all");
+  const [err, setErr] = useState("");
 
   const load = useCallback(
     async (from: number, append: boolean) => {
+      if (!append) {
+        setErr("");
+        setLoading(true);
+      }
       try {
         const data = await api.notifications(PAGE, from);
         setUnread(data.unread_count);
         setItems((prev) => (append ? [...prev, ...data.items] : data.items));
         setHasMore(data.items.length === PAGE);
         if (!append) setOffset(0);
-      } catch {
-        /* 忽略：网络/鉴权异常不阻塞页面骨架 */
+        setErr("");
+      } catch (e: any) {
+        // 仅首屏加载失败才提示错误态；分页追加失败保持已有列表，用户可点「加载更多」重试
+        if (!append) setErr(e?.message || "通知加载失败，请稍后重试");
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -113,6 +121,13 @@ export default function Notifications() {
             <div key={i} className="notif-page__sk" />
           ))}
         </div>
+      ) : err && items.length === 0 ? (
+        <ErrorState
+          title="通知加载失败"
+          desc={err || "网络开小差了，请点击重试。"}
+          onRetry={() => load(0, false)}
+          retryBusy={loading}
+        />
       ) : items.length === 0 ? (
         <EmptyState
           icon="inbox"

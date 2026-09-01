@@ -4396,6 +4396,20 @@
   height: 26px;
 }
 
+/* ===== 错误态（复用空态骨架，改危险色，提示「加载失败可重试」）=====
+   仅替换光晕 / 图标 / 外环的色相，结构与动效完全复用空态，保持同一视觉语言。 */
+.empty--err::before {
+  background: radial-gradient(140px 140px at 50% 40%, color-mix(in srgb, var(--danger) 9%, transparent), transparent 70%);
+}
+.empty--err .empty__icon {
+  background: linear-gradient(135deg, var(--danger-050), #ffffff, var(--danger-050));
+  color: var(--danger);
+  box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.20), inset 0 0 0 1px rgba(var(--accent-rgb), 0.12), var(--edge-hi);
+}
+.empty--err .empty__icon::after {
+  background: conic-gradient(from 0deg, transparent 0 55%, color-mix(in srgb, var(--danger) 42%, transparent) 75%, transparent 100%);
+}
+
 /* 空态入场微交互：图标轻缩入，标题/描述/操作依次淡入上浮，补足「大厂质感」微交互层
    （prefers-reduced-motion 已在全局禁用动画，无障碍用户直接显示） */
 @keyframes empty-icon-in {
