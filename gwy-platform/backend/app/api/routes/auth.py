@@ -14,6 +14,7 @@ from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.core.ratelimit import rate_limit
 from app.core.security import (
     create_access_token,
     decode_access_token,
@@ -131,7 +132,11 @@ require_admin = require_roles("admin")
 
 
 @router.post("/register", response_model=TokenOut, status_code=status.HTTP_201_CREATED)
-def register(payload: UserRegister, db: Session = Depends(get_db)):
+def register(
+    payload: UserRegister,
+    db: Session = Depends(get_db),
+    _rl: str = Depends(rate_limit(10, 600)),  # 同 IP 10 次 / 10 分钟，防注册轰炸
+):
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=409, detail="该邮箱已注册")
     user = User(
@@ -148,7 +153,11 @@ def register(payload: UserRegister, db: Session = Depends(get_db)):
 
 
 @router.post("/login", response_model=TokenOut)
-def login(payload: UserLogin, db: Session = Depends(get_db)):
+def login(
+    payload: UserLogin,
+    db: Session = Depends(get_db),
+    _rl: str = Depends(rate_limit(10, 300)),  # 同 IP 10 次 / 5 分钟，防暴力撞密码
+):
     user = db.query(User).filter(User.email == payload.email).first()
     if user is None or not verify_password(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="邮箱或密码错误")
@@ -236,7 +245,11 @@ def _send_reset_email(email: str, token: str) -> bool:
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
-def forgot_password(payload: PasswordResetRequestIn, db: Session = Depends(get_db)):
+def forgot_password(
+    payload: PasswordResetRequestIn,
+    db: Session = Depends(get_db),
+    _rl: str = Depends(rate_limit(10, 300)),  # 同 IP 10 次 / 5 分钟，防枚举轰炸
+):
     """账号找回：提交注册邮箱，生成一次性重置令牌（30 分钟有效）。
 
     - 无论邮箱是否注册均返回 200，避免账号枚举。

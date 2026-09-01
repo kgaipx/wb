@@ -48,6 +48,9 @@ ssh "${SSH_OPTS[@]}" "$SERVER" '
   mkdir -p /opt/gwy/frontend/dist
   tar -xzf /tmp/deploy_frontend.tar.gz -C /opt/gwy/frontend/dist
   cp /opt/gwy/backend/deploy/backup.sh /opt/gwy/backup.sh 2>/dev/null || true
+  # 备份脚本必须可执行，否则每日 04:00 cron 会 Permission denied（曾因此静默丢备份数天）。
+  # 显式补执行位，避免 tar/cp 权限位在跨平台/跨文件系统时丢失。
+  chmod +x /opt/gwy/backup.sh 2>/dev/null || true
   find /opt/gwy/backend -name __pycache__ -type d -exec rm -rf {} +
 
   # 安装依赖（确保 Alembic 等随 requirements 落地）：开发/生产同 venv
