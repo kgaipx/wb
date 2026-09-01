@@ -135,7 +135,7 @@ require_admin = require_roles("admin")
 def register(
     payload: UserRegister,
     db: Session = Depends(get_db),
-    _rl: str = Depends(rate_limit(30, 600)),  # 同 IP 30 次 / 10 分钟，防注册轰炸（留足冒烟/演示余量）
+    _rl: str = Depends(rate_limit(30, 600, "register")),  # 同 IP 30 次 / 10 分钟，防注册轰炸
 ):
     if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=409, detail="该邮箱已注册")
@@ -156,7 +156,7 @@ def register(
 def login(
     payload: UserLogin,
     db: Session = Depends(get_db),
-    _rl: str = Depends(rate_limit(10, 300)),  # 同 IP 10 次 / 5 分钟，防暴力撞密码
+    _rl: str = Depends(rate_limit(10, 300, "login")),  # 同 IP 10 次 / 5 分钟，防暴力撞密码
 ):
     user = db.query(User).filter(User.email == payload.email).first()
     if user is None or not verify_password(payload.password, user.hashed_password):
@@ -248,7 +248,7 @@ def _send_reset_email(email: str, token: str) -> bool:
 def forgot_password(
     payload: PasswordResetRequestIn,
     db: Session = Depends(get_db),
-    _rl: str = Depends(rate_limit(10, 300)),  # 同 IP 10 次 / 5 分钟，防枚举轰炸
+    _rl: str = Depends(rate_limit(10, 300, "forgot")),  # 同 IP 10 次 / 5 分钟，防枚举轰炸
 ):
     """账号找回：提交注册邮箱，生成一次性重置令牌（30 分钟有效）。
 
