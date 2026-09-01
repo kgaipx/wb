@@ -318,6 +318,33 @@ export default function Review() {
           </div>
           </Reveal>
 
+          {/* 抽样复检队列：每次 spot-check 返回的随机样本，支撑「真抽」而非「只报数」的可操作闭环 */}
+          {stats?.samples && stats.samples.length > 0 && (
+            <Reveal delay={80}>
+            <div className="card" style={{ marginTop: 12 }}>
+              <div className="row row--between">
+                <strong style={{ fontSize: 14 }}>本次抽样复检（{stats.sample_size ?? stats.samples.length} 条）</strong>
+                <span className="muted" style={{ fontSize: 12 }}>随机抽取已通过项做二次核验</span>
+              </div>
+              <div style={{ marginTop: 8 }}>
+                {stats.samples.map((s) => (
+                  <div key={s.review_id} className="q-item" style={{ marginTop: 6 }}>
+                    <div className="q-item__meta">
+                      <span className="tag tag--brand">#{s.review_id}</span>
+                      <span className="text-3">{s.item_type}</span>
+                      <span className="text-3">{s.item_id}</span>
+                    </div>
+                    <div className="row" style={{ gap: 12, fontSize: 12, marginTop: 4, color: "var(--text-3)" }}>
+                      <span>甲签：{s.reviewer_1 || "—"} {s.reviewer_1_at ? `· ${new Date(s.reviewer_1_at).toLocaleString("zh-CN", { hour12: false })}` : ""}</span>
+                      <span>乙签：{s.reviewer_2 || "—"} {s.reviewer_2_at ? `· ${new Date(s.reviewer_2_at).toLocaleString("zh-CN", { hour12: false })}` : ""}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            </Reveal>
+          )}
+
           {/* 审核员身份 */}
           <Reveal delay={120}>
           <div className="card" style={{ marginTop: 12 }}>
@@ -407,10 +434,12 @@ export default function Review() {
                   <span className={"sign-chip" + (signed1 ? " sign-chip--on" : "")}>
                     {signed1 ? "✔ " : "○ "}
                     {r.reviewer_1 || "第一签审核员"}
+                    {r.reviewer_1_at && <span className="text-3" style={{ fontSize: 11, marginLeft: 4 }}>· {new Date(r.reviewer_1_at).toLocaleString("zh-CN", { hour12: false })}</span>}
                   </span>
                   <span className={"sign-chip" + (signed2 ? " sign-chip--on" : "")}>
                     {signed2 ? "✔ " : "○ "}
                     {r.reviewer_2 || "第二签审核员"}
+                    {r.reviewer_2_at && <span className="text-3" style={{ fontSize: 11, marginLeft: 4 }}>· {new Date(r.reviewer_2_at).toLocaleString("zh-CN", { hour12: false })}</span>}
                   </span>
                   {signed1 && !signed2 && <span className="muted" style={{ fontSize: 12 }}>尚缺一签</span>}
                 </div>

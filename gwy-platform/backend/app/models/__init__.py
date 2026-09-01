@@ -4,7 +4,7 @@ from app.models.user import User
 from app.models.question import Question, QuestionOption
 from app.models.progress import UserAnswer, AbilityProfile
 from app.models.knowledge import KnowledgeChunk
-from app.models.content import ContentReview
+from app.models.content import ContentReview, ContentReviewLog
 from app.models.billing import Order, RefundRequest
 from app.models.essay import EssayGradeRecord, EssayPrompt
 from app.models.favorite import Favorite
@@ -24,6 +24,7 @@ __all__ = [
     "AbilityProfile",
     "KnowledgeChunk",
     "ContentReview",
+    "ContentReviewLog",
     "Order",
     "RefundRequest",
     "EssayPrompt",

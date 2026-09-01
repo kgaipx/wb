@@ -31,11 +31,35 @@ class ReviewOut(BaseModel):
     body: str
     reviewer_1: str | None
     reviewer_2: str | None
+    reviewer_1_at: datetime | None = None
+    reviewer_2_at: datetime | None = None
     reviewer_note: str | None
     created_at: datetime
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class ReviewLogOut(BaseModel):
+    id: int
+    review_id: int
+    action: str
+    actor: str
+    note: str | None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class SpotCheckSample(BaseModel):
+    review_id: int
+    item_type: str
+    item_id: str
+    reviewer_1: str | None
+    reviewer_2: str | None
+    reviewer_1_at: datetime | None = None
+    reviewer_2_at: datetime | None = None
+    created_at: datetime
 
 
 class QuestionOptionOut(BaseModel):

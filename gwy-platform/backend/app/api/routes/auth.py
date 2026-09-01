@@ -2,8 +2,12 @@
 
 注册即签发 JWT，便于前端直接登录态进入学习；所有受保护接口通过 get_current_user 依赖校验。
 """
+import logging
 import secrets
+import smtplib
+import ssl
 from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
@@ -193,14 +197,42 @@ def change_password(
 # 账号找回 / 密码重置（WBS 2.1 安全）
 # ---------------------------------------------------------------------------
 def _send_reset_email(email: str, token: str) -> bool:
-    """发送重置邮件；未配置 SMTP_HOST 时返回 False（开发模式）。
+    """发送密码重置邮件；未配置 SMTP_HOST 时返回 False（开发模式）。
 
     返回 False 时由调用方直接返回 dev_token，便于自托管演示与测试。
+    真实发送：465 → SMTP_SSL；其他端口 → SMTP + STARTTLS。捕获所有异常并记日志，
+    避免给前端返回 5xx —— 找回链路必须总是 200 防账号枚举。
     """
     if not settings.SMTP_HOST:
         return False
-    # TODO(prod): 经 SMTP_HOST/USER/PASSWORD 发送含 token 的链接；当前仅占位。
-    return False
+    reset_url = settings.PASSWORD_RESET_URL or "https://gwy.example/reset"
+    link = f"{reset_url.rstrip('/')}?token={token}"
+    msg = EmailMessage()
+    msg["Subject"] = "AI 公考私教 · 密码重置"
+    msg["From"] = settings.SMTP_SENDER
+    msg["To"] = email
+    msg.set_content(
+        f"你好，\n\n我们收到了你的密码重置请求。点击下方链接重置密码（30 分钟内有效）：\n\n\n    {link}\n\n\n如果不是你本人的操作，请忽略此邮件。\n\n—— AI 公考私教"
+    )
+    try:
+        if settings.SMTP_PORT == 465:
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, context=context, timeout=15) as s:
+                if settings.SMTP_USER:
+                    s.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+                s.send_message(msg)
+        else:
+            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=15) as s:
+                s.ehlo()
+                s.starttls(context=ssl.create_default_context())
+                s.ehlo()
+                if settings.SMTP_USER:
+                    s.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+                s.send_message(msg)
+        return True
+    except Exception as e:
+        logging.getLogger(__name__).warning("SMTP send failed: %s", e)
+        return False
 
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)

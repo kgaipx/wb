@@ -234,16 +234,38 @@ export interface ReviewOut {
   body: string;
   reviewer_1: string | null;
   reviewer_2: string | null;
+  reviewer_1_at: string | null;
+  reviewer_2_at: string | null;
   reviewer_note: string | null;
   created_at: string;
   updated_at: string;
+}
+export interface ReviewLogOut {
+  id: number;
+  review_id: number;
+  action: string; // submit | approve | reject | correct
+  actor: string;
+  note: string | null;
+  created_at: string;
+}
+export interface SpotCheckSample {
+  review_id: number;
+  item_type: string;
+  item_id: string;
+  reviewer_1: string | null;
+  reviewer_2: string | null;
+  reviewer_1_at: string | null;
+  reviewer_2_at: string | null;
+  created_at: string;
 }
 export interface ReviewStats {
   total: number;
   approved: number;
   sample_target: number;
   sample_rate: number;
-  pass_rate: number; // 已通过占比
+  pass_rate: number;
+  sample_size?: number;
+  samples?: SpotCheckSample[];
 }
 
 // 题库双签审核（待核实题接入审核台）
@@ -717,6 +739,8 @@ export const api = {
     }),
   reviewPending: () => request<ReviewOut[]>("/content/review/pending"),
   reviewSpotCheck: () => request<ReviewStats>("/content/review/spot-check"),
+  // 双签复核完整审计日志（替代旧版只能从 ContentReview 单行倒推的局面）
+  reviewLogs: (review_id: number) => request<{ id: number; review_id: number; action: string; actor: string; note: string | null; created_at: string }[]>(`/content/review/${review_id}/logs`),
   // 审核员身份以服务端登录用户为准，前端不再传 reviewer
   reviewApprove: (id: number) =>
     request<ReviewOut>(`/content/review/${id}/approve`, {

@@ -17,13 +17,14 @@ from app.ai.content_validator import (
 )
 from app.api.routes.auth import get_current_user, require_reviewer
 from app.db.session import get_db
-from app.models import ContentReview, Question, User
+from app.models import ContentReview, ContentReviewLog, Question, User
 from app.schemas.content import (
     QuestionOptionOut,
     QuestionReviewOut,
     QuestionReviewStats,
     ReviewApproveIn,
     ReviewCorrectIn,
+    ReviewLogOut,
     ReviewOut,
     ReviewRejectIn,
     ReviewSubmitIn,
@@ -95,6 +96,26 @@ def pending(current: User = Depends(require_reviewer), db: Session = Depends(get
 @router.get("/review/spot-check", tags=["content"])
 def spotcheck(current: User = Depends(require_reviewer), db: Session = Depends(get_db)):
     return spot_check(db)
+
+
+@router.get("/review/{review_id}/logs", response_model=list[ReviewLogOut])
+def review_logs(
+    review_id: int,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """双签复核完整审计日志：按时间正序返回 submit/approve/reject/correct 全部动作。
+
+    替代旧实现中只能从 ContentReview 单行倒推的局面 —— 现在每次动作都被单独记录，
+    含操作人 / 备注 / 时间戳，回溯任一时刻都不会丢信息。
+    """
+    rows = (
+        db.query(ContentReviewLog)
+        .filter(ContentReviewLog.review_id == review_id)
+        .order_by(ContentReviewLog.id.asc())
+        .all()
+    )
+    return rows
 
 
 # ---------------------------------------------------------------------------

@@ -378,7 +378,9 @@ export default function Admin() {
               </div>
               <div className="usr-row__right">
                 <span className="tag">¥{(o.amount / 100).toFixed(0)}</span>
-                <span className={"status-pill " + (o.status === "paid" ? "status--approved" : o.status === "refunded" ? "status--rejected" : "")}>{o.status}</span>
+                <span className={"status-pill " + (o.status === "paid" ? "status--approved" : o.status === "refunded" ? "status--rejected" : "")}>
+                  {o.status === "paid" ? "已支付" : o.status === "pending" ? "待支付" : o.status === "refunding" ? "退费中" : o.status === "refunded" ? "已退费" : o.status}
+                </span>
               </div>
             </div>
           ))}
@@ -400,7 +402,9 @@ export default function Admin() {
               </div>
               <div className="usr-row__right">
                 <span className="tag tag--bad">-¥{(r.amount / 100).toFixed(0)}</span>
-                <span className={"status-pill " + (r.status === "refunded" ? "status--approved" : r.status === "pending" ? "status--rejected" : "")}>{r.status}</span>
+                <span className={"status-pill " + (r.status === "refunded" ? "status--approved" : r.status === "pending" ? "status--rejected" : "")}>
+                  {r.status === "refunded" ? "已退费" : r.status === "pending" ? "退费中" : r.status === "rejected" ? "已驳回" : r.status}
+                </span>
               </div>
             </div>
           ))}

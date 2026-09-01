@@ -50,6 +50,12 @@ class Settings(BaseSettings):
     # 生产回调校验令牌（PAYMENT_NOTIFY_SECRET），由支付 provider 回调时携带以验真。
     PAYMENT_SANDBOX: bool = True
     PAYMENT_NOTIFY_SECRET: str = ""
+    # 真实支付网关：非沙箱模式下 create_order 会用这三项拼接带签名的 pay_url。
+    # 留空则视为「未配置真实网关」——此时关闭沙箱将返回 503，避免静默生成坏链接。
+    # 接入微信支付/支付宝等不同 provider 时，按 provider 规范改造签名串即可。
+    PAYMENT_GATEWAY_URL: str = ""
+    PAYMENT_MCH_ID: str = ""
+    PAYMENT_KEY: str = ""
 
     # 邮件（账号找回）：未配置 SMTP_HOST 时进入开发模式，接口直接返回重置令牌，便于自托管演示。
     SMTP_HOST: str = ""
@@ -57,6 +63,8 @@ class Settings(BaseSettings):
     SMTP_USER: str = ""
     SMTP_PASSWORD: str = ""
     SMTP_SENDER: str = "noreply@gwy.example"
+    # 邮件里点重置的回跳地址；留空则使用请求里的 origin，前端需在 /reset 页处理 token。
+    PASSWORD_RESET_URL: str = ""
 
 
 settings = Settings()

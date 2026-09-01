@@ -10,6 +10,9 @@
 便于自托管演示；接真实支付时置 PAYMENT_SANDBOX=False 并配置 PAYMENT_NOTIFY_SECRET。
 """
 from datetime import datetime, timedelta, timezone
+import hashlib
+import hmac
+import logging
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -141,11 +144,41 @@ def create_order(
     db.add(order)
     db.commit()
     db.refresh(order)
-    # 支付入口：沙箱模式下提供可点击的模拟支付链接；真实支付由 provider 回调 /pay/notify
-    pay_url = f"/api/billing/pay/sandbox/{order.id}" if settings.PAYMENT_SANDBOX else None
+    # 支付入口：沙箱模式下提供可点击的模拟支付链接；非沙箱需配置真实网关
+    # PAYMENT_GATEWAY_URL/MCH_ID/KEY，否则返回 503 避免前端拿到一个坏链接。
+    if settings.PAYMENT_SANDBOX:
+        pay_url = f"/api/billing/pay/sandbox/{order.id}"
+    else:
+        if not (settings.PAYMENT_GATEWAY_URL and settings.PAYMENT_MCH_ID and settings.PAYMENT_KEY):
+            raise HTTPException(
+                status_code=503,
+                detail="真实支付网关未配置（PAYMENT_GATEWAY_URL / PAYMENT_MCH_ID / PAYMENT_KEY），请先在 .env 配齐或临时开启 PAYMENT_SANDBOX 演示模式。",
+            )
+        pay_url = _build_gateway_pay_url(order, current)
     out = OrderOut.model_validate(order, from_attributes=True)
     out.pay_url = pay_url
     return out
+
+
+def _build_gateway_pay_url(order: Order, user: User) -> str:
+    """拼接带 HMAC-SHA256 签名的真实网关支付跳转 URL。
+
+    签名规范：按 mch_id + out_trade_no + amount + plan + user_id 字典序拼串后用 PAYMENT_KEY
+    做 HMAC-SHA256。不同 provider（微信、支付宝、银联）签名要素各异；接入时按 provider 文档
+    替换 canonical 串的字段顺序与命名即可，骨架一致。"""
+    params = {
+        "mch_id": settings.PAYMENT_MCH_ID,
+        "out_trade_no": str(order.id),
+        "amount": str(order.amount),
+        "plan": order.plan,
+        "user_id": str(user.id),
+    }
+    canonical = "&".join(f"{k}={params[k]}" for k in sorted(params))
+    sign = hmac.new(settings.PAYMENT_KEY.encode("utf-8"), canonical.encode("utf-8"), hashlib.sha256).hexdigest()
+    qs = "&".join(f"{k}={v}" for k, v in params.items()) + f"&sign={sign}"
+    sep = "&" if "?" in settings.PAYMENT_GATEWAY_URL else "?"
+    logging.getLogger(__name__).info("create_order: build pay_url for order=%s user=%s", order.id, user.id)
+    return f"{settings.PAYMENT_GATEWAY_URL}{sep}{qs}"
 
 
 @router.post("/pay/sandbox/{order_id}", response_model=OrderOut)

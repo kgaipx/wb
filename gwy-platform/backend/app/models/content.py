@@ -30,6 +30,27 @@ class ContentReview(Base):
     )
     reviewer_1: Mapped[str | None] = mapped_column(String(64), nullable=True)
     reviewer_2: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    reviewer_1_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, comment="甲签时间（双签留痕）")
+    reviewer_2_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True, comment="乙签时间（双签留痕）")
     reviewer_note: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=_now, onupdate=_now)
+
+
+class ContentReviewLog(Base):
+    """双签复核操作日志（append-only 留痕）。
+
+    每一次 submit / approve / reject / correct 都写入一条，
+    支持前端展示完整审计轨迹与回溯任一时刻的审核员/动作/备注。
+    """
+
+    __tablename__ = "content_review_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    review_id: Mapped[int] = mapped_column(Integer, index=True, comment="所属审核单")
+    action: Mapped[str] = mapped_column(
+        String(16), comment="submit / approve / reject / correct"
+    )
+    actor: Mapped[str] = mapped_column(String(64), comment="操作人（昵称或邮箱）")
+    note: Mapped[str | None] = mapped_column(Text, nullable=True, comment="备注/驳回理由/更正说明")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
