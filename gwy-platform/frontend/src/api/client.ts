@@ -739,6 +739,14 @@ export const api = {
     }),
   reviewPending: () => request<ReviewOut[]>("/content/review/pending"),
   reviewSpotCheck: () => request<ReviewStats>("/content/review/spot-check"),
+  // 程序自动识别审核：规则初筛题库，输出可疑题清单与类型统计（不自动改库）
+  autoScan: (params: { subject?: string; source?: string; limit?: number } = {}) => {
+    const q = new URLSearchParams();
+    if (params.subject) q.set("subject", params.subject);
+    if (params.source) q.set("source", params.source);
+    if (params.limit) q.set("limit", String(params.limit));
+    return request<{ scanned: number; ok_count: number; suspect_count: number; ok_rate: number; by_type: Record<string, number>; suspects: { id: number; subject: string; category: string; qtype: string; source: string | null; stem: string; answer: string | null; reasons: string[]; reason_labels: string[] }[] }>(`/content/review/auto-scan?${q.toString()}`);
+  },
   // 双签复核完整审计日志（替代旧版只能从 ContentReview 单行倒推的局面）
   reviewLogs: (review_id: number) => request<{ id: number; review_id: number; action: string; actor: string; note: string | null; created_at: string }[]>(`/content/review/${review_id}/logs`),
   // 审核员身份以服务端登录用户为准，前端不再传 reviewer

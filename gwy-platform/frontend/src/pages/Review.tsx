@@ -57,6 +57,11 @@ export default function Review() {
   const [qHasMore, setQHasMore] = useState(false);
   const [qSigned, setQSigned] = useState<QuestionReviewOut[]>([]); // 本会话已处理（反馈）
   const [qBulkBusy, setQBulkBusy] = useState(false); // 本页批量签
+  // —— 程序自动识别审核（规则初筛：定位可疑题，优先人工复核） ——
+  const [scan, setScan] = useState<any>(null);
+  const [scanBusy, setScanBusy] = useState(false);
+  const [scanErr, setScanErr] = useState("");
+  const [scanOpen, setScanOpen] = useState(false); // 可疑题列表展开
 
   // ===== 内容审核 =====
   function loadAll() {
@@ -530,6 +535,90 @@ export default function Review() {
               <span><b style={{ color: "var(--danger, #d92b1c)" }}>{qStats?.pending ?? 0}</b> 待核实</span>
               <span><b>{qStats?.awaiting_second ?? 0}</b> 待二审</span>
             </div>
+          </div>
+          </Reveal>
+
+          {/* 程序自动识别：规则初筛可疑题，优先人工双签复核 */}
+          <Reveal delay={270}>
+          <div className="card card--soft" style={{ marginTop: 12 }}>
+            <div className="row row--between">
+              <strong style={{ fontSize: 14 }}>🤖 程序自动识别</strong>
+              <span className="muted" style={{ fontSize: 12 }}>规则初筛 · 不自动改库</span>
+            </div>
+            <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>
+              对题库执行 9 类规则识别（答案合法性 / 选项矛盾 / 重复 / 乱码 / 题干重复等），
+              把可疑题标注出来优先人工双签；识别通过项可进入常规队列。
+            </div>
+            <div className="row" style={{ gap: 8, marginTop: 10 }}>
+              <button className="btn btn--primary btn--sm" disabled={scanBusy} onClick={async () => {
+                setScanBusy(true); setScanErr(""); setScan(null);
+                try {
+                  const r = await api.autoScan({ limit: 300 });
+                  setScan(r);
+                } catch (e: any) {
+                  setScanErr(e.message || "识别失败");
+                } finally {
+                  setScanBusy(false);
+                }
+              }}>
+                {scanBusy ? "识别中…" : "运行全库识别"}
+              </button>
+              {scan && (
+                <button className="btn btn--ghost btn--sm" disabled={scanBusy} onClick={async () => {
+                  setScanBusy(true); setScanErr("");
+                  try {
+                    const r = await api.autoScan({ limit: 300, subject: "行测" });
+                    setScan(r);
+                  } catch (e: any) { setScanErr(e.message || "识别失败"); }
+                  finally { setScanBusy(false); }
+                }}>仅行测</button>
+              )}
+            </div>
+            {scanErr && <div className="err-text" style={{ marginTop: 8 }}>{scanErr}</div>}
+
+            {scan && (
+              <div style={{ marginTop: 10 }}>
+                <div className="row" style={{ gap: 16, fontSize: 13 }}>
+                  <span>扫描 <b>{scan.scanned}</b> 题</span>
+                  <span style={{ color: "var(--ok, #1a7f37)" }}>正常 <b>{scan.ok_count}</b>（{Math.round(scan.ok_rate * 100)}%）</span>
+                  <span style={{ color: "var(--warning, #b7791f)" }}>提示 <b>{scan.notice_count ?? 0}</b></span>
+                  <span style={{ color: "var(--danger, #d92b1c)" }}>硬伤可疑 <b>{scan.suspect_count}</b></span>
+                </div>
+                {Object.keys(scan.by_type || {}).length > 0 && (
+                  <div className="chip-row" style={{ marginTop: 8, flexWrap: "wrap" }}>
+                    {Object.entries(scan.by_type).map(([code, n]) => (
+                      <span key={code} className="chip chip--warn" title={code}>{code} ×{String(n)}</span>
+                    ))}
+                  </div>
+                )}
+                {(scan.suspects || []).length > 0 && (
+                  <>
+                    <button className="link-btn" style={{ marginTop: 8, fontSize: 13 }} onClick={() => setScanOpen(o => !o)}>
+                      {scanOpen ? "收起可疑题清单" : `展开可疑题清单（${scan.suspects.length}）`}
+                    </button>
+                    {scanOpen && (
+                      <div style={{ marginTop: 8, maxHeight: 360, overflow: "auto" }}>
+                        {scan.suspects.map((s: any) => (
+                          <div key={s.id} className="q-item" style={{ marginTop: 6 }}>
+                            <div className="q-item__meta">
+                              <span className="tag tag--brand">#{s.id}</span>
+                              <span className="text-3">{s.subject} · {s.category}</span>
+                              {s.source && <span className="text-3">{s.source}</span>}
+                            </div>
+                            <div style={{ fontSize: 13, marginTop: 4 }}>{s.stem}</div>
+                            <div className="chip-row" style={{ marginTop: 6, flexWrap: "wrap" }}>
+                              {(s.reason_labels || []).map((l: string) => (
+                                <span key={l} className="chip chip--warn" style={{ fontSize: 12 }}>{l}</span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </div>
           </Reveal>
 

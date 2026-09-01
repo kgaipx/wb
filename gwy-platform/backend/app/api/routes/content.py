@@ -18,6 +18,7 @@ from app.ai.content_validator import (
 from app.api.routes.auth import get_current_user, require_reviewer
 from app.db.session import get_db
 from app.models import ContentReview, ContentReviewLog, Question, User
+from app.services.auto_review import auto_scan
 from app.schemas.content import (
     QuestionOptionOut,
     QuestionReviewOut,
@@ -96,6 +97,22 @@ def pending(current: User = Depends(require_reviewer), db: Session = Depends(get
 @router.get("/review/spot-check", tags=["content"])
 def spotcheck(current: User = Depends(require_reviewer), db: Session = Depends(get_db)):
     return spot_check(db)
+
+
+@router.get("/review/auto-scan", tags=["content"])
+def auto_scan_endpoint(
+    subject: str | None = None,
+    source: str | None = None,
+    limit: int = 200,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """程序自动识别审核：对题库做规则初筛，输出可疑题清单与类型统计。
+
+    不自动改库/不自动置 verified —— 识别结果只用于给管理员排序待审队列，
+    可疑题优先人工双签复核（信任保障闭环的自动化前置）。
+    """
+    return auto_scan(db, subject=subject, source=source, limit=max(1, min(limit, 500)))
 
 
 @router.get("/review/{review_id}/logs", response_model=list[ReviewLogOut])
