@@ -68,6 +68,11 @@ export default function Review() {
   const [fixNote, setFixNote] = useState<string>(""); // 处置备注（批量）
   const [hist, setHist] = useState<any[]>([]); // 最近处置留痕
   const [histErr, setHistErr] = useState("");
+  // —— v2 批量处置 ——
+  const [selIds, setSelIds] = useState<number[]>([]); // 勾选待批量处置
+  const [reasonFilter, setReasonFilter] = useState<string>(""); // 原因类型筛选
+  const [scanLimit, setScanLimit] = useState<number>(300); // 已加载条数
+  const [bulkFixAns, setBulkFixAns] = useState<string>(""); // 批量修正答案
 
   // —— 可疑题处置（工作台）：fixed / voided / ignored，全部留痕 ——
   async function loadHist() {
@@ -587,9 +592,9 @@ export default function Review() {
             </div>
             <div className="row" style={{ gap: 8, marginTop: 10 }}>
               <button className="btn btn--primary btn--sm" disabled={scanBusy} onClick={async () => {
-                setScanBusy(true); setScanErr(""); setScan(null);
+                setScanBusy(true); setScanErr(""); setScan(null); setSelIds([]);
                 try {
-                  const r = await api.autoScan({ limit: 300 });
+                  const r = await api.autoScan({ limit: scanLimit });
                   setScan(r); loadHist();
                 } catch (e: any) {
                   setScanErr(e.message || "识别失败");
@@ -603,7 +608,7 @@ export default function Review() {
                 <button className="btn btn--ghost btn--sm" disabled={scanBusy} onClick={async () => {
                   setScanBusy(true); setScanErr("");
                   try {
-                    const r = await api.autoScan({ limit: 300, subject: "行测" });
+                    const r = await api.autoScan({ limit: scanLimit, subject: "行测" });
                     setScan(r);
                   } catch (e: any) { setScanErr(e.message || "识别失败"); }
                   finally { setScanBusy(false); }
@@ -620,10 +625,12 @@ export default function Review() {
                   <span style={{ color: "var(--warning, #b7791f)" }}>提示 <b>{scan.notice_count ?? 0}</b></span>
                   <span style={{ color: "var(--danger, #d92b1c)" }}>待处置 <b>{scan.suspect_count}</b></span>
                 </div>
+                {/* 按原因类型筛选（点击切换，与 by_type 计数联动） */}
                 {Object.keys(scan.by_type || {}).length > 0 && (
                   <div className="chip-row" style={{ marginTop: 8, flexWrap: "wrap" }}>
+                    <span className="chip" style={{ cursor: "pointer", ...(reasonFilter === "" ? { outline: "2px solid var(--brand, #4f46e5)" } : {}) }} onClick={() => setReasonFilter("")}>全部原因</span>
                     {Object.entries(scan.by_type).map(([code, n]) => (
-                      <span key={code} className="chip chip--warn" title={code}>{code} ×{String(n)}</span>
+                      <span key={code} className="chip chip--warn" style={{ cursor: "pointer", ...(reasonFilter === code ? { outline: "2px solid var(--brand, #4f46e5)" } : {}) }} title={code} onClick={() => setReasonFilter(code)}>{code} ×{String(n)}</span>
                     ))}
                   </div>
                 )}
@@ -640,50 +647,93 @@ export default function Review() {
                 <div className="row" style={{ gap: 8, marginTop: 8 }}>
                   <input className="input" style={{ flex: 1, fontSize: 12, padding: "5px 10px" }} placeholder="处置备注（选填，留痕展示）" value={fixNote} onChange={e => setFixNote(e.target.value)} />
                 </div>
-                {/* 可疑题清单 */}
+                {/* 可疑题清单（多选 + 批量处置） */}
                 {(() => {
-                  const list = (scan.suspects || []).filter((s: any) => !scanGroup || s.subject === scanGroup);
+                  const list = (scan.suspects || []).filter(
+                    (s: any) =>
+                      (!scanGroup || s.subject === scanGroup) &&
+                      (!reasonFilter || (s.reasons || []).includes(reasonFilter))
+                  );
+                  const allSel = list.length > 0 && list.every((s: any) => selIds.includes(s.id));
+                  const canBulkFix = list.some(
+                    (s: any) => (s.reasons || []).includes("bad_answer") || (s.reasons || []).includes("answer_conflict")
+                  );
                   return list.length > 0 && (
                     <>
-                      <button className="link-btn" style={{ marginTop: 8, fontSize: 13 }} onClick={() => setScanOpen(o => !o)}>
-                        {scanOpen ? "收起可疑题清单" : `展开待处置题（${list.length}）`}
-                      </button>
+                      <div className="row row--between" style={{ marginTop: 8 }}>
+                        <button className="link-btn" style={{ fontSize: 13 }} onClick={() => setScanOpen(o => !o)}>
+                          {scanOpen ? "收起可疑题清单" : `展开待处置题（${list.length}）`}
+                        </button>
+                        {scan.suspect_count > (scan.suspects?.length || 0) && (
+                          <button className="link-btn" style={{ fontSize: 12 }} disabled={scanBusy} onClick={async () => {
+                            setScanBusy(true);
+                            try {
+                              const more = Math.min(scan.suspect_count, scanLimit + 700);
+                              const r = await api.autoScan({ limit: more });
+                              setScan(r); setScanLimit(more);
+                            } catch (e: any) { setScanErr(e.message || "加载失败"); }
+                            finally { setScanBusy(false); }
+                          }}>
+                            {scanBusy ? "加载中…" : `加载更多（当前 ${scan.suspects?.length ?? 0}/${scan.suspect_count}）`}
+                          </button>
+                        )}
+                      </div>
                       {scanOpen && (
-                        <div style={{ marginTop: 8, maxHeight: 420, overflow: "auto" }}>
-                          {list.map((s: any) => {
-                            const busy = scanBusyIds.includes(s.id);
-                            return (
-                              <div key={s.id} className="q-item" style={{ marginTop: 6 }}>
-                                <div className="q-item__meta">
-                                  <span className="tag tag--brand">#{s.id}</span>
-                                  <span className="text-3">{s.subject} · {s.category}</span>
-                                  {s.source && <span className="text-3">{s.source}</span>}
-                                  <span className="text-3" style={{ color: "var(--danger, #d92b1c)" }}>答案：{s.answer || "(空)"}</span>
-                                </div>
-                                <div style={{ fontSize: 13, marginTop: 4 }}>{s.stem}</div>
-                                <div className="chip-row" style={{ marginTop: 6, flexWrap: "wrap" }}>
-                                  {(s.reason_labels || []).map((l: string) => (
-                                    <span key={l} className="chip chip--warn" style={{ fontSize: 12 }}>{l}</span>
-                                  ))}
-                                </div>
-                                {/* 修正答案输入（仅对可修正类显示） */}
-                                {(s.reasons || []).includes("bad_answer") || (s.reasons || []).includes("answer_conflict") ? (
-                                  <div className="row" style={{ gap: 6, marginTop: 6 }}>
-                                    <input className="input" style={{ width: 130, fontSize: 12, padding: "5px 10px" }} placeholder="修正答案，如 A" value={fixAns[s.id] ?? ""} onChange={e => setFixAns(prev => ({ ...prev, [s.id]: e.target.value }))} />
-                                    <button className="btn btn--sm" disabled={busy} onClick={() => doAction([s.id], "fixed", (fixAns[s.id] || "").trim().toUpperCase() || undefined)}>
-                                      {busy ? "…" : "修正并固定"}
-                                    </button>
+                        <>
+                          {/* 批量工具栏 */}
+                          <div className="row" style={{ gap: 6, marginTop: 8, flexWrap: "wrap", alignItems: "center" }}>
+                            <label className="text-3" style={{ display: "inline-flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+                              <input type="checkbox" checked={allSel} onChange={e => setSelIds(e.target.checked ? list.map((s: any) => s.id) : [])} />
+                              全选当前 {list.length} 题
+                            </label>
+                            <span className="text-3" style={{ color: "var(--brand, #4f46e5)" }}>已选 {selIds.length}</span>
+                            {canBulkFix && (
+                              <input className="input" style={{ width: 120, fontSize: 12, padding: "4px 8px" }} placeholder="批量修正答案，如 A" value={bulkFixAns} onChange={e => setBulkFixAns(e.target.value)} />
+                            )}
+                            <button className="btn btn--ghost btn--sm" disabled={selIds.length === 0 || scanBusyIds.length > 0} onClick={() => { doAction(selIds, "ignored"); setSelIds([]); }}>批量忽略</button>
+                            <button className="btn btn--danger btn--sm" disabled={selIds.length === 0 || scanBusyIds.length > 0} onClick={() => { doAction(selIds, "voided"); setSelIds([]); }}>批量作废</button>
+                            <button className="btn btn--primary btn--sm" disabled={selIds.length === 0 || scanBusyIds.length > 0 || !canBulkFix} onClick={() => { doAction(selIds, "fixed", (bulkFixAns || "").trim().toUpperCase() || undefined); setSelIds([]); setBulkFixAns(""); }}>批量修正</button>
+                          </div>
+                          <div style={{ marginTop: 8, maxHeight: 420, overflow: "auto" }}>
+                            {list.map((s: any) => {
+                              const busy = scanBusyIds.includes(s.id);
+                              const checked = selIds.includes(s.id);
+                              return (
+                                <div key={s.id} className="q-item" style={{ marginTop: 6 }}>
+                                  <div className="q-item__meta">
+                                    <label style={{ display: "inline-flex", alignItems: "center", gap: 4, cursor: "pointer" }}>
+                                      <input type="checkbox" checked={checked} onChange={e => setSelIds(prev => e.target.checked ? [...prev, s.id] : prev.filter(x => x !== s.id))} />
+                                    </label>
+                                    <span className="tag tag--brand">#{s.id}</span>
+                                    <span className="text-3">{s.subject} · {s.category}</span>
+                                    {s.source && <span className="text-3">{s.source}</span>}
+                                    <span className="text-3" style={{ color: "var(--danger, #d92b1c)" }}>答案：{s.answer || "(空)"}</span>
                                   </div>
-                                ) : (
-                                  <div className="row" style={{ gap: 6, marginTop: 6 }}>
-                                    <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => doAction([s.id], "ignored")}>{busy ? "…" : "忽略（误报）"}</button>
-                                    <button className="btn btn--danger btn--sm" disabled={busy} onClick={() => doAction([s.id], "voided")}>{busy ? "…" : "作废"}</button>
+                                  <div style={{ fontSize: 13, marginTop: 4 }}>{s.stem}</div>
+                                  <div className="chip-row" style={{ marginTop: 6, flexWrap: "wrap" }}>
+                                    {(s.reason_labels || []).map((l: string) => (
+                                      <span key={l} className="chip chip--warn" style={{ fontSize: 12 }}>{l}</span>
+                                    ))}
                                   </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                                  {/* 修正答案输入（仅对可修正类显示） */}
+                                  {(s.reasons || []).includes("bad_answer") || (s.reasons || []).includes("answer_conflict") ? (
+                                    <div className="row" style={{ gap: 6, marginTop: 6 }}>
+                                      <input className="input" style={{ width: 130, fontSize: 12, padding: "5px 10px" }} placeholder="修正答案，如 A" value={fixAns[s.id] ?? ""} onChange={e => setFixAns(prev => ({ ...prev, [s.id]: e.target.value }))} />
+                                      <button className="btn btn--sm" disabled={busy} onClick={() => doAction([s.id], "fixed", (fixAns[s.id] || "").trim().toUpperCase() || undefined)}>
+                                        {busy ? "…" : "修正并固定"}
+                                      </button>
+                                    </div>
+                                  ) : (
+                                    <div className="row" style={{ gap: 6, marginTop: 6 }}>
+                                      <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => doAction([s.id], "ignored")}>{busy ? "…" : "忽略（误报）"}</button>
+                                      <button className="btn btn--danger btn--sm" disabled={busy} onClick={() => doAction([s.id], "voided")}>{busy ? "…" : "作废"}</button>
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </>
                       )}
                     </>
                   );

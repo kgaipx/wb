@@ -120,7 +120,7 @@ def auto_scan_endpoint(
     不自动改库/不自动置 verified —— 识别结果只用于给管理员排序待审队列，
     可疑题优先人工双签复核（信任保障闭环的自动化前置）。
     """
-    return auto_scan(db, subject=subject, source=source, limit=max(1, min(limit, 500)))
+    return auto_scan(db, subject=subject, source=source, limit=max(1, min(limit, 1000)))
 
 
 @router.post("/review/auto-action", tags=["content"])
