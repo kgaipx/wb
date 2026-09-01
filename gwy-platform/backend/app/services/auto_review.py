@@ -125,9 +125,16 @@ def auto_scan(
     subject: str | None = None,
     source: str | None = None,
     limit: int = 200,
+    exclude_handled: bool = True,
 ) -> dict:
-    """全库/按科目/按来源扫描，返回统计 + 按类型聚合 + 可疑题样本（limit 截断）。"""
+    """全库/按科目/按来源扫描，返回统计 + 按类型聚合 + 按科目分组 + 可疑题样本。
+
+    exclude_handled=True 时跳过已处置题（audit_status != 'pending'），
+    让识别结果始终聚焦「尚未处置」的可疑题。
+    """
     q = db.query(Question)
+    if exclude_handled:
+        q = q.filter(Question.audit_status == "pending")
     if subject:
         q = q.filter(Question.subject == subject)
     if source:
@@ -141,6 +148,7 @@ def auto_scan(
         stem_count[(r.subject, _normalize(r.stem))] += 1
 
     by_type: Counter = Counter()
+    grouped: Counter = Counter()  # 按 subject 聚合硬伤数（工作台分组视图）
     suspects: list[dict] = []
     hard_suspect = 0
     notice_only = 0
@@ -159,6 +167,7 @@ def auto_scan(
                 ok += 1
             continue
         hard_suspect += 1
+        grouped[r.subject] += 1
         for code in reasons:
             by_type[code] += 1
         if len(suspects) < limit:
@@ -171,6 +180,7 @@ def auto_scan(
                     "source": r.source,
                     "stem": (r.stem or "")[:80],
                     "answer": r.answer,
+                    "audit_status": r.audit_status,
                     "reasons": reasons,
                     "reason_labels": [REASON_LABELS[c] for c in reasons],
                 }
@@ -183,6 +193,7 @@ def auto_scan(
         "suspect_count": hard_suspect,
         "ok_rate": round(ok / len(rows), 3) if rows else 0.0,
         "by_type": {k: by_type[k] for k in sorted(by_type, key=lambda x: -by_type[x])},
+        "grouped": {k: grouped[k] for k in sorted(grouped, key=lambda x: -grouped[x])},
         "suspects": suspects,
         "limit": limit,
     }

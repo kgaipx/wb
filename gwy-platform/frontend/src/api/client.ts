@@ -745,8 +745,18 @@ export const api = {
     if (params.subject) q.set("subject", params.subject);
     if (params.source) q.set("source", params.source);
     if (params.limit) q.set("limit", String(params.limit));
-    return request<{ scanned: number; ok_count: number; suspect_count: number; ok_rate: number; by_type: Record<string, number>; suspects: { id: number; subject: string; category: string; qtype: string; source: string | null; stem: string; answer: string | null; reasons: string[]; reason_labels: string[] }[] }>(`/content/review/auto-scan?${q.toString()}`);
+    return request<{ scanned: number; ok_count: number; notice_count: number; suspect_count: number; ok_rate: number; by_type: Record<string, number>; grouped: Record<string, number>; suspects: { id: number; subject: string; category: string; qtype: string; source: string | null; stem: string; answer: string | null; audit_status: string; reasons: string[]; reason_labels: string[] }[] }>(`/content/review/auto-scan?${q.toString()}`);
   },
+  // 可疑题处置（工作台）：fixed / voided / ignored，全部留痕
+  autoAction: (body: { question_ids: number[]; action: "fixed" | "voided" | "ignored"; note?: string; answer?: string }) =>
+    request<{ processed: number; action: string }>("/content/review/auto-action", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    }),
+  // 最近处置留痕（工作台历史）
+  auditActions: (limit = 50) =>
+    request<{ id: number; question_id: number; action: string; note: string | null; actor: string; created_at: string }[]>(`/content/review/audit-actions?limit=${limit}`),
   // 双签复核完整审计日志（替代旧版只能从 ContentReview 单行倒推的局面）
   reviewLogs: (review_id: number) => request<{ id: number; review_id: number; action: string; actor: string; note: string | null; created_at: string }[]>(`/content/review/${review_id}/logs`),
   // 审核员身份以服务端登录用户为准，前端不再传 reviewer

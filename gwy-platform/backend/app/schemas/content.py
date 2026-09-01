@@ -1,5 +1,7 @@
 """内容审核接口契约（WBS 5.2 双签校验）。"""
 from datetime import datetime
+from typing import Literal
+
 from pydantic import BaseModel
 
 
@@ -97,3 +99,29 @@ class QuestionReviewStats(BaseModel):
     verified: int  # 已双签通过（is_verified=True）
     pending: int  # 待核实（is_verified=False）
     awaiting_second: int  # 已签第一签、待第二签
+
+
+class AutoActionIn(BaseModel):
+    """程序自动识别 → 可疑题处置（工作台）。
+
+    action 语义：
+      fixed   已人工修正（可带 answer 覆盖答案字段）
+      voided  作废（内容损坏不可修复，从练习池移除）
+      ignored 忽略（误报 / 无需处理）
+    """
+
+    question_ids: list[int]
+    action: Literal["fixed", "voided", "ignored"]
+    note: str | None = None
+    answer: str | None = None  # 仅 action=fixed 且需改答案时传入
+
+
+class AuditActionOut(BaseModel):
+    id: int
+    question_id: int
+    action: str
+    note: str | None
+    actor: str
+    created_at: datetime
+
+    model_config = {"from_attributes": True}

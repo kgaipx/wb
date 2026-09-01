@@ -62,6 +62,41 @@ export default function Review() {
   const [scanBusy, setScanBusy] = useState(false);
   const [scanErr, setScanErr] = useState("");
   const [scanOpen, setScanOpen] = useState(false); // 可疑题列表展开
+  const [scanGroup, setScanGroup] = useState<string>(""); // 分组筛选（""=全部 / 科目名）
+  const [scanBusyIds, setScanBusyIds] = useState<number[]>([]); // 处置中的题目
+  const [fixAns, setFixAns] = useState<Record<number, string>>({}); // 修正答案输入
+  const [fixNote, setFixNote] = useState<string>(""); // 处置备注（批量）
+  const [hist, setHist] = useState<any[]>([]); // 最近处置留痕
+  const [histErr, setHistErr] = useState("");
+
+  // —— 可疑题处置（工作台）：fixed / voided / ignored，全部留痕 ——
+  async function loadHist() {
+    try {
+      setHist(await api.auditActions(30));
+      setHistErr("");
+    } catch (e: any) {
+      setHistErr(e.message || "留痕加载失败");
+    }
+  }
+  async function doAction(ids: number[], action: "fixed" | "voided" | "ignored", answer?: string) {
+    setScanBusyIds(prev => [...prev, ...ids]);
+    setScanErr("");
+    try {
+      await api.autoAction({ question_ids: ids, action, note: fixNote || undefined, answer });
+      const idSet = new Set(ids);
+      setScan((prev: any) => prev ? {
+        ...prev,
+        suspects: (prev.suspects || []).filter((s: any) => !idSet.has(s.id)),
+        suspect_count: Math.max(0, prev.suspect_count - ids.length),
+      } : prev);
+      setFixNote("");
+      await loadHist();
+    } catch (e: any) {
+      setScanErr(e.message || "处置失败");
+    } finally {
+      setScanBusyIds(prev => prev.filter(id => !ids.includes(id)));
+    }
+  }
 
   // ===== 内容审核 =====
   function loadAll() {
@@ -538,23 +573,24 @@ export default function Review() {
           </div>
           </Reveal>
 
-          {/* 程序自动识别：规则初筛可疑题，优先人工双签复核 */}
+          {/* 程序自动识别：规则初筛 → 处置工作台（fixed/voided/ignored，全部留痕） */}
           <Reveal delay={270}>
           <div className="card card--soft" style={{ marginTop: 12 }}>
             <div className="row row--between">
-              <strong style={{ fontSize: 14 }}>🤖 程序自动识别</strong>
-              <span className="muted" style={{ fontSize: 12 }}>规则初筛 · 不自动改库</span>
+              <strong style={{ fontSize: 14 }}>🤖 程序自动识别 · 处置工作台</strong>
+              <span className="muted" style={{ fontSize: 12 }}>规则初筛 → 人工处置，全程留痕</span>
             </div>
             <div className="muted" style={{ fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>
               对题库执行 9 类规则识别（答案合法性 / 选项矛盾 / 重复 / 乱码 / 题干重复等），
-              把可疑题标注出来优先人工双签；识别通过项可进入常规队列。
+              可疑题在此直接处置：<b>忽略</b>（误报）/ <b>作废</b>（内容损坏，移出练习池）/
+              <b>修正答案</b>（改答案字段）。每条处置记录操作人与时间，已处置题不再重复识别。
             </div>
             <div className="row" style={{ gap: 8, marginTop: 10 }}>
               <button className="btn btn--primary btn--sm" disabled={scanBusy} onClick={async () => {
                 setScanBusy(true); setScanErr(""); setScan(null);
                 try {
                   const r = await api.autoScan({ limit: 300 });
-                  setScan(r);
+                  setScan(r); loadHist();
                 } catch (e: any) {
                   setScanErr(e.message || "识别失败");
                 } finally {
@@ -582,7 +618,7 @@ export default function Review() {
                   <span>扫描 <b>{scan.scanned}</b> 题</span>
                   <span style={{ color: "var(--ok, #1a7f37)" }}>正常 <b>{scan.ok_count}</b>（{Math.round(scan.ok_rate * 100)}%）</span>
                   <span style={{ color: "var(--warning, #b7791f)" }}>提示 <b>{scan.notice_count ?? 0}</b></span>
-                  <span style={{ color: "var(--danger, #d92b1c)" }}>硬伤可疑 <b>{scan.suspect_count}</b></span>
+                  <span style={{ color: "var(--danger, #d92b1c)" }}>待处置 <b>{scan.suspect_count}</b></span>
                 </div>
                 {Object.keys(scan.by_type || {}).length > 0 && (
                   <div className="chip-row" style={{ marginTop: 8, flexWrap: "wrap" }}>
@@ -591,32 +627,80 @@ export default function Review() {
                     ))}
                   </div>
                 )}
-                {(scan.suspects || []).length > 0 && (
-                  <>
-                    <button className="link-btn" style={{ marginTop: 8, fontSize: 13 }} onClick={() => setScanOpen(o => !o)}>
-                      {scanOpen ? "收起可疑题清单" : `展开可疑题清单（${scan.suspects.length}）`}
-                    </button>
-                    {scanOpen && (
-                      <div style={{ marginTop: 8, maxHeight: 360, overflow: "auto" }}>
-                        {scan.suspects.map((s: any) => (
-                          <div key={s.id} className="q-item" style={{ marginTop: 6 }}>
-                            <div className="q-item__meta">
-                              <span className="tag tag--brand">#{s.id}</span>
-                              <span className="text-3">{s.subject} · {s.category}</span>
-                              {s.source && <span className="text-3">{s.source}</span>}
-                            </div>
-                            <div style={{ fontSize: 13, marginTop: 4 }}>{s.stem}</div>
-                            <div className="chip-row" style={{ marginTop: 6, flexWrap: "wrap" }}>
-                              {(s.reason_labels || []).map((l: string) => (
-                                <span key={l} className="chip chip--warn" style={{ fontSize: 12 }}>{l}</span>
-                              ))}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                {/* 按科目分组筛选 */}
+                {Object.keys(scan.grouped || {}).length > 0 && (
+                  <div className="chip-row" style={{ marginTop: 8, flexWrap: "wrap" }}>
+                    <span className="chip" style={{ cursor: "pointer", ...(scanGroup === "" ? { outline: "2px solid var(--brand, #4f46e5)" } : {}) }} onClick={() => setScanGroup("")}>全部</span>
+                    {Object.entries(scan.grouped).map(([sub, n]) => (
+                      <span key={sub} className="chip" style={{ cursor: "pointer", ...(scanGroup === sub ? { outline: "2px solid var(--brand, #4f46e5)" } : {}) }} onClick={() => setScanGroup(sub)}>{sub} ×{String(n)}</span>
+                    ))}
+                  </div>
                 )}
+                {/* 处置备注（批量） */}
+                <div className="row" style={{ gap: 8, marginTop: 8 }}>
+                  <input className="input" style={{ flex: 1, fontSize: 12, padding: "5px 10px" }} placeholder="处置备注（选填，留痕展示）" value={fixNote} onChange={e => setFixNote(e.target.value)} />
+                </div>
+                {/* 可疑题清单 */}
+                {(() => {
+                  const list = (scan.suspects || []).filter((s: any) => !scanGroup || s.subject === scanGroup);
+                  return list.length > 0 && (
+                    <>
+                      <button className="link-btn" style={{ marginTop: 8, fontSize: 13 }} onClick={() => setScanOpen(o => !o)}>
+                        {scanOpen ? "收起可疑题清单" : `展开待处置题（${list.length}）`}
+                      </button>
+                      {scanOpen && (
+                        <div style={{ marginTop: 8, maxHeight: 420, overflow: "auto" }}>
+                          {list.map((s: any) => {
+                            const busy = scanBusyIds.includes(s.id);
+                            return (
+                              <div key={s.id} className="q-item" style={{ marginTop: 6 }}>
+                                <div className="q-item__meta">
+                                  <span className="tag tag--brand">#{s.id}</span>
+                                  <span className="text-3">{s.subject} · {s.category}</span>
+                                  {s.source && <span className="text-3">{s.source}</span>}
+                                  <span className="text-3" style={{ color: "var(--danger, #d92b1c)" }}>答案：{s.answer || "(空)"}</span>
+                                </div>
+                                <div style={{ fontSize: 13, marginTop: 4 }}>{s.stem}</div>
+                                <div className="chip-row" style={{ marginTop: 6, flexWrap: "wrap" }}>
+                                  {(s.reason_labels || []).map((l: string) => (
+                                    <span key={l} className="chip chip--warn" style={{ fontSize: 12 }}>{l}</span>
+                                  ))}
+                                </div>
+                                {/* 修正答案输入（仅对可修正类显示） */}
+                                {(s.reasons || []).includes("bad_answer") || (s.reasons || []).includes("answer_conflict") ? (
+                                  <div className="row" style={{ gap: 6, marginTop: 6 }}>
+                                    <input className="input" style={{ width: 130, fontSize: 12, padding: "5px 10px" }} placeholder="修正答案，如 A" value={fixAns[s.id] ?? ""} onChange={e => setFixAns(prev => ({ ...prev, [s.id]: e.target.value }))} />
+                                    <button className="btn btn--sm" disabled={busy} onClick={() => doAction([s.id], "fixed", (fixAns[s.id] || "").trim().toUpperCase() || undefined)}>
+                                      {busy ? "…" : "修正并固定"}
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="row" style={{ gap: 6, marginTop: 6 }}>
+                                    <button className="btn btn--ghost btn--sm" disabled={busy} onClick={() => doAction([s.id], "ignored")}>{busy ? "…" : "忽略（误报）"}</button>
+                                    <button className="btn btn--danger btn--sm" disabled={busy} onClick={() => doAction([s.id], "voided")}>{busy ? "…" : "作废"}</button>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
+                {/* 最近处置留痕 */}
+                <div style={{ marginTop: 10, fontSize: 12 }}>
+                  <div className="muted" style={{ marginBottom: 4 }}>最近处置留痕（{hist.length}）：</div>
+                  {histErr && <div className="err-text">{histErr}</div>}
+                  {hist.length === 0 && !histErr && <div className="muted">暂无处置记录</div>}
+                  {hist.slice(0, 8).map((h: any) => (
+                    <div key={h.id} className="text-3" style={{ marginTop: 2 }}>
+                      <span className="chip chip--on" style={{ fontSize: 11 }}>{h.action === "fixed" ? "已修正" : h.action === "voided" ? "已作废" : "已忽略"}</span>
+                      #{h.question_id} · {h.actor} · {new Date(h.created_at).toLocaleString("zh-CN")}
+                      {h.note ? ` · ${h.note}` : ""}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

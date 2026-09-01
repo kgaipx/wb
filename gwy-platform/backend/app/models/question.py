@@ -49,6 +49,12 @@ class Question(Base):
     is_verified: Mapped[bool] = mapped_column(
         Boolean, default=False, comment="双签校验通过（WBS 5.2）"
     )
+    audit_status: Mapped[str] = mapped_column(
+        String(16),
+        default="pending",
+        index=True,
+        comment="程序自动识别处置状态：pending 待处置 / fixed 已修正 / voided 已作废 / ignored 已忽略",
+    )
 
     created_at: Mapped[datetime] = mapped_column(DateTime, default=_now)
 
@@ -58,6 +64,28 @@ class Question(Base):
     answers: Mapped[list["UserAnswer"]] = relationship(
         back_populates="question", cascade="all, delete-orphan"
     )
+    audit_actions: Mapped[list["QuestionAuditAction"]] = relationship(
+        back_populates="question", cascade="all, delete-orphan"
+    )
+
+
+class QuestionAuditAction(Base):
+    """程序自动识别处置留痕（c11：谁在何时对哪道题做了什么处置）。"""
+
+    __tablename__ = "question_audit_actions"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    question_id: Mapped[int] = mapped_column(
+        ForeignKey("questions.id", ondelete="CASCADE"), index=True
+    )
+    action: Mapped[str] = mapped_column(
+        String(16), comment="fixed 已修正 / voided 已作废 / ignored 已忽略"
+    )
+    note: Mapped[str | None] = mapped_column(Text, nullable=True, comment="处置备注")
+    actor: Mapped[str] = mapped_column(String(64), comment="处置人（邮箱）")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_now, index=True)
+
+    question: Mapped["Question"] = relationship(back_populates="audit_actions")
 
 
 class QuestionOption(Base):

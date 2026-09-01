@@ -17,9 +17,17 @@ from app.ai.content_validator import (
 )
 from app.api.routes.auth import get_current_user, require_reviewer
 from app.db.session import get_db
-from app.models import ContentReview, ContentReviewLog, Question, User
+from app.models import (
+    ContentReview,
+    ContentReviewLog,
+    Question,
+    QuestionAuditAction,
+    User,
+)
 from app.services.auto_review import auto_scan
 from app.schemas.content import (
+    AuditActionOut,
+    AutoActionIn,
     QuestionOptionOut,
     QuestionReviewOut,
     QuestionReviewStats,
@@ -113,6 +121,62 @@ def auto_scan_endpoint(
     可疑题优先人工双签复核（信任保障闭环的自动化前置）。
     """
     return auto_scan(db, subject=subject, source=source, limit=max(1, min(limit, 500)))
+
+
+@router.post("/review/auto-action", tags=["content"])
+def auto_action(
+    payload: AutoActionIn,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """可疑题处置（工作台）：对一批题目执行 fixed / voided / ignored。
+
+    - 每条处置写入 question_audit_actions 留痕（谁、何时、处置了什么、备注）
+    - 题目 audit_status 置为对应状态；扫描器将自动跳过已处置题
+    - action=fixed 且传 answer 时，同时修正题目的答案字段
+    """
+    if not payload.question_ids:
+        raise HTTPException(status_code=400, detail="question_ids 不能为空")
+    ids = list(set(payload.question_ids))
+    qs = db.query(Question).filter(Question.id.in_(ids)).all()
+    if len(qs) != len(ids):
+        raise HTTPException(status_code=400, detail="部分题目不存在")
+
+    actor = current.email or current.nickname or str(current.id)
+    from datetime import datetime, timezone
+
+    now = datetime.now(timezone.utc)
+    for q in qs:
+        db.add(
+            QuestionAuditAction(
+                question_id=q.id,
+                action=payload.action,
+                note=payload.note,
+                actor=actor,
+                created_at=now,
+            )
+        )
+        q.audit_status = payload.action
+        if payload.action == "fixed" and payload.answer is not None:
+            q.answer = payload.answer
+    db.commit()
+    return {"processed": len(qs), "action": payload.action}
+
+
+@router.get("/review/audit-actions", response_model=list[AuditActionOut], tags=["content"])
+def audit_actions(
+    limit: int = 50,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """最近处置留痕（工作台右侧历史列表）。"""
+    rows = (
+        db.query(QuestionAuditAction)
+        .order_by(QuestionAuditAction.id.desc())
+        .limit(max(1, min(limit, 200)))
+        .all()
+    )
+    return rows
 
 
 @router.get("/review/{review_id}/logs", response_model=list[ReviewLogOut])
