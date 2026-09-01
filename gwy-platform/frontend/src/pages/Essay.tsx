@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api, EssayPrompt, EssayHistoryItem, EssayModel, EssayCompare } from "../api/client";
 import { DimensionBars } from "../components/DimensionBars";
 import { LineChart } from "../components/LineChart";
@@ -11,6 +12,7 @@ import Spinner from "../components/Spinner";
 import { PenIcon } from "../icons";
 
 export default function Essay() {
+  const nav = useNavigate();
   const [tab, setTab] = useState<"write" | "history">("write");
   const [prompts, setPrompts] = useState<EssayPrompt[]>([]);
   const [promptId, setPromptId] = useState<number | null>(null);
@@ -21,6 +23,7 @@ export default function Essay() {
   const [history, setHistory] = useState<EssayHistoryItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [quotaBlock, setQuotaBlock] = useState(false);
   const [hLoading, setHLoading] = useState(false);
   const [model, setModel] = useState<EssayModel | null>(null);
   const [modelBusy, setModelBusy] = useState(false);
@@ -54,7 +57,8 @@ export default function Essay() {
       // 批改即完整报告：后台预取范文与对比点评，数据就绪原地展开，免去多次点击与串行等待
       enrich(r, ++enrichRun.current);
     } catch (e: any) {
-      setErr(e.message);
+      if (e?.status === 402) setQuotaBlock(true);
+      else setErr(e.message);
     } finally {
       setBusy(false);
     }
@@ -82,7 +86,8 @@ export default function Essay() {
       if (enrichRun.current !== myRun) return;
       setCompare(c);
     } catch (e: any) {
-      setErr(e.message);
+      if (e?.status === 402) setQuotaBlock(true);
+      else setErr(e.message);
     } finally {
       setModelBusy(false);
       setCompareBusy(false);
@@ -122,6 +127,17 @@ export default function Essay() {
         </div>
       </div>
 
+      {quotaBlock && (
+        <div className="card card--warning" style={{ marginTop: 12 }}>
+          <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+            今日 AI 使用次数已用完（免费版有每日上限，含讲解 / 对话 / 批改）。升级会员解锁无限次 AI 私教与申论批改。
+          </div>
+          <div className="row" style={{ gap: 8, marginTop: 8 }}>
+            <button className="btn btn--primary btn--sm" onClick={() => nav("/membership")}>去升级 →</button>
+            <button className="btn btn--ghost btn--sm" onClick={() => setQuotaBlock(false)}>稍后再说</button>
+          </div>
+        </div>
+      )}
       {err && <div className="err-text">{err}</div>}
 
       {tab === "write" && (

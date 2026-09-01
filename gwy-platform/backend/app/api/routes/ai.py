@@ -62,6 +62,24 @@ def _quota_state(user: User) -> dict:
     return {"is_pro": False, "limit": _FREE_QUOTA, "used": user.ai_quota_used, "remaining": remaining, "date": today}
 
 
+def _consume_quota_or_402(user: User, db: Session) -> None:
+    """免费用户消费一次每日 AI 配额（讲解/对话/批改共享）；超额返回 402 引导升级；pro 放行。
+
+    配额计数随请求即时落库，确保跨请求一致；跨日由 _quota_state 自动重置。
+    """
+    if user.plan != "free":
+        return
+    st = _quota_state(user)  # 内部已处理跨日重置
+    if st["remaining"] <= 0:
+        raise HTTPException(
+            status_code=402,
+            detail="今日 AI 使用次数已用完（免费版每日 %d 次，含讲解/对话/批改）。升级会员解锁无限次 AI 私教讲解与申论批改。" % _FREE_QUOTA,
+        )
+    user.ai_quota_used += 1
+    db.add(user)
+    db.commit()
+
+
 @router.get("/quota", response_model=AiQuota, tags=["ai"])
 def ai_quota(current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """查询当前会员等级与免费版每日 AI 讲解剩余配额（驱动会员升级引导）。"""
@@ -74,15 +92,8 @@ def explain(payload: ExplainIn, current: User = Depends(get_current_user), db: S
     q = db.get(Question, payload.question_id)
     if q is None:
         raise HTTPException(status_code=404, detail="题目不存在")
-    # 免费版按日配额限流（pro 不限），超额引导升级
-    if current.plan == "free":
-        st = _quota_state(current)
-        if st["remaining"] <= 0:
-            raise HTTPException(
-                status_code=402,
-                detail="今日 AI 讲解次数已用完（免费版每日 %d 次）。升级会员解锁无限次 AI 私教讲解。" % _FREE_QUOTA,
-            )
-        current.ai_quota_used += 1
+    # 免费版按日配额限流（讲解/对话/批改共享，pro 不限），超额引导升级
+    _consume_quota_or_402(current, db)
     tutor = TutorAgent()
     out = tutor.explain_question(q, payload.selected)
     db.commit()
@@ -120,6 +131,7 @@ def recommend(top_n: int = 10, seed: int | None = None, current: User = Depends(
 
 @router.post("/chat", response_model=ChatOut)
 def chat(payload: ChatIn, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    _consume_quota_or_402(current, db)
     tutor = TutorAgent()
     # 与会话路由一致：注入学员能力画像（最弱且练过的考点），让私教个性化
     weak = chat_svc.build_weak_points(db, current)
@@ -134,6 +146,7 @@ def essay_prompts(current: User = Depends(get_current_user), db: Session = Depen
 
 @router.post("/essay-grade", response_model=EssayGradeOut)
 def essay_grade(payload: EssayGradeIn, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    _consume_quota_or_402(current, db)
     grader = EssayGrader()
     score = grader.grade(
         payload.essay_text,
@@ -173,6 +186,7 @@ def essay_model(
     db: Session = Depends(get_db),
 ):
     """申论范文参考：基于材料/要求生成高分范文 + 结构提纲 + 高分要点（LLM 不可用时降级）。"""
+    _consume_quota_or_402(current, db)
     material = payload.material
     requirement = payload.requirement
     if (not material and not requirement) and payload.prompt_id:
@@ -186,8 +200,9 @@ def essay_model(
 
 
 @router.post("/essay/compare", response_model=EssayCompareOut, tags=["ai"])
-def essay_compare(payload: EssayCompareIn, current: User = Depends(get_current_user)):
+def essay_compare(payload: EssayCompareIn, current: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """将考生作答与高分范文做维度级对比点评（差距分析 + 改进建议）。"""
+    _consume_quota_or_402(current, db)
     from app.ai.essay_compare import compare_essay
 
     return EssayCompareOut(

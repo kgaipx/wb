@@ -148,10 +148,14 @@ export default function Admin() {
   const nav = useNavigate();
   const { user } = useAuth();
   const [data, setData] = useState<AdminOverview | null>(null);
+  const [orders, setOrders] = useState<any[]>([]);
+  const [refunds, setRefunds] = useState<any[]>([]);
   const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     api.adminOverview().then(setData).catch((e) => setErr(e?.message || "加载失败"));
+    api.adminOrders().then(setOrders).catch(() => {});
+    api.adminRefunds().then(setRefunds).catch(() => {});
   }, []);
 
   if (user && user.role !== "admin") {
@@ -352,6 +356,51 @@ export default function Admin() {
               <div className="usr-row__right">
                 <span className={"role-chip role-chip--" + (u.role === "admin" ? "admin" : u.role === "reviewer" ? "rev" : "user")}>{u.role}</span>
                 <span className="usr-row__date">{fmtDate(u.created_at)}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 财务对账：订单与退费明细 */}
+      <div className="card" style={{ marginTop: 12 }}>
+        <div className="row row--between">
+          <strong>财务对账 · 订单</strong>
+          <span className="muted" style={{ fontSize: 12 }}>最近 {orders.length} 笔</span>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          {orders.length === 0 && <div className="muted" style={{ fontSize: 13 }}>暂无订单</div>}
+          {orders.map((o: any) => (
+            <div className="usr-row" key={o.id}>
+              <div className="usr-row__main">
+                <div className="usr-row__name">{planLabel(o.plan)} · #{o.id}</div>
+                <div className="usr-row__sub">{fmtDate(o.created_at)}{o.paid_at ? ` · 支付 ${fmtDate(o.paid_at)}` : ""}</div>
+              </div>
+              <div className="usr-row__right">
+                <span className="tag">¥{(o.amount / 100).toFixed(0)}</span>
+                <span className={"status-pill " + (o.status === "paid" ? "status--approved" : o.status === "refunded" ? "status--rejected" : "")}>{o.status}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="card" style={{ marginTop: 12 }}>
+        <div className="row row--between">
+          <strong>财务对账 · 退费</strong>
+          <span className="muted" style={{ fontSize: 12 }}>最近 {refunds.length} 笔</span>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          {refunds.length === 0 && <div className="muted" style={{ fontSize: 13 }}>暂无退费</div>}
+          {refunds.map((r: any) => (
+            <div className="usr-row" key={r.id}>
+              <div className="usr-row__main">
+                <div className="usr-row__name">退费 #{r.id} · 订单 #{r.order_id}</div>
+                <div className="usr-row__sub">{fmtDate(r.requested_at)}{r.decided_at ? ` · 处理 ${fmtDate(r.decided_at)}` : ""}</div>
+              </div>
+              <div className="usr-row__right">
+                <span className="tag tag--bad">-¥{(r.amount / 100).toFixed(0)}</span>
+                <span className={"status-pill " + (r.status === "refunded" ? "status--approved" : r.status === "pending" ? "status--rejected" : "")}>{r.status}</span>
               </div>
             </div>
           ))}

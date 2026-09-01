@@ -13,7 +13,8 @@ from sqlalchemy.orm import Session
 
 from app.api.routes.auth import require_admin
 from app.db.session import get_db
-from app.models.billing import Order
+from app.models.billing import Order, RefundRequest
+from app.schemas.billing import OrderOut, RefundOut
 from app.models.content import ContentReview
 from app.models.essay import EssayGradeRecord
 from app.models.exam_record import ExamRecord
@@ -208,3 +209,17 @@ def overview(
         daily_revenue=daily_revenue,
         recent_users=recent_users,
     )
+
+
+@router.get("/billing/orders")
+def admin_orders(_admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """运营财务对账：订单明细（最近 200 笔，含状态 / 金额 / 支付时间）。"""
+    rows = db.query(Order).order_by(Order.created_at.desc()).limit(200).all()
+    return [OrderOut.model_validate(o).model_dump() for o in rows]
+
+
+@router.get("/billing/refunds")
+def admin_refunds(_admin: User = Depends(require_admin), db: Session = Depends(get_db)):
+    """运营财务对账：退费申请明细（最近 200 笔，含金额 / 状态 / 处理时间）。"""
+    rows = db.query(RefundRequest).order_by(RefundRequest.requested_at.desc()).limit(200).all()
+    return [RefundOut.model_validate(r).model_dump() for r in rows]

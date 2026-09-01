@@ -29,9 +29,22 @@ _MEMBER_DAYS = {"pro": 30, "pro_year": 365}
 
 
 def _grant_membership(user: User, plan: str) -> None:
-    """开通会员：设置等级与到期时间（不提交，由调用方统一 commit）。"""
+    """开通 / 续费会员：设置等级与到期时间（不提交，由调用方统一 commit）。
+
+    续费逻辑：若当前仍在会员有效期内，则在现有到期日基础上顺延；
+    若已过期（或首次开通），从当前时间起算，避免损失剩余天数。
+    """
+    days = _MEMBER_DAYS[plan]
+    now = datetime.now(timezone.utc)
+    base = now
+    if user.plan_expires_at is not None:
+        exp = user.plan_expires_at
+        if exp.tzinfo is None:
+            exp = exp.replace(tzinfo=timezone.utc)
+        if exp > now:
+            base = exp  # 未过期：在现有到期日上顺延
     user.plan = plan
-    user.plan_expires_at = datetime.now(timezone.utc) + timedelta(days=_MEMBER_DAYS[plan])
+    user.plan_expires_at = base + timedelta(days=days)
 
 
 def _revoke_membership(user: User) -> None:

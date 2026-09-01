@@ -30,6 +30,7 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [quotaBlock, setQuotaBlock] = useState(false);
   const [drawer, setDrawer] = useState(false);
   // 抽屉焦点陷阱：打开时焦点移入、Tab 循环、Esc 关闭、关闭后焦点归还
   const drawerTrap = useFocusTrap<HTMLDivElement>(drawer, () => setDrawer(false));
@@ -143,7 +144,12 @@ export default function Chat() {
       });
     } catch (e: any) {
       setMessages((prev) => prev.filter((m) => m.id !== uid));
-      setErr(e.message || "对话失败，请稍后再试");
+      if (e?.status === 402) {
+        setQuotaBlock(true);
+        setErr("");
+      } else {
+        setErr(e.message || "对话失败，请稍后再试");
+      }
     } finally {
       setBusy(false);
     }
@@ -436,6 +442,17 @@ export default function Chat() {
           </div>
         ))}
         {busy && <div className="bubble bubble--assistant bubble--loading">私教正在思考…</div>}
+        {quotaBlock && (
+          <div className="card card--warning" style={{ marginTop: 10 }}>
+            <div style={{ fontSize: 13, lineHeight: 1.6 }}>
+              今日 AI 使用次数已用完（免费版有每日上限，含讲解 / 对话 / 批改）。升级会员解锁无限次 AI 私教与申论批改。
+            </div>
+            <div className="row" style={{ gap: 8, marginTop: 8 }}>
+              <button className="btn btn--primary btn--sm" onClick={() => nav("/membership")}>去升级 →</button>
+              <button className="btn btn--ghost btn--sm" onClick={() => setQuotaBlock(false)}>稍后再说</button>
+            </div>
+          </div>
+        )}
         {err && <div className="err-text">{err}</div>}
         <div ref={endRef} />
       </div>

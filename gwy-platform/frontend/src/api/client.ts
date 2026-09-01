@@ -451,6 +451,8 @@ export const api = {
 
   // 运营后台（仅 admin 角色可见）
   adminOverview: () => request<AdminOverview>("/admin/overview"),
+  adminOrders: () => request<any[]>("/admin/billing/orders"),
+  adminRefunds: () => request<any[]>("/admin/billing/refunds"),
 
   // 认证（WBS 2.1）
   register: (body: { email: string; password: string; nickname?: string; province?: string; target_exam?: string }) =>
