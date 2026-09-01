@@ -207,13 +207,22 @@ def pay_notify(
 ):
     """支付成功回调（微信/支付宝 provider 调用）。
 
-    生产环境应由 provider 携带签名或共享令牌验真：若配置了 PAYMENT_NOTIFY_SECRET，
-    则要求请求体中的 notify_token 与之匹配，否则拒绝。订单按 out_trade_no 定位并置 paid。
+    安全（fail-closed）：本端点无登录态，任何人都能 POST 一个 order_id 把订单置为已支付，
+    因此必须验真：
+    - 配置了 PAYMENT_NOTIFY_SECRET：要求请求体 notify_token 与之匹配，否则 403；
+    - 非沙箱（真实支付）却未配置该令牌：**直接拒绝**（503），而不是放行 ——
+      否则任何人都能伪造支付成功白嫖会员（此前正是这个漏洞）。
+    沙箱演示模式未配置令牌时保持可用，便于本地/自托管联调。
     """
     if settings.PAYMENT_NOTIFY_SECRET:
         token = (payload or {}).get("notify_token")
         if token != settings.PAYMENT_NOTIFY_SECRET:
             raise HTTPException(status_code=403, detail="通知令牌无效")
+    elif not settings.PAYMENT_SANDBOX:
+        raise HTTPException(
+            status_code=503,
+            detail="支付回调未配置 PAYMENT_NOTIFY_SECRET，已拒绝（防伪造支付成功白嫖会员）。请在 .env 配置该令牌后重试。",
+        )
     out_trade_no = (payload or {}).get("out_trade_no") or (payload or {}).get("order_id")
     if not out_trade_no:
         raise HTTPException(status_code=400, detail="缺少订单标识")

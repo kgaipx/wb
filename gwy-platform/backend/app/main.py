@@ -211,6 +211,11 @@ async def lifespan(app: FastAPI):
             )
         if any(h in settings.CORS_ORIGINS for h in ("localhost", "127.0.0.1")):
             print("⚠️ [config] 生产环境 CORS_ORIGINS 含 localhost，应改为正式域名以避免跨域风险。")
+        # 支付回调防伪造：非沙箱却未配通知令牌时，/pay/notify 会 fail-closed 拒绝，
+        # 这里再给出启动期显式告警，避免上线后才发现「回调全部被拒」或「被伪造」。
+        if not settings.PAYMENT_SANDBOX and not settings.PAYMENT_NOTIFY_SECRET:
+            print("⚠️ [config] 真实支付模式（PAYMENT_SANDBOX=False）但未配置 PAYMENT_NOTIFY_SECRET："
+                  "/pay/notify 将拒绝所有回调（防伪造支付成功）。请配置该令牌。")
 
     # 引导初始管理员（环境变量驱动，幂等）
     _ensure_admin()

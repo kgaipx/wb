@@ -55,6 +55,14 @@ ssh "${SSH_OPTS[@]}" "$SERVER" '
 
   # 数据库迁移（Alembic）：按 DB 现状选择策略，避免对旧库（create_all 生成）误建表
   cd /opt/gwy/backend
+
+  # 【关键】alembic/env.py 以 settings.DATABASE_URL 为准，而该值由 systemd 单元注入、
+  # 并未写入 .env —— 若在脚本里不显式导出，pydantic 会回落默认值 sqlite:///./gwy_dev.db，
+  # 导致迁移/stamp 打到 /opt/gwy/backend/gwy_dev.db（另一个库），生产库永远收不到 schema 变更。
+  # 这里显式钉死生产库，与 systemd 单元保持一致。
+  export DATABASE_URL="sqlite:////opt/gwy/data/gwy.db"
+  echo "[migrate] DATABASE_URL=$DATABASE_URL"
+
   DBSTATUS=$(/opt/gwy/venv/bin/python - <<PY
 import sqlite3
 db="/opt/gwy/data/gwy.db"
