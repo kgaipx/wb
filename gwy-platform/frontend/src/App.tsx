@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { lazy, Suspense, useEffect, useState, useCallback, useRef } from "react";
 import type { AnimationEvent as ReactAnimationEvent } from "react";
 import { Routes, Route, NavLink, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth";
@@ -7,28 +7,31 @@ import type { NotificationOut } from "./api/client";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ToastProvider } from "./components/ToastProvider";
 import { notifMeta, formatNotifTime } from "./components/notifMeta";
-import Home from "./pages/Home";
-import Learn from "./pages/Learn";
-import Practice from "./pages/Practice";
-import Profile from "./pages/Profile";
-import Exam from "./pages/Exam";
-import Wrong from "./pages/Wrong";
-import Favorites from "./pages/Favorites";
-import Chat from "./pages/Chat";
-import Plan from "./pages/Plan";
-import Review from "./pages/Review";
-import Membership from "./pages/Membership";
-import Essay from "./pages/Essay";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
-import Admin from "./pages/Admin";
-import Notifications from "./pages/Notifications";
-import Assessment from "./pages/Assessment";
-import Search from "./pages/Search";
-import MaterialLibrary from "./pages/MaterialLibrary";
-import SmartReinforcement from "./pages/SmartReinforcement";
-import ExamPrediction from "./pages/ExamPrediction";
-import Flashcards from "./pages/Flashcards";
+
+// 路由级代码分包：每个页面独立 chunk，首屏只加载当前路由（把 ~507kB 单 bundle 切成按需加载）。
+// Suspense fallback 复用全局骨架屏；懒加载失败由外层 ErrorBoundary 兜底。
+const Home = lazy(() => import("./pages/Home"));
+const Learn = lazy(() => import("./pages/Learn"));
+const Practice = lazy(() => import("./pages/Practice"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Exam = lazy(() => import("./pages/Exam"));
+const Wrong = lazy(() => import("./pages/Wrong"));
+const Favorites = lazy(() => import("./pages/Favorites"));
+const Chat = lazy(() => import("./pages/Chat"));
+const Plan = lazy(() => import("./pages/Plan"));
+const Review = lazy(() => import("./pages/Review"));
+const Membership = lazy(() => import("./pages/Membership"));
+const Essay = lazy(() => import("./pages/Essay"));
+const Login = lazy(() => import("./pages/Login"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Admin = lazy(() => import("./pages/Admin"));
+const Notifications = lazy(() => import("./pages/Notifications"));
+const Assessment = lazy(() => import("./pages/Assessment"));
+const Search = lazy(() => import("./pages/Search"));
+const MaterialLibrary = lazy(() => import("./pages/MaterialLibrary"));
+const SmartReinforcement = lazy(() => import("./pages/SmartReinforcement"));
+const ExamPrediction = lazy(() => import("./pages/ExamPrediction"));
+const Flashcards = lazy(() => import("./pages/Flashcards"));
 import { getStoredMode, resolveTheme, applyTheme, setMode, watchSystem, type ThemeMode } from "./theme/theme";
 
 type Icon = () => JSX.Element;
@@ -668,6 +671,25 @@ function AppShell() {
       <main id="main-content" ref={mainRef} tabIndex={-1} className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
         <ErrorBoundary>
           <div className={"route-anim route-anim--" + stage} onAnimationEnd={onRouteAnimEnd}>
+          <Suspense
+            fallback={
+              <div className="splash" aria-busy="true" aria-label="页面加载中">
+                <div className="sk-stack splash__skel">
+                  <div className="sk-card">
+                    <div className="sk-head">
+                      <div className="sk sk-circle" style={{ width: 40, height: 40 }} />
+                      <div style={{ flex: 1 }}>
+                        <div className="sk sk-line" style={{ width: "52%" }} />
+                        <div className="sk sk-line" style={{ width: "32%", height: 10 }} />
+                      </div>
+                    </div>
+                    <div className="sk sk-line" style={{ width: "100%" }} />
+                    <div className="sk sk-line" style={{ width: "86%" }} />
+                  </div>
+                </div>
+              </div>
+            }
+          >
           <Routes location={displayLocation}>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
@@ -693,6 +715,7 @@ function AppShell() {
             <Route path="/chat" element={<RequireAuth><Chat /></RequireAuth>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </Suspense>
           </div>
         </ErrorBoundary>
       </main>
