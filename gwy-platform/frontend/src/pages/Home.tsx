@@ -473,11 +473,25 @@ export default function Home() {
         <div className="card card--soft" style={{ marginTop: 14 }}>
           <div className="row row--between">
             <strong>今日学习计划</strong>
+            <span className="muted" style={{ fontSize: 12 }}>AI · 7 天</span>
           </div>
-          <EmptyState tight icon="calendar" title="还没有学习计划" desc="生成一份为你定制的 AI 学习计划，这里会出现今日待办。" />
-            <button className="btn btn--primary empty__action" onClick={() => nav("/plan")}>
-              制定我的计划
-            </button>
+          <EmptyState
+            tight
+            icon="calendar"
+            title="还没有学习计划"
+            desc={
+              <ul className="home-plan__benefits" style={{ listStyle: "none", padding: 0, margin: "6px 0 0", textAlign: "left", display: "inline-block", fontSize: 13, lineHeight: 1.8, color: "var(--text-2)" }}>
+                <li>· 根据学情定制每日 3-5 项任务</li>
+                <li>· 智能分配错题复盘 + 新题练习 + 模考</li>
+                <li>· 持续追踪打卡与能力画像变化</li>
+              </ul>
+            }
+            action={
+              <button className="btn btn--primary" onClick={() => nav("/plan")}>
+                一键生成我的 7 天计划
+              </button>
+            }
+          />
         </div>
       )}
 
