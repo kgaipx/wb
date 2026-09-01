@@ -5,7 +5,7 @@ import { triggerDownload, stamp } from "../utils/exportUtils";
 import ExplainModal from "../components/ExplainModal";
 import EmptyState from "../components/EmptyState";
 import { TargetIcon, PenIcon } from "../icons";
-import { useToast } from "../components/ToastProvider";
+import { useToast, type ToastApi } from "../components/ToastProvider";
 import Spinner from "../components/Spinner";
 import Reveal from "../components/Reveal";
 
@@ -262,7 +262,7 @@ export default function Favorites() {
                   </div>
                   {items.slice(0, take).map((it, i) => (
                     <Reveal key={it.question.id} delay={Math.min(i, 6) * 40}>
-                      <FavCard item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+                      <FavCard item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} toast={toast} />
                     </Reveal>
                   ))}
                 </div>
@@ -275,7 +275,7 @@ export default function Favorites() {
       {!loading && list.length > 0 && groupBy === "list" && (
         filtered.slice(0, shown).map((it, i) => (
           <Reveal key={it.question.id} delay={Math.min(i, 6) * 40}>
-            <FavCard item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} />
+            <FavCard item={it} busy={busy} onRemove={remove} onPatch={applyPatch} onExplain={setExplainId} toast={toast} />
           </Reveal>
         ))
       )}
@@ -311,12 +311,14 @@ function FavCard({
   onRemove,
   onPatch,
   onExplain,
+  toast,
 }: {
   item: FavoriteItem;
   busy: boolean;
   onRemove: (id: number) => void;
   onPatch: (qid: number, patch: { note?: string; tags?: string[] }) => Promise<FavoriteItem>;
   onExplain?: (id: number) => void;
+  toast: ToastApi;
 }) {
   const nav = useNavigate();
   const q = item.question;
@@ -332,8 +334,9 @@ function FavCard({
       setNoteOpen(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
-    } catch {
-      /* 静默：错误由页面级 err 兜底 */
+    } catch (e: any) {
+      // 失败保留编辑器，给出可见错误提示，便于重试（不再静默隐藏）
+      toast.error(e?.message || "笔记保存失败，请重试");
     } finally {
       setSaving(false);
     }
@@ -344,8 +347,8 @@ function FavCard({
     const next = has ? item.tags.filter((t) => t !== tag) : [...item.tags, tag];
     try {
       await onPatch(q.id, { tags: next });
-    } catch {
-      /* 静默 */
+    } catch (e: any) {
+      toast.error(e?.message || "标签更新失败，请重试");
     }
   }
 
