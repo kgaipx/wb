@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import type { AnimationEvent as ReactAnimationEvent } from "react";
 import { Routes, Route, NavLink, Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./auth";
 import { setUnauthorizedHandler, api } from "./api/client";
@@ -301,6 +302,32 @@ function AuthGate() {
 function AppShell() {
   const loc = useLocation();
   const isAuth = loc.pathname === "/login";
+  // 路由转场：displayLocation 持有「正在显示」的路由，配合 in/out 两阶段动画
+  // 实现类原生 App 的从容淡入淡出（离场时旧页面不卸载，到位后瞬时切换为新页面）。
+  const [displayLocation, setDisplayLocation] = useState(loc);
+  const [stage, setStage] = useState<"in" | "out">("in");
+  useEffect(() => {
+    if (loc.pathname === displayLocation.pathname) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) {
+      // 尊重无障碍偏好：不做转场，立即切换并复位滚动
+      setDisplayLocation(loc);
+      window.scrollTo(0, 0);
+      setStage("in");
+      return;
+    }
+    setStage("out");
+  }, [loc, displayLocation]);
+  const onRouteAnimEnd = (e: ReactAnimationEvent<HTMLDivElement>) => {
+    if (e.target !== e.currentTarget) return; // 仅响应自身动画，忽略子元素冒泡
+    if (stage === "out") {
+      setDisplayLocation(loc);
+      window.scrollTo(0, 0);
+      setStage("in");
+    }
+  };
   const { user } = useAuth();
   const nav = useNavigate();
   const [notifs, setNotifs] = useState<NotificationOut[]>([]);
@@ -632,8 +659,8 @@ function AppShell() {
 
       <main className="app-main" style={isAuth ? { padding: 0, paddingBottom: 0 } : undefined}>
         <ErrorBoundary>
-          <div key={loc.pathname} className="route-anim">
-          <Routes>
+          <div className={"route-anim route-anim--" + stage} onAnimationEnd={onRouteAnimEnd}>
+          <Routes location={displayLocation}>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/learn" element={<RequireAuth><Learn /></RequireAuth>} />

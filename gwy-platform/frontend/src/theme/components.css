@@ -80,14 +80,8 @@
   display: none;
 }
 
-/* 页面切换：路由变更时新页面淡入，营造顺畅的 App 级过渡（仅 opacity，不破坏页面内 fixed 定位） */
-@keyframes page-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.app-main > * {
-  animation: page-in 0.26s var(--ease-out) both;
-}
+/* 页面切换转场统一由 .route-anim 的 in/out 两阶段动画接管（见下方），
+   不再对 .app-main > * 叠加独立动画，避免与路由容器动画冲突/重复触发。 */
 
 /* ===================== 底部导航 ===================== */
 .nav-bar {
@@ -186,14 +180,26 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
-/* 路由切换：进入淡入（仅 opacity，避免对 fixed/sticky 后代建立包含块） */
-.route-anim { animation: route-fade var(--t-sheet) var(--ease-ios) both; will-change: transform, opacity; }
-@keyframes route-fade {
-  from { opacity: 0; transform: translateY(12px) scale(0.985); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+/* 路由切换：进入淡入 + 离开淡出，形成类原生 App 的从容转场。
+   - in：新页面从下方轻抬 + 淡入，落位用 --ease-out（减速曲线，收尾干净）
+   - out：旧页面极轻上移 + 淡出，时长更短，避免「卡顿感」
+   - 两阶段均以 transform:none 收尾，不长期占用包含块，不破坏页面内 fixed/sticky
+   - 尊重 prefers-reduced-motion：完全禁用转场 */
+.route-anim { will-change: opacity, transform; }
+.route-anim--in { animation: route-in 0.34s var(--ease-out) both; }
+.route-anim--out { animation: route-out 0.2s var(--ease-out) both; }
+@keyframes route-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.992); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes route-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(-6px); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .route-anim { animation: none; }
+  .route-anim,
+  .route-anim--in,
+  .route-anim--out { animation: none !important; will-change: auto; }
 }
 .more-sheet__head {
   display: flex;
