@@ -6,6 +6,7 @@
 等敏感审核动作须 reviewer / admin 角色（服务端以登录用户身份签名，杜绝伪造）。
 """
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
 from app.ai.content_validator import (
@@ -161,6 +162,29 @@ def auto_action(
             q.answer = payload.answer
     db.commit()
     return {"processed": len(qs), "action": payload.action}
+
+
+class AiFillExplanationsIn(BaseModel):
+    limit: int = 10  # 单批题数（后端上限 30，LLM 逐题生成约 3~8s/题）
+    subject: str | None = None  # 可选：限定科目
+
+
+@router.post("/review/ai-fill-explanations", tags=["content"])
+def ai_fill_explanations_endpoint(
+    payload: AiFillExplanationsIn,
+    current: User = Depends(require_reviewer),
+    db: Session = Depends(get_db),
+):
+    """AI 批量补解析（P2 内容质量）：对缺解析题调 LLM 生成解析并写库。
+
+    - 只处理 explanation 为空且未作废的题；每题写入 question_audit_actions（ai_filled）留痕
+    - 逐题提交：单题 LLM 失败不丢前面成果；单批上限 30（避免 HTTP 超时）
+    - 前端循环调用直到 remaining=0 即可完成全量补齐
+    """
+    from app.services.auto_review import ai_fill_explanations
+
+    actor = current.email or current.nickname or str(current.id)
+    return ai_fill_explanations(db, limit=payload.limit, subject=payload.subject, actor=actor)
 
 
 @router.get("/review/audit-actions", response_model=list[AuditActionOut], tags=["content"])

@@ -21,6 +21,7 @@
 import re
 from collections import Counter
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models import Question
@@ -196,4 +197,101 @@ def auto_scan(
         "grouped": {k: grouped[k] for k in sorted(grouped, key=lambda x: -grouped[x])},
         "suspects": suspects,
         "limit": limit,
+    }
+
+
+# ---------------------------------------------------------------------------
+# AI 批量补解析（P2 内容质量：8,332 题缺解析，人工补不现实）
+# ---------------------------------------------------------------------------
+_EXPLAIN_SYSTEM = (
+    "你是公考题库的资深解析作者。根据题干、选项与正确答案，写一段简洁、准确的解析："
+    "先点明考点，再说明为什么正确项成立、关键干扰项为何不对。"
+    "要求：1) 120~250 字；2) 不要复述题干原文；3) 不要编造题目以外的知识；"
+    "4) 直接输出解析正文，不要标题、序号或前后缀。"
+)
+
+
+def ai_fill_explanations(
+    db: Session,
+    *,
+    limit: int = 10,
+    subject: str | None = None,
+    actor: str = "system",
+) -> dict:
+    """对缺解析题批量调用 LLM 生成解析并写库。
+
+    - 只处理 explanation 为空 且 未被作废（audit_status != 'voided'）的题；
+    - 已被 'ignored' 的题仍可补（ignored 仅表示排除出硬伤队列）；
+    - 每题生成后写入 question_audit_actions（action='ai_filled'）留痕；
+    - 顺序生成，limit 单次上限 30（LLM 每题 3~8s，避免请求超时）。
+    """
+    from app.ai.llm_gateway import LLMGateway
+    from app.models import QuestionAuditAction
+
+    limit = max(1, min(limit, 30))
+
+    q = db.query(Question).filter(
+        Question.audit_status != "voided",
+        (Question.explanation.is_(None)) | (Question.explanation == ""),
+    )
+    if subject:
+        q = q.filter(Question.subject == subject)
+    rows = q.order_by(Question.id.asc()).limit(limit).all()
+
+    remaining_q = db.query(func.count(Question.id)).filter(
+        Question.audit_status != "voided",
+        (Question.explanation.is_(None)) | (Question.explanation == ""),
+    )
+    if subject:
+        remaining_q = remaining_q.filter(Question.subject == subject)
+    remaining_before = remaining_q.scalar() or 0
+
+    if not rows:
+        return {"filled": 0, "failed": 0, "remaining": remaining_before, "items": [], "model": None}
+
+    gw = LLMGateway()
+    filled, failed, items = 0, 0, []
+    model_used = None
+    for r in rows:
+        try:
+            opts = sorted(r.options, key=lambda o: o.label)
+            opt_text = "\n".join(f"{o.label}. {o.content}" for o in opts)
+            prompt = (
+                f"【科目】{r.subject} · {r.category}（题型：{r.qtype}）\n"
+                f"【题干】{r.stem}\n"
+                f"【选项】\n{opt_text}\n"
+                f"【正确答案】{r.answer or '未知'}\n\n请写出解析。"
+            )
+            resp = gw.complete(prompt, system=_EXPLAIN_SYSTEM, temperature=0.2, max_tokens=512)
+            text = (resp.content or "").strip()
+            model_used = resp.model or model_used
+            if len(text) < 20 or len(text) > 1500:
+                raise ValueError(f"生成结果长度异常（{len(text)} 字）")
+            r.explanation = text
+            db.add(QuestionAuditAction(
+                question_id=r.id, action="ai_filled",
+                note=f"AI 生成解析（{resp.model}）", actor=actor,
+            ))
+            db.commit()  # 逐题提交：单题失败不丢前面成果
+            filled += 1
+            items.append({"id": r.id, "ok": True, "explanation": text[:80] + ("…" if len(text) > 80 else "")})
+        except Exception as e:  # noqa: BLE001 - 单题失败不阻断整批
+            db.rollback()
+            failed += 1
+            items.append({"id": r.id, "ok": False, "error": str(e)[:120]})
+    db.commit()
+
+    remaining_q = db.query(func.count(Question.id)).filter(
+        Question.audit_status != "voided",
+        (Question.explanation.is_(None)) | (Question.explanation == ""),
+    )
+    if subject:
+        remaining_q = remaining_q.filter(Question.subject == subject)
+
+    return {
+        "filled": filled,
+        "failed": failed,
+        "remaining": remaining_q.scalar() or 0,
+        "items": items,
+        "model": model_used,
     }

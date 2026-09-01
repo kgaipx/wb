@@ -778,6 +778,12 @@ export const api = {
   // 最近处置留痕（工作台历史）
   auditActions: (limit = 50) =>
     request<{ id: number; question_id: number; action: string; note: string | null; actor: string; created_at: string }[]>(`/content/review/audit-actions?limit=${limit}`),
+  // AI 批量补解析（P2 内容质量）：对缺解析题调 LLM 生成解析，逐题提交
+  aiFillExplanations: (limit = 10, subject?: string) =>
+    request<{ filled: number; failed: number; remaining: number; model: string | null; items: { id: number; ok: boolean; explanation?: string; error?: string }[] }>(
+      "/content/review/ai-fill-explanations",
+      { method: "POST", body: JSON.stringify({ limit, subject }) },
+    ),
   // 双签复核完整审计日志（替代旧版只能从 ContentReview 单行倒推的局面）
   reviewLogs: (review_id: number) => request<{ id: number; review_id: number; action: string; actor: string; note: string | null; created_at: string }[]>(`/content/review/${review_id}/logs`),
   // 审核员身份以服务端登录用户为准，前端不再传 reviewer

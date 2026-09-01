@@ -74,6 +74,24 @@ export default function Review() {
   const [scanLimit, setScanLimit] = useState<number>(300); // 已加载条数
   const [bulkFixAns, setBulkFixAns] = useState<string>(""); // 批量修正答案
 
+  // —— AI 批量补解析（P2 内容质量） ——
+  const [aiFill, setAiFill] = useState<any>(null); // 最近一批结果
+  const [aiFillBusy, setAiFillBusy] = useState(false);
+  const [aiFillErr, setAiFillErr] = useState("");
+  const [aiBatch, setAiBatch] = useState(10); // 单批题数
+  async function runAiFill() {
+    setAiFillBusy(true); setAiFillErr("");
+    try {
+      const r = await api.aiFillExplanations(aiBatch);
+      setAiFill(r);
+      await loadHist();
+    } catch (e: any) {
+      setAiFillErr(e.message || "补解析失败");
+    } finally {
+      setAiFillBusy(false);
+    }
+  }
+
   // —— 可疑题处置（工作台）：fixed / voided / ignored，全部留痕 ——
   async function loadHist() {
     try {
@@ -616,6 +634,47 @@ export default function Review() {
               )}
             </div>
             {scanErr && <div className="err-text" style={{ marginTop: 8 }}>{scanErr}</div>}
+
+            {/* AI 批量补解析：对缺解析题调 LLM 生成（逐题留痕，单题失败不阻断） */}
+            <div style={{ marginTop: 12, padding: "10px 12px", borderRadius: 10, background: "var(--bg-soft, #f6f7fb)" }}>
+              <div className="row row--between">
+                <strong style={{ fontSize: 13 }}>✨ AI 批量补解析</strong>
+                {aiFill && (
+                  <span className="muted" style={{ fontSize: 12 }}>
+                    剩余缺解析（未作废）：<b>{aiFill.remaining}</b>
+                  </span>
+                )}
+              </div>
+              <div className="muted" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.6 }}>
+                对缺解析的题由 LLM 生成解析并写库（含 ai_filled 留痕）。单批最多 30 题、约数秒/题；
+                连续点击即可完成全量补齐。
+              </div>
+              <div className="row" style={{ gap: 8, marginTop: 8, alignItems: "center" }}>
+                <select className="input" style={{ width: 110, fontSize: 12, padding: "5px 8px" }}
+                  value={aiBatch} onChange={e => setAiBatch(Number(e.target.value))} disabled={aiFillBusy}>
+                  <option value={10}>每批 10 题</option>
+                  <option value={20}>每批 20 题</option>
+                  <option value={30}>每批 30 题</option>
+                </select>
+                <button className="btn btn--primary btn--sm" disabled={aiFillBusy} onClick={runAiFill}>
+                  {aiFillBusy ? "生成中…（请勿关闭）" : aiFill ? `继续补 ${aiBatch} 题` : `开始补解析（${aiBatch} 题）`}
+                </button>
+              </div>
+              {aiFillErr && <div className="err-text" style={{ fontSize: 12, marginTop: 6 }}>{aiFillErr}</div>}
+              {aiFill && (
+                <div style={{ marginTop: 6, fontSize: 12 }}>
+                  <span style={{ color: "var(--ok, #1a7f37)" }}>本批成功 <b>{aiFill.filled}</b></span>
+                  {aiFill.failed > 0 && <span style={{ color: "var(--danger, #d92b1c)", marginLeft: 10 }}>失败 <b>{aiFill.failed}</b></span>}
+                  {aiFill.model && <span className="muted" style={{ marginLeft: 10 }}>模型：{aiFill.model}</span>}
+                  {(aiFill.items || []).filter((i: any) => !i.ok).slice(0, 3).map((i: any) => (
+                    <div key={i.id} className="err-text" style={{ fontSize: 12, marginTop: 4 }}>#{i.id}：{i.error}</div>
+                  ))}
+                  {(aiFill.items || []).filter((i: any) => i.ok).slice(0, 2).map((i: any) => (
+                    <div key={i.id} className="muted" style={{ fontSize: 12, marginTop: 4 }}>#{i.id}：{i.explanation}</div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {scan && (
               <div style={{ marginTop: 10 }}>
