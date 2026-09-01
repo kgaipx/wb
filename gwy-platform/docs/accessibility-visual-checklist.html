@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>gwy-platform · 视觉 / 可达性走查清单</title>
+<style>
+  :root{
+    --bg:#f5f6f8; --card:#ffffff; --ink:#1c2536; --ink2:#54607a; --ink3:#8a93a6;
+    --brand:#2f6bff; --brand050:#eaf1ff; --line:#e7eaf0; --ok:#1aa463; --ok050:#e6f6ee;
+    --warn:#c47d00; --danger:#d23b3b; --radius:16px; --shadow:0 1px 2px rgba(20,30,60,.06),0 8px 24px rgba(20,30,60,.06);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1080px;margin:0 auto;padding:40px 24px 80px;}
+  header.hero{background:linear-gradient(135deg,#2f6bff,#5b8bff);color:#fff;border-radius:24px;padding:34px 36px;box-shadow:var(--shadow);}
+  header.hero h1{margin:0 0 6px;font-size:26px;letter-spacing:.3px;}
+  header.hero p{margin:0;opacity:.92;font-size:14px;}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px;}
+  .chip{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:5px 12px;font-size:12.5px;}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0 8px;}
+  .stat{background:var(--card);border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);}
+  .stat .n{font-size:26px;font-weight:700;color:var(--brand);}
+  .stat .l{font-size:12.5px;color:var(--ink2);margin-top:2px;}
+  h2{font-size:19px;margin:34px 0 14px;display:flex;align-items:center;gap:10px;}
+  h2 .tag{font-size:12px;font-weight:600;color:var(--brand);background:var(--brand050);padding:3px 10px;border-radius:999px;}
+  .intro{background:var(--card);border-radius:var(--radius);padding:18px 22px;box-shadow:var(--shadow);font-size:14px;color:var(--ink2);}
+  .intro b{color:var(--ink);}
+  .group{margin-top:14px;}
+  .item{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow);}
+  .item .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .item .name{font-weight:650;font-size:15.5px;}
+  .item .std{font-size:12.5px;color:var(--ink3);margin-top:2px;}
+  .badge{flex:none;font-size:12px;font-weight:600;padding:4px 11px;border-radius:999px;white-space:nowrap;}
+  .badge.ok{background:var(--ok050);color:var(--ok);}
+  .badge.part{background:#fff3df;color:var(--warn);}
+  .kv{display:grid;grid-template-columns:84px 1fr;gap:6px 14px;margin-top:12px;font-size:13px;}
+  .kv dt{color:var(--ink3);font-weight:600;}
+  .kv dd{margin:0;color:var(--ink2);}
+  .kv code{background:#f0f2f7;border-radius:6px;padding:1px 6px;font-size:12px;color:#394760;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;}
+  .flow{background:var(--card);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+  .flow ol{margin:8px 0 0;padding-left:20px;}
+  .flow li{margin:9px 0;font-size:13.5px;color:var(--ink2);}
+  .flow li b{color:var(--ink);}
+  pre{background:#0f1729;color:#d7e1f4;border-radius:12px;padding:14px 16px;overflow:auto;font-size:12.5px;line-height:1.55;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;}
+  pre .c{color:#7f8db0;}
+  .evidence{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-top:6px;}
+  .ev{background:#0f1729;color:#cdd8ef;border-radius:10px;padding:10px 12px;font-size:12.5px;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;}
+  .ev .h{color:#7fd1a0;font-weight:600;}
+  .ev .s{color:#8b97b8;font-size:11.5px;display:block;margin-top:3px;}
+  footer{margin-top:40px;font-size:12px;color:var(--ink3);text-align:center;}
+  @media (max-width:680px){.stats{grid-template-columns:repeat(2,1fr);}.kv{grid-template-columns:72px 1fr;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <h1>视觉 / 可达性走查清单</h1>
+    <p>gwy-platform 前端 · Apple 级显示品质收尾基线 &amp; 通用走查标准</p>
+    <div class="meta">
+      <span class="chip">线上：https://49.233.171.233/</span>
+      <span class="chip">栈：React + Vite + FastAPI</span>
+      <span class="chip">更新：2026-09-01</span>
+    </div>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><div class="n">14</div><div class="l">走查维度（4 大类）</div></div>
+    <div class="stat"><div class="n">14</div><div class="l">基线达标维度</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">WCAG AA 对比度问题</div></div>
+    <div class="stat"><div class="n">0</div><div class="l">移动端守卫噪音（仅 2 处角色预期）</div></div>
+  </section>
+
+  <div class="intro">
+    <b>本文档双重用途：</b>① <b>已落地基线汇总</b>——记录「Apple 级显示品质」收尾主线已达成的水位，团队一眼看清现状；② <b>通用走查标准</b>——未来新增任何页面 / 功能，按本清单逐项核对即可保证不退化。
+    每个维度给出 <b>检查点 → 通过标准 → 本项目做法（文件 / class / hook）→ 验证方式 → 状态</b>。
+  </div>
+
+  <!-- ===================== A. 色彩与排版 ===================== -->
+  <h2><span class="tag">A</span>色彩与排版 Color &amp; Typography</h2>
+  <div class="group">
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">A1 · 文本对比度（WCAG 1.4.3）</div><div class="std">普通文本 ≥ 4.5:1，大文本（≥18.66px 粗 / 24px）≥ 3:1；图标/图形 ≥ 3:1</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>从 <b>token 层</b>修而非逐个组件：调整 <code>--text-3</code>、<code>--danger</code>、<code>--brand</code> 等取值，浅/暗双主题分别达标。暗色下跳转链接用近黑底 <code>#0f1c38</code>+白字（~15:1）规避品牌蓝偏亮 3.2 不达标。</dd>
+        <dt>验证</dt><dd>逐路由实测「文字色 / 有效背景色」对比度，浅/暗/移动三态 = <b>0 / 0 / 0</b>。</dd>
+        <dt>位置</dt><dd><code>frontend/src/theme/tokens.css</code> · <code>global.css</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">A2 · 占位符与光标一致性</div><div class="std">所有输入框占位符同色可辨；输入光标使用品牌色</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>全局 <code>::placeholder{color:var(--text-3);opacity:1}</code>（此前仅 <code>.input</code> 有）；<code>input/textarea/[contenteditable]{caret-color:var(--brand)}</code>。</dd>
+        <dt>位置</dt><dd><code>theme/global.css</code> · 提交 <code>d6c44dc</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">A3 · 最小字号</div><div class="std">正文 ≥ 12px（避免可读性崩塌）</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>审计脚本扫描两断点（移动 390 / 桌面 1440），所有渲染文本 ≥ 12px。</dd>
+        <dt>位置</dt><dd>提交 <code>f8318d0</code>（UI 细节打磨）</dd>
+      </dl>
+    </div>
+
+  </div>
+
+  <!-- ===================== B. 布局与响应式 ===================== -->
+  <h2><span class="tag">B</span>布局与响应式 Layout &amp; Responsive</h2>
+  <div class="group">
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">B1 · 三断点响应式体系</div><div class="std">移动 ≤480 · 平板 680–1023 · 桌面 ≥1240；各断点布局不破版</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>补齐平板断点（iPad 竖屏 768/834、折叠屏展开）；移动 shell 480→680；桌面侧栏 236 + 正文 884。</dd>
+        <dt>验证</dt><dd>3 断点 × 19 路由 = 57 项布局检查，<b>0 问题</b>。</dd>
+        <dt>位置</dt><dd><code>theme/components.css</code> · 提交 <code>27a5d67</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">B2 · 触控目标尺寸（WCAG 2.5.8）</div><div class="std">可点击目标 ≥ 24×24（本项目采用更严的 44×44）</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd><code>.btn</code> 基础 <code>min-height</code> 39→44px；主/次/幽灵按钮（去问问、制定计划、开始刷题、攻克错题本、退出登录、保存画像、加载更多）全部达标。</dd>
+        <dt>位置</dt><dd>提交 <code>f8318d0</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">B3 · 悬浮控件不遮挡操作</div><div class="std">FAB / 底部操作不被固定悬浮元素覆盖</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd><code>.app-main</code> 移动端加 <code>padding-bottom</code>，FAB 不再遮住 <code>/data</code>「继续刷题」按钮（原遮 32%）。</dd>
+        <dt>位置</dt><dd>提交 <code>f8318d0</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">B4 · 长列表性能</div><div class="std">大批量数据分页 / 虚拟滚动，避免一次性堆叠渲染</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>如「政治 1341 题」学科页改为分页 / 分批渲染，DOM 可控、滚动轻盈、作答反馈不被埋没。</dd>
+        <dt>位置</dt><dd>前序轮次已落地（主线基线）</dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">B5 · 长文本 / 消息截断</div><div class="std">超长内容优雅截断或折叠，不撑破布局</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>聊天等超长消息裁剪 + （可选）展开，避免气泡无限撑高。</dd>
+        <dt>位置</dt><dd>前序轮次已落地（主线基线）</dd>
+      </dl>
+    </div>
+
+  </div>
+
+  <!-- ===================== C. 交互与反馈 ===================== -->
+  <h2><span class="tag">C</span>交互与反馈 Interaction &amp; Feedback</h2>
+  <div class="group">
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">C1 · 加载 / 空 / 错误三态闭环</div><div class="std">每类数据视图均有 loading 骨架、空态、可重试错误态；错误态不误显示为「空」</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>统一 <code>EmptyState</code>；新增 <code>ErrorState</code>（<code>empty--err</code> 危险色 + <code>onRetry</code> + <code>role="alert"</code>）。修复通知中心静默吞错（失败误走空态）。</dd>
+        <dt>位置</dt><dd><code>components/ErrorState.tsx</code> · 提交 <code>ff83e7c</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">C2 · 写操作反馈一致性</div><div class="std">任何写 / 乐观更新失败必须给可见反馈，禁止静默吞错；乐观更新失败要回滚</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>全局统一 <code>toast.error</code> 兜底；收藏页笔记/标签保存失败透传 toast；通知「全部已读」失败给 toast；<code>Chat.doSend</code>/<code>Plan.onToggle</code> 乐观更新均正确回滚，无假成功态。</dd>
+        <dt>位置</dt><dd>提交 <code>ec82af0</code> · <code>0c48145</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">C3 · 表单实时校验反馈</div><div class="std">字段错误随输入实时复算；失焦或首次提交后即内联标红，改对即清、改错即显；带 aria 关联</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>新增 <code>useField</code> 控制器：返回 <code>{invalid,error,describedBy,onBlur}</code>；样式 <code>.input.is-invalid</code>（红描边+危险光环）、<code>.field-error</code>（红圈「!」+<code>role=alert</code>）。已接入 Login / Profile / ExamPrediction。</dd>
+        <dt>验证</dt><dd>Playwright 移动视口 <b>13/13 通过</b>：失焦即显、改对即清、<code>aria-invalid=true</code>。</dd>
+        <dt>位置</dt><dd><code>hooks/useField.ts</code> · 提交 <code>f60f2f6</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">C4 · 路由转场动画</div><div class="std">页面切换为类原生淡出+淡入交叉转场；尊重 reduced-motion；不长期建立 transform 包含块</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>移除重复入场动画；新增 <code>.route-anim--in</code>（translateY(10px) scale(.992) 升入，收尾 <code>transform:none</code> 释放包含块）与 <code>.route-anim--out</code>（轻上移淡出）。</dd>
+        <dt>位置</dt><dd><code>theme/components.css</code> · <code>App.tsx</code> · 提交 <code>d67f85c</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">C5 · 动效语言统一</div><div class="std">缓动语义一致；所有动画尊重 <code>prefers-reduced-motion</code></div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>保留语义化缓动（spin/pulse/shimmer 用 ease-in-out、spin 匀速）；全量动画在 reduced-motion 下 <code>animation:none !important</code>。</dd>
+        <dt>位置</dt><dd>提交 <code>0b425cc</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">C6 · 全局微交互</div><div class="std">滚动顺滑、占位符/光标统一、输入细节有质感</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd><code>html{scroll-behavior:smooth}</code> + A2 占位符/光标 + 品牌色 caret。</dd>
+        <dt>位置</dt><dd>提交 <code>d6c44dc</code></dd>
+      </dl>
+    </div>
+
+  </div>
+
+  <!-- ===================== D. 可达性 ===================== -->
+  <h2><span class="tag">D</span>可达性 Accessibility</h2>
+  <div class="group">
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">D1 · 键盘可绕过区块（WCAG 2.4.1）</div><div class="std">提供「跳到主内容」链接；路由切换后焦点归位主内容</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd><code>&lt;a class="skip-link" href="#main-content"&gt;</code> 移出视口、聚焦滑入；<code>&lt;main id="main-content" tabIndex={-1}&gt;</code>；路由转场后 <code>mainRef.current.focus()</code> 归位。</dd>
+        <dt>位置</dt><dd><code>App.tsx</code> · <code>global.css</code> · 提交 <code>30434f3</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">D2 · 焦点陷阱与 Esc（模态/抽屉）</div><div class="std">打开模态/抽屉时 Tab 在容器内循环；Esc 关闭；关闭归还焦点给触发元素</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd>新增 <code>useFocusTrap(active,onClose)</code>：记录触发元素、焦点移入、Tab/Shift+Tab 循环、Esc 关闭、卸载归还。<code>onClose</code> 用 ref 持有避免重挂。已接入题解模态、Chat 抽屉、模考答题卡/交卷确认。</dd>
+        <dt>验证</dt><dd>Playwright <b>8/8</b>：skip-link、焦点归位、模态内 Tab 循环 8 次不逃逸、Esc 关闭归还。</dd>
+        <dt>位置</dt><dd><code>hooks/useFocusTrap.ts</code> · 提交 <code>30434f3</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">D3 · 焦点可见环（WCAG 2.4.7）</div><div class="std">键盘聚焦有清晰可见的聚焦指示</div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd><code>:focus-visible{outline:2px solid var(--brand);outline-offset:2px}</code>；全站可聚焦元素统一覆盖。</dd>
+        <dt>位置</dt><dd><code>theme/global.css</code></dd>
+      </dl>
+    </div>
+
+    <div class="item">
+      <div class="top">
+        <div><div class="name">D4 · 屏幕阅读器语义</div><div class="std">表单错误 <code>aria-invalid</code> + <code>aria-describedby</code>；错误块 <code>role="alert"</code></div></div>
+        <span class="badge ok">基线达标</span>
+      </div>
+      <dl class="kv">
+        <dt>做法</dt><dd><code>useField</code> 输出 <code>aria-invalid</code> 与 <code>describedBy</code>；<code>.field-error</code> / <code>ErrorState</code> 用 <code>role="alert"</code> 即时播报。</dd>
+        <dt>位置</dt><dd>提交 <code>f60f2f6</code> · <code>ff83e7c</code></dd>
+      </dl>
+    </div>
+
+  </div>
+
+  <!-- ===================== 通用走查流程 ===================== -->
+  <h2><span class="tag">▶</span>新页面 / 功能通用走查流程</h2>
+  <div class="flow">
+    <ol>
+      <li><b>列维度</b>：对照上文 4 大类 14 项，圈出本页涉及的项（如列表页必查 B1/B4/C1；表单页必查 C3/D4/A1）。</li>
+      <li><b>三断点截图</b>：移动 390×844、平板 820×1180、桌面 1280×800 各截一帧，肉眼核对破版 / 遮挡 / 截断。</li>
+      <li><b>对比度复算</b>：取「文字色 / 有效背景色」（注意半透明遮罩、渐变卡），普通 ≥4.5:1、大文本 ≥3:1；暗色主题单独跑。</li>
+      <li><b>键盘走查</b>：Tab 顺序是否合理？有无 skip-link？模态/抽屉能否 Tab 循环且 Esc 关闭、关闭归还焦点？</li>
+      <li><b>三态走查</b>：制造空数据（清 localStorage）→ 看 EmptyState；拦截接口 5xx → 看 ErrorState + 重试；loading 期间有骨架。</li>
+      <li><b>写操作走查</b>：拦截写接口失败 → 确认有 toast/err 且乐观更新已回滚，绝无静默吞错。</li>
+      <li><b>表单走查</b>：失焦即显内联错误 + 红框 + aria-invalid；改对即清；提交拦截非法值。</li>
+      <li><b>动效走查</b>：开启系统「减少动态效果」后，转场/循环动画应全部禁用或降级。</li>
+    </ol>
+
+    <p style="margin:16px 0 8px;font-weight:650;color:var(--ink);">验证工具链命令模板（playwright-core + 系统 Chrome）</p>
+    <pre><span class="c"># 1) 启动前端 dev（或指向已部署 https://49.233.171.233/）</span>
+cd C:/Users/hp/WorkBuddy/2026-08-04-15-27-40/gwy-platform/frontend
+<span class="c"># 2) 运行审计脚本（对比度 / 布局三断点 / 触控字号遮挡）</span>
+NODE_PATH=C:/Users/hp/.workbuddy/binaries/node/workspace/node_modules \
+PLAYWRIGHT_BROWSERS_PATH=C:/Users/hp/AppData/Local/ms-playwright \
+C:/Users/hp/.workbuddy/binaries/node/versions/22.22.2/node.exe scripts/&lt;audit&gt;.cjs
+<span class="c"># 3) 控制台无 pageerror、对比度 0 问题、布局 0 问题即达标</span></pre>
+    <p style="font-size:12.5px;color:var(--ink3);margin:6px 0 0;">说明：历史审计脚本 <code>audit_ui.cjs / contrast_ui.cjs / detail_ui.cjs</code> 已在交付清理时移除，复跑时按上方模板重建或改用 Playwright 录制即可；线上环境为自签 TLS，浏览器安全提示属正常。</p>
+  </div>
+
+  <!-- ===================== 基线证据 ===================== -->
+  <h2><span class="tag">⚑</span>主线关键提交（基线证据）</h2>
+  <div class="evidence">
+    <div class="ev"><span class="h">d6c44dc</span>全局微交互统一<span class="s">占位符/光标/平滑滚动</span></div>
+    <div class="ev"><span class="h">ff83e7c</span>通知中心错误态<span class="s">ErrorState + 重试</span></div>
+    <div class="ev"><span class="h">ec82af0</span>写失败 toast<span class="s">收藏笔记/标签</span></div>
+    <div class="ev"><span class="h">d67f85c</span>路由交叉转场<span class="s">淡出+淡入</span></div>
+    <div class="ev"><span class="h">0c48145</span>通知已读失败<span class="s">toast.error</span></div>
+    <div class="ev"><span class="h">30434f3</span>键盘可达性<span class="s">skip-link+焦点陷阱</span></div>
+    <div class="ev"><span class="h">f60f2f6</span>表单实时校验<span class="s">useField + is-invalid</span></div>
+    <div class="ev"><span class="h">27a5d67</span>对比度+平板<span class="s">WCAG AA 全量修复</span></div>
+    <div class="ev"><span class="h">f8318d0</span>触控/字号/遮挡<span class="s">44px 目标</span></div>
+    <div class="ev"><span class="h">0b425cc</span>动效语言统一<span class="s">reduced-motion</span></div>
+  </div>
+
+  <footer>
+    gwy-platform · 视觉 / 可达性走查清单 · 基线截至 2026-09-01 · 本清单随新维度发现持续增补
+  </footer>
+
+</div>
+</body>
+</html>
