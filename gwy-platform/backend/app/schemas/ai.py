@@ -8,8 +8,13 @@ class ExplainIn(BaseModel):
 
 
 class CitationOut(BaseModel):
-    """富引用：知识点 + 标题 + 来源 + 相关度，供前端渲染知识卡片。"""
-    title: str
+    """富引用：知识点 + 标题 + 来源 + 相关度，供前端渲染知识卡片。
+
+    title 允许缺失：旧版聊天消息的 citations 以纯字符串来源存储，读取时归一化为
+    {"source": ...} 无 title，若 title 必填会导致历史会话消息接口 500
+    （pydantic ValidationError）。前端 CiteCards 已按 title || source 兜底展示。
+    """
+    title: str | None = None
     kp: str | None = None
     source: str | None = None
     score: float | None = None  # 检索相关度（0~1 混合分；纯词项路径可能更高）

@@ -152,7 +152,7 @@ export interface WrongItem {
   explanation?: string | null; // 解析（打印视图展示，本人可见）
 }
 export interface Citation {
-  title: string;
+  title?: string; // 兼容旧版字符串来源引用（无 title，前端按 title || source 兜底）
   kp?: string;
   source?: string;
   score?: number; // 检索相关度（0~1 混合分）
