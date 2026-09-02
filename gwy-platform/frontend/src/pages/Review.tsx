@@ -100,11 +100,11 @@ export default function Review() {
   async function runAiFillLoop() {
     setLoopRun(true); loopStopRef.current = false; setAiFillErr("");
     setLoopStat({ done: 0, failed: 0, remaining: aiFill?.remaining ?? 0, startedAt: Date.now() });
-    let guard = 0; // 硬上限防失控（400 批 × 30 = 12000 > 全库）
+    let guard = 0; // 硬上限防失控（100 批 × 100 = 10000 > 全库）
     try {
-      while (!loopStopRef.current && guard < 400) {
+      while (!loopStopRef.current && guard < 100) {
         guard++;
-        const r = await api.aiFillExplanations(30);
+        const r = await api.aiFillExplanations(100);
         setAiFill(r);
         setLoopStat(s => s ? { ...s, done: s.done + r.filled, failed: s.failed + r.failed, remaining: r.remaining } : s);
         if (r.remaining === 0) break;
@@ -673,8 +673,8 @@ export default function Review() {
                 )}
               </div>
               <div className="muted" style={{ fontSize: 12, marginTop: 4, lineHeight: 1.6 }}>
-                对缺解析的题由 LLM 生成解析并写库（含 ai_filled 留痕）。单批最多 30 题、约数秒/题；
-                连续点击即可完成全量补齐。
+                对缺解析的题由 LLM 生成解析并写库（含 ai_filled 留痕）。LLM 并发生成、每批约
+                30~60 秒；连续点击或「一键补完」即可完成全量补齐。
               </div>
               <div className="row" style={{ gap: 8, marginTop: 8, alignItems: "center" }}>
                 <select className="input" style={{ width: 110, fontSize: 12, padding: "5px 8px" }}
@@ -682,13 +682,15 @@ export default function Review() {
                   <option value={10}>每批 10 题</option>
                   <option value={20}>每批 20 题</option>
                   <option value={30}>每批 30 题</option>
+                  <option value={50}>每批 50 题</option>
+                  <option value={100}>每批 100 题</option>
                 </select>
                 <button className="btn btn--primary btn--sm" disabled={aiFillBusy || loopRun} onClick={runAiFill}>
                   {aiFillBusy ? "生成中…（请勿关闭）" : aiFill ? `继续补 ${aiBatch} 题` : `开始补解析（${aiBatch} 题）`}
                 </button>
                 {!loopRun ? (
                   <button className="btn btn--ghost btn--sm" disabled={aiFillBusy} onClick={runAiFillLoop}
-                    title="自动以每批 30 题循环执行直到全部补完，可随时停止">
+                    title="自动以每批 100 题循环执行直到全部补完，可随时停止">
                     ▶▶ 一键补完（循环执行）
                   </button>
                 ) : (

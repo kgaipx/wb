@@ -217,18 +217,24 @@ def ai_fill_explanations(
     limit: int = 10,
     subject: str | None = None,
     actor: str = "system",
+    concurrency: int = 4,
 ) -> dict:
     """对缺解析题批量调用 LLM 生成解析并写库。
 
     - 只处理 explanation 为空 且 未被作废（audit_status != 'voided'）的题；
     - 已被 'ignored' 的题仍可补（ignored 仅表示排除出硬伤队列）；
     - 每题生成后写入 question_audit_actions（action='ai_filled'）留痕；
-    - 顺序生成，limit 单次上限 30（LLM 每题 3~8s，避免请求超时）。
+    - 并发架构：LLM 调用放 ThreadPoolExecutor 并行（主瓶颈），写库回主线程串行
+      逐题 commit——SQLAlchemy session 不做跨线程共享，单题失败不丢前面成果；
+    - limit 单次上限 100（并发 4~8 下每批约 30~60s，避免 HTTP 超时）。
     """
+    import concurrent.futures as cf
+
     from app.ai.llm_gateway import LLMGateway
     from app.models import QuestionAuditAction
 
-    limit = max(1, min(limit, 30))
+    limit = max(1, min(limit, 100))
+    concurrency = max(1, min(concurrency, 8))
 
     q = db.query(Question).filter(
         Question.audit_status != "voided",
@@ -238,60 +244,71 @@ def ai_fill_explanations(
         q = q.filter(Question.subject == subject)
     rows = q.order_by(Question.id.asc()).limit(limit).all()
 
-    remaining_q = db.query(func.count(Question.id)).filter(
-        Question.audit_status != "voided",
-        (Question.explanation.is_(None)) | (Question.explanation == ""),
-    )
-    if subject:
-        remaining_q = remaining_q.filter(Question.subject == subject)
-    remaining_before = remaining_q.scalar() or 0
+    def _count_remaining() -> int:
+        rq = db.query(func.count(Question.id)).filter(
+            Question.audit_status != "voided",
+            (Question.explanation.is_(None)) | (Question.explanation == ""),
+        )
+        if subject:
+            rq = rq.filter(Question.subject == subject)
+        return rq.scalar() or 0
+
+    remaining_before = _count_remaining()
 
     if not rows:
         return {"filled": 0, "failed": 0, "remaining": remaining_before, "items": [], "model": None}
 
-    gw = LLMGateway()
+    def _gen_one(r: Question) -> tuple[str, str]:
+        """纯 LLM 调用（无 DB 写），worker 线程内执行。返回 (text, model)。"""
+        opts = sorted(r.options, key=lambda o: o.label)
+        opt_text = "\n".join(f"{o.label}. {o.content}" for o in opts)
+        prompt = (
+            f"【科目】{r.subject} · {r.category}（题型：{r.qtype}）\n"
+            f"【题干】{r.stem}\n"
+            f"【选项】\n{opt_text}\n"
+            f"【正确答案】{r.answer or '未知'}\n\n请写出解析。"
+        )
+        resp = LLMGateway().complete(prompt, system=_EXPLAIN_SYSTEM, temperature=0.2, max_tokens=512)
+        return (resp.content or "").strip(), resp.model or ""
+
+    # 并行调 LLM（主瓶颈）：结果按行序对齐，写库回主线程串行逐题 commit
+    results: list[tuple[int, str | None, str | None]] = []  # (row_idx, text, err)
+    with cf.ThreadPoolExecutor(max_workers=concurrency) as pool:
+        futs = {pool.submit(_gen_one, r): i for i, r in enumerate(rows)}
+        for f in cf.as_completed(futs):
+            i = futs[f]
+            try:
+                text, model = f.result()
+                if len(text) < 20 or len(text) > 1500:
+                    raise ValueError(f"生成结果长度异常（{len(text)} 字）")
+                results.append((i, text, model))
+            except Exception as e:  # noqa: BLE001 - 单题失败不阻断整批
+                results.append((i, None, str(e)[:120]))
+
+    results.sort(key=lambda x: x[0])  # 按行序写库，留痕日志稳定
+
     filled, failed, items = 0, 0, []
     model_used = None
-    for r in rows:
-        try:
-            opts = sorted(r.options, key=lambda o: o.label)
-            opt_text = "\n".join(f"{o.label}. {o.content}" for o in opts)
-            prompt = (
-                f"【科目】{r.subject} · {r.category}（题型：{r.qtype}）\n"
-                f"【题干】{r.stem}\n"
-                f"【选项】\n{opt_text}\n"
-                f"【正确答案】{r.answer or '未知'}\n\n请写出解析。"
-            )
-            resp = gw.complete(prompt, system=_EXPLAIN_SYSTEM, temperature=0.2, max_tokens=512)
-            text = (resp.content or "").strip()
-            model_used = resp.model or model_used
-            if len(text) < 20 or len(text) > 1500:
-                raise ValueError(f"生成结果长度异常（{len(text)} 字）")
-            r.explanation = text
-            db.add(QuestionAuditAction(
-                question_id=r.id, action="ai_filled",
-                note=f"AI 生成解析（{resp.model}）", actor=actor,
-            ))
-            db.commit()  # 逐题提交：单题失败不丢前面成果
-            filled += 1
-            items.append({"id": r.id, "ok": True, "explanation": text[:80] + ("…" if len(text) > 80 else "")})
-        except Exception as e:  # noqa: BLE001 - 单题失败不阻断整批
-            db.rollback()
+    for i, text, meta in results:
+        r = rows[i]
+        if text is None:
             failed += 1
-            items.append({"id": r.id, "ok": False, "error": str(e)[:120]})
-    db.commit()
-
-    remaining_q = db.query(func.count(Question.id)).filter(
-        Question.audit_status != "voided",
-        (Question.explanation.is_(None)) | (Question.explanation == ""),
-    )
-    if subject:
-        remaining_q = remaining_q.filter(Question.subject == subject)
+            items.append({"id": r.id, "ok": False, "error": meta})
+            continue
+        model_used = model_used or meta
+        r.explanation = text
+        db.add(QuestionAuditAction(
+            question_id=r.id, action="ai_filled",
+            note=f"AI 生成解析（{meta}）", actor=actor,
+        ))
+        db.commit()  # 逐题提交：单题失败不丢前面成果
+        filled += 1
+        items.append({"id": r.id, "ok": True, "explanation": text[:80] + ("…" if len(text) > 80 else "")})
 
     return {
         "filled": filled,
         "failed": failed,
-        "remaining": remaining_q.scalar() or 0,
+        "remaining": _count_remaining(),
         "items": items,
         "model": model_used,
     }
