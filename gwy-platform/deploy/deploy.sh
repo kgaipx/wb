@@ -21,6 +21,9 @@ SSH_OPTS=(-i "$PEM" -o StrictHostKeyChecking=no)
 
 echo "==> 1/4 构建前端"
 export PATH="/c/Users/hp/.workbuddy/binaries/node/versions/22.22.2:$PATH"
+# 本地 dist 会积累历史 chunk（vite emptyOutDir 的 fs.rmSync 被安全删除 shim 拦截时静默失败），
+# tar 全量上传会把垃圾带上线 → 构建前先移走旧 dist（固定名，不累积）
+[ -d frontend/dist ] && mv frontend/dist frontend/dist-bak
 VITE_API_BASE=/api npm run build --prefix frontend
 
 echo "==> 2/4 打包产物"

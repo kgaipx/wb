@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   api,
@@ -79,6 +79,11 @@ export default function Review() {
   const [aiFillBusy, setAiFillBusy] = useState(false);
   const [aiFillErr, setAiFillErr] = useState("");
   const [aiBatch, setAiBatch] = useState(10); // 单批题数
+  // 一键循环补完：前端驱动循环（服务端双 worker，进程内 job 状态不可共享）
+  const loopStopRef = useRef(false);
+  const [loopRun, setLoopRun] = useState(false);
+  const [loopStat, setLoopStat] = useState<{ done: number; failed: number; remaining: number; startedAt: number } | null>(null);
+
   async function runAiFill() {
     setAiFillBusy(true); setAiFillErr("");
     try {
@@ -89,6 +94,28 @@ export default function Review() {
       setAiFillErr(e.message || "补解析失败");
     } finally {
       setAiFillBusy(false);
+    }
+  }
+
+  async function runAiFillLoop() {
+    setLoopRun(true); loopStopRef.current = false; setAiFillErr("");
+    setLoopStat({ done: 0, failed: 0, remaining: aiFill?.remaining ?? 0, startedAt: Date.now() });
+    let guard = 0; // 硬上限防失控（400 批 × 30 = 12000 > 全库）
+    try {
+      while (!loopStopRef.current && guard < 400) {
+        guard++;
+        const r = await api.aiFillExplanations(30);
+        setAiFill(r);
+        setLoopStat(s => s ? { ...s, done: s.done + r.filled, failed: s.failed + r.failed, remaining: r.remaining } : s);
+        if (r.remaining === 0) break;
+        if (r.filled === 0) { setAiFillErr("连续一批无成功题，已停止（查看失败原因）"); break; }
+        await loadHist();
+      }
+    } catch (e: any) {
+      setAiFillErr(e.message || "循环补解析中断");
+    } finally {
+      setLoopRun(false);
+      loopStopRef.current = false;
     }
   }
 
@@ -651,15 +678,33 @@ export default function Review() {
               </div>
               <div className="row" style={{ gap: 8, marginTop: 8, alignItems: "center" }}>
                 <select className="input" style={{ width: 110, fontSize: 12, padding: "5px 8px" }}
-                  value={aiBatch} onChange={e => setAiBatch(Number(e.target.value))} disabled={aiFillBusy}>
+                  value={aiBatch} onChange={e => setAiBatch(Number(e.target.value))} disabled={aiFillBusy || loopRun}>
                   <option value={10}>每批 10 题</option>
                   <option value={20}>每批 20 题</option>
                   <option value={30}>每批 30 题</option>
                 </select>
-                <button className="btn btn--primary btn--sm" disabled={aiFillBusy} onClick={runAiFill}>
+                <button className="btn btn--primary btn--sm" disabled={aiFillBusy || loopRun} onClick={runAiFill}>
                   {aiFillBusy ? "生成中…（请勿关闭）" : aiFill ? `继续补 ${aiBatch} 题` : `开始补解析（${aiBatch} 题）`}
                 </button>
+                {!loopRun ? (
+                  <button className="btn btn--ghost btn--sm" disabled={aiFillBusy} onClick={runAiFillLoop}
+                    title="自动以每批 30 题循环执行直到全部补完，可随时停止">
+                    ▶▶ 一键补完（循环执行）
+                  </button>
+                ) : (
+                  <button className="btn btn--danger btn--sm" onClick={() => { loopStopRef.current = true; }}>
+                    ■ 停止
+                  </button>
+                )}
               </div>
+              {loopRun && loopStat && (
+                <div style={{ fontSize: 12, marginTop: 6 }}>
+                  <span style={{ color: "var(--ok, #1a7f37)" }}>循环中：已补 <b>{loopStat.done}</b></span>
+                  {loopStat.failed > 0 && <span style={{ color: "var(--danger, #d92b1c)", marginLeft: 10 }}>失败 <b>{loopStat.failed}</b></span>}
+                  <span className="muted" style={{ marginLeft: 10 }}>剩余 <b>{loopStat.remaining}</b></span>
+                  <span className="muted" style={{ marginLeft: 10 }}>已用 {Math.max(1, Math.round((Date.now() - loopStat.startedAt) / 60000))} 分钟</span>
+                </div>
+              )}
               {aiFillErr && <div className="err-text" style={{ fontSize: 12, marginTop: 6 }}>{aiFillErr}</div>}
               {aiFill && (
                 <div style={{ marginTop: 6, fontSize: 12 }}>
